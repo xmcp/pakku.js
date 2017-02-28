@@ -1,0 +1,24 @@
+{
+    "name": "pakku",
+    "version": "1.0",
+    "description": "The eternal danmaku devil on bilibili, now in your Chrome.",
+    "icons": {
+        "128": "logo.png"
+    },
+    
+    "manifest_version": 2,
+    "minimum_chrome_version": "32",
+    
+    "permissions": [
+        "*://*.bilibili.com/*",
+        "webRequestBlocking",
+        "webRequest",
+        "notifications"
+    ],
+    "browser_action": {
+        "default_icon": "icon_display.png"
+    },
+    "background": {
+        "scripts": ["background.js"]
+    }
+}
