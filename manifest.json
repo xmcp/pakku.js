@@ -3,7 +3,7 @@
     "version": "1.0",
     "description": "The eternal danmaku devil on bilibili, now in your Chrome.",
     "icons": {
-        "128": "logo.png"
+        "128": "assets/logo.png"
     },
     
     "manifest_version": 2,
@@ -15,8 +15,11 @@
         "webRequest",
         "notifications"
     ],
+    
+    "options_page": "options/options.html",
     "browser_action": {
-        "default_icon": "icon_display.png"
+        "default_icon": "assets/icon_display.png",
+        "default_popup": "popup/popup.html"
     },
     "background": {
         "scripts": ["background.js"]
