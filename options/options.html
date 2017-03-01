@@ -1,0 +1,108 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>pakku 设置</title>
+    <style>
+        body {
+            background-color: #eee;
+            font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
+            max-width: 800px;
+            margin: auto;
+        }
+        #title {
+            font-size: 60px;
+            font-family: Consolas, Courier, monospace;
+            margin: 0;
+            padding: 10px 0 10px 0;
+            text-align: center;
+        }
+        #title img {
+            vertical-align: middle;
+        }
+        label {
+            font-weight: bold;
+        }
+        code {
+            font-family: Consolas, Courier, monospace;
+            border-bottom: 1px dashed black;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            border-top: 1px solid #ccc;
+            padding: 1em;
+        }
+        tr:hover {
+            background-color: #f7f7f7;
+        }
+        td:nth-child(1) {
+            font-weight: bold;
+            padding-right: 1em;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <p id="title">
+        <img src="../assets/logo.png">
+        <span>pakku 设置页建设中</span>
+    </p>
+    
+    <table>
+        <tbody>
+            <tr>
+                <td>弹幕时间差阈值</td>
+                <td>
+                    <p><input id="threshold" type="number" min="0" step="1"> 秒</p>
+                    <p>小于这个时间差的弹幕才会被合并。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>弹幕套路</td>
+                <td>
+                    <p>满足同样套路特征的弹幕即使内容不同也会被合并。</p>
+                    <p>
+                        <input id="newtaolu-pattern" placeholder="正则表达式">
+                        →
+                        <input id="newtaolu-name" placeholder="替换文本">
+                        <button id="newtaolu-submit" type="button">添加</button>
+                    </p>
+                    <div id="taolus">
+                        <li>
+                            <code>^foo$</code>
+                            → <code>bar</code>
+                            <button type="button">删除</button>
+                        </li>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>附加功能</td>
+                <td>
+                    <p>
+                        <input id="remove-seek" type="checkbox">
+                        <label for="remove-seek">屏蔽跳转脚本</label>
+                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的脚本弹幕。</span>
+                    </p>
+                    <p>
+                        <input id="flash-notif" type="checkbox">
+                        <label for="flash-notif">Flash 播放器兼容提示</label>
+                        <span>/ 检测到 Flash 播放器时给出提醒。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>统计数据</td>
+                <td>
+                    <p>pakku 共为您过滤了 <code id="stats-videos">--</code> 个视频中的 <code id="stats-danmus">---</code> 条弹幕。</p>
+                    <p><button id="stats-clear" type="button">重置统计数据</button></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="options.js"></script>
+</body>
+</html>
