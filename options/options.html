@@ -42,12 +42,15 @@
             padding-right: 1em;
             text-align: right;
         }
+        #taolus button {
+            margin-right: 1em;
+        }
     </style>
 </head>
 <body>
     <p id="title">
-        <img src="../assets/logo.png">
-        <span>pakku 设置页建设中</span>
+        <img src="../assets/logo.png" height="128" width="128">
+        <span>pakku</span>
     </p>
     
     <table>
@@ -69,13 +72,7 @@
                         <input id="newtaolu-name" placeholder="替换文本">
                         <button id="newtaolu-submit" type="button">添加</button>
                     </p>
-                    <div id="taolus">
-                        <li>
-                            <code>^foo$</code>
-                            → <code>bar</code>
-                            <button type="button">删除</button>
-                        </li>
-                    </div>
+                    <div id="taolus"></div>
                 </td>
             </tr>
             <tr>
@@ -84,7 +81,7 @@
                     <p>
                         <input id="remove-seek" type="checkbox">
                         <label for="remove-seek">屏蔽跳转脚本</label>
-                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的脚本弹幕。</span>
+                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的代码弹幕。</span>
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">

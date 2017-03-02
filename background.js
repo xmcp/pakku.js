@@ -1,13 +1,29 @@
-var TAOLUS={
-    '233...': /^23{2,}$/,
-    '666...': /^6{3,}$/,
-    'FFF...': /^[fF]+$/,
-    'hhh...': /^[hH]+$/,
-};
-var THRESHOLD=15;
-var REMOVE_SEEK=true;
-var FLASH_NOTIF=true;
 var GLOBAL_SWITCH=true;
+
+function fromholyjson(txt) {
+    var item=JSON.parse(txt);
+    for(var key in item)
+        item[key]=RegExp(item[key]);
+    return item;
+}
+function toholyjson(obj) {
+    var item={};
+    for(var key in obj)
+        item[key]=obj[key].source;
+    return JSON.stringify(item);
+}
+
+function loadconfig() {
+    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
+    window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
+    window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
+    window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
+}
+localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
+localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
+localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
+localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
+loadconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0) // goto settings
@@ -48,16 +64,16 @@ function parse(dom,tabid) {
         var txt=elem.childNodes[0].data;
         if(REMOVE_SEEK && attr[1]=='8' && txt.indexOf('Player.seek')!=-1)
             elem.childNodes[0].data='/* player.seek filtered by pakku */';
-        return {
+        return { // code danmu
             text: detaolu(txt),
             elem: elem,
-            time: parseFloat(attr[0])
-        }
+            time: parseFloat(attr[0]),
+            mode: attr[1]
+        };
     }
     
     var danmus=[].slice
         .call(dom.getElementsByTagName('d'))
-        .filter(function(elem) {return elem.childNodes.length;})
         .map(parse_single_danmu)
         .sort(function(a,b) {return a.time-b.time;});
 
@@ -81,7 +97,7 @@ function parse(dom,tabid) {
     }
         
     danmus.forEach(function(danmu) {
-        if(iterate(danmu)) { // delete same danmu
+        if(danmu.mode!='8' && iterate(danmu)) { // delete same danmu
             danmu.elem.parentNode.removeChild(danmu.elem);
             counter++;
         }
