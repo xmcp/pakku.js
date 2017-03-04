@@ -1,7 +1,7 @@
 {
     "name": "pakku",
-    "version": "1.0",
-    "description": "The eternal danmaku devil on bilibili, now in your Chrome.",
+    "version": "2.0",
+    "description": "Make Bilibili Great Again!",
     "icons": {
         "128": "assets/logo.png"
     },
