@@ -4,6 +4,7 @@ function id(x) {
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     id('threshold').value=localStorage['THRESHOLD'];
+    id('max-dist').value=localStorage['MAX_DIST'];
     var cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
     var taolus=id('taolus');
     for(var key in cfg_taolus) {
@@ -44,6 +45,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
+        localStorage['MAX_DIST']=parseInt(id('max-dist').value)>0?parseInt(id('max-dist').value):5;
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         bgpage.loadconfig();
@@ -51,6 +53,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     id('threshold').addEventListener('change',update);
+    id('max-dist').addEventListener('change',update);
     id('remove-seek').addEventListener('change',update);
     id('flash-notif').addEventListener('change',update);
 });

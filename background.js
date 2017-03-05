@@ -18,10 +18,11 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.MAX_DIST = 5;
+    window.MAX_DIST = localStorage['MAX_DIST']||5;
 }
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
+localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 loadconfig();
@@ -56,6 +57,8 @@ var counts = new Int16Array (0x10ffff);
 
 function edit_distance (P, Q) {
     'use strict';
+
+    if (P.length + Q.length < 7) return (MAX_DIST + 1) * +(P != Q);
 
     for (var i = 0; i < P.length; i ++) counts [P.charCodeAt (i)] ++;
     for (var i = 0; i < Q.length; i ++) counts [Q.charCodeAt (i)] --;
