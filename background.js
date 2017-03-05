@@ -74,6 +74,7 @@ function parse(dom,tabid) {
     
     var danmus=[].slice
         .call(dom.getElementsByTagName('d'))
+        .filter(function(elem) {return !!elem.childNodes[0];})
         .map(parse_single_danmu)
         .sort(function(a,b) {return a.time-b.time;});
 
