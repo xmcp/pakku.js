@@ -19,12 +19,16 @@ function loadconfig() {
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.MAX_DIST = localStorage['MAX_DIST']||5;
+    window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
+    window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
 localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
+localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
+localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'count';
 loadconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
@@ -193,7 +197,10 @@ function parse(dom,tabid) {
             else {
                 counter += len - 1;
 
-                var proc = len == 1 ? key : key + " [x" + len.toString () + "]";
+                var proc =
+                    (len == 1 || ! DANMU_BADGE)
+                    ? key
+                    : key + " [x" + len.toString () + "]";
                 
                 var d = new_dom.createElement ('d');
                 var tn = new_dom.createTextNode (proc);
@@ -223,7 +230,10 @@ function parse(dom,tabid) {
     danmu_hist.forEach (gen_new_dom);
 
     chrome.browserAction.setBadgeText({
-        text: ''+counter,
+        text:
+            POPUP_BADGE=='count' ? ''+counter :
+            POPUP_BADGE=='percent' ? (counter*100/danmus.length).toFixed(0)+'%' :
+            '',
         tabId: tabid
     });
     var serializer=new XMLSerializer();

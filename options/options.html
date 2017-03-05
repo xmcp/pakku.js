@@ -9,6 +9,17 @@
             max-width: 800px;
             margin: auto;
         }
+        a {
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0,0,0,.5);
+        }
+        .hidden {
+            display: none;
+        }
+        #title small {
+            font-size: .3em;
+            vertical-align: middle;
+        }
         #title {
             font-size: 60px;
             font-family: Consolas, Courier, monospace;
@@ -45,12 +56,29 @@
         #taolus button {
             margin-right: 1em;
         }
+        #saved-alert {
+            position: fixed;
+            top: 0; bottom: 0; left: 0; right: 0;
+            margin: auto;
+            width: 150px;
+            height: 50px;
+            line-height: 50px;
+            font-size: 25px;
+            text-align: center;
+            border-radius: 10px;
+            background-color: black;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <p id="title">
-        <img src="../assets/logo.png" height="128" width="128">
         <span>pakku</span>
+        <img src="../assets/logo.png" height="128" width="128">
+        <small>
+            <span id="version"></span>
+            <a href="https://github.com/xmcp/pakku.js" target="_blank">by @xmcp</a>
+        </small>
     </p>
     
     <table>
@@ -59,7 +87,7 @@
                 <td>弹幕时间差阈值</td>
                 <td>
                     <p><input id="threshold" type="number" min="0" step="1"> 秒</p>
-                    <p>小于这个时间差的弹幕才会被合并。</p>
+                    <p>小于这个时间差的相同弹幕才会被合并。</p>
                 </td>
             </tr>
             <tr>
@@ -72,14 +100,34 @@
             <tr>
                 <td>弹幕套路</td>
                 <td>
-                    <p>满足同样套路特征的弹幕即使内容不同也会被合并。</p>
+                    <p>满足同样特征的弹幕，即使内容不同也会被合并。</p>
                     <p>
-                        <input id="newtaolu-pattern" placeholder="正则表达式">
-                        →
-                        <input id="newtaolu-name" placeholder="替换文本">
-                        <button id="newtaolu-submit" type="button">添加</button>
+                        <form id="newtaolu-form">
+                            <input id="newtaolu-pattern" placeholder="正则表达式">
+                            →
+                            <input id="newtaolu-name" placeholder="替换文本">
+                            <button type="submit">添加</button>
+                        </form>
                     </p>
                     <div id="taolus"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>显示设置</td>
+                <td>
+                    <p>
+                        <input id="danmu-badge" type="checkbox">
+                        <label for="danmu-badge">向合并的弹幕添加 <code>[xN]</code> 后缀</label>
+                        <span>/ 如果此提示影响你观看视频，可以关闭它。</span>
+                    </p>
+                    <p>
+                        <b>扩展程序角标数字：</b>
+                        <select id="popup-badge">
+                            <option value="off">不显示角标</option>
+                            <option value="count">显示被合并弹幕数量</option>
+                            <option value="percent">显示被合并弹幕比例</option>
+                        </select>
+                    </p>
                 </td>
             </tr>
             <tr>
@@ -106,7 +154,10 @@
             </tr> -->
         </tbody>
     </table>
+    <br>
 
+    <div id="saved-alert" class="hidden">已保存</div>
+    
     <script src="options.js"></script>
 </body>
 </html>

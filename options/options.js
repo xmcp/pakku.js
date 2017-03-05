@@ -2,7 +2,15 @@ function id(x) {
     return document.getElementById(x);
 }
 
+id('version').textContent=chrome.runtime.getManifest().version;
+
 chrome.runtime.getBackgroundPage(function(bgpage) {
+    function reload() {
+        bgpage.loadconfig();
+        id('saved-alert').classList.remove('hidden');
+        setTimeout(function(){location.reload();},50);
+    }
+    
     id('threshold').value=localStorage['THRESHOLD'];
     id('max-dist').value=localStorage['MAX_DIST'];
     var cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
@@ -21,8 +29,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         (function(key) {deletebtn.addEventListener('click',function() {
             delete cfg_taolus[key];
             localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
-            bgpage.loadconfig();
-            location.reload();
+            reload();
         })})(key);
         
         container.appendChild(deletebtn);
@@ -33,14 +40,16 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
     id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
+    id('danmu-badge').checked=localStorage['DANMU_BADGE']==='on';
+    id('popup-badge').value=localStorage['POPUP_BADGE'];
     
-    id('newtaolu-submit').addEventListener('click',function() {
+    id('newtaolu-form').addEventListener('submit',function(e) {
+        e.preventDefault();
         var pattern=RegExp(id('newtaolu-pattern').value),
             key=id('newtaolu-name').value;
         cfg_taolus[key]=pattern;
         localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
-        bgpage.loadconfig();
-        location.reload();
+        reload();
     });
     
     function update() {
@@ -48,12 +57,12 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['MAX_DIST']=parseInt(id('max-dist').value)>0?parseInt(id('max-dist').value):5;
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
-        bgpage.loadconfig();
-        location.reload();
+        localStorage['DANMU_BADGE']=id('danmu-badge').checked?'on':'off';
+        localStorage['POPUP_BADGE']=id('popup-badge').value;
+        reload();
     }
     
-    id('threshold').addEventListener('change',update);
-    id('max-dist').addEventListener('change',update);
-    id('remove-seek').addEventListener('change',update);
-    id('flash-notif').addEventListener('change',update);
+    ['threshold','max-dist','remove-seek','flash-notif','danmu-badge','popup-badge'].forEach(function(elem) {
+        id(elem).addEventListener('change',update);
+    });
 });
