@@ -1,5 +1,7 @@
 var GLOBAL_SWITCH=true;
 
+var MAGIC = '$' + Math.random ().toString ().substr (2, 6) + '$';
+
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var key in item)
@@ -18,6 +20,7 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
+    window.MAX_DIST = 5;
 }
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
@@ -51,65 +54,161 @@ chrome.runtime.onInstalled.addListener(function(details) {
         });
 });
 
+var counts = new Int16Array (0x10ffff);
+
+function edit_distance (P, Q) {
+    'use strict';
+
+    for (var i = 0; i < P.length; i ++) counts [P.charCodeAt (i)] ++;
+    for (var i = 0; i < Q.length; i ++) counts [Q.charCodeAt (i)] --;
+
+    var ans = 0;
+
+    for (var i = 0; i < P.length; i ++) {
+        ans += Math.abs (counts[P.charCodeAt (i)]);
+        counts[P.charCodeAt (i)] = 0;
+    }
+
+    for (var i = 0; i < Q.length; i ++) {
+        ans += Math.abs (counts[Q.charCodeAt (i)]);
+        counts[Q.charCodeAt (i)] = 0;
+    }
+
+    return ans;
+}
+
+function BKTree () {
+    this.root = null;
+    this.count = 0;
+}
+
+BKTree.prototype.insert = function (new_str, time) {
+    'use strict';
+
+    this.count ++;
+    
+
+    var new_node = { val: new_str, time: time, children: new Map () };
+
+    if (this.root == null)
+        this.root = new_node;
+    else {
+        var node = this.root;
+        var dist = edit_distance (node.val, new_str);
+        while (node.children.has (dist)) {
+            node = node.children.get (dist);
+            dist = edit_distance (node.val, new_str);
+        }
+        node.children.set (dist, new_node);
+    }
+};
+
+function time_str (time) { return Math.round(time).toString (); }
+
+BKTree.prototype.find = function (str, time_lim) {
+    'use strict';
+
+    var best_time, best_str = null;
+
+    if (this.root != null) {
+        var queue = [this.root];
+
+        while (queue.length) {
+            var u = queue.pop ();
+            var dist = edit_distance (u.val, str);
+            
+            if (dist < MAX_DIST && u.time > time_lim)
+                return u.val + MAGIC + time_str(u.time);
+
+            u.children.forEach (function (value, key) {
+                if (value.time < time_lim) u.children.delete (key);
+                else if (dist - MAX_DIST < key && key <= dist + MAX_DIST)
+                    queue.push (value);
+            });
+        }
+    }
+
+    return null;
+}
+
 function parse(dom,tabid) {
+    console.time ('parse');
     function detaolu(text) {
         for(var name in TAOLUS)
             if(TAOLUS[name].test(text))
                 return name;
         return text;
     }
-    
-    function parse_single_danmu(elem) {
-        var attr=elem.attributes['p'].value.split(',');
-        var txt=elem.childNodes[0].data;
-        if(REMOVE_SEEK && attr[1]=='8' && txt.indexOf('Player.seek')!=-1)
-            elem.childNodes[0].data='/* player.seek filtered by pakku */';
-        return { // code danmu
-            text: detaolu(txt),
-            elem: elem,
-            time: parseFloat(attr[0]),
-            mode: attr[1]
-        };
-    }
-    
-    var danmus=[].slice
-        .call(dom.getElementsByTagName('d'))
-        .filter(function(elem) {return !!elem.childNodes[0];})
-        .map(parse_single_danmu)
-        .sort(function(a,b) {return a.time-b.time;});
 
-    var self,counter=0,hist={}; // text : time, count, danmu
-    function iterate(elem) {
-        if(hist[elem.text] && elem.time-hist[elem.text].time>THRESHOLD) // outdated
-            delete hist[elem.text];
-            
-        if((self=hist[elem.text])) {
-            self.count++;
-            self.danmu.elem.childNodes[0].data=self.danmu.text+' [x'+self.count+']';
-            return true;
+    var parser = new DOMParser ();
+    var new_dom = parser.parseFromString ('<i></i>', 'text/xml');
+    var i_elem = new_dom.getRootNode ().children[0];
+
+    var danmus = [];
+
+    function get_danmus_worker (elem) {
+        if (elem.tagName == 'd') {
+            var attr = elem.attributes['p'].value;
+            var time = parseFloat (attr.split (',')[0]);
+            var str = elem.childNodes[0] ? elem.childNodes[0].data : '';
+            if (REMOVE_SEEK && attr.split (',')[1] == '8' && str.indexOf ('Player.seek') != -1)
+                str = '/* player.seek filtered by pakku */';
+            danmus.push ({ attr: attr, str: detaolu (str), time: time });
+        } else
+            i_elem.appendChild (elem);
+    }
+
+    [].slice.call (dom.getRootNode ().children[0].children).forEach (get_danmus_worker);
+
+    danmus.sort (function (x, y) { return x.time - y.time; });
+
+    var danmu_hist = new Map ();
+
+    var bk = new BKTree ();
+    var last_time = 0;
+
+    function process_hist (dm) {
+        var time = dm.time;
+        var str = dm.str;
+
+        var res = bk.find (str, time - THRESHOLD);
+        if (res == null) {
+            danmu_hist.set (str + MAGIC + time_str (time), [dm]);
+            bk.insert (str, time);
         } else {
-            hist[elem.text]={
-                count: 1,
-                time: elem.time,
-                danmu: elem
-            };
-            return false;
+            danmu_hist.get (res).push (dm);
         }
     }
+
+    danmus.forEach (process_hist);
+
+    function gen_new_dom (value, key) {
+        var len = value.length;
+        counter += value.length - 1;
+
+        var fkey = key.split (MAGIC)[0];
+        var proc = len == 1 ? fkey : fkey + " [x" + len.toString () + "]";
         
-    danmus.forEach(function(danmu) {
-        if(danmu.mode!='8' && iterate(danmu)) { // delete same danmu
-            danmu.elem.parentNode.removeChild(danmu.elem);
-            counter++;
-        }
-    });
-    
+        var d = new_dom.createElement ('d');
+        var tn = new_dom.createTextNode (proc);
+
+        d.appendChild (tn);
+        d.setAttribute('p', value[0].attr)
+
+        i_elem.appendChild (d);
+    }
+
+    danmu_hist.forEach (gen_new_dom);
+
+    var counter = 0;
+
     chrome.browserAction.setBadgeText({
         text: ''+counter,
         tabId: tabid
     });
     var serializer=new XMLSerializer();
-    return serializer.serializeToString(dom);
+    console.timeEnd ('parse');
+    return serializer.serializeToString(new_dom);
 }
 
 function load_danmaku(id,tabid) {
