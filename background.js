@@ -1,7 +1,5 @@
 var GLOBAL_SWITCH=true;
 
-var MAGIC = '$' + Math.random ().toString ().substr (2, 6) + '$';
-
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var key in item)
@@ -118,7 +116,7 @@ BKTree.prototype.find = function (str, time_lim) {
             var dist = edit_distance (u.val, str);
             
             if (dist < MAX_DIST && u.time > time_lim)
-                return u.val + MAGIC + time_str(u.time);
+                return u.val;
 
             u.children.forEach (function (value, key) {
                 if (value.time < time_lim) u.children.delete (key);
@@ -173,7 +171,8 @@ function parse(dom,tabid) {
 
         var res = bk.find (str, time - THRESHOLD);
         if (res == null) {
-            danmu_hist.set (str + MAGIC + time_str (time), [dm]);
+            if (danmu_hist.has (str)) danmu_hist.get (str).push (dm);
+            else danmu_hist.set (str, [dm]);
             bk.insert (str, time);
         } else {
             danmu_hist.get (res).push (dm);
@@ -182,25 +181,43 @@ function parse(dom,tabid) {
 
     danmus.forEach (process_hist);
 
-    function gen_new_dom (value, key) {
-        var len = value.length;
-        counter += value.length - 1;
+    var counter = 0;
 
-        var fkey = key.split (MAGIC)[0];
-        var proc = len == 1 ? fkey : fkey + " [x" + len.toString () + "]";
+    function gen_new_dom (value, key) {
+        var len = 1, last_time = value[0].time;
+        for (var i = 1; i < value.length; i ++)
+            if (value[i].time - last_time < THRESHOLD) len ++;
+            else {
+                counter += len - 1;
+
+                var proc = len == 1 ? key : key + " [x" + len.toString () + "]";
+                
+                var d = new_dom.createElement ('d');
+                var tn = new_dom.createTextNode (proc);
+
+                d.appendChild (tn);
+                d.setAttribute('p', value[i - 1].attr)
+
+                i_elem.appendChild (d);
+
+                last_time = value[i].time;
+                len = 0;
+            }
+
+        counter += len - 1;
+
+        var proc = len == 1 ? key : key + " [x" + len.toString () + "]";
         
         var d = new_dom.createElement ('d');
         var tn = new_dom.createTextNode (proc);
 
         d.appendChild (tn);
-        d.setAttribute('p', value[0].attr)
+        d.setAttribute('p', value[value.length - 1].attr)
 
         i_elem.appendChild (d);
     }
 
     danmu_hist.forEach (gen_new_dom);
-
-    var counter = 0;
 
     chrome.browserAction.setBadgeText({
         text: ''+counter,
