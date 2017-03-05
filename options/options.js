@@ -54,7 +54,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
-        localStorage['MAX_DIST']=parseInt(id('max-dist').value)>0?parseInt(id('max-dist').value):5;
+        localStorage['MAX_DIST']=parseInt(id('max-dist').value)>=0?parseInt(id('max-dist').value):5;
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_BADGE']=id('danmu-badge').checked?'on':'off';
