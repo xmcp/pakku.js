@@ -18,11 +18,15 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
+    window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
+    window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
+localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
+localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'count';
 loadconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
@@ -85,7 +89,8 @@ function parse(dom,tabid) {
             
         if((self=hist[elem.text])) {
             self.count++;
-            self.danmu.elem.childNodes[0].data=self.danmu.text+' [x'+self.count+']';
+            if(DANMU_BADGE)
+                self.danmu.elem.childNodes[0].data=self.danmu.text+' [x'+self.count+']';
             return true;
         } else {
             hist[elem.text]={
@@ -105,7 +110,10 @@ function parse(dom,tabid) {
     });
     
     chrome.browserAction.setBadgeText({
-        text: ''+counter,
+        text:
+            POPUP_BADGE=='count' ? ''+counter :
+            POPUP_BADGE=='percent' ? (counter*100/danmus.length).toFixed(0)+'%' :
+            '',
         tabId: tabid
     });
     var serializer=new XMLSerializer();
