@@ -22,6 +22,6 @@
         "default_popup": "popup/popup.html"
     },
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["edit_distance.js", "background.js"]
     }
 }
