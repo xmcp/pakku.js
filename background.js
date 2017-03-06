@@ -130,7 +130,7 @@ BKTree.prototype.find = function (str, time_lim) {
                 return u;
 
             u.children.forEach (function (value, key) {
-                if (dist - MAX_DIST < key && key <= dist + MAX_DIST)
+                if (dist - MAX_DIST <= key && key <= dist + MAX_DIST)
                     queue.push (value);
             });
         }
