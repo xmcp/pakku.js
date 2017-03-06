@@ -1,6 +1,6 @@
 {
     "name": "pakku",
-    "version": "2.1",
+    "version": "3.0",
     "description": "Make Bilibili Great Again!",
     "icons": {
         "128": "assets/logo.png"
@@ -22,6 +22,8 @@
         "default_popup": "popup/popup.html"
     },
     "background": {
-        "scripts": ["edit_distance.js", "background.js"]
+        "scripts": [
+            "core/edit_distance.js", "core/background.js"
+        ]
     }
 }

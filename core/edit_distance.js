@@ -1,10 +1,12 @@
 var ed_counts = new Int16Array (0x10ffff);
 
+var MIN_DANMU_SIZE=10;
+
 function edit_distance (P, Q) {
     'use strict';
 
     // TODO: Make this less hacky
-    if (P.length + Q.length < 7)
+    if (P.length + Q.length < MIN_DANMU_SIZE)
         return (MAX_DIST + 1) * +(P != Q);
 
     for (var i = 0; i < P.length; i ++) ed_counts [P.charCodeAt (i)] ++;

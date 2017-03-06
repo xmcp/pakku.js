@@ -84,17 +84,19 @@
     <table>
         <tbody>
             <tr>
-                <td>弹幕时间差阈值</td>
+                <td>弹幕合并设置</td>
                 <td>
-                    <p><input id="threshold" type="number" min="0" step="1"> 秒</p>
-                    <p>小于这个时间差的相同弹幕才会被合并。</p>
-                </td>
-            </tr>
-            <tr>
-                <td>弹幕内容距离阀值</td>
-                <td>
-                    <p><input id="max-dist" type="number" min="0" step="1"></p>
-                    <p>合并相似弹幕时容忍差别的程度</p>
+                    <p>
+                        <label for="threshold">时间阈值：</label>
+                        合并
+                        <input id="threshold" type="number" min="0" step="1">
+                        秒之内的重复弹幕
+                    </p>
+                    <p>
+                        <input id="danmu-fuzz" type="checkbox">
+                        <label for="danmu-fuzz">模糊匹配</label>
+                        <span>/ 合并不同但内容相似的弹幕（可能误伤计数君）</span>
+                    </p>
                 </td>
             </tr>
             <tr>
@@ -145,15 +147,16 @@
                     </p>
                 </td>
             </tr>
-            <!-- not implemented yet <tr>
-                <td>统计数据</td>
-                <td>
-                    <p>pakku 共为您过滤了 <code id="stats-videos">--</code> 个视频中的 <code id="stats-danmus">---</code> 条弹幕。</p>
-                    <p><button id="stats-clear" type="button">重置统计数据</button></p>
-                </td>
-            </tr> -->
         </tbody>
     </table>
+    
+    <br>
+    
+    <p><small>
+        请使用 <a href="http://www.bilibili.com/html/help.html#p" target="_blank">哔哩哔哩 HTML5 播放器</a>。
+        如有任何问题请 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">在 GitHub 中反馈</a>。
+    </p></small>
+    
     <br>
 
     <div id="saved-alert" class="hidden">已保存</div>
