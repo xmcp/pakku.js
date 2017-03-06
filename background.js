@@ -112,8 +112,6 @@ BKTree.prototype.insert = function (new_str, time) {
     return new_node;
 };
 
-function time_str (time) { return Math.round(time).toString (); }
-
 BKTree.prototype.find = function (str, time_lim) {
     'use strict';
 
