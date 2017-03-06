@@ -18,11 +18,13 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
+    window.MAX_DIST = parseInt(localStorage['MAX_DIST'])||5;
     window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
+localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
@@ -56,59 +58,118 @@ chrome.runtime.onInstalled.addListener(function(details) {
 });
 
 function parse(dom,tabid) {
+    console.time ('parse');
     function detaolu(text) {
         for(var name in TAOLUS)
             if(TAOLUS[name].test(text))
                 return name;
         return text;
     }
-    
-    function parse_single_danmu(elem) {
-        var attr=elem.attributes['p'].value.split(',');
-        var txt=elem.childNodes[0].data;
-        if(REMOVE_SEEK && attr[1]=='8' && txt.indexOf('Player.seek')!=-1)
-            elem.childNodes[0].data='/* player.seek filtered by pakku */';
-        return { // code danmu
-            text: detaolu(txt),
-            elem: elem,
-            time: parseFloat(attr[0]),
-            mode: attr[1]
-        };
-    }
-    
-    var danmus=[].slice
-        .call(dom.getElementsByTagName('d'))
-        .filter(function(elem) {return !!elem.childNodes[0];})
-        .map(parse_single_danmu)
-        .sort(function(a,b) {return a.time-b.time;});
 
-    var self,counter=0,hist={}; // text : time, count, danmu
-    function iterate(elem) {
-        if(hist[elem.text] && elem.time-hist[elem.text].time>THRESHOLD) // outdated
-            delete hist[elem.text];
-            
-        if((self=hist[elem.text])) {
-            self.count++;
-            if(DANMU_BADGE)
-                self.danmu.elem.childNodes[0].data=self.danmu.text+' [x'+self.count+']';
-            return true;
+    var parser = new DOMParser ();
+    var new_dom = parser.parseFromString ('<i></i>', 'text/xml');
+    var i_elem = new_dom.getRootNode ().children[0];
+
+    var danmus = [];
+
+    function get_danmus_worker (elem) {
+        if (elem.tagName == 'd') {
+            var attr = elem.attributes['p'].value;
+            var time = parseFloat (attr.split (',')[0]);
+            var str = elem.childNodes[0] ? elem.childNodes[0].data : '';
+            if (REMOVE_SEEK && attr.split (',')[1] == '8' && str.indexOf ('Player.seek') != -1)
+                str = '/* player.seek filtered by pakku */';
+            danmus.push ({ attr: attr, str: detaolu (str), time: time });
+        } else
+            i_elem.appendChild (elem);
+    }
+
+    [].slice.call (dom.getRootNode ().children[0].children).forEach (get_danmus_worker);
+
+    danmus.sort (function (x, y) { return x.time - y.time; });
+
+    var danmu_hist = new Map ();
+
+    var bk = new BKTree (), bk_buf = new BKTree ();
+    var last_time = 0;
+
+    function process_hist (dm) {
+        var time = dm.time;
+        var str = dm.str;
+
+        if (time - last_time > THRESHOLD) {
+            bk = bk_buf;
+            bk_buf = new BKTree ();
+            last_time = time;
+        }
+
+        var res = bk.find (str, time - THRESHOLD);
+
+        if (res == null) {
+            var node = bk.insert (str, time);
+            danmu_hist.set (node, [dm]);
+            var node_buf = bk_buf.insert (str, time);
+            danmu_hist.set (node_buf, []);
         } else {
-            hist[elem.text]={
-                count: 1,
-                time: elem.time,
-                danmu: elem
-            };
-            return false;
+            danmu_hist.get (res).push (dm);
+
+            var res_buf = bk_buf.find (str, time - THRESHOLD);
+
+            if (res_buf == null) {
+                var node = bk_buf.insert (str, time);
+                danmu_hist.set (node, []);
+            }
         }
     }
+
+    danmus.forEach (process_hist);
+
+    var counter = 0;
+
+    function gen_new_dom (value, key) {
+        if (! value.length) return; // Dummy node
+
+        var len = 1, last_time = value[0].time;
+        for (var i = 1; i < value.length; i ++)
+            if (value[i].time - last_time < THRESHOLD) len ++;
+            else {
+                counter += len - 1;
+
+                var proc =
+                    (len == 1 || ! DANMU_BADGE)
+                    ? key.val
+                    : key.val + " [x" + len.toString () + "]";
+                
+                var d = new_dom.createElement ('d');
+                var tn = new_dom.createTextNode (proc);
+
+                d.appendChild (tn);
+                d.setAttribute('p', value[i - 1].attr)
+
+                i_elem.appendChild (d);
+
+                last_time = value[i].time;
+                len = 0;
+            }
+
+        counter += len - 1;
+
+        var proc =
+            (len == 1 || ! DANMU_BADGE)
+            ? key.val
+            : key.val + " [x" + len.toString () + "]";
         
-    danmus.forEach(function(danmu) {
-        if(danmu.mode!='8' && iterate(danmu)) { // delete same danmu
-            danmu.elem.parentNode.removeChild(danmu.elem);
-            counter++;
-        }
-    });
-    
+        var d = new_dom.createElement ('d');
+        var tn = new_dom.createTextNode (proc);
+
+        d.appendChild (tn);
+        d.setAttribute('p', value[value.length - 1].attr)
+
+        i_elem.appendChild (d);
+    }
+
+    danmu_hist.forEach (gen_new_dom);
+
     chrome.browserAction.setBadgeText({
         text:
             POPUP_BADGE=='count' ? ''+counter :
@@ -117,7 +178,8 @@ function parse(dom,tabid) {
         tabId: tabid
     });
     var serializer=new XMLSerializer();
-    return serializer.serializeToString(dom);
+    console.timeEnd ('parse');
+    return serializer.serializeToString(new_dom);
 }
 
 function load_danmaku(id,tabid) {

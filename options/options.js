@@ -12,6 +12,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     id('threshold').value=localStorage['THRESHOLD'];
+    id('max-dist').value=localStorage['MAX_DIST'];
     var cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
     var taolus=id('taolus');
     for(var key in cfg_taolus) {
@@ -53,6 +54,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
+        localStorage['MAX_DIST']=parseInt(id('max-dist').value)>=0?parseInt(id('max-dist').value):5;
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_BADGE']=id('danmu-badge').checked?'on':'off';
@@ -60,7 +62,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         reload();
     }
     
-    ['threshold','remove-seek','flash-notif','danmu-badge','popup-badge'].forEach(function(elem) {
+    ['threshold','max-dist','remove-seek','flash-notif','danmu-badge','popup-badge'].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
 });
