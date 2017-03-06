@@ -18,7 +18,7 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.MAX_DIST = localStorage['MAX_DIST']||5;
+    window.MAX_DIST = parseInt(localStorage['MAX_DIST'])||5;
     window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
@@ -62,8 +62,6 @@ var counts = new Int16Array (0x10ffff);
 function edit_distance (P, Q) {
     'use strict';
 
-    if (P.length + Q.length < 7) return (MAX_DIST + 1) * +(P != Q);
-
     for (var i = 0; i < P.length; i ++) counts [P.charCodeAt (i)] ++;
     for (var i = 0; i < Q.length; i ++) counts [Q.charCodeAt (i)] --;
 
@@ -106,6 +104,8 @@ BKTree.prototype.insert = function (new_str, time) {
         }
         node.children.set (dist, new_node);
     }
+
+    return new_node;
 };
 
 function time_str (time) { return Math.round(time).toString (); }
@@ -123,11 +123,10 @@ BKTree.prototype.find = function (str, time_lim) {
             var dist = edit_distance (u.val, str);
             
             if (dist < MAX_DIST && u.time > time_lim)
-                return u.val;
+                return u;
 
             u.children.forEach (function (value, key) {
-                if (value.time < time_lim) u.children.delete (key);
-                else if (dist - MAX_DIST < key && key <= dist + MAX_DIST)
+                if (dist - MAX_DIST < key && key <= dist + MAX_DIST)
                     queue.push (value);
             });
         }
@@ -169,20 +168,35 @@ function parse(dom,tabid) {
 
     var danmu_hist = new Map ();
 
-    var bk = new BKTree ();
+    var bk = new BKTree (), bk_buf = new BKTree ();
     var last_time = 0;
 
     function process_hist (dm) {
         var time = dm.time;
         var str = dm.str;
 
+        if (time - last_time > THRESHOLD) {
+            bk = bk_buf;
+            bk_buf = new BKTree ();
+            last_time = time;
+        }
+
         var res = bk.find (str, time - THRESHOLD);
+
         if (res == null) {
-            if (danmu_hist.has (str)) danmu_hist.get (str).push (dm);
-            else danmu_hist.set (str, [dm]);
-            bk.insert (str, time);
+            var node = bk.insert (str, time);
+            danmu_hist.set (node, [dm]);
+            var node_buf = bk_buf.insert (str, time);
+            danmu_hist.set (node_buf, []);
         } else {
             danmu_hist.get (res).push (dm);
+
+            var res_buf = bk_buf.find (str, time - THRESHOLD);
+
+            if (res_buf == null) {
+                var node = bk_buf.insert (str, time);
+                danmu_hist.set (node, []);
+            }
         }
     }
 
@@ -191,6 +205,8 @@ function parse(dom,tabid) {
     var counter = 0;
 
     function gen_new_dom (value, key) {
+        if (! value.length) return; // Dummy node
+
         var len = 1, last_time = value[0].time;
         for (var i = 1; i < value.length; i ++)
             if (value[i].time - last_time < THRESHOLD) len ++;
@@ -199,8 +215,8 @@ function parse(dom,tabid) {
 
                 var proc =
                     (len == 1 || ! DANMU_BADGE)
-                    ? key
-                    : key + " [x" + len.toString () + "]";
+                    ? key.val
+                    : key.val + " [x" + len.toString () + "]";
                 
                 var d = new_dom.createElement ('d');
                 var tn = new_dom.createTextNode (proc);
@@ -216,7 +232,10 @@ function parse(dom,tabid) {
 
         counter += len - 1;
 
-        var proc = len == 1 ? key : key + " [x" + len.toString () + "]";
+        var proc =
+            (len == 1 || ! DANMU_BADGE)
+            ? key.val
+            : key.val + " [x" + len.toString () + "]";
         
         var d = new_dom.createElement ('d');
         var tn = new_dom.createTextNode (proc);
