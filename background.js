@@ -62,6 +62,10 @@ var counts = new Int16Array (0x10ffff);
 function edit_distance (P, Q) {
     'use strict';
 
+    // TODO: Make this less hacky
+    if (P.length + Q.length < 7)
+        return (MAX_DIST + 1) * +(P != Q);
+
     for (var i = 0; i < P.length; i ++) counts [P.charCodeAt (i)] ++;
     for (var i = 0; i < Q.length; i ++) counts [Q.charCodeAt (i)] --;
 
