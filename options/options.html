@@ -84,7 +84,7 @@
     <table>
         <tbody>
             <tr>
-                <td>弹幕合并设置</td>
+                <td>弹幕合并</td>
                 <td>
                     <p>
                         <label for="threshold">时间阈值：</label>
@@ -94,8 +94,13 @@
                     </p>
                     <p>
                         <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">模糊匹配</label>
-                        <span>/ 合并内容相似的弹幕（可能误伤计数君）</span>
+                        <label for="danmu-fuzz">合并相似弹幕</label>
+                        <span>/ "那你很棒哦" + "那你真棒啊" → "那你很棒哦 [x2]"（会误伤计数君）</span>
+                    </p>
+                    <p>
+                        <input id="trim-ending" type="checkbox">
+                        <label for="trim-ending">忽略标点</label>
+                        <span>/ "A~" + "A！！" → "A [x2]"</span>
                     </p>
                 </td>
             </tr>

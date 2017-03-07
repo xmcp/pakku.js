@@ -1,4 +1,5 @@
 var GLOBAL_SWITCH=true;
+var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
@@ -14,17 +15,19 @@ function toholyjson(obj) {
 }
 
 function loadconfig() {
-    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
+    window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4;
+    window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
+    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4; // todo: it should be 0 there
     window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
-localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
 localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';
+localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
+localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
@@ -64,7 +67,7 @@ function parse(dom,tabid) {
         for(var name in TAOLUS)
             if(TAOLUS[name].test(text))
                 return name;
-        return text;
+        return TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
     }
 
     var parser=new DOMParser();
@@ -194,7 +197,7 @@ function load_danmaku(id,tabid) {
     });
     
     var xhr=new XMLHttpRequest();
-    console.log('load http://comment.bilibili.com/'+id+'.xml')
+    console.log('load http://comment.bilibili.com/'+id+'.xml');
     xhr.open('get','http://comment.bilibili.com/'+id+'.xml',false);
     xhr.send();
     if(xhr.status===200 && xhr.responseXML) {
