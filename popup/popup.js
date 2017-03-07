@@ -11,7 +11,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         bgpage.GLOBAL_SWITCH=enabled=!enabled;
         chrome.browserAction.setBadgeText({
             text: enabled?'':'zzz'
-        })
+        });
         setbtn();
     });
     setbtn();

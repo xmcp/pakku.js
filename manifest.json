@@ -15,6 +15,8 @@
         "webRequest",
         "notifications"
     ],
+    "content_security_policy":
+        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml; style-src 'self' 'unsafe-inline'",
     
     "options_page": "options/options.html",
     "browser_action": {
@@ -22,8 +24,6 @@
         "default_popup": "popup/popup.html"
     },
     "background": {
-        "scripts": [
-            "core/edit_distance.js", "core/background.js"
-        ]
+        "page": "core/background.html"
     }
 }

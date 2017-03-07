@@ -45,9 +45,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     id('newtaolu-form').addEventListener('submit',function(e) {
         e.preventDefault();
-        var pattern=RegExp(id('newtaolu-pattern').value),
-            key=id('newtaolu-name').value;
-        cfg_taolus[key]=pattern;
+        var key=id('newtaolu-name').value;
+        cfg_taolus[key]=new RegExp(id('newtaolu-pattern').value);
         localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
         reload();
     });

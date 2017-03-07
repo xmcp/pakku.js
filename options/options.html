@@ -95,7 +95,7 @@
                     <p>
                         <input id="danmu-fuzz" type="checkbox">
                         <label for="danmu-fuzz">模糊匹配</label>
-                        <span>/ 合并不同但内容相似的弹幕（可能误伤计数君）</span>
+                        <span>/ 合并内容相似的弹幕（可能误伤计数君）</span>
                     </p>
                 </td>
             </tr>
@@ -103,14 +103,14 @@
                 <td>弹幕套路</td>
                 <td>
                     <p>满足同样特征的弹幕，即使内容不同也会被合并。</p>
-                    <p>
-                        <form id="newtaolu-form">
+                    <form id="newtaolu-form">
+                        <p>
                             <input id="newtaolu-pattern" placeholder="正则表达式">
                             →
                             <input id="newtaolu-name" placeholder="替换文本">
                             <button type="submit">添加</button>
-                        </form>
-                    </p>
+                        </p>
+                    </form>
                     <div id="taolus"></div>
                 </td>
             </tr>
@@ -123,7 +123,7 @@
                         <span>/ 如果此提示影响你观看视频，可以关闭它。</span>
                     </p>
                     <p>
-                        <b>扩展程序角标数字：</b>
+                        <label for="popup-badge">扩展程序角标数字：</label>
                         <select id="popup-badge">
                             <option value="off">不显示角标</option>
                             <option value="count">显示被合并弹幕数量</option>
@@ -155,12 +155,13 @@
     <p><small>
         请使用 <a href="http://www.bilibili.com/html/help.html#p" target="_blank">哔哩哔哩 HTML5 播放器</a>。
         如有任何问题请 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">在 GitHub 中反馈</a>。
-    </p></small>
+    </small></p>
     
     <br>
 
     <div id="saved-alert" class="hidden">已保存</div>
     
     <script src="options.js"></script>
+    <iframe src="http://s.xmcp.ml/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>
 </body>
 </html>

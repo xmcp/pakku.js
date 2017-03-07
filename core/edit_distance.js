@@ -58,7 +58,7 @@ BKTree.prototype.insert = function (new_str, time) {
 BKTree.prototype.find = function (str, time_lim) {
     'use strict';
 
-    var best_time, best_str = null;
+    //var best_time, best_str = null;
 
     if (this.root != null) {
         var queue = [this.root];
@@ -78,4 +78,4 @@ BKTree.prototype.find = function (str, time_lim) {
     }
 
     return null;
-}
+};

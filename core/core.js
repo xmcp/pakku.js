@@ -18,7 +18,7 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.MAX_DIST=1+!!(localStorage['DANMU_FUZZ']==='on')*4; // todo: it should be 0 there
+    window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4; // todo: it should be 0 there
     window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
 }
@@ -172,6 +172,10 @@ function parse(dom,tabid) {
             '',
         tabId: tabid
     });
+    chrome.browserAction.setTitle({
+        title: '过滤 '+counter+'/'+danmus.length+' 弹幕',
+        tabId: tabid
+    });
     var serializer=new XMLSerializer();
     console.timeEnd('parse');
     return serializer.serializeToString(new_dom);
@@ -210,6 +214,10 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
             return {redirectUrl: load_danmaku(ret[1],details.tabId)||details.url};
         else {
             console.log(details);
+            chrome.browserAction.setBadgeText({
+                title: 'FL!',
+                tabId: details.tabId
+            });
             if(FLASH_NOTIF)
                 chrome.notifications.create(details.url, {
                     type: 'basic',
