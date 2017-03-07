@@ -176,7 +176,7 @@ function parse(dom,tabid) {
         tabId: tabid
     });
     chrome.browserAction.setTitle({
-        title: '过滤 '+counter+'/'+danmus.length+' 弹幕',
+        title: '已过滤 '+counter+'/'+danmus.length+' 弹幕',
         tabId: tabid
     });
     var serializer=new XMLSerializer();
@@ -218,7 +218,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         else {
             console.log(details);
             chrome.browserAction.setBadgeText({
-                title: 'FL!',
+                text: 'FL!',
                 tabId: details.tabId
             });
             if(FLASH_NOTIF)
