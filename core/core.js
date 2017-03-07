@@ -23,6 +23,7 @@ function loadconfig() {
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
+    window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
 }
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
 localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';
@@ -32,6 +33,7 @@ localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
 localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
+localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
 loadconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
@@ -69,6 +71,21 @@ function parse(dom,tabid) {
                 return name;
         return TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
     }
+    function ext_special_danmu(text) {
+        return JSON.parse(text)[4];
+    }
+    function build_text(elem,text,count) {
+        if(elem.mode=='7') { // special danmu, need more parsing
+            var dumped=JSON.parse(elem.orig_str);
+            dumped[4]=(count==1 || !DANMU_BADGE) ?
+                text :
+                text+' [x'+count.toString()+']';
+            return JSON.stringify(dumped);
+        } else // normal case
+            return (count==1 || !DANMU_BADGE) ?
+                text :
+                text+' [x'+count.toString()+']';
+    }
 
     var parser=new DOMParser();
     var new_dom=parser.parseFromString('<i></i>','text/xml');
@@ -77,16 +94,21 @@ function parse(dom,tabid) {
     var danmus=[];
     [].slice.call(dom.getRootNode().children[0].children).forEach(function(elem) {
         if(elem.tagName=='d') {
-            var attr=elem.attributes['p'].value;
-            var time=parseFloat(attr.split(',')[0]);
+            var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
-            
-            danmus.push({
-                attr: attr,
-                str: (REMOVE_SEEK && attr.split(',')[1]=='8' && str.indexOf('Player.seek(')!=-1) ?
-                    '/* player.seek filtered by pakku */' : detaolu(str),
-                time: time
-            });
+
+            if(!PROC_TYPE7 && attr[1]=='7')
+                i_elem.appendChild(elem);
+            else
+                danmus.push({
+                    attr: attr, // thus we can build it into new_dom again
+                    str: attr[1]=='7' ? ext_special_danmu(str) :
+                        (REMOVE_SEEK && attr[1]=='8' && str.indexOf('Player.seek(')!=-1) ? '/* player.seek filtered by pakku */' :
+                        detaolu(str),
+                    time: parseFloat(attr[0]),
+                    orig_str: str,
+                    mode: attr[1]
+                });
         } else
             i_elem.appendChild(elem);
     });
@@ -136,17 +158,11 @@ function parse(dom,tabid) {
                 len++;
             else {
                 counter+=len-1;
-
-                var proc =
-                    (len==1 || !DANMU_BADGE) ?
-                    key.val :
-                    key.val+' [x'+len.toString()+']';
-                
                 var d=new_dom.createElement('d');
-                var tn=new_dom.createTextNode(proc);
+                var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
 
                 d.appendChild(tn);
-                d.setAttribute('p',value[i-1].attr)
+                d.setAttribute('p',value[i-1].attr.join(','));
                 i_elem.appendChild(d);
 
                 last_time=value[i].time;
@@ -154,17 +170,11 @@ function parse(dom,tabid) {
             }
 
         counter+=len-1;
-
-        var proc =
-            (len==1 || !DANMU_BADGE) ?
-            key.val :
-            key.val+' [x'+len.toString()+']';
-        
         var d=new_dom.createElement('d');
-        var tn=new_dom.createTextNode(proc);
+        var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
 
         d.appendChild(tn);
-        d.setAttribute('p',value[i-1].attr);
+        d.setAttribute('p',value[i-1].attr.join(','));
         i_elem.appendChild(d);
     });
 

@@ -43,7 +43,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
     id('danmu-badge').checked=localStorage['DANMU_BADGE']==='on';
     id('popup-badge').value=localStorage['POPUP_BADGE'];
-    
+    id('proc-type7').checked=localStorage['PROC_TYPE7']==='on';
+
     id('newtaolu-form').addEventListener('submit',function(e) {
         e.preventDefault();
         var key=id('newtaolu-name').value;
@@ -60,10 +61,12 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_BADGE']=id('danmu-badge').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
+        localStorage['PROC_TYPE7']=id('proc-type7').checked?'on':'off';
         reload();
     }
     
-    ['threshold','danmu-fuzz','trim-ending','remove-seek','flash-notif','danmu-badge','popup-badge'].forEach(function(elem) {
+    ['threshold','danmu-fuzz','trim-ending','remove-seek','flash-notif','danmu-badge','popup-badge','proc-type7']
+            .forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
 });
