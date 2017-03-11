@@ -72,11 +72,20 @@ function parse(dom,tabid) {
         return TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
     }
     function ext_special_danmu(text) {
-        return JSON.parse(text)[4];
+        try {
+            return JSON.parse(text)[4];
+        } catch(e) {
+            return text;
+        }
     }
     function build_text(elem,text,count) {
-        if(elem.mode=='7') { // special danmu, need more parsing
-            var dumped=JSON.parse(elem.orig_str);
+        var dumped=null;
+        if(elem.mode=='7') // special danmu, need more parsing
+            try {
+                dumped=JSON.parse(elem.orig_str);
+            } catch(e) {}
+        
+        if(dumped) {
             dumped[4]=(count==1 || !DANMU_BADGE) ?
                 text :
                 text+' [x'+count.toString()+']';
@@ -236,7 +245,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
                     title: '暂不支持 Flash 播放器',
-                    message: '请切换到 HTML5 播放器来让 pakku 过滤 AV'+ret[1]+' 中的弹幕。',
+                    message: '请切换到哔哩哔哩 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
                     contextMessage: '（在 pakku 的设置中可以关闭此提醒）',
                     isClickable: false,
                     buttons: [
