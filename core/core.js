@@ -98,10 +98,10 @@ function parse(dom,tabid) {
 
     var parser=new DOMParser();
     var new_dom=parser.parseFromString('<i></i>','text/xml');
-    var i_elem=new_dom.getRootNode().children[0];
+    var i_elem=new_dom.childNodes[0];
 
     var danmus=[];
-    [].slice.call(dom.getRootNode().children[0].children).forEach(function(elem) {
+    [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName=='d') {
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
