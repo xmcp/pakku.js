@@ -124,17 +124,22 @@
                 <td>显示设置</td>
                 <td>
                     <p>
-                        <input id="danmu-badge" type="checkbox">
-                        <label for="danmu-badge">向合并的弹幕添加 <code>[xN]</code> 后缀</label>
-                        <span>/ 如果此提示影响你观看视频，可以关闭它。</span>
+                        <label for="danmu-mark">弹幕数量标记：</label>
+                        <select id="danmu-mark">
+                            <option value="suffix">显示在结尾</option>
+                            <option value="prefix">显示在开头</option>
+                            <option value="off">不显示</option>
+                        </select>
+                        <span> 合并的弹幕显示为 "AAA [x2]" 或 "[x2] AAA" 或 "AAA"</span>
                     </p>
                     <p>
-                        <label for="popup-badge">扩展程序角标数字：</label>
+                        <label for="popup-badge">扩展程序角标：</label>
                         <select id="popup-badge">
                             <option value="off">不显示角标</option>
                             <option value="count">显示被合并弹幕数量</option>
-                            <option value="percent">显示被合并弹幕比例</option>
+                            <option value="percent">显示被合并弹幕百分比</option>
                         </select>
+                        <span> 在右上角的图标上显示合并了多少弹幕</span>
                     </p>
                 </td>
             </tr>
@@ -144,17 +149,17 @@
                     <p>
                         <input id="remove-seek" type="checkbox">
                         <label for="remove-seek">屏蔽跳转脚本</label>
-                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的代码弹幕。</span>
+                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">
                         <label for="flash-notif">Flash 播放器兼容提示</label>
-                        <span>/ 检测到 Flash 播放器时给出提醒。</span>
+                        <span>/ 检测到 Flash 播放器时给出提醒</span>
                     </p>
                     <p>
                         <input id="proc-type7" type="checkbox">
                         <label for="proc-type7">合并高级弹幕</label>
-                        <span>/ 合并后可能影响高级弹幕的表现效果，你可以选择不合并高级弹幕。</span>
+                        <span>/ 合并后可能影响高级弹幕的表现效果，你可以选择不合并高级弹幕</span>
                     </p>
                 </td>
             </tr>

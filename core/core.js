@@ -21,7 +21,7 @@ function loadconfig() {
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.DANMU_BADGE=localStorage['DANMU_BADGE']==='on';
+    window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
 }
@@ -31,7 +31,7 @@ localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
-localStorage['DANMU_BADGE']=localStorage['DANMU_BADGE']||'on';
+localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
 localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
 localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
 loadconfig();
@@ -65,6 +65,11 @@ chrome.runtime.onInstalled.addListener(function(details) {
 function parse(dom,tabid) {
     console.time('parse');
     
+    function make_mark(txt,cnt) {
+        return DANMU_MARK=='suffix' ? txt+' [x'+cnt+']' :
+               DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt : txt;
+    }
+    
     function detaolu(text) {
         for(var name in TAOLUS)
             if(TAOLUS[name].test(text))
@@ -86,14 +91,10 @@ function parse(dom,tabid) {
             } catch(e) {}
         
         if(dumped) {
-            dumped[4]=(count==1 || !DANMU_BADGE) ?
-                text :
-                text+' [x'+count.toString()+']';
+            dumped[4]=count==1?text:make_mark(text,count);
             return JSON.stringify(dumped);
         } else // normal case
-            return (count==1 || !DANMU_BADGE) ?
-                text :
-                text+' [x'+count.toString()+']';
+            return count==1?text:make_mark(text,count);
     }
 
     var parser=new DOMParser();
