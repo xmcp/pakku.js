@@ -1,3 +1,5 @@
+// (C) 2017 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 var ed_counts = new Int16Array (0x10ffff);
 
 var MIN_DANMU_SIZE=10;

@@ -1,4 +1,11 @@
+// (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 function parse(dom,tabid) {
+    chrome.browserAction.setTitle({
+        title: '正在处理弹幕…', // if u can see this, pakku might not be working correctly :)
+        tabId: tabid
+    });
+    
     console.time('parse');
     
     function make_mark(txt,cnt) {
@@ -127,7 +134,7 @@ function parse(dom,tabid) {
     chrome.browserAction.setBadgeText({
         text:
             POPUP_BADGE=='count' ? ''+counter :
-            POPUP_BADGE=='percent' ? (counter*100/danmus.length).toFixed(0)+'%' :
+            POPUP_BADGE=='percent' ? (danmus.length ? (counter*100/danmus.length).toFixed(0)+'%' : '0%') :
             '',
         tabId: tabid
     });

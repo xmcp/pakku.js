@@ -6,7 +6,7 @@
         body {
             background-color: #eee;
             font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
-            max-width: 800px;
+            max-width: 850px;
             margin: auto;
         }
         a {
@@ -94,14 +94,19 @@
                         秒之内的重复弹幕
                     </p>
                     <p>
+                        <input id="trim-ending" type="checkbox">
+                        <label for="trim-ending">比较时忽略末尾标点</label>
+                        <span>/ 如 "LL大法好~" + "LL大法好！！" → "LL大法好 [x2]"</span>
+                    </p>
+                    <p>
                         <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">合并相似弹幕</label>
+                        <label for="danmu-fuzz">也合并相似弹幕</label>
                         <span>/ 如 "那你很棒哦" + "那你真棒啊" → "那你很棒哦 [x2]"（会误伤计数君）</span>
                     </p>
                     <p>
-                        <input id="trim-ending" type="checkbox">
-                        <label for="trim-ending">忽略标点</label>
-                        <span>/ 如 "LL大法好~" + "LL大法好！！" → "LL大法好 [x2]"</span>
+                        <input id="proc-type7" type="checkbox">
+                        <label for="proc-type7">也合并高级弹幕</label>
+                        <span>/ 选择此项后可能会影响部分高级弹幕的表现效果</span>
                     </p>
                 </td>
             </tr>
@@ -124,22 +129,22 @@
                 <td>显示设置</td>
                 <td>
                     <p>
-                        <label for="danmu-mark">弹幕数量标记：</label>
+                        <label for="danmu-mark">弹幕数量标记 </label>
                         <select id="danmu-mark">
                             <option value="suffix">显示在结尾</option>
                             <option value="prefix">显示在开头</option>
                             <option value="off">不显示</option>
                         </select>
-                        <span> 合并的弹幕显示为 "AAA [x2]" 或 "[x2] AAA" 或 "AAA"</span>
+                        <span>/ 合并的弹幕显示为 "AAA [x2]" 或 "[x2] AAA" 或 "AAA"</span>
                     </p>
                     <p>
-                        <label for="popup-badge">扩展程序角标：</label>
+                        <label for="popup-badge">扩展程序角标 </label>
                         <select id="popup-badge">
                             <option value="off">不显示角标</option>
                             <option value="count">显示被合并弹幕数量</option>
                             <option value="percent">显示被合并弹幕百分比</option>
                         </select>
-                        <span> 在右上角的图标上显示合并了多少弹幕</span>
+                        <span>/ 在右上角的 pakku 图标上显示合并了多少弹幕</span>
                     </p>
                 </td>
             </tr>
@@ -155,11 +160,6 @@
                         <input id="flash-notif" type="checkbox">
                         <label for="flash-notif">Flash 播放器兼容提示</label>
                         <span>/ 检测到 Flash 播放器时给出提醒</span>
-                    </p>
-                    <p>
-                        <input id="proc-type7" type="checkbox">
-                        <label for="proc-type7">合并高级弹幕</label>
-                        <span>/ 合并后可能影响高级弹幕的表现效果，你可以选择不合并高级弹幕</span>
                     </p>
                 </td>
             </tr>

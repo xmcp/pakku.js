@@ -1,3 +1,5 @@
+// (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 var GLOBAL_SWITCH=true;
 var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 
@@ -47,7 +49,8 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {
-    if(details.reason=='install')
+    if(details.reason=='install') {
+        window.open(chrome.runtime.getURL('options/options.html'));
         chrome.notifications.create('//init', {
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/logo.png'),
@@ -60,6 +63,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 {title: '我已经在用 HTML5 播放器了'}
             ]
         });
+    }
 });
 
 function load_danmaku(id,tabid) {
@@ -68,7 +72,10 @@ function load_danmaku(id,tabid) {
             return String.fromCharCode('0x' + p1);
         }));
     }
-    
+    chrome.browserAction.setTitle({
+        title: '正在下载弹幕文件…',
+        tabId: tabid
+    });
     chrome.browserAction.setBadgeText({
         text: '...',
         tabId: tabid
