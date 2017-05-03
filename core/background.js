@@ -1,7 +1,6 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var GLOBAL_SWITCH=true;
-var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
@@ -20,6 +19,7 @@ function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
     window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
+    window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
@@ -30,6 +30,7 @@ function loadconfig() {
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
 localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';
 localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
+localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
 localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
 localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';

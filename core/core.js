@@ -1,5 +1,8 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
+var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
+var trim_space_re=/[ 　]/g;
+
 function parse(dom,tabid) {
     chrome.browserAction.setTitle({
         title: '正在处理弹幕…', // if u can see this, pakku might not be working correctly :)
@@ -17,7 +20,9 @@ function parse(dom,tabid) {
         for(var name in TAOLUS)
             if(TAOLUS[name].test(text))
                 return name;
-        return TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
+        text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
+        text = TRIM_SPACE ? text.replace(trim_space_re,'') : text;
+        return text;
     }
     function ext_special_danmu(text) {
         try {
@@ -37,7 +42,7 @@ function parse(dom,tabid) {
             dumped[4]=count==1?text:make_mark(text,count);
             return JSON.stringify(dumped);
         } else // normal case
-            return count==1?text:make_mark(text,count);
+            return count==1?elem.orig_str:make_mark(text,count);
     }
 
     var parser=new DOMParser();
@@ -50,14 +55,17 @@ function parse(dom,tabid) {
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
 
-            if(!PROC_TYPE7 && attr[1]=='7')
+            if(!PROC_TYPE7 && attr[1]=='7') // special danmu
                 i_elem.appendChild(elem);
+            else if(attr[1]=='8') { // code danmu
+                if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1)
+                    elem.childNodes[0].data='/* player.seek filtered by pakku */';
+                i_elem.appendChild(elem);
+            }
             else
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
-                    str: attr[1]=='7' ? ext_special_danmu(str) :
-                        (REMOVE_SEEK && attr[1]=='8' && str.indexOf('Player.seek(')!=-1) ? '/* player.seek filtered by pakku */' :
-                        detaolu(str),
+                    str: attr[1]=='7' ? ext_special_danmu(str) : detaolu(str),
                     time: parseFloat(attr[0]),
                     orig_str: str,
                     mode: attr[1]

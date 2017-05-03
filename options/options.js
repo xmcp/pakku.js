@@ -39,6 +39,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     id('threshold').value=localStorage['THRESHOLD'];
     id('danmu-fuzz').checked=localStorage['DANMU_FUZZ']==='on';
     id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
+    id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
     id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
     id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
     id('danmu-mark').value=localStorage['DANMU_MARK'];
@@ -56,6 +57,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
+        localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['DANMU_FUZZ']=id('danmu-fuzz').checked?'on':'off';
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
@@ -65,7 +67,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         reload();
     }
     
-    ['threshold','danmu-fuzz','trim-ending','remove-seek','flash-notif','danmu-mark','popup-badge','proc-type7']
+    ['threshold','danmu-fuzz','trim-ending','trim-space','remove-seek','flash-notif','danmu-mark','popup-badge','proc-type7']
             .forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });

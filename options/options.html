@@ -35,7 +35,7 @@
             font-weight: bold;
         }
         code {
-            font-family: Consolas, Courier, monospace;
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '黑体', monospace;
             border-bottom: 1px dashed black;
         }
         table {
@@ -96,16 +96,22 @@
                     <p>
                         <input id="trim-ending" type="checkbox">
                         <label for="trim-ending">比较时忽略末尾标点</label>
-                        <span>/ 如 "LL大法好~" + "LL大法好！！" → "LL大法好 [x2]"</span>
+                        <span>/ 如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
+                    </p>
+                    <p>
+                        <input id="trim-space" type="checkbox">
+                        <label for="trim-space">比较时忽略空格</label>
+                        <span>/ 对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
+                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
                     <p>
                         <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">也合并相似弹幕</label>
-                        <span>/ 如 "那你很棒哦" + "那你真棒啊" → "那你很棒哦 [x2]"（会误伤计数君）</span>
+                        <label for="danmu-fuzz">合并相似弹幕</label>
+                        <span>/ 如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"（会误伤计数君）</span>
                     </p>
                     <p>
                         <input id="proc-type7" type="checkbox">
-                        <label for="proc-type7">也合并高级弹幕</label>
+                        <label for="proc-type7">合并高级弹幕</label>
                         <span>/ 选择此项后可能会影响部分高级弹幕的表现效果</span>
                     </p>
                 </td>
@@ -135,7 +141,7 @@
                             <option value="prefix">显示在开头</option>
                             <option value="off">不显示</option>
                         </select>
-                        <span>/ 合并的弹幕显示为 "AAA [x2]" 或 "[x2] AAA" 或 "AAA"</span>
+                        <span>/ 合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
                     </p>
                     <p>
                         <label for="popup-badge">扩展程序角标 </label>
