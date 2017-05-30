@@ -69,7 +69,7 @@ BKTree.prototype.find = function (str, time_lim) {
             var u = queue.pop ();
             var dist = edit_distance (u.val, str);
             
-            if (dist < MAX_DIST && u.time > time_lim)
+            if (dist <= MAX_DIST && u.time > time_lim)
                 return u;
 
             u.children.forEach (function (value, key) {
