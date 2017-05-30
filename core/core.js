@@ -17,13 +17,21 @@ function parse(dom,tabid) {
     }
     
     function detaolu(text) {
-        for(var name in TAOLUS)
-            if(TAOLUS[name].test(text))
-                return name;
+        for(var i in TAOLUS)
+            if(TAOLUS[i][0].test(text))
+                return TAOLUS[i][1];
         text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
         text = TRIM_SPACE ? text.replace(trim_space_re,'') : text;
         return text;
     }
+    
+    function whitelisted(text) {
+        for(var i in WHITELIST)
+            if(WHITELIST[i][0].test(text))
+                return true;
+        return false;
+    }
+    
     function ext_special_danmu(text) {
         try {
             return JSON.parse(text)[4];
@@ -31,6 +39,7 @@ function parse(dom,tabid) {
             return text;
         }
     }
+    
     function build_text(elem,text,count) {
         var dumped=null;
         if(elem.mode=='7') // special danmu, need more parsing
@@ -51,7 +60,7 @@ function parse(dom,tabid) {
 
     var danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
-        if(elem.tagName=='d') {
+        if(elem.tagName=='d') { // danmu
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
 
@@ -61,8 +70,9 @@ function parse(dom,tabid) {
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1)
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
                 i_elem.appendChild(elem);
-            }
-            else
+            } else if(whitelisted(str)) {
+                i_elem.appendChild(elem);
+            } else
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
                     str: attr[1]=='7' ? ext_special_danmu(str) : detaolu(str),

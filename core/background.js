@@ -4,35 +4,37 @@ var GLOBAL_SWITCH=true;
 
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
-    for(var key in item)
-        item[key]=RegExp(item[key]);
+    for(var i in item)
+        item[i][0]=RegExp(item[i][0]);
     return item;
 }
 function toholyjson(obj) {
-    var item={};
-    for(var key in obj)
-        item[key]=obj[key].source;
+    var item=[];
+    for(var i in obj)
+        item.push([obj[i][0].source,obj[i][1]]);
     return JSON.stringify(item);
 }
 
 function loadconfig() {
-    window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||15;
+    window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||20;
     window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
-    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||{};
+    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
+    window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
 }
-localStorage['THRESHOLD']=localStorage['THRESHOLD']||15;
+localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
 localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';
 localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
 localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
-localStorage['TAOLUS']=localStorage['TAOLUS']||'{"233...":"^23{2,}$","666...":"^6{3,}$","FFF...":"^[fF]+$","hhh...":"^[hH]+$"}';
-localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'on';
+localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
+localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
+localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
 localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
 localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';

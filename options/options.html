@@ -54,7 +54,7 @@
             padding-right: 1em;
             text-align: right;
         }
-        #taolus button {
+        #taolus button, #whitelist button {
             margin-right: 1em;
         }
         #saved-alert {
@@ -102,7 +102,7 @@
                         <input id="trim-space" type="checkbox">
                         <label for="trim-space">比较时忽略空格</label>
                         <span>/ 对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
-                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
+                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
                     <p>
                         <input id="danmu-fuzz" type="checkbox">
@@ -126,9 +126,24 @@
                             →
                             <input id="newtaolu-name" placeholder="替换文本">
                             <button type="submit">添加</button>
+                            &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                         </p>
                     </form>
                     <div id="taolus"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>白名单</td>
+                <td>
+                    <p>属于白名单的弹幕永远不会被合并。</p>
+                    <form id="newwhitelist-form">
+                        <p>
+                            <input id="newwhitelist-pattern" placeholder="正则表达式">
+                            <button type="submit">添加</button>
+                            &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
+                        </p>
+                    </form>
+                    <div id="whitelist"></div>
                 </td>
             </tr>
             <tr>

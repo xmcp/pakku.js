@@ -13,22 +13,26 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     var cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
     var taolus=id('taolus');
-    for(var key in cfg_taolus) {
+    for(var i in cfg_taolus) {
         var container=document.createElement('li'),
             code1=document.createElement('code'),
             spliter=document.createElement('span'),
             code2=document.createElement('code'),
             deletebtn=document.createElement('button');
             
-        code1.textContent=cfg_taolus[key].source;
+        code1.textContent=cfg_taolus[i][0].source;
         spliter.textContent=' → ';
-        code2.textContent=key;
+        code2.textContent=cfg_taolus[i][1];
         deletebtn.textContent='删除';
-        (function(key) {deletebtn.addEventListener('click',function() {
-            delete cfg_taolus[key];
-            localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
-            reload();
-        })})(key);
+        (function(expr) {deletebtn.addEventListener('click',function() {
+            for(var i in cfg_taolus)
+                if(cfg_taolus[i][0].source==expr) {
+                    delete cfg_taolus[i];
+                    localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
+                    reload();
+                    break;
+                }
+        })})(cfg_taolus[i][0].source);
         
         container.appendChild(deletebtn);
         container.appendChild(code1);
@@ -36,6 +40,31 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         container.appendChild(code2);
         taolus.appendChild(container);
     }
+    
+    var cfg_whitelist=bgpage.fromholyjson(localStorage['WHITELIST']);
+    var whitelist=id('whitelist');
+    for(var i in cfg_whitelist) {
+        var container=document.createElement('li'),
+            code1=document.createElement('code'),
+            deletebtn=document.createElement('button');
+            
+        code1.textContent=cfg_whitelist[i][0].source;
+        deletebtn.textContent='删除';
+        (function(expr) {deletebtn.addEventListener('click',function() {
+            for(var i in cfg_whitelist)
+                if(cfg_whitelist[i][0].source==expr) {
+                    delete cfg_whitelist[i];
+                    localStorage['WHITELIST']=bgpage.toholyjson(cfg_whitelist);
+                    reload();
+                    break;
+                }
+        })})(cfg_whitelist[i][0].source);
+        
+        container.appendChild(deletebtn);
+        container.appendChild(code1);
+        whitelist.appendChild(container);
+    }
+    
     id('threshold').value=localStorage['THRESHOLD'];
     id('danmu-fuzz').checked=localStorage['DANMU_FUZZ']==='on';
     id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
@@ -48,9 +77,20 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
     id('newtaolu-form').addEventListener('submit',function(e) {
         e.preventDefault();
-        var key=id('newtaolu-name').value;
-        cfg_taolus[key]=new RegExp(id('newtaolu-pattern').value);
+        cfg_taolus.push([
+            new RegExp(id('newtaolu-pattern').value),
+            id('newtaolu-name').value
+        ]);
         localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
+        reload();
+    });
+    id('newwhitelist-form').addEventListener('submit',function(e) {
+        e.preventDefault();
+        cfg_whitelist.push([
+            new RegExp(id('newwhitelist-pattern').value),
+            "" // could be anything
+        ]);
+        localStorage['WHITELIST']=bgpage.toholyjson(cfg_whitelist);
         reload();
     });
     
