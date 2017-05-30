@@ -10,9 +10,9 @@
             margin: auto;
         }
         a {
-            color: inherit;
+            color: #000077;
             text-decoration: none;
-            border-bottom: 1px solid rgba(0,0,0,.5);
+            border-bottom: 1px solid #000077;
         }
         .hidden {
             display: none;
@@ -36,14 +36,15 @@
         }
         code {
             font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '黑体', monospace;
-            border-bottom: 1px dashed black;
+            color: #007700;
+            border-bottom: 1px dashed #007700;
         }
         table {
             border-spacing: 0;
             width: 100%;
         }
         td {
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #aaa;
             padding: 1em;
         }
         tr:hover {
@@ -95,24 +96,24 @@
                     </p>
                     <p>
                         <input id="trim-ending" type="checkbox">
-                        <label for="trim-ending">比较时忽略末尾标点</label>
-                        <span>/ 如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
+                        <label for="trim-ending">比较时忽略末尾标点：</label>
+                        <span>如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
                     </p>
                     <p>
                         <input id="trim-space" type="checkbox">
-                        <label for="trim-space">比较时忽略空格</label>
-                        <span>/ 对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
+                        <label for="trim-space">比较时忽略空格：</label>
+                        <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
                     <p>
                         <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">合并相似弹幕</label>
-                        <span>/ 如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"（会误伤计数君）</span>
+                        <label for="danmu-fuzz">合并相似弹幕：</label>
+                        <span>如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"（会误伤计数君）</span>
                     </p>
                     <p>
                         <input id="proc-type7" type="checkbox">
-                        <label for="proc-type7">合并高级弹幕</label>
-                        <span>/ 选择此项后可能会影响部分高级弹幕的表现效果</span>
+                        <label for="proc-type7">合并刷屏的高级弹幕：</label>
+                        <span>合并高级弹幕可能会打乱高级弹幕的排版</span>
                     </p>
                 </td>
             </tr>
@@ -156,7 +157,8 @@
                             <option value="prefix">显示在开头</option>
                             <option value="off">不显示</option>
                         </select>
-                        <span>/ 合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
+                        <label for="danmu-mark">：</label>
+                        <span>合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
                     </p>
                     <p>
                         <label for="popup-badge">扩展程序角标 </label>
@@ -165,7 +167,8 @@
                             <option value="count">显示被合并弹幕数量</option>
                             <option value="percent">显示被合并弹幕百分比</option>
                         </select>
-                        <span>/ 在右上角的 pakku 图标上显示合并了多少弹幕</span>
+                        <label for="danmu-mark">：</label>
+                        <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
                     </p>
                 </td>
             </tr>
@@ -174,13 +177,13 @@
                 <td>
                     <p>
                         <input id="remove-seek" type="checkbox">
-                        <label for="remove-seek">屏蔽跳转脚本</label>
-                        <span>/ 将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
+                        <label for="remove-seek">屏蔽跳转脚本：</label>
+                        <span>将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">
-                        <label for="flash-notif">Flash 播放器兼容提示</label>
-                        <span>/ 检测到 Flash 播放器时给出提醒</span>
+                        <label for="flash-notif">Flash 播放器兼容提示：</label>
+                        <span>检测到 Flash 播放器时给出提醒</span>
                     </p>
                 </td>
             </tr>

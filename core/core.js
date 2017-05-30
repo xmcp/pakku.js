@@ -149,13 +149,12 @@ function parse(dom,tabid) {
         i_elem.appendChild(d);
     });
 
-    chrome.browserAction.setBadgeText({
-        text:
+    setbadge((
             POPUP_BADGE=='count' ? ''+counter :
             POPUP_BADGE=='percent' ? (danmus.length ? (counter*100/danmus.length).toFixed(0)+'%' : '0%') :
-            '',
-        tabId: tabid
-    });
+            ''
+        ),SUCCESS_COLOR,tabid
+    );
     chrome.browserAction.setTitle({
         title: '已过滤 '+counter+'/'+danmus.length+' 弹幕',
         tabId: tabid

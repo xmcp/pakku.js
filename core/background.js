@@ -2,19 +2,6 @@
 
 var GLOBAL_SWITCH=true;
 
-function fromholyjson(txt) {
-    var item=JSON.parse(txt);
-    for(var i in item)
-        item[i][0]=RegExp(item[i][0]);
-    return item;
-}
-function toholyjson(obj) {
-    var item=[];
-    for(var i in obj)
-        item.push([obj[i][0].source,obj[i][1]]);
-    return JSON.stringify(item);
-}
-
 function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||20;
     window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4;
@@ -79,19 +66,27 @@ function load_danmaku(id,tabid) {
         title: '正在下载弹幕文件…',
         tabId: tabid
     });
-    chrome.browserAction.setBadgeText({
-        text: '...',
-        tabId: tabid
-    });
+    setbadge('...',LOADING_COLOR,tabid);
     
     var xhr=new XMLHttpRequest();
     console.log('load http://comment.bilibili.com/'+id+'.xml');
     xhr.open('get','http://comment.bilibili.com/'+id+'.xml',false);
-    xhr.send();
+    try {        
+        xhr.send();
+    } catch(e) {
+        setbadge('NET!',ERROR_COLOR,tabid);
+        throw e;
+    }
     if(xhr.status===200 && xhr.responseXML) {
-        return 'data:text/xml;charset=utf-8;base64,'+base64(parse(xhr.responseXML,tabid));
+        try {
+            return 'data:text/xml;charset=utf-8;base64,'+base64(parse(xhr.responseXML,tabid));
+        } catch(e) {
+            setbadge('JS!',ERROR_COLOR,tabid);
+            throw e;
+        }
     } else {
-        return null;
+        setbadge('SVR!',ERROR_COLOR,tabid);
+        throw 'network error!';
     }
 }
 
@@ -105,11 +100,8 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
             return {redirectUrl: load_danmaku(ret[1],details.tabId)||details.url};
         else {
             console.log(details);
-            chrome.browserAction.setBadgeText({
-                text: 'FL!',
-                tabId: details.tabId
-            });
-            if(FLASH_NOTIF)
+            setbadge('FL!',ERROR_COLOR,details.tabId);
+            if(details.type!=='main_frame' && FLASH_NOTIF)
                 chrome.notifications.create(details.url, {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
