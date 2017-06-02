@@ -1,32 +1,58 @@
 // (C) 2017 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var ed_counts = new Int16Array (0x10ffff);
-
 var MIN_DANMU_SIZE=10;
 
-function edit_distance (P, Q) {
+var counts_P = new Int16Array (0x110000);
+var counts_Q = new Int16Array (0x110000);
+
+function get_edit_distance (score, P, Q) {
     'use strict';
 
+    for (var i = 0; i < P.length; i ++) counts_P[P.charCodeAt (i)] ++;
+    for (var i = 0; i < Q.length; i ++) counts_Q[Q.charCodeAt (i)] ++;
+
+    var ans = 0;
+
+    function worker (S, A) {
+        for (var i = 0; i < S.length; i ++) {
+            var c = S.charCodeAt (i);
+            if (A[c]) {
+                ans += score (counts_P[c], counts_Q[c]);
+                counts_P[c] = 0;
+                counts_Q[c] = 0;
+            }
+        }
+    }
+
+    worker (P, counts_P);
+    worker (Q, counts_Q);
+
+    return ans;
+}
+
+function new_score (m, n) {
+    return Math.abs (m - n) / (m + n);
+}
+
+function old_score (m, n) {
+    return Math.abs (m - n);
+}
+
+function edit_distance (P, Q) {
     // TODO: Make this less hacky
     if (P.length + Q.length < MIN_DANMU_SIZE)
         return (MAX_DIST + 1) * +(P != Q);
 
-    for (var i = 0; i < P.length; i ++) ed_counts [P.charCodeAt (i)] ++;
-    for (var i = 0; i < Q.length; i ++) ed_counts [Q.charCodeAt (i)] --;
+    var scoreFunc = NEW_DIST ? new_score : old_score;
 
-    var ans = 0;
+    /*
+    var ans_new = get_edit_distance (new_score, P, Q);
+    var ans_old = get_edit_distance (old_score, P, Q);
 
-    for (var i = 0; i < P.length; i ++) {
-        ans += Math.abs (ed_counts[P.charCodeAt (i)]);
-        ed_counts[P.charCodeAt (i)] = 0;
-    }
+    console.log ("%o ~~ %o, new = %o, old = %o", P, Q, ans_new, ans_old);
+    */
 
-    for (var i = 0; i < Q.length; i ++) {
-        ans += Math.abs (ed_counts[Q.charCodeAt (i)]);
-        ed_counts[Q.charCodeAt (i)] = 0;
-    }
-
-    return ans;
+    return get_edit_distance (scoreFunc, P, Q);
 }
 
 function BKTree () {
