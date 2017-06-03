@@ -53,7 +53,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 {title: '我已经在用 HTML5 播放器了'}
             ]
         });
-    }
+    } else
+        migrate_legacy_taolus(); // in utils.js
 });
 
 function load_danmaku(id,tabid) {
