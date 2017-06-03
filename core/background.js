@@ -14,6 +14,7 @@ function loadconfig() {
     window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
+    window.NEW_DIST=localStorage['NEW_DIST']==='on';
 }
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
 localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';

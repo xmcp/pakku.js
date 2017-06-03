@@ -74,6 +74,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     id('danmu-mark').value=localStorage['DANMU_MARK'];
     id('popup-badge').value=localStorage['POPUP_BADGE'];
     id('proc-type7').checked=localStorage['PROC_TYPE7']==='on';
+    id('new-dist').checked=localStorage['NEW_DIST']==='on';
 
     id('newtaolu-form').addEventListener('submit',function(e) {
         e.preventDefault();
@@ -104,10 +105,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['DANMU_MARK']=id('danmu-mark').value;
         localStorage['POPUP_BADGE']=id('popup-badge').value;
         localStorage['PROC_TYPE7']=id('proc-type7').checked?'on':'off';
+        localStorage['NEW_DIST']=id('new-dist').checked?'on':'off';
         reload();
     }
     
-    ['threshold','danmu-fuzz','trim-ending','trim-space','remove-seek','flash-notif','danmu-mark','popup-badge','proc-type7']
+    ['threshold','danmu-fuzz','trim-ending','trim-space','remove-seek','flash-notif','danmu-mark','popup-badge','proc-type7','new-dist']
             .forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
