@@ -28,3 +28,20 @@ function setbadge(text,color,tabid) {
             tabId: tabid
         });
 }
+
+function migrate_legacy_taolus() {
+    try {
+        var taolus=JSON.parse(localStorage['TAOLUS']);
+    } catch(e) {
+        localStorage['TAOLUS']=''; // this will be fixed at the next startup
+        loadconfig();
+        return;
+    }
+    if(taolus.length==undefined) { // should migrate
+        var right=[]; // [[expr,text], ...]
+        for(var text in taolus) // text -> expr
+            right.push([RegExp(taolus[text]),text]);
+        localStorage['TAOLUS']=toholyjson(right);
+        loadconfig();
+    }
+}
