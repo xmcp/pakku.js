@@ -123,7 +123,7 @@ function parse(dom,tabid) {
     danmu_hist.forEach(function(value,key) {
         if (!value.length) return; // dummy node
 
-        var len=0, last_time=value[0].time;
+        var len=1, last_time=value[0].time;
         for (var i=1; i<value.length; i++)
             if(value[i].time-last_time<THRESHOLD)
                 len++;
