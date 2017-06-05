@@ -123,3 +123,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     else
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
+
+chrome.webRequest.onBeforeRequest.addListener(function(details) {
+    return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
+}, {urls: ['http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci']}, ['blocking']);
