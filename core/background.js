@@ -41,6 +41,16 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {
+    if(TEST_MODE) {
+        chrome.notifications.create('//test', {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/logo.png'),
+            title: 'pakku.js is running in test mode',
+            message: 'this should not be happening. please report a bug if you see this message.',
+            contextMessage: navigator.userAgent
+        });
+        return;
+    }
     if(details.reason=='install') {
         window.open(chrome.runtime.getURL('options/options.html'));
         chrome.notifications.create('//init', {
@@ -124,6 +134,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
 
-chrome.webRequest.onBeforeRequest.addListener(function(details) {
-    return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
-}, {urls: ['http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci']}, ['blocking']);
+if(TEST_MODE)
+    chrome.webRequest.onBeforeRequest.addListener(function(details) {
+        return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
+    }, {urls: ['http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci']}, ['blocking']);

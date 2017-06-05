@@ -1,5 +1,7 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
+var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
+
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)
