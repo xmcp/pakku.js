@@ -128,34 +128,33 @@ function parse(dom,tabid) {
     danmu_hist.forEach(function(value,key) {
         if (!value.length) return; // dummy node
 
-        var len=1, last_time=value[0].time;
+        var len=1, piv_item=value[0];
         for (var i=1; i<value.length; i++)
-            if(value[i].time-last_time<THRESHOLD)
+            if(value[i].time-piv_item.time<THRESHOLD)
                 len++;
             else {
                 counter+=len-1;
                 var d=new_dom.createElement('d');
-                var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
+                var tn=new_dom.createTextNode(build_text(piv_item,key.val,len));
 
                 d.appendChild(tn);
                 if(ENLARGE)
-                    value[i-1].attr[2]=''+enlarge(parseInt(value[i-1].attr[2]),len);
-                d.setAttribute('p',value[i-1].attr.join(','));
-                d.setAttribute('p',value[i-1].attr.join(','));
+                    piv_item.attr[2]=''+enlarge(parseInt(piv_item.attr[2]),len);
+                d.setAttribute('p',piv_item.attr.join(','));
                 i_elem.appendChild(d);
 
-                last_time=value[i].time;
+                piv_item=value[i];
                 len=0;
             }
 
         counter+=len-1;
         var d=new_dom.createElement('d');
-        var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
+        var tn=new_dom.createTextNode(build_text(piv_item,key.val,len));
 
         d.appendChild(tn);
         if(ENLARGE)
-            value[i-1].attr[2]=''+enlarge(parseInt(value[i-1].attr[2]),len);
-        d.setAttribute('p',value[i-1].attr.join(','));
+            piv_item.attr[2]=''+enlarge(parseInt(piv_item.attr[2]),len);
+        d.setAttribute('p',piv_item.attr.join(','));
         i_elem.appendChild(d);
     });
 
