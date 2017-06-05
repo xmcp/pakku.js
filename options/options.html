@@ -4,7 +4,7 @@
     <title>pakku :: 选项</title>
     <style>
         body {
-            background-color: #eee;
+            background-color: #f3f3f3;
             font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
             max-width: 850px;
             margin: auto;
@@ -13,9 +13,6 @@
             color: #000077;
             text-decoration: none;
             border-bottom: 1px solid #000077;
-        }
-        .hidden {
-            display: none;
         }
         #title small {
             font-size: .3em;
@@ -39,6 +36,20 @@
             color: #007700;
             border-bottom: 1px dashed #007700;
         }
+        p {
+            margin-top: .7em;
+            margin-bottom: .7em;
+        }
+        .warning {
+            margin-top: -.5em;
+            margin-left: 3em;
+            color: #aa0000;
+            font-size: .8em;
+        }
+        .warning a {
+            color: inherit;
+            border-color: inherit;
+        }
         table {
             border-spacing: 0;
             width: 100%;
@@ -48,7 +59,7 @@
             padding: 1em;
         }
         tr:hover {
-            background-color: #f7f7f7;
+            background-color: #fafafa;
         }
         td:nth-child(1) {
             font-weight: bold;
@@ -60,16 +71,20 @@
         }
         #saved-alert {
             position: fixed;
-            top: 0; bottom: 0; left: 0; right: 0;
-            margin: auto;
-            width: 150px;
-            height: 50px;
-            line-height: 50px;
-            font-size: 25px;
-            text-align: center;
-            border-radius: 10px;
+            top: 10px; right: -5px;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 20px;
+            text-align: left;
+            padding-left: 10px;
+            border-radius: 5px;
             background-color: black;
             color: white;
+        }
+        #saved-alert.hidden {
+            right: -110px;
+            transition: right .2s ease 1s;
         }
     </style>
 </head>
@@ -106,21 +121,26 @@
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
                     <p>
-                        <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">合并相似弹幕：</label>
-                        <span>如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"（会误伤计数君）</span>
-                    </p>
-                    <p>
                         <input id="proc-type7" type="checkbox">
-                        <label for="proc-type7">合并刷屏的高级弹幕：</label>
+                        <label for="proc-type7">也合并刷屏的高级弹幕：</label>
                         <span>合并高级弹幕可能会打乱高级弹幕的排版</span>
                     </p>
+                    <p>
+                        <input id="danmu-fuzz" type="checkbox">
+                        <label for="danmu-fuzz">合并相似弹幕：</label>
+                        <span>
+                            如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"
+                        </span>
+                    </p>
+                    <p class="warning">
+                        * 根据编辑距离合并内容不同但相似的弹幕，选中该选项会误伤计数君。
+                        感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a></p>
                 </td>
             </tr>
             <tr>
                 <td>弹幕套路</td>
                 <td>
-                    <p>满足同样特征的弹幕，即使内容不同也会被合并。</p>
+                    <p>满足同样特征的弹幕，即使内容不同也会被合并</p>
                     <form id="newtaolu-form">
                         <p>
                             <input id="newtaolu-pattern" placeholder="正则表达式">
@@ -136,7 +156,7 @@
             <tr>
                 <td>白名单</td>
                 <td>
-                    <p>属于白名单的弹幕永远不会被合并。</p>
+                    <p>属于白名单的弹幕永远不会被合并</p>
                     <form id="newwhitelist-form">
                         <p>
                             <input id="newwhitelist-pattern" placeholder="正则表达式">
@@ -150,6 +170,11 @@
             <tr>
                 <td>显示设置</td>
                 <td>
+                    <p>
+                        <input id="enlarge" type="checkbox">
+                        <label for="enlarge">放大合并后的弹幕：</label>
+                        <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
+                    </p>
                     <p>
                         <label for="danmu-mark">弹幕数量标记 </label>
                         <select id="danmu-mark">
@@ -173,7 +198,7 @@
                 </td>
             </tr>
             <tr>
-                <td>附加设置</td>
+                <td>附加功能</td>
                 <td>
                     <p>
                         <input id="remove-seek" type="checkbox">
@@ -182,8 +207,8 @@
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">
-                        <label for="flash-notif">Flash 播放器兼容提示：</label>
-                        <span>检测到 Flash 播放器时给出提醒</span>
+                        <label for="flash-notif">播放器兼容提示：</label>
+                        <span>pakku 不支持B站 Flash 播放器，检测到 Flash 播放器时将给出提醒</span>
                     </p>
                 </td>
             </tr>
@@ -201,7 +226,7 @@
     
     <br>
 
-    <div id="saved-alert" class="hidden">已保存</div>
+    <div id="saved-alert" class="hidden">✓ 已保存</div>
     
     <script src="options.js"></script>
     <iframe src="http://s.xmcp.ml/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>

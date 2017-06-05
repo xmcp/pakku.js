@@ -11,6 +11,11 @@ function parse(dom,tabid) {
     
     console.time('parse');
     
+    function enlarge(size,count) {
+        return count<=10 ? size : Math.floor(size*Math.log10(count));
+    }
+
+    
     function make_mark(txt,cnt) {
         return DANMU_MARK=='suffix' ? txt+' [x'+cnt+']' :
                DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt : txt;
@@ -133,6 +138,9 @@ function parse(dom,tabid) {
                 var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
 
                 d.appendChild(tn);
+                if(ENLARGE)
+                    value[i-1].attr[2]=''+enlarge(parseInt(value[i-1].attr[2]),len);
+                d.setAttribute('p',value[i-1].attr.join(','));
                 d.setAttribute('p',value[i-1].attr.join(','));
                 i_elem.appendChild(d);
 
@@ -145,6 +153,8 @@ function parse(dom,tabid) {
         var tn=new_dom.createTextNode(build_text(value[i-1],key.val,len));
 
         d.appendChild(tn);
+        if(ENLARGE)
+            value[i-1].attr[2]=''+enlarge(parseInt(value[i-1].attr[2]),len);
         d.setAttribute('p',value[i-1].attr.join(','));
         i_elem.appendChild(d);
     });
