@@ -1,0 +1,77 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import os
+import time
+from xml.dom.minidom import parseString
+
+print('== initializing selenium')
+
+opt=Options()
+opt.add_argument('load-extension=%s'%os.path.abspath('pakkujs'))
+opt.add_argument('--no-sandbox')
+opt.add_argument('--no-default-browser-check')
+opt.add_argument('--user-agent=xmcp_pakku_test_runner, like Gecko and Mozilla/5.0')
+opt.add_argument('--no-first-run')
+b=webdriver.Chrome('driver/chromedriver',chrome_options=opt)
+
+print('== chrome launched. waiting for pakku.js to be installed')
+
+time.sleep(5)
+
+print('== finding pakkujs')
+
+b.get('http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci')
+opt_url=b.title
+if not opt_url.startswith('chrome-extension://'):
+    raise RuntimeError('! bad opt_url: '+opt_url)
+
+print('== ok. pakku.js page:',opt_url)
+
+def goto_options():
+    if b.current_url!=opt_url:
+        print(' == will redirect to options page:',b.current_url)
+        b.get(opt_url)
+
+def update_settings(k,v):
+    print('== update settings %r %r'%(k,v))
+    goto_options()
+    b.execute_script('localStorage[%r]=%r'%(k,v))
+
+def get_source():
+    return b.execute_script('return document.getElementById("webkit-xml-viewer-source-xml").innerHTML')
+
+def set_global_switch(val):
+    goto_options()
+    b.execute_script('''
+        document.title='';
+        (function(val){
+            chrome.runtime.getBackgroundPage(function(page){
+                page.GLOBAL_SWITCH=val;
+                document.title='ok';
+            });
+        })(arguments[0]);
+    ''',val)
+    for _ in range(30):
+        if b.title=='ok':
+            return
+        time.sleep(.1)
+    raise RuntimeError('js not keeping up')
+
+def parse_string(s):
+    goto_options()
+    b.execute_script('''
+        document.title='';
+        console.log(arguments);
+        (function(str){
+            chrome.runtime.getBackgroundPage(function(page){
+                page.loadconfig();
+                document.title=page.parse_string(str);
+            });
+        })(arguments[0]);
+    ''',s)
+    for _ in range(30):
+        if b.title:
+            dom=parseString(b.title)
+            return dom.getElementsByTagName('d')
+        time.sleep(.1)
+    raise RuntimeError('js not keeping up')
