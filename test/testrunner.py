@@ -7,7 +7,7 @@ from xml.dom.minidom import parseString
 print('== initializing selenium')
 
 opt=Options()
-opt.add_argument('load-extension=%s'%os.path.abspath('pakkujs'))
+opt.add_argument('load-extension=%s'%os.path.abspath('../pakkujs'))
 opt.add_argument('--no-sandbox')
 opt.add_argument('--no-default-browser-check')
 opt.add_argument('--user-agent=xmcp_pakku_test_runner, like Gecko and Mozilla/5.0')
