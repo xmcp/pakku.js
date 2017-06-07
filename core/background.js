@@ -134,7 +134,14 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
 
-if(TEST_MODE)
+if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
     }, {urls: ['http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci']}, ['blocking']);
+
+    function parse_string(str) {
+        var parser=new DOMParser();
+        var dom=parser.parseFromString(str,'text/xml');
+        return parse(dom,0);
+    }
+}
