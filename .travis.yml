@@ -13,4 +13,5 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
 script:
-  - python3 test/test_main.py
+  - cd test
+  - python3 ./test_main.py
