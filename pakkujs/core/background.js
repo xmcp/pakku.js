@@ -3,8 +3,9 @@
 var GLOBAL_SWITCH=true;
 
 function loadconfig() {
-    window.THRESHOLD=parseInt(localStorage['THRESHOLD'])||20;
-    window.MAX_DIST=1+(localStorage['DANMU_FUZZ']==='on')*4;
+    window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
+    window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
+    window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||85;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
@@ -17,7 +18,8 @@ function loadconfig() {
     window.ENLARGE=localStorage['ENLARGE']==='on';
 }
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
-localStorage['DANMU_FUZZ']=localStorage['DANMU_FUZZ']||'on';
+localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
+localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||85;
 localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
 localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
 localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
@@ -65,8 +67,10 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 {title: '我已经在用 HTML5 播放器了'}
             ]
         });
-    } else
-        migrate_legacy_taolus(); // in utils.js
+    } else {
+        migrate_legacy_taolus();
+        migrate_legacy_fuzz();
+    }
 });
 
 function load_danmaku(id,tabid) {

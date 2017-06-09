@@ -37,11 +37,11 @@
             border-bottom: 1px dashed #007700;
         }
         p {
-            margin-top: .7em;
-            margin-bottom: .7em;
+            margin-top: 1em;
+            margin-bottom: 1em;
         }
         .warning {
-            margin-top: -.5em;
+            margin-top: -1em;
             margin-left: 3em;
             color: #aa0000;
             font-size: .8em;
@@ -66,7 +66,10 @@
             padding-right: 1em;
             text-align: right;
         }
-        #taolus button, #whitelist button {
+        .list {
+            margin-bottom: 1em;
+        }
+        .list button {
             margin-right: 1em;
         }
         #saved-alert {
@@ -106,8 +109,11 @@
                     <p>
                         <label for="threshold">时间阈值：</label>
                         合并
-                        <input id="threshold" type="number" min="0" step="1">
+                        <input id="threshold" type="number" min="1" step="1" max="120">
                         秒之内的重复弹幕
+                    </p>
+                    <p class="warning">
+                        * 在低配电脑中，超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢
                     </p>
                     <p>
                         <input id="trim-ending" type="checkbox">
@@ -123,18 +129,44 @@
                     <p>
                         <input id="proc-type7" type="checkbox">
                         <label for="proc-type7">也合并刷屏的高级弹幕：</label>
-                        <span>合并高级弹幕可能会打乱高级弹幕的排版</span>
+                        <span>高级弹幕可能包含艺术字、动画等特殊效果</span>
+                    </p>
+                    <p class="warning">
+                        * 可能会打乱少量高级弹幕的排版，如果你很欣赏那些高级弹幕的表现效果，请关闭此选项。
                     </p>
                     <p>
-                        <input id="danmu-fuzz" type="checkbox">
-                        <label for="danmu-fuzz">合并相似弹幕：</label>
+                        <label for="max-dist">按编辑距离合并</label>
+                        <select id="max-dist">
+                            <option value="0">禁用</option>
+                            <option value="3">轻微</option>
+                            <option value="5">默认</option>
+                        </select>
+                        <label for="max-dist">：</label>
                         <span>
-                            如 "<code>那你很棒哦</code>" + "<code>那你真棒啊</code>" → "<code>那你很棒哦 [x2]</code>"
+                            根据编辑距离判断不完全一致但内容相近（例如有错别字）的弹幕
                         </span>
                     </p>
                     <p class="warning">
-                        * 根据编辑距离合并内容不同但相似的弹幕，选中该选项会误伤计数君。
-                        感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a></p>
+                        * 会误伤少量内容相似的弹幕，以计数君为主。
+                        感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
+                    </p>
+                    <p>
+                        <label for="max-cosine">按词频向量合并</label>
+                        <select id="max-cosine">
+                            <option value="1000">禁用</option>
+                            <option value="85">轻微</option>
+                            <option value="60">中等</option>
+                            <option value="30">强力</option>
+                        </select>
+                        <label for="max-cosine">：</label>
+                        <span>
+                            根据 2-Gram 频率向量的夹角判断不完全一致但内容类似的弹幕
+                        </span>
+                    </p>
+                    <p class="warning">
+                        * 误伤较多，除非对编辑距离算法的效果仍不满意，否则请选择“禁用”或“轻微”。
+                        感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
+                    </p>
                 </td>
             </tr>
             <tr>
@@ -150,7 +182,7 @@
                             &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                         </p>
                     </form>
-                    <div id="taolus"></div>
+                    <div class="list" id="taolus"></div>
                 </td>
             </tr>
             <tr>
@@ -164,7 +196,7 @@
                             &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                         </p>
                     </form>
-                    <div id="whitelist"></div>
+                    <div class="list" id="whitelist"></div>
                 </td>
             </tr>
             <tr>
@@ -192,7 +224,7 @@
                             <option value="count">显示被合并弹幕数量</option>
                             <option value="percent">显示被合并弹幕百分比</option>
                         </select>
-                        <label for="danmu-badge">：</label>
+                        <label for="popup-badge">：</label>
                         <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
                     </p>
                 </td>
@@ -204,6 +236,9 @@
                         <input id="remove-seek" type="checkbox">
                         <label for="remove-seek">屏蔽跳转脚本：</label>
                         <span>将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
+                    </p>
+                    <p class="warning">
+                        * B站移除“播放器控制API”开关后的替代选项，会误伤部分代码弹幕游戏。
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">

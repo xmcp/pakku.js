@@ -16,13 +16,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function loadconfig() {
         id('threshold').value=localStorage['THRESHOLD'];
-        id('danmu-fuzz').checked=localStorage['DANMU_FUZZ']==='on';
+        id('max-dist').value=localStorage['MAX_DIST'];
+        id('max-cosine').value=localStorage['MAX_COSINE'];
+        id('danmu-mark').value=localStorage['DANMU_MARK'];
+        id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
-        id('danmu-mark').value=localStorage['DANMU_MARK'];
-        id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('proc-type7').checked=localStorage['PROC_TYPE7']==='on';
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         
@@ -107,9 +108,10 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
+        localStorage['MAX_DIST']=parseInt(id('max-dist').value);
+        localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
-        localStorage['DANMU_FUZZ']=id('danmu-fuzz').checked?'on':'off';
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_MARK']=id('danmu-mark').value;
@@ -120,8 +122,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     loadconfig();
-    ['threshold','danmu-fuzz','trim-ending','trim-space','remove-seek','flash-notif','danmu-mark','popup-badge','proc-type7','enlarge']
-            .forEach(function(elem) {
+    [
+        'threshold','max-dist','max-cosine',
+        'trim-ending','trim-space','proc-type7',
+        'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge'
+    ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
 });

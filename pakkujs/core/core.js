@@ -2,6 +2,7 @@
 
 var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 var trim_space_re=/[ 　]/g;
+var LOG_VERBOSE=false;
 
 function parse(dom,tabid) {
     chrome.browserAction.setTitle({
@@ -45,7 +46,8 @@ function parse(dom,tabid) {
         }
     }
     
-    function build_text(elem,text,count) {
+    function build_text(elem) {
+        var count=elem.count, text=elem.count>1 ? elem.str : elem.orig_str;
         var dumped=null;
         if(elem.mode=='7') // special danmu, need more parsing
             try {
@@ -80,83 +82,53 @@ function parse(dom,tabid) {
             } else
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
-                    str: attr[1]=='7' ? ext_special_danmu(str) : detaolu(str),
+                    str: attr[1]=='7' ? detaolu(ext_special_danmu(str)) : detaolu(str),
                     time: parseFloat(attr[0]),
                     orig_str: str,
-                    mode: attr[1]
+                    mode: attr[1],
+                    count: 1,
                 });
         } else
             i_elem.appendChild(elem);
     });
     danmus.sort(function(x,y) {return x.time-y.time;});
 
-    var danmu_hist=new Map();
-    var bk=new BKTree(), bk_buf=new BKTree(); // double buffer
+    var danmu_chunk=Array();
     var last_time=0;
-
-    danmus.forEach(function(dm) {
-        var time=dm.time;
-        var str=dm.str;
-
-        if (time-last_time>THRESHOLD) { // swap buffer
-            bk=bk_buf;
-            bk_buf=new BKTree();
-            last_time=time;
-        }
-
-        var res=bk.find(str,time-THRESHOLD);
-
-        if (res==null) {
-            var node=bk.insert(str,time);
-            danmu_hist.set(node,[dm]);
-            var node_buf=bk_buf.insert(str,time);
-            danmu_hist.set(node_buf,[]);
-        } else {
-            danmu_hist.get(res).push(dm);
-
-            var res_buf=bk_buf.find(str,time-THRESHOLD);
-
-            if (res_buf==null) {
-                var node=bk_buf.insert(str,time);
-                danmu_hist.set(node,[]);
-            }
-        }
-    });
-
     var counter=0;
 
-    danmu_hist.forEach(function(value,key) {
-        if (!value.length) return; // dummy node
-
-        var len=1, piv_item=value[0];
-        for (var i=1; i<value.length; i++)
-            if(value[i].time-piv_item.time<THRESHOLD)
-                len++;
-            else {
-                counter+=len-1;
-                var d=new_dom.createElement('d');
-                var tn=new_dom.createTextNode(build_text(piv_item,key.val,len));
-
-                d.appendChild(tn);
-                if(ENLARGE)
-                    piv_item.attr[2]=''+enlarge(parseInt(piv_item.attr[2]),len);
-                d.setAttribute('p',piv_item.attr.join(','));
-                i_elem.appendChild(d);
-
-                piv_item=value[i];
-                len=0;
-            }
-
-        counter+=len-1;
+    function apply_item(dm) {
+        counter+=dm.count-1;
         var d=new_dom.createElement('d');
-        var tn=new_dom.createTextNode(build_text(piv_item,key.val,len));
+        var tn=new_dom.createTextNode(build_text(dm));
 
         d.appendChild(tn);
         if(ENLARGE)
-            piv_item.attr[2]=''+enlarge(parseInt(piv_item.attr[2]),len);
-        d.setAttribute('p',piv_item.attr.join(','));
+            dm.attr[2]=''+enlarge(parseInt(dm.attr[2]),dm.count);
+        d.setAttribute('p',dm.attr.join(','));
         i_elem.appendChild(d);
+    }
+    
+    danmus.forEach(function(dm) {
+        while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
+            apply_item(danmu_chunk.shift());
+        
+        for(var i in danmu_chunk) {
+            if(similar(dm.str,danmu_chunk[i].str)) {
+                if(LOG_VERBOSE) {
+                    if(edit_distance(dm.str,danmu_chunk[i].str)>MAX_DIST)
+                        console.log('cosine_dis',dm.str,'to',danmu_chunk[i].str);
+                    else
+                        console.log('edit_dis',dm.str,'to',danmu_chunk[i].str);
+                }
+                danmu_chunk[i].count++;
+                return; // aka continue
+            }
+        }
+        danmu_chunk.push(dm);
     });
+    for(var i in danmu_chunk)
+        apply_item(danmu_chunk[i]);
 
     setbadge((
             POPUP_BADGE=='count' ? ''+counter :

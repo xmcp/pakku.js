@@ -1,3 +1,5 @@
+document.getElementById('pakku-logo').href=chrome.runtime.getURL('options/options.html');
+
 chrome.runtime.getBackgroundPage(function(bgpage) {
     var enabled=bgpage.GLOBAL_SWITCH;
     var btn=document.getElementById('switch');

@@ -57,7 +57,7 @@ def set_global_switch(val):
         time.sleep(.1)
     raise RuntimeError('js not keeping up')
 
-def parse_string(s):
+def parse_string(s,timeout=5):
     goto_options()
     b.execute_script('''
         document.title='';
@@ -69,7 +69,7 @@ def parse_string(s):
             });
         })(arguments[0]);
     ''',s)
-    for _ in range(30):
+    for _ in range(timeout*10):
         if b.title:
             dom=parseString(b.title)
             return dom.getElementsByTagName('d')

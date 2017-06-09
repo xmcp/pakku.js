@@ -8,7 +8,8 @@ def demo(fn):
         return f.read()
 
 print('== reset settings')
-runner.update_settings('DANMU_FUZZ','off')
+runner.update_settings('MAX_DIST','0')
+runner.update_settings('MAX_COSINE','1000')
 runner.update_settings('ENLARGE','off')
 runner.update_settings('PROC_TYPE7','off')
 runner.update_settings('REMOVE_SEEK','off')
@@ -123,6 +124,8 @@ print('!= test taolus')
 
 runner.update_settings('TAOLUS','[]')
 assert len(runner.parse_string(demo('taolu_test')))==3
+runner.update_settings('TAOLUS','[[".*","foo"]]')
+assert 'foo' not in runner.parse_string(demo('unicode'))[0].childNodes[0].data
 runner.update_settings('TAOLUS','[["taolu(\\\\d+)","bingo"]]')
 assert len(runner.parse_string(demo('taolu_test')))==2
 
@@ -133,14 +136,18 @@ assert len(runner.parse_string(demo('unicode_2')))==2
 runner.update_settings('WHITELIST','[]')
 assert len(runner.parse_string(demo('unicode_2')))==1
 
-print('!= test danmu fuzz')
+print('!= test edit distance')
 
-runner.update_settings('DANMU_FUZZ','on')
+runner.update_settings('MAX_DIST','5')
 assert len(runner.parse_string(demo('edit_distance')))==1
 assert len(runner.parse_string(demo('edit_distance_short')))==2
-runner.update_settings('DANMU_FUZZ','off')
+runner.update_settings('MAX_DIST','0')
 assert len(runner.parse_string(demo('edit_distance')))==2 # as our edit_distance is buggy
 assert len(runner.parse_string(demo('edit_distance_short')))==2
+
+print('!= test exception')
+
+assert len(runner.parse_string(demo('production')))<=18000
 
 print('== well done! exitting...')
 runner.b.quit()

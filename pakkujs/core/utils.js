@@ -47,3 +47,11 @@ function migrate_legacy_taolus() {
         loadconfig();
     }
 }
+
+function migrate_legacy_fuzz() {
+    if(localStorage['DANMU_FUZZ']) {
+        localStorage['MAX_DIST']=localStorage['DANMU_FUZZ']==='on'?5:0;
+        delete localStorage['DANMU_FUZZ'];
+        loadconfig();
+    }
+}
