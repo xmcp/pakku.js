@@ -58,10 +58,10 @@ print('!= test danmu mark')
 
 runner.update_settings('DANMU_MARK','off')
 assert runner.parse_string(demo('unicode_2'))[0].childNodes[0].data=='testｔｅｓｔ[]【】'
-runner.update_settings('DANMU_MARK','prefix')
-assert runner.parse_string(demo('unicode_2'))[0].childNodes[0].data=='[x2] testｔｅｓｔ[]【】'
 runner.update_settings('DANMU_MARK','suffix')
 assert runner.parse_string(demo('unicode_2'))[0].childNodes[0].data=='testｔｅｓｔ[]【】 [x2]'
+runner.update_settings('DANMU_MARK','prefix')
+assert runner.parse_string(demo('unicode_2'))[0].childNodes[0].data=='[x2] testｔｅｓｔ[]【】'
 
 print('!= test enlarge')
 
@@ -97,7 +97,7 @@ runner.update_settings('PROC_TYPE7','on')
 danmus=runner.parse_string(demo('special_2'))
 assert len(danmus)==1
 assert danmus[0].getAttribute('p').split(',')[1]=='7' # type == special_danmu
-assert '[x2]' in danmus[0].childNodes[0].data
+assert danmus[0].childNodes[0].data=='[x2] testｔｅｓｔ[]【】'
 
 print('!= test special danmu json')
 
@@ -105,7 +105,14 @@ danmus=runner.parse_string(demo('special_json_2'))
 assert len(danmus)==1
 assert danmus[0].getAttribute('p').split(',')[1]=='7' # type == special_danmu
 special_obj=json.loads(danmus[0].childNodes[0].data)
-assert '[x2]' in special_obj[4]
+assert special_obj[4]=='[x2] testｔｅｓｔ[]【】'
+
+danmus=runner.parse_string(demo('special_json'))
+assert len(danmus)==1
+assert danmus[0].getAttribute('p').split(',')[1]=='7' # type == special_danmu
+special_obj=json.loads(danmus[0].childNodes[0].data)
+assert special_obj[4]=='testｔｅｓｔ[]【】'
+
 
 print('!= test threshold')
 

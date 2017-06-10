@@ -47,7 +47,7 @@ function parse(dom,tabid) {
     }
     
     function build_text(elem) {
-        var count=elem.count, text=elem.count>1 ? elem.str : elem.orig_str;
+        var count=elem.count;
         var dumped=null;
         if(elem.mode=='7') // special danmu, need more parsing
             try {
@@ -55,10 +55,10 @@ function parse(dom,tabid) {
             } catch(e) {}
         
         if(dumped) {
-            dumped[4]=count==1?text:make_mark(text,count);
+            dumped[4]=count==1?dumped[4]:make_mark(elem.str,count);
             return JSON.stringify(dumped);
         } else // normal case
-            return count==1?elem.orig_str:make_mark(text,count);
+            return count==1?elem.orig_str:make_mark(elem.str,count);
     }
 
     var parser=new DOMParser();
