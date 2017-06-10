@@ -5,6 +5,9 @@ var trim_space_re=/[ 　]/g;
 var LOG_VERBOSE=false;
 
 function parse(dom,tabid) {
+    TAOLUS_len=TAOLUS.length;
+    WHITELIST_len=WHITELIST.length;
+    
     chrome.browserAction.setTitle({
         title: '正在处理弹幕…', // if u can see this, pakku might not be working correctly :)
         tabId: tabid
@@ -23,7 +26,7 @@ function parse(dom,tabid) {
     }
     
     function detaolu(text) {
-        for(var i in TAOLUS)
+        for(var i=0;i<TAOLUS_len;i++)
             if(TAOLUS[i][0].test(text))
                 return TAOLUS[i][1];
         text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
@@ -32,7 +35,7 @@ function parse(dom,tabid) {
     }
     
     function whitelisted(text) {
-        for(var i in WHITELIST)
+        for(var i=0;i<WHITELIST_len;i++)
             if(WHITELIST[i][0].test(text))
                 return true;
         return false;
@@ -113,7 +116,7 @@ function parse(dom,tabid) {
         while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
             apply_item(danmu_chunk.shift());
         
-        for(var i in danmu_chunk) {
+        for(var i=0;i<danmu_chunk.length;i++) {
             if(similar(dm.str,danmu_chunk[i].str)) {
                 if(LOG_VERBOSE) {
                     if(edit_distance(dm.str,danmu_chunk[i].str)>MAX_DIST)
@@ -127,7 +130,7 @@ function parse(dom,tabid) {
         }
         danmu_chunk.push(dm);
     });
-    for(var i in danmu_chunk)
+    for(var i=0;i<danmu_chunk.length;i++)
         apply_item(danmu_chunk[i]);
 
     setbadge((

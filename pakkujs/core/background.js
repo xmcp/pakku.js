@@ -74,11 +74,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
 });
 
 function load_danmaku(id,tabid) {
-    function base64(str) { // from https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
-        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-            return String.fromCharCode('0x' + p1);
-        }));
-    }
     chrome.browserAction.setTitle({
         title: '正在下载弹幕文件…',
         tabId: tabid
@@ -96,7 +91,7 @@ function load_danmaku(id,tabid) {
     }
     if(xhr.status===200 && xhr.responseXML) {
         try {
-            return 'data:text/xml;charset=utf-8;base64,'+base64(parse(xhr.responseXML,tabid));
+            return 'data:text/xml;charset=utf-8,'+parse(xhr.responseXML,tabid);
         } catch(e) {
             setbadge('JS!',ERROR_COLOR,tabid);
             throw e;
