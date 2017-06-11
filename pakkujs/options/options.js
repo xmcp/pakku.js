@@ -24,7 +24,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
-        id('proc-type7').checked=localStorage['PROC_TYPE7']==='on';
+        id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on'; // compatibility reason
+        id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
@@ -116,7 +117,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_MARK']=id('danmu-mark').value;
         localStorage['POPUP_BADGE']=id('popup-badge').value;
-        localStorage['PROC_TYPE7']=id('proc-type7').checked?'on':'off';
+        localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
+        localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         reload();
     }
@@ -124,7 +126,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     loadconfig();
     [
         'threshold','max-dist','max-cosine',
-        'trim-ending','trim-space','proc-type7',
+        'trim-ending','trim-space','ignore-type7','ignore-type4',
         'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);

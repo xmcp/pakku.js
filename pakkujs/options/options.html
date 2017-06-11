@@ -15,11 +15,11 @@
             border-bottom: 1px solid #000077;
         }
         #title small {
-            font-size: .3em;
+            font-size: 18px;
             vertical-align: middle;
         }
         #title {
-            font-size: 60px;
+            font-size: 50px;
             font-family: Consolas, Courier, monospace;
             margin: 0;
             padding: 10px 0 10px 0;
@@ -127,14 +127,6 @@
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
                     <p>
-                        <input id="proc-type7" type="checkbox">
-                        <label for="proc-type7">也合并刷屏的高级弹幕：</label>
-                        <span>高级弹幕可能包含艺术字、动画等特殊效果</span>
-                    </p>
-                    <p class="warning">
-                        * 可能会打乱少量高级弹幕的排版，如果你很欣赏那些高级弹幕的表现效果，请关闭此选项。
-                    </p>
-                    <p>
                         <label for="max-dist">按编辑距离合并</label>
                         <select id="max-dist">
                             <option value="0">禁用</option>
@@ -172,7 +164,7 @@
             <tr>
                 <td>弹幕套路</td>
                 <td>
-                    <p>满足同样特征的弹幕，即使内容不同也会被合并</p>
+                    <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
                     <form id="newtaolu-form">
                         <p>
                             <input id="newtaolu-pattern" placeholder="正则表达式">
@@ -186,9 +178,9 @@
                 </td>
             </tr>
             <tr>
-                <td>白名单</td>
+                <td>例外项</td>
                 <td>
-                    <p>属于白名单的弹幕永远不会被合并</p>
+                    <p>你可以设置基于弹幕内容的白名单，属于白名单的弹幕永远不会被合并：</p>
                     <form id="newwhitelist-form">
                         <p>
                             <input id="newwhitelist-pattern" placeholder="正则表达式">
@@ -197,6 +189,16 @@
                         </p>
                     </form>
                     <div class="list" id="whitelist"></div>
+                    <p>
+                        <input id="ignore-type7" type="checkbox">
+                        <label for="ignore-type7">放过所有高级弹幕：</label>
+                        <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
+                    </p>
+                    <p>
+                        <input id="ignore-type4" type="checkbox">
+                        <label for="ignore-type4">放过所有底部弹幕：</label>
+                        <span>底部弹幕可能包含字幕和歌词，你可能不希望相似的歌词弹幕被合并</span>
+                    </p>
                 </td>
             </tr>
             <tr>
@@ -204,7 +206,7 @@
                 <td>
                     <p>
                         <input id="enlarge" type="checkbox">
-                        <label for="enlarge">放大合并后的弹幕：</label>
+                        <label for="enlarge">放大显示合并后的弹幕：</label>
                         <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
                     </p>
                     <p>

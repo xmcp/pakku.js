@@ -37,6 +37,9 @@ function edit_distance (P, Q) {
 
 function cosine_distance (P, Q) {
     'use strict';
+    
+    if(MAX_COSINE>100)
+        return 1.;
 
     P+=P.charCodeAt(0); Q+=Q.charCodeAt(0);
     var P_length_1=P.length-1, Q_length_1=Q.length-1;

@@ -15,6 +15,7 @@ function loadconfig() {
     window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
+    window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
     window.ENLARGE=localStorage['ENLARGE']==='on';
 }
 localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
@@ -29,6 +30,7 @@ localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
 localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
 localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
 localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
+localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
 localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
 loadconfig();
 
@@ -83,7 +85,7 @@ function load_danmaku(id,tabid) {
         title: '正在下载弹幕文件…',
         tabId: tabid
     });
-    setbadge('...',LOADING_COLOR,tabid);
+    setbadge('↓',LOADING_COLOR,tabid);
     
     var xhr=new XMLHttpRequest();
     console.log('load http://comment.bilibili.com/'+id+'.xml');
@@ -96,6 +98,7 @@ function load_danmaku(id,tabid) {
     }
     if(xhr.status===200 && xhr.responseXML) {
         try {
+            setbadge('...',LOADING_COLOR,tabid);
             return 'data:text/xml;charset=utf-8,'+parse(xhr.responseXML,tabid);
         } catch(e) {
             setbadge('JS!',ERROR_COLOR,tabid);

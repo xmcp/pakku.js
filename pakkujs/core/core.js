@@ -76,6 +76,8 @@ function parse(dom,tabid) {
 
             if(!PROC_TYPE7 && attr[1]=='7') // special danmu
                 i_elem.appendChild(elem);
+            else if(!PROC_TYPE4 && attr[1]=='4') // bottom danmu
+                i_elem.appendChild(elem);
             else if(attr[1]=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1)
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
