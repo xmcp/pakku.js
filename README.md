@@ -8,25 +8,36 @@
 
 不方便翻墙的人和其他Chrome内核浏览器的用户可以 [直接下载CRX文件](http://s.xmcp.ml/pakkujs/latest.crx)，忽略浏览器的提示后将其拖拽至扩展程序页面（chrome://extensions） 来安装。
 
-另外 [@fanthos](https://github.com/fanthos) 搞了一个油猴移植版的 [pakku.user.js](https://github.com/fanthos/pakku.user.js)（非官方），效果怎么样我也没试过，把链接放在这里供 Firefox 党参考（逃。比起这个油猴脚本，出于作者个人的立场，我当然更希望大家用我这个 Chrome 扩展啦 :)
+另外 [@fanthos](https://github.com/fanthos) 搞了一个油猴移植版的 [pakku.user.js](https://github.com/fanthos/pakku.user.js)（非官方），不过版本好像有点旧，因此效果略差与目前的 pakku.js。
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
 自动合并B站视频中刷屏弹幕的 Chrome 扩展程序，让您免受各种带节奏弹幕的刷屏之苦
 
-![screenshot](https://cloud.githubusercontent.com/assets/6646473/17503800/5cba26e8-5e25-11e6-87c1-04431ef58e17.png)
+使用之前 ↓
+
+![screenshot_before](https://user-images.githubusercontent.com/6646473/27000977-c4d32444-4df0-11e7-8049-2a611f174471.png)
+
+使用之后 ↓
+
+![screenshot_after](https://user-images.githubusercontent.com/6646473/27000990-3ff7deee-4df1-11e7-90ba-32647c1defea.png)
+
+选项页面 ↓
+
+![screenshot_options](https://user-images.githubusercontent.com/6646473/27000987-2f3e0ef2-4df1-11e7-98e4-02aa89bb36e1.png)
+
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展以方便使用。
 
 ## 实现细节
 
-视频的弹幕池会被按照时间切成若干个片段（默认是每15秒一个片段，可以在设置中调整），在每个片段中的相似弹幕（“弹幕A与弹幕B相似”定义为`(similar_flag_enabled && A.length+B.length>=10) ? edit_distance(A,B)<=5 : A==B`，设置中有`similar_flag_enabled`的开关）会被合并成一个。
-
-由于这个实现方式，少数时间相近但跨越片段分界线的相似弹幕无法被合并。例如当片段长度为15秒时，如果有3条相同弹幕分别位于00:26、00:29、00:32，只有前两个会被合并，而第三个不会。这种实现并不完美，但实现容易、效率更好且效果可以接受。
+视频的弹幕池中所有时间差小于`THRESHOLD`秒的相似弹幕（“弹幕P与弹幕Q相似”定义为 `edit_distance(P,Q)<=MAX_DIST || cosine_distance(P,Q)*100>=MAX_COSINE`，设置中有 `THRESHOLD`、`MAX_DIST` 和 `MAX_COSINE` 的选项）会被合并成一个。
 
 合并之后的弹幕的模式（即顶部、滚动、底部）、颜色和大小与时间最早的弹幕相同。代表多个相似弹幕的弹幕会被添加一个“[xN]”后缀以示标记（在设置中可以修改为添加前缀或不添加任何标记）。
 
 出于这个原因，部分高级弹幕合并后会出现排版错乱的问题，设置中提供了是否处理高级弹幕（`type==7`）的开关。
+
+部分用户不想让某些相似弹幕（例如计数君、弹幕护眼等）被合并，因此我们提供了基于正则表达式的弹幕合并白名单功能。
 
 另外，我们发现有些弹幕虽然在文本上来看并不相似，但符合某些特定的模式，比如：
 
