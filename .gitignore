@@ -2,3 +2,4 @@
 /test/driver/
 *.pyc
 __pycache__/
+/pakkujs.zip

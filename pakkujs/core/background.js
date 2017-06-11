@@ -33,8 +33,14 @@ localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
 loadconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
-    if(btnindex==0) // goto settings
-        chrome.tabs.create({url: 'http://www.bilibili.com/html/help.html#p'});
+    if(btnindex==0)  // goto settings
+        chrome.tabs.create({url: 'http://www.bilibili.com/html/help.html#p'},function(tab) {
+            console.log(tab.id);
+            chrome.tabs.executeScript(tab.id,{
+                file: '/assets/enable_h5_player.js',
+                runAt: 'document_end'
+            });
+        });
     else if(btnindex==1) // ignore
         ;
     else
@@ -58,12 +64,11 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.notifications.create('//init', {
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/logo.png'),
-            title: '切换到哔哩哔哩 HTML5 播放器',
-            message: '由于技术限制，pakku 不支持过滤 Flash 播放器中的弹幕。如果您仍在使用 Flash 播放器，请切换到 HTML5 版本。',
-            contextMessage: 'http://www.bilibili.com/html/help.html#p',
+            title: '你切换到B站 HTML5 播放器了吗？',
+            message: '我们不兼容B站的 Flash 播放器。请切换到B站的 HTML5 播放器来让 pakku 过滤弹幕。',
             isClickable: false,
             buttons: [
-                {title: '→ 前去设置'},
+                {title: '→ 切换到 HTML5 播放器'},
                 {title: '我已经在用 HTML5 播放器了'}
             ]
         });
@@ -117,12 +122,12 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
                 chrome.notifications.create(details.url, {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
-                    title: '暂不支持 Flash 播放器',
-                    message: '请切换到哔哩哔哩 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
+                    title: 'pakku 没有在正常工作',
+                    message: '切换到B站 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
                     contextMessage: '（在 pakku 的设置中可以关闭此提醒）',
                     isClickable: false,
                     buttons: [
-                        {title: '→ 切换到 HTML5 播放器'},
+                        {title: '→ 点我一键切换'},
                         {title: '忽略'}
                     ]
                 });
