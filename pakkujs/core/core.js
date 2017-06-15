@@ -4,6 +4,8 @@ var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 var trim_space_re=/[ 　]/g;
 var LOG_VERBOSE=false;
 
+var DISPVAL_THRESHOLD=75,SHRINK_TIME_THRESHOLD=3;
+
 function parse(dom,tabid) {
     TAOLUS_len=TAOLUS.length;
     WHITELIST_len=WHITELIST.length;
@@ -63,12 +65,16 @@ function parse(dom,tabid) {
         } else // normal case
             return count==1?elem.orig_str:make_mark(elem.str,count);
     }
+    
+    function dispval(str) {
+        return Math.sqrt(str.length);
+    }
 
     var parser=new DOMParser();
     var new_dom=parser.parseFromString('<i></i>','text/xml');
     var i_elem=new_dom.childNodes[0];
 
-    var danmus=[];
+    var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName=='d') { // danmu
             var attr=elem.attributes['p'].value.split(',');
@@ -91,6 +97,7 @@ function parse(dom,tabid) {
                     time: parseFloat(attr[0]),
                     orig_str: str,
                     mode: attr[1],
+                    size: parseFloat(attr[2]),
                     count: 1,
                 });
         } else
@@ -102,26 +109,17 @@ function parse(dom,tabid) {
     var last_time=0;
     var counter=0;
 
-    function apply_item(dm) {
-        counter+=dm.count-1;
-        var d=new_dom.createElement('d');
-        var tn=new_dom.createTextNode(build_text(dm));
-
-        d.appendChild(tn);
-        if(ENLARGE)
-            dm.attr[2]=''+enlarge(parseInt(dm.attr[2]),dm.count);
-        d.setAttribute('p',dm.attr.join(','));
-        i_elem.appendChild(d);
-    }
-    
     danmus.forEach(function(dm) {
         while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
-            apply_item(danmu_chunk.shift());
+            out_danmus.push(danmu_chunk.shift());
         
         for(var i=0;i<danmu_chunk.length;i++) {
             if(similar(dm.str,danmu_chunk[i].str)) {
                 if(LOG_VERBOSE) {
-                    if(edit_distance(dm.str,danmu_chunk[i].str)>MAX_DIST)
+                    var dis=edit_distance(dm.str,danmu_chunk[i].str);
+                    if(dis==0)
+                        console.log('same',dm.str,'to',danmu_chunk[i].str);
+                    if(dis>MAX_DIST)
                         console.log('cosine_dis',dm.str,'to',danmu_chunk[i].str);
                     else
                         console.log('edit_dis',dm.str,'to',danmu_chunk[i].str);
@@ -133,8 +131,41 @@ function parse(dom,tabid) {
         danmu_chunk.push(dm);
     });
     for(var i=0;i<danmu_chunk.length;i++)
-        apply_item(danmu_chunk[i]);
+        out_danmus.push(danmu_chunk[i]);
 
+    var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
+    var chunkl=0,chunkr=0,chunkval=0;
+    out_danmus.forEach(function(dm) {
+        while(dm.time-out_danmus[chunkl].time>SHRINK_TIME_THRESHOLD) {
+            chunkval-=dispval(danmus[chunkl].str);
+            chunkl++;
+        }
+        while(chunkr<out_danmus_len && out_danmus[chunkr].time-dm.time<SHRINK_TIME_THRESHOLD) {
+            chunkval+=dispval(danmus[chunkr].str);
+            chunkr++;
+        }
+        if(chunkval>DISPVAL_THRESHOLD) {
+            if(LOG_VERBOSE)
+                console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
+            dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2);
+        }
+    });
+    
+    out_danmus.forEach(function(dm) {
+        counter+=dm.count-1;
+        var d=new_dom.createElement('d');
+        var tn=new_dom.createTextNode(build_text(dm));
+
+        d.appendChild(tn);
+        if(ENLARGE)
+            dm.size=enlarge(dm.size,dm.count);
+        
+        dm.attr[2]=Math.ceil(dm.size);
+        d.setAttribute('p',dm.attr.join(','));
+        i_elem.appendChild(d);
+    });
+    
+    console.timeEnd('parse');
     setbadge((
             POPUP_BADGE=='count' ? ''+counter :
             POPUP_BADGE=='percent' ? (danmus.length ? (counter*100/danmus.length).toFixed(0)+'%' : '0%') :
@@ -146,6 +177,5 @@ function parse(dom,tabid) {
         tabId: tabid
     });
     var serializer=new XMLSerializer();
-    console.timeEnd('parse');
     return serializer.serializeToString(new_dom);
 }
