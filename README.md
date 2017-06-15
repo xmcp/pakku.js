@@ -8,7 +8,7 @@
 
 不方便翻墙的人和其他Chrome内核浏览器的用户可以 [直接下载CRX文件](http://s.xmcp.ml/pakkujs/latest.crx)，忽略浏览器的提示后将其拖拽至扩展程序页面（chrome://extensions） 来安装。
 
-另外 [@fanthos](https://github.com/fanthos) 搞了一个油猴移植版的 [pakku.user.js](https://github.com/fanthos/pakku.user.js)（非官方），不过版本好像有点旧，因此效果略差与目前的 pakku.js。
+另外 [@fanthos](https://github.com/fanthos) 搞了一个油猴移植版的 [pakku.user.js](https://github.com/fanthos/pakku.user.js)（非官方），虽说把选项页面完全删掉了，不过 Firefox 用户还是可以考虑一下的。
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
