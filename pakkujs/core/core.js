@@ -4,7 +4,7 @@ var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 var trim_space_re=/[ 　]/g;
 var LOG_VERBOSE=false;
 
-var DISPVAL_THRESHOLD=75,SHRINK_TIME_THRESHOLD=3;
+var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
 function parse(dom,tabid) {
     TAOLUS_len=TAOLUS.length;
@@ -147,7 +147,7 @@ function parse(dom,tabid) {
         if(chunkval>DISPVAL_THRESHOLD) {
             if(LOG_VERBOSE)
                 console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
-            dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2);
+            dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2.5);
         }
     });
     
