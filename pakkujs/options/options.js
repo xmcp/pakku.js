@@ -27,6 +27,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on'; // compatibility reason
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
         id('enlarge').checked=localStorage['ENLARGE']==='on';
+        id('shrink').checked=localStorage['SHRINK']==='on';
         
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
         var taolus=id('taolus');
@@ -120,6 +121,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
+        localStorage['SHRINK']=id('shrink').checked?'on':'off';
         reload();
     }
     
@@ -127,7 +129,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     [
         'threshold','max-dist','max-cosine',
         'trim-ending','trim-space','ignore-type7','ignore-type4',
-        'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge'
+        'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge','shrink'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });

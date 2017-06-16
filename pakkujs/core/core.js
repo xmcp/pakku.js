@@ -6,7 +6,7 @@ var LOG_VERBOSE=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
-function parse(dom,tabid) {
+function parse(dom,tabid,S) {
     TAOLUS_len=TAOLUS.length;
     WHITELIST_len=WHITELIST.length;
     
@@ -18,7 +18,12 @@ function parse(dom,tabid) {
     console.time('parse');
     
     function enlarge(size,count) {
-        return count<=10 ? size : Math.floor(size*Math.log10(count));
+        if(count<=10)
+            return size;
+        else {
+            S.enlarge++;
+            return Math.floor(size*Math.log10(count));
+        }
     }
 
     
@@ -29,8 +34,10 @@ function parse(dom,tabid) {
     
     function detaolu(text) {
         for(var i=0;i<TAOLUS_len;i++)
-            if(TAOLUS[i][0].test(text))
+            if(TAOLUS[i][0].test(text)) {
+                S.taolu++;
                 return TAOLUS[i][1];
+            }
         text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
         text = TRIM_SPACE ? text.replace(trim_space_re,'') : text;
         return text;
@@ -80,15 +87,22 @@ function parse(dom,tabid) {
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
 
-            if(!PROC_TYPE7 && attr[1]=='7') // special danmu
+            if(!PROC_TYPE7 && attr[1]=='7') { // special danmu
+                S.type7++;
                 i_elem.appendChild(elem);
-            else if(!PROC_TYPE4 && attr[1]=='4') // bottom danmu
+            } else if(!PROC_TYPE4 && attr[1]=='4') { // bottom danmu
+                S.type4++;
                 i_elem.appendChild(elem);
-            else if(attr[1]=='8') { // code danmu
-                if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1)
+            } else if(attr[1]=='8') { // code danmu
+                if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
+                    S.player_seek++;
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
-                i_elem.appendChild(elem);
+                } else {
+                    S.script++;
+                    i_elem.appendChild(elem);
+                }
             } else if(whitelisted(str)) {
+                S.whitelist++;
                 i_elem.appendChild(elem);
             } else
                 danmus.push({
@@ -114,7 +128,7 @@ function parse(dom,tabid) {
             out_danmus.push(danmu_chunk.shift());
         
         for(var i=0;i<danmu_chunk.length;i++) {
-            if(similar(dm.str,danmu_chunk[i].str)) {
+            if(similar(dm.str,danmu_chunk[i].str,S)) {
                 if(LOG_VERBOSE) {
                     var dis=edit_distance(dm.str,danmu_chunk[i].str);
                     if(dis==0)
@@ -133,26 +147,32 @@ function parse(dom,tabid) {
     for(var i=0;i<danmu_chunk.length;i++)
         out_danmus.push(danmu_chunk[i]);
 
-    var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
-    var chunkl=0,chunkr=0,chunkval=0;
-    out_danmus.forEach(function(dm) {
-        while(dm.time-out_danmus[chunkl].time>SHRINK_TIME_THRESHOLD) {
-            chunkval-=dispval(danmus[chunkl].str);
-            chunkl++;
-        }
-        while(chunkr<out_danmus_len && out_danmus[chunkr].time-dm.time<SHRINK_TIME_THRESHOLD) {
-            chunkval+=dispval(danmus[chunkr].str);
-            chunkr++;
-        }
-        if(chunkval>DISPVAL_THRESHOLD) {
-            if(LOG_VERBOSE)
-                console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
-            dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2.5);
-        }
-    });
+    if(SHRINK) {
+        var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
+        var chunkl=0,chunkr=0,chunkval=0;
+        out_danmus.forEach(function(dm) {
+            while(dm.time-out_danmus[chunkl].time>SHRINK_TIME_THRESHOLD) {
+                chunkval-=dispval(danmus[chunkl].str);
+                chunkl++;
+            }
+            while(chunkr<out_danmus_len && out_danmus[chunkr].time-dm.time<SHRINK_TIME_THRESHOLD) {
+                chunkval+=dispval(danmus[chunkr].str);
+                chunkr++;
+            }
+            if(chunkval>DISPVAL_THRESHOLD) {
+                if(LOG_VERBOSE)
+                    console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
+                S.shrink++;
+                S.maxdispval=Math.max(S.maxdispval,chunkval);
+                dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2.5);
+            }
+        });        
+    }
     
     out_danmus.forEach(function(dm) {
         counter+=dm.count-1;
+        S.maxcombo=Math.max(S.maxcombo,dm.count);
+        
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
 
@@ -166,6 +186,17 @@ function parse(dom,tabid) {
     });
     
     console.timeEnd('parse');
+    
+    S.total=danmus.length;
+    S.onscreen=danmus.length-counter;
+    
+    if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='已禁用';
+    if(PROC_TYPE7 && S.type7==0) S.type7='已禁用';
+    if(PROC_TYPE4 && S.type4==0) S.type4='已禁用';
+    if(!ENLARGE && S.enlarge==0) S.enlarge='已禁用';
+    if(!SHRINK && S.shrink==0) S.shrink='已禁用';
+    if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';
+    
     setbadge((
             POPUP_BADGE=='count' ? ''+counter :
             POPUP_BADGE=='percent' ? (danmus.length ? (counter*100/danmus.length).toFixed(0)+'%' : '0%') :

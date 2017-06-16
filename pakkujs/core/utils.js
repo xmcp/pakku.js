@@ -55,3 +55,37 @@ function migrate_legacy_fuzz() {
         loadconfig();
     }
 }
+
+var HISTORY={};
+
+function Status() {
+    return {
+        identical: 0, // combined
+        edit_distance: 0,
+        cosine_distance: 0,
+        
+        player_seek: 0, // deleted
+        
+        whitelist: 0, // ignored
+        type7: 0,
+        type4: 0,
+        script: 0,
+        
+        enlarge: 0, // modified
+        shrink: 0,
+        
+        taolu: 0, // other
+        total: 0,
+        onscreen: 0,
+        maxcombo: 0,
+        maxdispval: 0,
+        
+        error: null
+    };
+}
+function FailingStatus(typ,details) {
+    return {
+        error: typ,
+        details: details
+    }
+}

@@ -202,13 +202,23 @@
                 </td>
             </tr>
             <tr>
-                <td>显示设置</td>
+                <td>实验室</td>
                 <td>
                     <p>
                         <input id="enlarge" type="checkbox">
-                        <label for="enlarge">放大显示合并后的弹幕：</label>
+                        <label for="enlarge">弹幕合并后增大字号：</label>
                         <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
                     </p>
+                    <p>
+                        <input id="shrink" type="checkbox">
+                        <label for="shrink">弹幕密度过大时减小字号：</label>
+                        <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>显示设置</td>
+                <td>
                     <p>
                         <label for="danmu-mark">弹幕数量标记 </label>
                         <select id="danmu-mark">

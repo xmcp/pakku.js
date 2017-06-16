@@ -1,9 +1,13 @@
 document.getElementById('pakku-logo').href=chrome.runtime.getURL('options/options.html');
 
+function id(x) {
+    return document.getElementById(x);
+}
+
 chrome.runtime.getBackgroundPage(function(bgpage) {
     var enabled=bgpage.GLOBAL_SWITCH;
-    var btn=document.getElementById('switch');
-    var hint_text=document.getElementById('hint-text');
+    var btn=id('switch');
+    var hint_text=id('hint-text');
     
     function loadui() {
         btn.classList.add(enabled?'on':'off');
@@ -28,6 +32,23 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             }
         );
     }
+    
+    chrome.tabs.query(
+        {active:true, currentWindow: true},
+        function(d) {
+            if(!d || !d[0].id || !bgpage.HISTORY[d[0].id]) return;
+            var res=bgpage.HISTORY[d[0].id];
+            if(res.error)
+                id('exception').classList.remove('display-none');
+            else    
+                id('result').classList.remove('display-none');
+            
+            for(var name in res)
+                if(id('status-'+name))
+                    id('status-'+name).textContent=(typeof res[name]=='number') ? Math.ceil(res[name]) : res[name];
+        }
+    );
+    
     btn.addEventListener('click',function() {
         bgpage.GLOBAL_SWITCH=enabled=!enabled;
         chrome.browserAction.setBadgeText({

@@ -3,16 +3,34 @@
     <meta charset="utf-8">
     <title>pakku</title>
     <style>
+        .display-none {
+            display: none;
+        }
         body {
-            width: 150px;
+            width: 300px;
             background-color: #f3f3f3;
+        }
+        code {
+            font-family: Consolas, Courier, monospace;
         }
         body, #switch {
             font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
         }
+        .clearfix {
+            clear: both;
+        }
         #pakku-logo, #pakku-logo img {
             display: block;
-            margin: auto;
+            width: 128px;
+            height: 128px;
+            float: left;
+        }
+        #pakku-title {
+            font-size: 3em;
+            text-align: center;
+            margin: 0;
+            padding-top: .2em;
+            font-family: Consolas, Courier, monospace;
         }
         #switch {
             display: block;
@@ -33,12 +51,145 @@
             padding-top: .5em;
             margin: 0;
         }
+        #result table {
+            border-spacing: 0;
+            margin-top: 1em;
+            width: 100%;
+        }
+        tr:hover {
+            background-color: white;
+        }
+        #result td, #result th {
+            padding: 3px 0 3px 0;
+        }
+        #result tr.first-item td {
+            border-top: 1px solid #aaa;
+        }
+        #result tr.first-item td:nth-child(1) {
+            font-weight: bold;
+        }
+        #result th {
+            text-align: left;
+        }
+        #result td:last-child {
+            text-align: right;
+            padding-right: 1em;
+        }
+        #result * {
+            font-size: 13px;
+        }
+        #exception {
+            background-color: #ffaaaa;
+            overflow: auto;
+            padding-left: 1em;
+            margin-top: 1em;
+        }
     </style>
 </head>
 <body>
-    <a id="pakku-logo" target="_blank"><img src="../assets/logo.png"></a>
-    <button id="switch">……</button>
-    <p id="hint-text">……</p>
+    <div id="topbar">    
+        <a id="pakku-logo" target="_blank"><img src="../assets/logo.png"></a>
+        <p id="pakku-title">pakku</p>
+        <button id="switch">……</button>
+        <p id="hint-text">……</p>
+    </div>
+    <div class="clearfix"></div>
+    <div id="result" class="display-none">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">状态</th>
+                    <th style="width: 50%">类型</th>
+                    <th style="width: 25%">数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="first-item">
+                    <td></td>
+                    <td>总弹幕数</td>
+                    <td id="status-total"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>显示的弹幕数</td>
+                    <td id="status-onscreen"></td>
+                </tr>
+                <tr class="first-item">
+                    <td style="color: #00aa00">已合并</td>
+                    <td>内容完全一致</td>
+                    <td id="status-identical"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>根据编辑距离合并</td>
+                    <td id="status-edit_distance"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>根据词频向量合并</td>
+                    <td id="status-cosine_distance"></td>
+                </tr>
+                
+                <tr class="first-item">
+                    <td style="color: #dd0000">已删除</td>
+                    <td>包含跳转脚本</td>
+                    <td id="status-player_seek"></td>
+                </tr>
+                
+                <tr class="first-item">
+                    <td style="color: #555555">已忽略</td>
+                    <td>命中白名单</td>
+                    <td id="status-whitelist"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>代码弹幕</td>
+                    <td id="status-script"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>高级弹幕</td>
+                    <td id="status-type7"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>底部弹幕</td>
+                    <td id="status-type4"></td>
+                </tr>
+                
+                <tr class="first-item">
+                    <td style="color: #0000dd">已修改</td>
+                    <td>放大合并后的弹幕</td>
+                    <td id="status-enlarge"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>缩小密度过高的弹幕</td>
+                    <td id="status-shrink"></td>
+                </tr>
+                
+                <tr class="first-item">
+                    <td>* 信息</td>
+                    <td>命中弹幕套路</td>
+                    <td id="status-taolu"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>最大连击</td>
+                    <td id="status-maxcombo"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>最大弹幕密度</td>
+                    <td id="status-maxdispval"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="exception" class="display-none">
+        <p>pakku 遇到了错误：<span id="status-error"></span></p>
+        <pre><code id="status-details"></code></pre>
+    </div>
     
     <script src="popup.js"></script>
 </body>
