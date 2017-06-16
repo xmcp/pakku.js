@@ -97,10 +97,9 @@ function parse(dom,tabid,S) {
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
-                } else {
-                    S.script++;
-                    i_elem.appendChild(elem);
                 }
+                S.script++;
+                i_elem.appendChild(elem);
             } else if(whitelisted(str)) {
                 S.whitelist++;
                 i_elem.appendChild(elem);
