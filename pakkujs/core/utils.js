@@ -34,9 +34,9 @@ function setbadge(text,color,tabid) {
 function migrate_legacy_taolus() {
     try {
         var taolus=JSON.parse(localStorage['TAOLUS']);
-    } catch(e) {
-        localStorage['TAOLUS']=''; // this will be fixed at the next startup
-        loadconfig();
+    } catch(e) { // something happened
+        localStorage['TAOLUS']='';
+        initconfig();
         return;
     }
     if(taolus.length==undefined) { // should migrate

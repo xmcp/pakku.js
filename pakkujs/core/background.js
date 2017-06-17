@@ -4,8 +4,9 @@ var GLOBAL_SWITCH=true;
 
 function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
+    window.MARK_THRESHOLD=parseInt(localStorage['MARK_THRESHOLD']||1);
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
-    window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||85;
+    window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
@@ -19,22 +20,26 @@ function loadconfig() {
     window.ENLARGE=localStorage['ENLARGE']==='on';
     window.SHRINK=localStorage['SHRINK']==='on';
 }
-localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
-localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
-localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||85;
-localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
-localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
-localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
-localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
-localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
-localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
-localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
-localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
-localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
-localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
-localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
-localStorage['SHRINK']=localStorage['SHRINK']||'off';
-loadconfig();
+function initconfig() {    
+    localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
+    localStorage['MARK_THRESHOLD']=localStorage['MARK_THRESHOLD']||1;
+    localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
+    localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
+    localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
+    localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
+    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
+    localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
+    localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
+    localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
+    localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
+    localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
+    localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'off';
+    localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
+    localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
+    localStorage['SHRINK']=localStorage['SHRINK']||'off';
+    loadconfig();
+}
+initconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0)  // goto settings

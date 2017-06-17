@@ -3,6 +3,7 @@ function id(x) {
 }
 
 id('version').textContent='v'+chrome.runtime.getManifest().version;
+var img_btns=document.querySelectorAll('[data-name]');
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     function reload() {
@@ -16,6 +17,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function loadconfig() {
         id('threshold').value=localStorage['THRESHOLD'];
+        id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
         id('danmu-mark').value=localStorage['DANMU_MARK'];
@@ -84,6 +86,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             container.appendChild(code1);
             whitelist.appendChild(container);
         }
+        
+        Array.from(img_btns).forEach(function(elem) {
+            if(localStorage[elem.dataset['name']]===elem.dataset['value'])
+                elem.className='img-active';
+            else
+                elem.className='img-inactive'
+        });
     }
 
     id('newtaolu-form').addEventListener('submit',function(e) {
@@ -107,9 +116,16 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         reload();
         id('newwhitelist-pattern').value='';
     });
+    Array.from(img_btns).forEach(function(elem) {
+        elem.addEventListener('click',function() {
+            localStorage[elem.dataset['name']]=elem.dataset['value'];
+            reload();
+        })
+    });
     
     function update() {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
+        localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
@@ -127,10 +143,18 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     loadconfig();
     [
-        'threshold','max-dist','max-cosine',
+        'threshold','max-dist','max-cosine','mark-threshold',
         'trim-ending','trim-space','ignore-type7','ignore-type4',
         'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge','shrink'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
+    
+    id('restore').addEventListener('click',function() {
+        if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
+            localStorage.clear();
+            bgpage.initconfig();
+            reload();
+        }
+    })
 });

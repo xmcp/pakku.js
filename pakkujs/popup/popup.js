@@ -1,8 +1,9 @@
-document.getElementById('pakku-logo').href=chrome.runtime.getURL('options/options.html');
-
 function id(x) {
     return document.getElementById(x);
 }
+
+id('pakku-logo').href=id('pakku-options').href=chrome.runtime.getURL('options/options.html');
+id('version').textContent=' '+chrome.runtime.getManifest().version;
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     var enabled=bgpage.GLOBAL_SWITCH;
@@ -16,13 +17,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         chrome.tabs.query( // get tooltip text of current tab
             {active:true,currentWindow: true},
             function(d) {
-                var general = enabled ? '暂时没有发现B站播放器' : 'zzzzzzzzzz'
+                var general = enabled ? '本页面没有发现B站播放器' : 'zzzzzzzzzz'
                 if(d[0] && d[0].id)
                     chrome.browserAction.getTitle( // fuck chrome APIs
                         {tabId: d[0].id},
                         function(res) {
                             if(res!=='pakku')
-                                hint_text.textContent=res;
+                                hint_text.textContent=enabled ? res : '刷新页面即可生效';
                             else
                                 hint_text.textContent=general;
                         }

@@ -6,7 +6,10 @@
         body {
             background-color: #f3f3f3;
             font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
-            max-width: 850px;
+            min-width: 800px;
+        }
+        #container {
+            max-width: 950px;
             margin: auto;
         }
         a {
@@ -43,7 +46,7 @@
         .warning {
             margin-top: -1em;
             margin-left: 3em;
-            color: #aa0000;
+            color: rgba(0,0,0,.8);
             font-size: .8em;
         }
         .warning a {
@@ -89,9 +92,16 @@
             right: -110px;
             transition: right .2s ease 1s;
         }
+        .img-active {
+            border: 2px solid #00aa00;
+        }
+        .img-inactive {
+            border: 2px solid #ff0000;
+            filter: blur(1px) brightness(.7) contrast(.5);
+        }
     </style>
 </head>
-<body>
+<body><div id="container">
     <p id="title">
         <span>pakku</span>
         <img src="../assets/logo.png" height="128" width="128">
@@ -156,7 +166,7 @@
                         </span>
                     </p>
                     <p class="warning">
-                        * 误伤较多，除非对编辑距离算法的效果仍不满意，否则请选择“禁用”或“轻微”。
+                        * 误伤较多，除非对编辑距离算法的效果非常不满意，否则请谨慎选择“强力”。
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
                     </p>
                 </td>
@@ -195,9 +205,17 @@
                         <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
                     </p>
                     <p>
+                        <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
+                        <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
+                    </p>
+                    <p>
                         <input id="ignore-type4" type="checkbox">
                         <label for="ignore-type4">放过所有底部弹幕：</label>
-                        <span>底部弹幕可能包含字幕和歌词，你可能不希望相似的歌词弹幕被合并</span>
+                        <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
+                    </p>
+                    <p>
+                        <img src="img/type4-combined.png" height="100" width="150" data-name="PROC_TYPE4" data-value="on">
+                        <img src="img/type4-skipped.png" height="100" width="150" data-name="PROC_TYPE4" data-value="off">
                     </p>
                 </td>
             </tr>
@@ -210,9 +228,25 @@
                         <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
                     </p>
                     <p>
+                        <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
+                        <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
+                    </p>
+                    <p>
                         <input id="shrink" type="checkbox">
                         <label for="shrink">弹幕密度过大时减小字号：</label>
                         <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
+                    </p>
+                    <p>
+                        <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
+                        <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
+                    </p>
+                    <p>
+                        <input id="remove-seek" type="checkbox">
+                        <label for="remove-seek">屏蔽跳转脚本：</label>
+                        <span>将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
+                    </p>
+                    <p class="warning">
+                        * B站移除“播放器控制API”开关后的替代选项，会误伤部分代码弹幕游戏。
                     </p>
                 </td>
             </tr>
@@ -230,14 +264,30 @@
                         <span>合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
                     </p>
                     <p>
+                        <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
+                        <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
+                        <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
+                    </p>
+                    <p>
+                        <label for="mark-threshold">弹幕数量标记阈值：</label>
+                        弹幕重复数量大于
+                        <input id="mark-threshold" type="number" min="1" step="1" max="10000">
+                        时显示重复标记
+                    </p>
+                    <p>
                         <label for="popup-badge">扩展程序角标 </label>
                         <select id="popup-badge">
-                            <option value="off">不显示角标</option>
-                            <option value="count">显示被合并弹幕数量</option>
                             <option value="percent">显示被合并弹幕百分比</option>
+                            <option value="count">显示被合并弹幕数量</option>
+                            <option value="off">不显示角标</option>
                         </select>
                         <label for="popup-badge">：</label>
                         <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
+                    </p>
+                    <p>
+                        <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
+                        <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
+                        <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
                     </p>
                 </td>
             </tr>
@@ -245,17 +295,17 @@
                 <td>附加功能</td>
                 <td>
                     <p>
-                        <input id="remove-seek" type="checkbox">
-                        <label for="remove-seek">屏蔽跳转脚本：</label>
-                        <span>将会过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
-                    </p>
-                    <p class="warning">
-                        * B站移除“播放器控制API”开关后的替代选项，会误伤部分代码弹幕游戏。
-                    </p>
-                    <p>
                         <input id="flash-notif" type="checkbox">
                         <label for="flash-notif">播放器兼容提示：</label>
                         <span>pakku 不支持B站 Flash 播放器，检测到 Flash 播放器时将给出提醒</span>
+                    </p>
+                    <p>
+                        <label for="restore">不小心把设置调乱了？</label>
+                        <button type="button" id="restore">重置所有设置</button>
+                        <span>也许可以帮你一把</span>
+                    </p>
+                    <p class="warning">
+                        * 你的所有设置，包括弹幕套路和白名单，都将会被重置为默认值。
                     </p>
                 </td>
             </tr>
@@ -277,5 +327,5 @@
     
     <script src="options.js"></script>
     <iframe src="http://s.xmcp.ml/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>
-</body>
+</div></body>
 </html>

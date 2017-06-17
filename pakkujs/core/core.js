@@ -67,10 +67,10 @@ function parse(dom,tabid,S) {
             } catch(e) {}
         
         if(dumped) {
-            dumped[4]=count==1?dumped[4]:make_mark(elem.str,count);
+            dumped[4]=count<=MARK_THRESHOLD?dumped[4]:make_mark(elem.str,count);
             return JSON.stringify(dumped);
         } else // normal case
-            return count==1?elem.orig_str:make_mark(elem.str,count);
+            return count<=MARK_THRESHOLD?elem.orig_str:make_mark(elem.str,count);
     }
     
     function dispval(str) {
@@ -158,12 +158,12 @@ function parse(dom,tabid,S) {
                 chunkval+=dispval(danmus[chunkr].str);
                 chunkr++;
             }
+            S.maxdispval=Math.max(S.maxdispval,chunkval);
             if(chunkval>DISPVAL_THRESHOLD) {
                 if(LOG_VERBOSE)
                     console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
                 S.shrink++;
-                S.maxdispval=Math.max(S.maxdispval,chunkval);
-                dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2.5);
+                dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2);
             }
         });        
     }

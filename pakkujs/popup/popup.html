@@ -19,6 +19,9 @@
         .clearfix {
             clear: both;
         }
+        #topbar p {
+            text-align: center;
+        }
         #pakku-logo, #pakku-logo img {
             display: block;
             width: 128px;
@@ -27,15 +30,17 @@
         }
         #pakku-title {
             font-size: 3em;
-            text-align: center;
             margin: 0;
             padding-top: .2em;
             font-family: Consolas, Courier, monospace;
         }
+        #pakku-title small {
+            font-size: 10px;
+            vertical-align: middle;
+        }
         #switch {
-            display: block;
+            display: inline-block;
             width: 100px;
-            margin: 5px auto 5px auto;
             border: black 1px solid;
             border-radius: 3px;
             font-size: 20px;
@@ -47,7 +52,6 @@
             background-color: #ddd;
         }
         #hint-text {
-            text-align: center;
             padding-top: .5em;
             margin: 0;
         }
@@ -89,8 +93,8 @@
 <body>
     <div id="topbar">    
         <a id="pakku-logo" target="_blank"><img src="../assets/logo.png"></a>
-        <p id="pakku-title">pakku</p>
-        <button id="switch">……</button>
+        <p id="pakku-title">pakku<small id="version"></small></p>
+        <p style="margin-bottom: 0"><button id="switch">……</button> &nbsp; <a id="pakku-options" target="_blank">选项</a></p>
         <p id="hint-text">……</p>
     </div>
     <div class="clearfix"></div>
@@ -132,7 +136,7 @@
                 
                 <tr class="first-item">
                     <td style="color: #dd0000">已删除</td>
-                    <td>包含跳转脚本</td>
+                    <td>删除跳转脚本</td>
                     <td id="status-player_seek"></td>
                 </tr>
                 
@@ -148,12 +152,12 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td>高级弹幕</td>
+                    <td>忽略高级弹幕</td>
                     <td id="status-type7"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>底部弹幕</td>
+                    <td>忽略底部弹幕</td>
                     <td id="status-type4"></td>
                 </tr>
                 
