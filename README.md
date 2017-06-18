@@ -24,8 +24,7 @@
 
 选项页面 ↓
 
-![screenshot_options](https://user-images.githubusercontent.com/6646473/27000987-2f3e0ef2-4df1-11e7-98e4-02aa89bb36e1.png)
-
+![screenshot_options](https://user-images.githubusercontent.com/6646473/27258881-64bb0c5e-5438-11e7-82e4-3fa9a93d3cff.png)
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展以方便使用。
 
