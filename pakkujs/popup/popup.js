@@ -22,7 +22,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     chrome.browserAction.getTitle( // fuck chrome APIs
                         {tabId: d[0].id},
                         function(res) {
-                            if(res!=='pakku')
+                            if(res!=='pakku' && res!=='')
                                 hint_text.textContent=enabled ? res : '刷新页面即可生效';
                             else
                                 hint_text.textContent=general;

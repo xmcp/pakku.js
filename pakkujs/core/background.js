@@ -65,7 +65,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             title: 'pakku.js is running in test mode',
             message: 'this should not be happening. please report a bug if you see this message.',
             contextMessage: navigator.userAgent
-        });
+        }, function(){});
         return;
     }
     if(details.reason=='install') {
@@ -80,7 +80,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 {title: '→ 切换到 HTML5 播放器'},
                 {title: '我已经在用 HTML5 播放器了'}
             ]
-        });
+        }, function(){});
     } else {
         migrate_legacy_taolus();
         migrate_legacy_fuzz();
@@ -147,7 +147,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
                         {title: '→ 点我一键切换'},
                         {title: '忽略'}
                     ]
-                });
+                }, function(){});
             return {cancel: false};
         }
     }

@@ -2,6 +2,11 @@
 
 var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
 
+if(!Math.log10)
+    Math.log10=function(x) {
+        return Math.log(x)/Math.log(10);
+    }
+
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)

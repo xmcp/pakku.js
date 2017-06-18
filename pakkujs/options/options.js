@@ -95,7 +95,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             whitelist.appendChild(container);
         }
         
-        Array.from(img_btns).forEach(function(elem) {
+        [].slice.call(img_btns).forEach(function(elem) {
             if(localStorage[elem.dataset['name']]===elem.dataset['value'])
                 elem.className='img-active';
             else
@@ -124,7 +124,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         reload();
         id('newwhitelist-pattern').value='';
     });
-    Array.from(img_btns).forEach(function(elem) {
+    [].slice.call(img_btns).forEach(function(elem) {
         elem.addEventListener('click',function() {
             localStorage[elem.dataset['name']]=elem.dataset['value'];
             reload();
@@ -132,7 +132,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
     
     function update() {
-        localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):15;
+        localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
         localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);

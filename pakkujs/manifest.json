@@ -1,6 +1,6 @@
 {
     "name": "pakku",
-    "version": "6.0.1",
+    "version": "6.0.2",
     "description": "合并B站刷屏弹幕，Make Bilibili Great Again!",
     "icons": {
         "128": "assets/logo.png"
