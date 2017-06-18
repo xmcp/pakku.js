@@ -101,24 +101,24 @@ function load_danmaku(id,tabid) {
         xhr.send();
     } catch(e) {
         setbadge('NET!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus('网络错误',e.stack);
+        HISTORY[tabid]=FailingStatus(id,'网络错误',e.stack);
         throw e;
     }
     if(xhr.status===200 && xhr.responseXML) {
         try {
             setbadge('...',LOADING_COLOR,tabid);
-            var S=Status();
+            var S=Status(id);
             var res=parse(xhr.responseXML,tabid,S);
             HISTORY[tabid]=S;
             return 'data:text/xml;charset=utf-8,'+res;
         } catch(e) {
             setbadge('JS!',ERROR_COLOR,tabid);
-            HISTORY[tabid]=FailingStatus('弹幕处理失败',e.stack);
+            HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.stack);
             throw e;
         }
     } else {
         setbadge('SVR!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus('B站弹幕服务器错误','xhr.status == '+xhr.status);
+        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误','xhr.status == '+xhr.status);
         throw 'network error!';
     }
 }
@@ -134,7 +134,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         else {
             console.log(details);
             setbadge('FL!',ERROR_COLOR,details.tabId);
-            HISTORY[details.tabId]=FailingStatus('已忽略非 HTML5 播放器的请求','details.type == '+details.type);
+            HISTORY[details.tabId]=FailingStatus(ret[1],'已忽略非 HTML5 播放器的请求','details.type == '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
                 chrome.notifications.create(details.url, {
                     type: 'basic',
@@ -163,6 +163,6 @@ if(TEST_MODE) {
     function parse_string(str) {
         var parser=new DOMParser();
         var dom=parser.parseFromString(str,'text/xml');
-        return parse(dom,0,Status());
+        return parse(dom,0,Status(0));
     }
 }

@@ -13,6 +13,9 @@
         code {
             font-family: Consolas, Courier, monospace;
         }
+        a {
+            color: inherit;
+        }
         body, #switch {
             font-family: '微软雅黑', 'Microsoft Yahei', '黑体', sans-serif;
         }
@@ -29,13 +32,13 @@
             float: left;
         }
         #pakku-title {
-            font-size: 3em;
+            font-size: 35px;
             margin: 0;
             padding-top: .2em;
             font-family: Consolas, Courier, monospace;
         }
         #pakku-title small {
-            font-size: 10px;
+            font-size: 15px;
             vertical-align: middle;
         }
         #switch {
@@ -61,7 +64,7 @@
             width: 100%;
         }
         tr:hover {
-            background-color: white;
+            background-color: #fafafa;
         }
         #result td, #result th {
             padding: 3px 0 3px 0;
@@ -92,9 +95,9 @@
 </head>
 <body>
     <div id="topbar">    
-        <a id="pakku-logo" target="_blank"><img src="../assets/logo.png"></a>
+        <a id="pakku-logo" target="_blank" title="选项"><img src="../assets/logo.png"></a>
         <p id="pakku-title">pakku<small id="version"></small></p>
-        <p style="margin-bottom: 0"><button id="switch">……</button> &nbsp; <a id="pakku-options" target="_blank">选项</a></p>
+        <p style="margin-bottom: 0"><button id="switch">……</button></p>
         <p id="hint-text">……</p>
     </div>
     <div class="clearfix"></div>
@@ -110,12 +113,12 @@
             <tbody>
                 <tr class="first-item">
                     <td></td>
-                    <td>总弹幕数</td>
+                    <td><a id="link-total" target="_blank">总弹幕数</a></td>
                     <td id="status-total"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>显示的弹幕数</td>
+                    <td><a id="link-display" target="_blank">显示的弹幕数</a></td>
                     <td id="status-onscreen"></td>
                 </tr>
                 <tr class="first-item">
@@ -192,7 +195,8 @@
     </div>
     <div id="exception" class="display-none">
         <p>pakku 遇到了错误：<span id="status-error"></span></p>
-        <pre><code id="status-details"></code></pre>
+        <p>CID = <span id="error-cid">???</span></p>
+        <p><pre><code id="status-details"></code></pre></p>
     </div>
     
     <script src="popup.js"></script>

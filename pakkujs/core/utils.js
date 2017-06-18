@@ -58,7 +58,7 @@ function migrate_legacy_fuzz() {
 
 var HISTORY={};
 
-function Status() {
+function Status(CID) {
     return {
         identical: 0, // combined
         edit_distance: 0,
@@ -80,12 +80,14 @@ function Status() {
         maxcombo: 0,
         maxdispval: 0,
         
-        error: null
+        error: null,
+        cid: CID
     };
 }
-function FailingStatus(typ,details) {
+function FailingStatus(CID,typ,details) {
     return {
         error: typ,
+        cid: CID,
         details: details
     }
 }

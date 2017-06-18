@@ -2,7 +2,7 @@ function id(x) {
     return document.getElementById(x);
 }
 
-id('pakku-logo').href=id('pakku-options').href=chrome.runtime.getURL('options/options.html');
+id('pakku-logo').href=chrome.runtime.getURL('options/options.html');
 id('version').textContent=' '+chrome.runtime.getManifest().version;
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
@@ -39,10 +39,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         function(d) {
             if(!d || !d[0].id || !bgpage.HISTORY[d[0].id]) return;
             var res=bgpage.HISTORY[d[0].id];
-            if(res.error)
+            if(res.error) {
                 id('exception').classList.remove('display-none');
-            else    
+                id('error-cid').textContent=res.cid;
+            } else {
                 id('result').classList.remove('display-none');
+                id('link-total').href='http://comment.bilibili.com/'+res.cid+'.xml';
+                id('link-display').href='http://comment.bilibili.com/'+res.cid+'.debug.xml';
+            }
             
             for(var name in res)
                 if(id('status-'+name))

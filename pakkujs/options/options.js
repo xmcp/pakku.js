@@ -6,6 +6,14 @@ id('version').textContent='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
+    id('restore').addEventListener('click',function() {
+        if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
+            localStorage.clear();
+            bgpage.initconfig();
+            location.reload();
+        }
+    });
+    
     function reload() {
         bgpage.loadconfig();
         id('saved-alert').classList.remove('hidden');
@@ -149,12 +157,4 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
-    
-    id('restore').addEventListener('click',function() {
-        if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
-            localStorage.clear();
-            bgpage.initconfig();
-            reload();
-        }
-    })
 });

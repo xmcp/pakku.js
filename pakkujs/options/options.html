@@ -96,8 +96,12 @@
             border: 2px solid #00aa00;
         }
         .img-inactive {
+            cursor: pointer;
             border: 2px solid #ff0000;
             filter: blur(1px) brightness(.7) contrast(.5);
+        }
+        .img-inactive:hover {
+            filter: brightness(.7) contrast(.8);
         }
     </style>
 </head>
@@ -141,7 +145,7 @@
                         <select id="max-dist">
                             <option value="0">禁用</option>
                             <option value="3">轻微</option>
-                            <option value="5">默认</option>
+                            <option value="5">中等</option>
                         </select>
                         <label for="max-dist">：</label>
                         <span>
@@ -213,9 +217,12 @@
                         <label for="ignore-type4">放过所有底部弹幕：</label>
                         <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
                     </p>
+                    <p class="warning">
+                        * 选中后，所有底部弹幕都不会被合并，请谨慎选择。
+                    </p>
                     <p>
-                        <img src="img/type4-combined.png" height="100" width="150" data-name="PROC_TYPE4" data-value="on">
-                        <img src="img/type4-skipped.png" height="100" width="150" data-name="PROC_TYPE4" data-value="off">
+                        <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
+                        <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
                     </p>
                 </td>
             </tr>
