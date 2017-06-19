@@ -75,6 +75,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             iconUrl: chrome.runtime.getURL('assets/logo.png'),
             title: '你切换到B站 HTML5 播放器了吗？',
             message: '我们不兼容B站的 Flash 播放器。请切换到B站的 HTML5 播放器来让 pakku 过滤弹幕。',
+            contextMessage: '如果你不确定要选什么，请选第一项',
             isClickable: false,
             buttons: [
                 {title: '→ 切换到 HTML5 播放器'},
@@ -118,7 +119,7 @@ function load_danmaku(id,tabid) {
         }
     } else {
         setbadge('SVR!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误','xhr.status == '+xhr.status);
+        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误','xhr.status = '+xhr.status+'\nxhr.responseXML = '+xhr.responseXML);
         throw 'network error!';
     }
 }
@@ -134,14 +135,14 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         else {
             console.log(details);
             setbadge('FL!',ERROR_COLOR,details.tabId);
-            HISTORY[details.tabId]=FailingStatus(ret[1],'已忽略非 HTML5 播放器的请求','details.type == '+details.type);
+            HISTORY[details.tabId]=FailingStatus(ret[1],'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
                 chrome.notifications.create(details.url, {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
                     title: 'pakku 没有在正常工作',
                     message: '切换到B站 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
-                    contextMessage: '（在 pakku 的设置中可以关闭此提醒）',
+                    contextMessage: '（在 pakku 的选项中可以关闭此提醒）',
                     isClickable: false,
                     buttons: [
                         {title: '→ 点我一键切换'},

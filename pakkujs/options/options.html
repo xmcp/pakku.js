@@ -17,6 +17,11 @@
             text-decoration: none;
             border-bottom: 1px solid #000077;
         }
+        hr {
+            border: initial;
+            border-top: 1px solid #aaa;
+            margin: 2em 0 2em 0;
+        }
         #title small {
             font-size: 18px;
             vertical-align: middle;
@@ -35,7 +40,7 @@
             font-weight: bold;
         }
         code {
-            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '黑体', monospace;
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
             color: #007700;
             border-bottom: 1px dashed #007700;
         }
@@ -43,7 +48,7 @@
             margin-top: 1em;
             margin-bottom: 1em;
         }
-        .warning {
+        p.warning {
             margin-top: -1em;
             margin-left: 3em;
             color: rgba(0,0,0,.8);
@@ -67,7 +72,9 @@
         td:nth-child(1) {
             font-weight: bold;
             padding-right: 1em;
+            padding-top: 2em;
             text-align: right;
+            vertical-align: top;
         }
         .list {
             margin-bottom: 1em;
@@ -91,6 +98,9 @@
         #saved-alert.hidden {
             right: -110px;
             transition: right .2s ease 1s;
+        }
+        p.img-panel {
+            margin-top: -.7em;
         }
         .img-active {
             border: 2px solid #00aa00;
@@ -205,12 +215,13 @@
                         </p>
                     </form>
                     <div class="list" id="whitelist"></div>
+                    <hr>
                     <p>
                         <input id="ignore-type7" type="checkbox">
                         <label for="ignore-type7">放过所有高级弹幕：</label>
                         <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
                         <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
                     </p>
@@ -222,7 +233,7 @@
                     <p class="warning">
                         * 选中后，所有底部弹幕都不会被合并，请谨慎选择。
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
                         <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
                     </p>
@@ -236,7 +247,7 @@
                         <label for="enlarge">弹幕合并后增大字号：</label>
                         <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
                         <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
                     </p>
@@ -245,7 +256,7 @@
                         <label for="shrink">弹幕密度过大时减小字号：</label>
                         <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
                         <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
                     </p>
@@ -256,6 +267,16 @@
                     </p>
                     <p class="warning">
                         * B站移除“播放器控制API”开关后的替代选项，会误伤部分代码弹幕游戏。
+                    </p>
+                    <hr>
+                    <p>
+                        <strong>觉得这些功能很赞？</strong>
+                        请把 pakku ( <code>http://s.xmcp.ml/pakkujs</code> ) 安利给更多的小伙伴们 _(:3」∠)_
+                    </p>
+                    <p>
+                        <strong>想添加更多功能？</strong>
+                        把你的脑洞 <a href="https://www.zhihu.com/people/xmcp" target="_blank">知乎私信给开发者</a>
+                        或者 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">丢到 GitHub 上</a>
                     </p>
                 </td>
             </tr>
@@ -272,7 +293,7 @@
                         <label for="danmu-mark">：</label>
                         <span>合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
                         <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
                         <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
@@ -293,7 +314,7 @@
                         <label for="popup-badge">：</label>
                         <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
                     </p>
-                    <p>
+                    <p class="img-panel">
                         <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
                         <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
                         <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
@@ -326,8 +347,8 @@
     <p><small>
         请使用 <a href="http://www.bilibili.com/html/help.html#p" target="_blank">哔哩哔哩 HTML5 播放器</a> /
         在 <a href="https://github.com/xmcp/pakku.js/" target="_blank">GitHub</a> 开放源代码 /
-        如有问题请 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">提交 Issue</a> /
-        使用 <a href="https://github.com/xmcp/pakku.js/blob/master/LICENSE.txt" target="_blank">GPL 3.0 协议</a>
+        如有问题请 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">去 GitHub 提交 Issue</a> 或 <a href="https://www.zhihu.com/people/xmcp" target="_blank">知乎私信开发者</a> /
+        使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>
     </small></p>
     
     <br>
