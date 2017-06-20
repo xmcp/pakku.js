@@ -10,11 +10,6 @@ function parse(dom,tabid,S) {
     TAOLUS_len=TAOLUS.length;
     WHITELIST_len=WHITELIST.length;
     
-    chrome.browserAction.setTitle({
-        title: '正在处理弹幕…', // if u can see this, pakku might not be working correctly :)
-        tabId: tabid
-    });
-    
     console.time('parse');
     
     function enlarge(size,count) {
@@ -196,16 +191,6 @@ function parse(dom,tabid,S) {
     if(!SHRINK && S.shrink==0) S.shrink='已禁用';
     if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';
     
-    setbadge((
-            POPUP_BADGE=='count' ? ''+counter :
-            POPUP_BADGE=='percent' ? (danmus.length ? (counter*100/danmus.length).toFixed(0)+'%' : '0%') :
-            ''
-        ),SUCCESS_COLOR,tabid
-    );
-    chrome.browserAction.setTitle({
-        title: '已过滤 '+counter+'/'+danmus.length+' 弹幕',
-        tabId: tabid
-    });
     var serializer=new XMLSerializer();
     return serializer.serializeToString(new_dom);
 }

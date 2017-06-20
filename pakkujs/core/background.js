@@ -106,9 +106,26 @@ function load_danmaku(id,tabid) {
     }
     if(xhr.status===200 && xhr.responseXML) {
         try {
+            chrome.browserAction.setTitle({
+                title: '正在处理弹幕…',
+                tabId: tabid
+            });
             setbadge('...',LOADING_COLOR,tabid);
             var S=Status(id);
+            
             var res=parse(xhr.responseXML,tabid,S);
+            var counter=S.total-S.onscreen;
+            
+            setbadge((
+                    POPUP_BADGE=='count' ? ''+counter :
+                    POPUP_BADGE=='percent' ? (S.total ? (counter*100/S.total).toFixed(0)+'%' : '0%') :
+                    ''
+                ),SUCCESS_COLOR,tabid
+            );
+            chrome.browserAction.setTitle({
+                title: '已过滤 '+counter+'/'+S.total+' 弹幕',
+                tabId: tabid
+            });
             HISTORY[tabid]=S;
             return 'data:text/xml;charset=utf-8,'+res;
         } catch(e) {

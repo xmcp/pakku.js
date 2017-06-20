@@ -47,11 +47,14 @@
             margin-top: -1em;
             margin-left: 3em;
             color: rgba(0,0,0,.8);
-            font-size: .8em;
+            font-size: .85em;
         }
         .warning a {
             color: inherit;
             border-color: inherit;
+        }
+        .warning b {
+            border-bottom: 3px double black;
         }
         table {
             border-spacing: 0;
@@ -97,13 +100,13 @@
         }
         .img-inactive {
             cursor: pointer;
-            border: 2px solid #ff0000;
+            border: 2px solid #ff4444;
             filter: blur(1px) brightness(.7) contrast(.5);
             -webkit-filter: blur(1px) brightness(.7) contrast(.5);
         }
         .img-inactive:hover {
             filter: brightness(.7) contrast(.8);
-            -webkit-filter: brightness(.7) contrast(.8);
+            -webkit-filter: brightness(.8) contrast(.8);
         }
     </style>
 </head>
@@ -142,6 +145,9 @@
                         <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
+                    <p class="warning">
+                        * 有少量误伤，使重复的英文弹幕内容中的空格被吃掉
+                    </p>
                     <p>
                         <label for="max-dist">按编辑距离合并</label>
                         <select id="max-dist">
@@ -172,7 +178,7 @@
                         </span>
                     </p>
                     <p class="warning">
-                        * 误伤较多，除非对编辑距离算法的效果非常不满意，否则请谨慎选择“强力”。
+                        * <b>误伤较多</b>，除非对编辑距离算法的效果非常不满意，否则请谨慎选择“强力”。
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
                     </p>
                 </td>
@@ -220,7 +226,7 @@
                         <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
                     </p>
                     <p class="warning">
-                        * 选中后，所有底部弹幕都不会被合并，请谨慎选择。
+                        * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
                     </p>
                     <p>
                         <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
@@ -280,8 +286,8 @@
                     <p>
                         <label for="mark-threshold">弹幕数量标记阈值：</label>
                         弹幕重复数量大于
-                        <input id="mark-threshold" type="number" min="1" step="1" max="10000">
-                        时显示重复标记
+                        <input id="mark-threshold" type="number" min="1" step="1" max="9999">
+                        时显示数量标记
                     </p>
                     <p>
                         <label for="popup-badge">扩展程序角标 </label>
@@ -292,6 +298,9 @@
                         </select>
                         <label for="popup-badge">：</label>
                         <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
+                    </p>
+                    <p class="warning">
+                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
                     </p>
                     <p>
                         <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
@@ -314,7 +323,7 @@
                         <span>也许可以帮你一把</span>
                     </p>
                     <p class="warning">
-                        * 你的所有设置，包括弹幕套路和白名单，都将会被重置为默认值。
+                        * 你的所有设置，包括 <b>弹幕套路</b> 和 <b>白名单</b>，都将会被重置为默认值。
                     </p>
                 </td>
             </tr>
