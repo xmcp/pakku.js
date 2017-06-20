@@ -8,6 +8,9 @@
             font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
             min-width: 800px;
         }
+        .hidden {
+            display: none;
+        }
         #container {
             max-width: 950px;
             margin: auto;
@@ -54,12 +57,13 @@
             color: rgba(0,0,0,.8);
             font-size: .85em;
         }
-        .warning a {
+        p.warning a {
             color: inherit;
             border-color: inherit;
         }
-        .warning b {
-            border-bottom: 3px double black;
+        p.warning b {
+            color: #770000;
+            border-bottom: 1px solid black;
         }
         table {
             border-spacing: 0;
@@ -82,8 +86,18 @@
         .list {
             margin-bottom: 1em;
         }
-        .list button {
-            margin-right: 1em;
+        .list:empty::after {
+            content: "（列表为空）";
+            color: rgba(0,0,0,.8);
+        }
+        .list code[contenteditable]:not(:focus) {
+            cursor: pointer;
+        }
+        .list li {
+            margin-bottom: .2em;
+        }
+        .list .btn {
+            margin-left: 1em;
         }
         #saved-alert {
             position: fixed;
@@ -98,7 +112,7 @@
             background-color: black;
             color: white;
         }
-        #saved-alert.hidden {
+        #saved-alert.saved-hidden {
             right: -110px;
             transition: right .2s ease 1s;
         }
@@ -199,9 +213,9 @@
                     <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
                     <form id="newtaolu-form">
                         <p>
-                            <input id="newtaolu-pattern" placeholder="正则表达式">
+                            <input id="newtaolu-pattern" placeholder="正则表达式" required>
                             →
-                            <input id="newtaolu-name" placeholder="替换文本">
+                            <input id="newtaolu-name" placeholder="替换文本" required>
                             <button type="submit">添加</button>
                             &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                         </p>
@@ -215,7 +229,7 @@
                     <p>你可以设置基于弹幕内容的白名单，属于白名单的弹幕永远不会被合并：</p>
                     <form id="newwhitelist-form">
                         <p>
-                            <input id="newwhitelist-pattern" placeholder="正则表达式">
+                            <input id="newwhitelist-pattern" placeholder="正则表达式" required>
                             <button type="submit">添加</button>
                             &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                         </p>
@@ -362,7 +376,7 @@
     
     <br>
 
-    <div id="saved-alert" class="hidden">✓ 已保存</div>
+    <div id="saved-alert" class="saved-hidden">✓ 已保存</div>
     
     <script src="options.js"></script>
     <iframe src="http://s.xmcp.ml/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>
