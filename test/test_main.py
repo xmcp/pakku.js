@@ -10,16 +10,15 @@ def demo(fn):
 print('== reset settings')
 runner.update_settings('MAX_DIST','0')
 runner.update_settings('MAX_COSINE','1000')
-runner.update_settings('ENLARGE','off')
 runner.update_settings('PROC_TYPE7','off')
-runner.update_settings('REMOVE_SEEK','off')
 runner.update_settings('TRIM_ENDING','off')
 runner.update_settings('TRIM_SPACE','off')
 runner.update_settings('TAOLUS','[]')
 runner.update_settings('WHITELIST','[]')
 runner.update_settings('THRESHOLD','20')
+runner.update_settings('MARK_THRESHOLD','1')
 
-# ignored tests: FLASH_NOTIF POPUP_BADGE TRIM_ENDING TRIM_SPACE
+# not tested: FLASH_NOTIF POPUP_BADGE TRIM_ENDING TRIM_SPACE
 
 print('!= test hook')
 
@@ -48,11 +47,12 @@ assert len(danmu.getAttribute('p').split(','))>3
 assert len(danmu.childNodes)==1
 assert isinstance(danmu.childNodes[0],Text)
 
-print('!= test encoding')
+print('!= test working')
 
 danmus=runner.parse_string(demo('unicode'))
 assert len(danmus)==1
 assert danmus[0].childNodes[0].data=='testｔｅｓｔ[]【】'
+assert len(runner.parse_string(demo('different_100')))==100
 
 print('!= test danmu mark')
 
@@ -65,12 +65,25 @@ assert runner.parse_string(demo('unicode_2'))[0].childNodes[0].data=='[x2] test�
 
 print('!= test enlarge')
 
-runner.update_settings('ENLARGE','off')
-assert runner.parse_string(demo('unicode_2'))[0].getAttribute('p').split(',')[2]=='25'
-assert runner.parse_string(demo('unicode_100'))[0].getAttribute('p').split(',')[2]=='25'
 runner.update_settings('ENLARGE','on')
 assert runner.parse_string(demo('unicode_2'))[0].getAttribute('p').split(',')[2]=='25'
 assert runner.parse_string(demo('unicode_100'))[0].getAttribute('p').split(',')[2]=='50'
+runner.update_settings('ENLARGE','off')
+assert runner.parse_string(demo('unicode_2'))[0].getAttribute('p').split(',')[2]=='25'
+assert runner.parse_string(demo('unicode_100'))[0].getAttribute('p').split(',')[2]=='25'
+
+print('!= test shrink')
+
+runner.update_settings('SHRINK','on')
+danmus=runner.parse_string(demo('different_2'))
+assert len(danmus)==2
+assert danmus[0].getAttribute('p').split(',')[2]=='25'
+danmus=runner.parse_string(demo('different_100'))
+assert len(danmus)==100
+assert int(danmus[0].getAttribute('p').split(',')[2])<25
+runner.update_settings('SHRINK','off')
+assert runner.parse_string(demo('different_2'))[0].getAttribute('p').split(',')[2]=='25'
+assert runner.parse_string(demo('different_100'))[0].getAttribute('p').split(',')[2]=='25'
 
 print('!= test code danmu')
 
@@ -127,6 +140,24 @@ danmus=runner.parse_string(demo('delta10'))
 assert len(danmus)==1
 assert '[x2]' in danmus[0].childNodes[0].data
 
+print('!= test mark threshold')
+
+runner.update_settings('MARK_THRESHOLD','2')
+danmus=runner.parse_string(demo('unicode_2'))
+assert len(danmus)==1
+assert '[x' not in danmus[0].childNodes[0].data
+danmus=runner.parse_string(demo('unicode_100'))
+assert len(danmus)==1
+assert '[x' in danmus[0].childNodes[0].data
+runner.update_settings('MARK_THRESHOLD','100')
+danmus=runner.parse_string(demo('unicode_100'))
+assert len(danmus)==1
+assert '[x' not in danmus[0].childNodes[0].data
+runner.update_settings('MARK_THRESHOLD','1')
+danmus=runner.parse_string(demo('unicode_2'))
+assert len(danmus)==1
+assert '[x' in danmus[0].childNodes[0].data
+
 print('!= test taolus')
 
 runner.update_settings('TAOLUS','[]')
@@ -151,6 +182,15 @@ assert len(runner.parse_string(demo('edit_distance_short')))==2
 runner.update_settings('MAX_DIST','0')
 assert len(runner.parse_string(demo('edit_distance')))==2 # as our edit_distance is buggy
 assert len(runner.parse_string(demo('edit_distance_short')))==2
+
+print('!= test cosine distance')
+
+runner.update_settings('MAX_COSINE','30')
+assert len(runner.parse_string(demo('cosine_distance')))==1
+runner.update_settings('MAX_COSINE','99')
+assert len(runner.parse_string(demo('cosine_distance')))==2
+runner.update_settings('MAX_COSINE','1000')
+assert len(runner.parse_string(demo('cosine_distance')))==3
 
 print('!= test exception')
 
