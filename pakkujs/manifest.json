@@ -1,6 +1,6 @@
 {
     "name": "pakku",
-    "version": "6.1",
+    "version": "6.2",
     "description": "合并B站刷屏弹幕，Make Bilibili Great Again!",
     "icons": {
         "128": "assets/logo.png"
@@ -11,9 +11,13 @@
     
     "permissions": [
         "*://*.bilibili.com/*",
-        "webRequestBlocking",
         "webRequest",
+        "webRequestBlocking",
         "notifications"
+    ],
+    "optional_permissions": [
+        "ws://*.bilibili.com/*",
+        "wss://*.bilibili.com/*"
     ],
     "content_security_policy":
         "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://comment.bilibili.com https://comment.bilibili.com; style-src 'self' 'unsafe-inline'",

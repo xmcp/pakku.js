@@ -13,6 +13,7 @@ function try_regexp(x) {
 
 id('version').textContent='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
+var CHROME_VERSION_RE=/Chrome\/(\d+)/;
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     id('restore').addEventListener('click',function() {
@@ -22,6 +23,25 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             location.reload();
         }
     });
+    
+    function get_ws_permission() {
+        chrome.permissions.request({
+            origins: ['ws://*.bilibili.com/*','wss://*.bilibili.com/*']
+        }, function(granted) {
+            if(granted) {
+                bgpage.load_update_breaker();
+                alert('警告：此功能属于实验性质，可能会影响B站播放器正常工作。\n如果你遇到任何播放问题，请尝试关闭此功能。')
+            } else {
+                localStorage['BREAK_UPDATE']=false;
+                loadconfig();
+                var chrome_version=CHROME_VERSION_RE.exec(navigator.userAgent);
+                if(!chrome_version)
+                    alert('您的浏览器不支持此功能');
+                else if(parseInt(chrome_version[1])<58)
+                    alert('此功能只支持 Chrome 58 或更高版本');
+            }
+        });
+    }
     
     function reload() {
         bgpage.loadconfig();
@@ -42,6 +62,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
+        id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
         id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on'; // compatibility reason
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
@@ -193,6 +214,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
+        localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_MARK']=id('danmu-mark').value;
         localStorage['POPUP_BADGE']=id('popup-badge').value;
@@ -201,13 +223,18 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
         reload();
+        if(this.id==='break-update' && this.checked)
+            get_ws_permission();
     }
     
     loadconfig();
     [
-        'threshold','max-dist','max-cosine','mark-threshold',
-        'trim-ending','trim-space','ignore-type7','ignore-type4',
-        'remove-seek','flash-notif','danmu-mark','popup-badge','enlarge','shrink'
+        'threshold','max-dist','max-cosine',
+        'trim-ending','trim-space',
+        'ignore-type7','ignore-type4',
+        'enlarge','shrink','remove-seek','break-update',
+        'mark-threshold','danmu-mark','popup-badge',
+        'flash-notif'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });

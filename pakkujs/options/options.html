@@ -129,8 +129,8 @@
             -webkit-filter: blur(1px) brightness(.7) contrast(.5);
         }
         .img-inactive:hover {
-            filter: brightness(.8) contrast(.8);
-            -webkit-filter: brightness(.8) contrast(.8);
+            filter: brightness(.9) contrast(.8);
+            -webkit-filter: brightness(.9) contrast(.8);
         }
     </style>
 </head>
@@ -157,20 +157,6 @@
                     </p>
                     <p class="warning">
                         * 在低配电脑中，超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢
-                    </p>
-                    <p>
-                        <input id="trim-ending" type="checkbox">
-                        <label for="trim-ending">比较时忽略末尾标点：</label>
-                        <span>如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
-                    </p>
-                    <p>
-                        <input id="trim-space" type="checkbox">
-                        <label for="trim-space">比较时忽略空格：</label>
-                        <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
-                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
-                    </p>
-                    <p class="warning">
-                        * 有少量误伤，使重复的英文弹幕内容中的空格被吃掉
                     </p>
                     <p>
                         <label for="max-dist">按编辑距离合并</label>
@@ -221,6 +207,18 @@
                         </p>
                     </form>
                     <div class="list" id="taolus"></div>
+                    <hr>
+                    <p>
+                        <input id="trim-ending" type="checkbox">
+                        <label for="trim-ending">忽略末尾标点：</label>
+                        <span>如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
+                    </p>
+                    <p>
+                        <input id="trim-space" type="checkbox">
+                        <label for="trim-space">忽略多余空格：</label>
+                        <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
+                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
+                    </p>
                 </td>
             </tr>
             <tr>
@@ -287,6 +285,14 @@
                     </p>
                     <p class="warning">
                         * B站移除“播放器控制API”开关后的替代选项，会误伤部分代码弹幕游戏。
+                    </p>
+                    <p>
+                        <input id="break-update" type="checkbox">
+                        <label for="break-update">阻止弹幕动态更新：</label>
+                        <span>阻止所有连接到 <code>ws://chat.bilibili.com</code> 的请求</span>
+                    </p>
+                    <p class="warning">
+                        * 观看视频时将不会动态更新弹幕，也不会显示在线人数。<b>可能导致各种问题，请谨慎使用。</b>
                     </p>
                     <hr>
                     <p>

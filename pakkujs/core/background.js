@@ -12,6 +12,7 @@ function loadconfig() {
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
+    window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
@@ -19,6 +20,7 @@ function loadconfig() {
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
     window.ENLARGE=localStorage['ENLARGE']==='on';
     window.SHRINK=localStorage['SHRINK']==='on';
+    load_update_breaker();
 }
 function initconfig() {    
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
@@ -30,6 +32,7 @@ function initconfig() {
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
+    localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
     localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
@@ -172,6 +175,16 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     else
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
+
+function update_breaker(details) {
+    return {cancel: GLOBAL_SWITCH};
+}
+var update_filter={urls: ['ws://chat.bilibili.com/*','wss://chat.bilibili.com/*']};
+function load_update_breaker() {
+    chrome.webRequest.onBeforeRequest.removeListener(update_breaker,update_filter,['blocking']);
+    if(BREAK_UPDATE)
+        chrome.webRequest.onBeforeRequest.addListener(update_breaker,update_filter,['blocking']);
+}
 
 if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {

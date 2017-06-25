@@ -1,7 +1,7 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
-var trim_space_re=/[ 　]/g;
+var trim_space_re=/[ 　]+/g;
 var LOG_VERBOSE=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
@@ -34,7 +34,7 @@ function parse(dom,tabid,S) {
                 return TAOLUS[i][1];
             }
         text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
-        text = TRIM_SPACE ? text.replace(trim_space_re,'') : text;
+        text = TRIM_SPACE ? text.replace(trim_space_re,' ') : text;
         return text;
     }
     
