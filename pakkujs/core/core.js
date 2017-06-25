@@ -28,13 +28,13 @@ function parse(dom,tabid,S) {
     }
     
     function detaolu(text) {
+        text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
+        text = TRIM_SPACE ? text.replace(trim_space_re,' ') : text;
         for(var i=0;i<TAOLUS_len;i++)
             if(TAOLUS[i][0].test(text)) {
                 S.taolu++;
                 return TAOLUS[i][1];
             }
-        text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
-        text = TRIM_SPACE ? text.replace(trim_space_re,' ') : text;
         return text;
     }
     
@@ -121,16 +121,18 @@ function parse(dom,tabid,S) {
         while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
             out_danmus.push(danmu_chunk.shift());
         
+        if(LOG_VERBOSE)
+            console.log(dm.attr[7],dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
             if(similar(dm.str,danmu_chunk[i].str,S)) {
                 if(LOG_VERBOSE) {
                     var dis=edit_distance(dm.str,danmu_chunk[i].str);
                     if(dis==0)
-                        console.log('same',dm.str,'to',danmu_chunk[i].str);
+                        console.log('! same',dm.attr[7],'to',danmu_chunk[i].attr[7]);
                     if(dis>MAX_DIST)
-                        console.log('cosine_dis',dm.str,'to',danmu_chunk[i].str);
+                        console.log('! cosine_dis',dm.attr[7],'to',danmu_chunk[i].attr[7]);
                     else
-                        console.log('edit_dis',dm.str,'to',danmu_chunk[i].str);
+                        console.log('! edit_dis',dm.attr[7],'to',danmu_chunk[i].attr[7]);
                 }
                 danmu_chunk[i].count++;
                 return; // aka continue
