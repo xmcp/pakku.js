@@ -176,14 +176,10 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
 
-function update_breaker(details) {
-    return {cancel: GLOBAL_SWITCH};
-}
-var update_filter={urls: ['ws://chat.bilibili.com/*','wss://chat.bilibili.com/*']};
 function load_update_breaker() {
-    chrome.webRequest.onBeforeRequest.removeListener(update_breaker,update_filter,['blocking']);
+    chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);
     if(BREAK_UPDATE)
-        chrome.webRequest.onBeforeRequest.addListener(update_breaker,update_filter,['blocking']);
+        chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
 }
 
 if(TEST_MODE) {

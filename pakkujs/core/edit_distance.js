@@ -39,7 +39,7 @@ function cosine_distance (P, Q) {
     'use strict';
 
     var P_length_1=P.length, Q_length_1=Q.length;
-    P+=P.charCodeAt(0); Q+=Q.charCodeAt(0);
+    P+=P.charAt(0); Q+=Q.charAt(0);
 
 	for (var i = 0; i < P_length_1; i++)
 		ed_a[hash(P.charCodeAt(i), P.charCodeAt(i + 1))]++;

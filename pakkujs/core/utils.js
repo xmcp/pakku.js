@@ -96,3 +96,8 @@ function FailingStatus(CID,typ,details) {
         details: details
     }
 }
+
+function req_breaker(details) {
+    return {cancel: GLOBAL_SWITCH};
+}
+var update_filter={urls: ['ws://chat.bilibili.com/*','wss://chat.bilibili.com/*']};
