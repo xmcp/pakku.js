@@ -2,7 +2,9 @@
 
 var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
 var trim_space_re=/[ 　]+/g;
+
 var LOG_VERBOSE=false;
+var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
@@ -75,7 +77,7 @@ function parse(dom,tabid,S) {
     var parser=new DOMParser();
     var new_dom=parser.parseFromString('<i></i>','text/xml');
     var i_elem=new_dom.childNodes[0];
-
+    
     var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName=='d') { // danmu
@@ -143,6 +145,7 @@ function parse(dom,tabid,S) {
     for(var i=0;i<danmu_chunk.length;i++)
         out_danmus.push(danmu_chunk[i]);
 
+    var last_log_dispval_time=-100;
     if(SHRINK) {
         var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
         var chunkl=0,chunkr=0,chunkval=0;
@@ -156,6 +159,24 @@ function parse(dom,tabid,S) {
                 chunkr++;
             }
             S.maxdispval=Math.max(S.maxdispval,chunkval);
+            
+            if(LOG_DISPVAL)
+                if(dm.time-last_log_dispval_time>=.25) {
+                    var rate=1/(chunkval>DISPVAL_THRESHOLD?Math.min(Math.sqrt(chunkval)/dispval_base,2):1);
+                    var logger=new_dom.createElement('d');
+                    
+                    // type=7(SPECIAL) size=50px color=0xFFFF00
+                    logger.setAttribute('p',dm.time+',7,50,16776960,0,0,0,0');
+                    // pos=(0,50%)->(0,50%) alpha=1->0 keep_time=0.8s
+                    logger.textContent=
+                        '[0,0,"1-0",0.8,'+
+                        '" dispval '+chunkval.toFixed(1)+'/n size '+rate.toFixed(2)+'"'+
+                        ',0,0.5,0,0.5,0,0,true,"Consolas",1]';
+                    
+                    i_elem.appendChild(logger);
+                    last_log_dispval_time=dm.time;
+                }
+            
             if(chunkval>DISPVAL_THRESHOLD) {
                 if(LOG_VERBOSE)
                     console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);

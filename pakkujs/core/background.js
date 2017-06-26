@@ -1,6 +1,7 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var GLOBAL_SWITCH=true;
+var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(\d+)(\.debug)?\.xml$/;
 
 function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
@@ -91,7 +92,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
 });
 
-function load_danmaku(id,tabid) {
+function load_danmaku(protocol,id,tabid) {
     chrome.browserAction.setTitle({
         title: '正在下载弹幕文件…',
         tabId: tabid
@@ -99,8 +100,8 @@ function load_danmaku(id,tabid) {
     setbadge('↓',LOADING_COLOR,tabid);
     
     var xhr=new XMLHttpRequest();
-    console.log('load http://comment.bilibili.com/'+id+'.xml');
-    xhr.open('get','http://comment.bilibili.com/'+id+'.xml',false);
+    console.log('load '+protocol+'://comment.bilibili.com/'+id+'.xml');
+    xhr.open('get',protocol+'://comment.bilibili.com/'+id+'.xml',false);
     try {        
         xhr.send();
     } catch(e) {
@@ -148,14 +149,15 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     if(!GLOBAL_SWITCH)
         return {cancel: false};
     
-    var ret=/:\/\/comment\.bilibili\.com\/(?:rc\/)?(\d+)(\.debug)?\.xml$/.exec(details.url);
+    var ret=DANMU_URL_RE.exec(details.url);
     if(ret) {
-        if(ret[2] || details.type==='xmlhttprequest')
-            return {redirectUrl: load_danmaku(ret[1],details.tabId)||details.url};
+        var protocol=ret[1], cid=ret[2], debug=ret[3];
+        if(debug || details.type==='xmlhttprequest')
+            return {redirectUrl: load_danmaku(protocol,cid,details.tabId)||details.url};
         else {
             console.log(details);
             setbadge('FL!',ERROR_COLOR,details.tabId);
-            HISTORY[details.tabId]=FailingStatus(ret[1],'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
+            HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
                 chrome.notifications.create(details.url, {
                     type: 'basic',
