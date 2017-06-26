@@ -310,25 +310,22 @@
                 <td>显示设置</td>
                 <td>
                     <p>
-                        <label for="danmu-mark">弹幕数量标记 </label>
+                        <label for="danmu-mark">弹幕数量标记 ：</label>
                         <select id="danmu-mark">
                             <option value="suffix">显示在结尾</option>
                             <option value="prefix">显示在开头</option>
                             <option value="off">不显示</option>
                         </select>
-                        <label for="danmu-mark">：</label>
-                        <span>合并的弹幕显示为 "<code>AAA [x2]</code>" 或 "<code>[x2] AAA</code>" 或 "<code>AAA</code>"</span>
+                        <span id="mark-threshold-panel">
+                            ，仅当数字大于
+                            <input id="mark-threshold" type="number" min="1" step="1" max="9999">
+                            时显示
+                        </span>
                     </p>
                     <p class="img-panel">
                         <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
                         <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
                         <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
-                    </p>
-                    <p>
-                        <label for="mark-threshold">弹幕数量标记阈值：</label>
-                        弹幕重复数量大于
-                        <input id="mark-threshold" type="number" min="1" step="1" max="9999">
-                        时显示数量标记
                     </p>
                     <p>
                         <label for="popup-badge">扩展程序角标 </label>

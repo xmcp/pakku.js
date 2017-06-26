@@ -69,6 +69,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
         
+        id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
+        
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
         var taolus=id('taolus');
         taolus.innerHTML='';
