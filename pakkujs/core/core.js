@@ -8,22 +8,31 @@ var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
-function parse(dom,tabid,S) {
+function parse(dom,tabid,S,D) {
     TAOLUS_len=TAOLUS.length;
     WHITELIST_len=WHITELIST.length;
     
     console.time('parse');
     
-    function enlarge(size,count) {
+    function make_peers_node(obj,reason) {
+        return { // clone the obj without some attributes
+            attr: obj.attr,
+            time: obj.time,
+            orig_str: obj.orig_str,
+            mode: obj.mode,
+            reason: reason
+        };
+    }
+    
+    function enlarge(count) {
         if(count<=10)
-            return size;
+            return 1;
         else {
             S.enlarge++;
-            return Math.floor(size*Math.log10(count));
+            return Math.log10(count);
         }
     }
 
-    
     function make_mark(txt,cnt) {
         return DANMU_MARK=='suffix' ? txt+' [x'+cnt+']' :
                DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt : txt;
@@ -56,7 +65,7 @@ function parse(dom,tabid,S) {
     }
     
     function build_text(elem) {
-        var count=elem.count;
+        var count=elem.peers.length;
         var dumped=null;
         if(elem.mode=='7') // special danmu, need more parsing
             try {
@@ -78,6 +87,15 @@ function parse(dom,tabid,S) {
     var new_dom=parser.parseFromString('<i></i>','text/xml');
     var i_elem=new_dom.childNodes[0];
     
+    function apply_danmu(elem,desc,peers) {
+        i_elem.appendChild(elem);
+        D.push({
+            text: elem.textContent,
+            desc: desc,
+            peers: peers
+        });
+    }
+    
     var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName=='d') { // danmu
@@ -86,20 +104,20 @@ function parse(dom,tabid,S) {
 
             if(!PROC_TYPE7 && attr[1]=='7') { // special danmu
                 S.type7++;
-                i_elem.appendChild(elem);
+                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[]);
             } else if(!PROC_TYPE4 && attr[1]=='4') { // bottom danmu
                 S.type4++;
-                i_elem.appendChild(elem);
+                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[]);
             } else if(attr[1]=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
                 }
                 S.script++;
-                i_elem.appendChild(elem);
+                apply_danmu(elem,['已忽略代码弹幕'],[]);
             } else if(whitelisted(str)) {
                 S.whitelist++;
-                i_elem.appendChild(elem);
+                apply_danmu(elem,['命中白名单'],[]);
             } else
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
@@ -108,9 +126,10 @@ function parse(dom,tabid,S) {
                     orig_str: str,
                     mode: attr[1],
                     size: parseFloat(attr[2]),
-                    count: 1,
+                    desc: [], // for D
+                    peers: []
                 });
-        } else
+        } else // not danmu
             i_elem.appendChild(elem);
     });
     danmus.sort(function(x,y) {return x.time-y.time;});
@@ -126,20 +145,16 @@ function parse(dom,tabid,S) {
         if(LOG_VERBOSE)
             console.log(dm.attr[7],dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
-            if(similar(dm.str,danmu_chunk[i].str,S)) {
+            var sim=similar(dm.str,danmu_chunk[i].str,S);
+            if(sim) {
                 if(LOG_VERBOSE) {
-                    var dis=edit_distance(dm.str,danmu_chunk[i].str);
-                    if(dis==0)
-                        console.log('! same',dm.attr[7],'to',danmu_chunk[i].attr[7]);
-                    if(dis>MAX_DIST)
-                        console.log('! cosine_dis',dm.attr[7],'to',danmu_chunk[i].attr[7]);
-                    else
-                        console.log('! edit_dis',dm.attr[7],'to',danmu_chunk[i].attr[7]);
+                    console.log(sim,dm.attr[7],'to',danmu_chunk[i].attr[7]);
                 }
-                danmu_chunk[i].count++;
+                danmu_chunk[i].peers.push(make_peers_node(dm,sim));
                 return; // aka continue
             }
         }
+        dm.peers.push(make_peers_node(dm,'ORIG'));
         danmu_chunk.push(dm);
     });
     for(var i=0;i<danmu_chunk.length;i++)
@@ -173,7 +188,7 @@ function parse(dom,tabid,S) {
                         '" dispval '+chunkval.toFixed(1)+'/n size '+rate.toFixed(2)+'"'+
                         ',0,0.5,0,0.5,0,0,true,"Consolas",1]';
                     
-                    i_elem.appendChild(logger);
+                    apply_danmu(logger,['LOG_DISPVAL helper'],[]);
                     last_log_dispval_time=dm.time;
                 }
             
@@ -181,25 +196,32 @@ function parse(dom,tabid,S) {
                 if(LOG_VERBOSE)
                     console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
                 S.shrink++;
-                dm.size/=Math.min(Math.sqrt(chunkval)/dispval_base,2);
+                var shrink_rate=Math.min(Math.sqrt(chunkval)/dispval_base,2);
+                dm.size/=shrink_rate;
+                dm.desc.push('已缩小 '+shrink_rate.toFixed(2)+' 倍：弹幕密度为 '+chunkval.toFixed(1));
             }
         });        
     }
     
     out_danmus.forEach(function(dm) {
-        counter+=dm.count-1;
-        S.maxcombo=Math.max(S.maxcombo,dm.count);
+        counter+=dm.peers.length-1;
+        S.maxcombo=Math.max(S.maxcombo,dm.peers.length);
         
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
 
         d.appendChild(tn);
-        if(ENLARGE)
-            dm.size=enlarge(dm.size,dm.count);
+        if(ENLARGE) {
+            var enlarge_rate=enlarge(dm.peers.length);
+            if(enlarge_rate>1.0001)
+                dm.desc.push('已放大 '+enlarge_rate.toFixed(2)+' 倍：合并数量为 '+(dm.peers.length));
+            dm.size*=enlarge_rate;
+        }
         
-        dm.attr[2]=Math.ceil(dm.size);
-        d.setAttribute('p',dm.attr.join(','));
-        i_elem.appendChild(d);
+        var attr=dm.attr.slice();
+        attr[2]=Math.ceil(dm.size);
+        d.setAttribute('p',attr.join(','));
+        apply_danmu(d,dm.desc,dm.peers);
     });
     
     console.timeEnd('parse');

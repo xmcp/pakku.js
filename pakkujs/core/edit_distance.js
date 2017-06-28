@@ -37,6 +37,8 @@ function edit_distance (P, Q) {
 
 function cosine_distance (P, Q) {
     'use strict';
+    
+    if(MAX_COSINE>100) return 0;
 
     var P_length_1=P.length, Q_length_1=Q.length;
     P+=P.charAt(0); Q+=Q.charAt(0);
@@ -75,13 +77,17 @@ function cosine_distance (P, Q) {
 function similar(P,Q,S) {
     if(P==Q) {
         S.identical++;
-        return true;
-    } else if(edit_distance(P,Q)<=MAX_DIST) {
+        return '==';
+    }
+    var dis=edit_distance(P,Q);
+    if(dis<=MAX_DIST) {
         S.edit_distance++;
-        return true;
-    } else if(MAX_COSINE<=100 && cosine_distance(P,Q)*100>=MAX_COSINE) {
+        return '≤'+dis;
+    }
+    var cos=~~(cosine_distance(P,Q)*100);
+    if(cos>=MAX_COSINE) {
         S.cosine_distance++;
-        return true;
+        return cos+'%';
     }
     return false;
 }

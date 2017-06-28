@@ -161,9 +161,9 @@
                     <p>
                         <label for="max-dist">按编辑距离合并</label>
                         <select id="max-dist">
-                            <option value="0">禁用</option>
-                            <option value="3">轻微</option>
-                            <option value="5">中等</option>
+                            <option value="0">禁用 (≤0)</option>
+                            <option value="3">轻微 (≤3)</option>
+                            <option value="5">中等 (≤5)</option>
                         </select>
                         <label for="max-dist">：</label>
                         <span>
@@ -177,10 +177,10 @@
                     <p>
                         <label for="max-cosine">按词频向量合并</label>
                         <select id="max-cosine">
-                            <option value="1000">禁用</option>
-                            <option value="85">轻微</option>
-                            <option value="60">中等</option>
-                            <option value="30">强力</option>
+                            <option value="1000">禁用 (+∞%)</option>
+                            <option value="85">轻微 (85%)</option>
+                            <option value="60">中等 (60%)</option>
+                            <option value="30">强力 (30%)</option>
                         </select>
                         <label for="max-cosine">：</label>
                         <span>
@@ -348,8 +348,13 @@
                 </td>
             </tr>
             <tr>
-                <td>附加功能</td>
+                <td>其他</td>
                 <td>
+                    <p>
+                        <input id="tooltip" type="checkbox">
+                        <label for="tooltip">弹幕信息显示框：</label>
+                        <span>在弹幕列表中点击即可显示这条弹幕的详细信息</span>
+                    </p>
                     <p>
                         <input id="flash-notif" type="checkbox">
                         <label for="flash-notif">播放器兼容提示：</label>

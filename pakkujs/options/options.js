@@ -68,6 +68,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
+        id('tooltip').checked=localStorage['TOOLTIP']==='on';
         
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         
@@ -224,6 +225,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
+        localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
         reload();
         if(this.id==='break-update' && this.checked)
             get_ws_permission();
@@ -236,7 +238,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         'ignore-type7','ignore-type4',
         'enlarge','shrink','remove-seek','break-update',
         'mark-threshold','danmu-mark','popup-badge',
-        'flash-notif'
+        'tooltip','flash-notif'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });

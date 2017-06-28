@@ -21,6 +21,7 @@ function loadconfig() {
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
     window.ENLARGE=localStorage['ENLARGE']==='on';
     window.SHRINK=localStorage['SHRINK']==='on';
+    window.TOOLTIP=localStorage['TOOLTIP']==='on';
     load_update_breaker();
 }
 function initconfig() {    
@@ -41,6 +42,7 @@ function initconfig() {
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
     localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
     localStorage['SHRINK']=localStorage['SHRINK']||'off';
+    localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
     loadconfig();
 }
 initconfig();
@@ -60,6 +62,19 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
         throw 'bad index';
     chrome.notifications.clear(notifid);
 });
+
+function inject_panel(tabid,D) {
+    chrome.tabs.executeScript(tabid,{
+        code: 'var D='+JSON.stringify(D), // todo: make it less xss-able
+        runAt: 'document_start'
+    });
+    setTimeout(function() { // the danmu list is created AFTER the xml is loaded
+        chrome.tabs.executeScript(tabid,{
+            file: '/assets/panel.js',
+            runAt: 'document_start'
+        });        
+    },500);
+}
 
 chrome.runtime.onInstalled.addListener(function(details) {
     if(TEST_MODE) {
@@ -117,8 +132,9 @@ function load_danmaku(protocol,id,tabid) {
             });
             setbadge('...',LOADING_COLOR,tabid);
             var S=Status(id);
+            var D=[];
             
-            var res=parse(xhr.responseXML,tabid,S);
+            var res=parse(xhr.responseXML,tabid,S,D);
             var counter=S.total-S.onscreen;
             
             setbadge((
@@ -131,6 +147,8 @@ function load_danmaku(protocol,id,tabid) {
                 title: '已过滤 '+counter+'/'+S.total+' 弹幕',
                 tabId: tabid
             });
+            if(TOOLTIP)
+                inject_panel(tabid,D);
             HISTORY[tabid]=S;
             return 'data:text/xml;charset=utf-8,'+res;
         } catch(e) {
@@ -192,6 +210,6 @@ if(TEST_MODE) {
     function parse_string(str) {
         var parser=new DOMParser();
         var dom=parser.parseFromString(str,'text/xml');
-        return parse(dom,0,Status(0));
+        return parse(dom,0,Status(0),[]);
     }
 }
