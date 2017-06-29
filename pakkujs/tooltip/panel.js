@@ -73,7 +73,6 @@ var style_src=`
     text-overflow: ellipsis;
 }
 .pakku-panel-peers p:nth-child(2) {
-    margin-left: 1em;
     display: none;
 }
 .pakku-panel-footer:empty::after {
@@ -114,7 +113,7 @@ function _load_uidhash(uidhash,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','http://biliquery.typcn.com/api/user/hash/'+uidhash);
+    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
@@ -136,7 +135,7 @@ function _load_info(uid,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','http://api.bilibili.com/cardrich?type=json&mid='+uid);
+    xhr.open('get','//api.bilibili.com/cardrich?type=json&mid='+uid);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
@@ -272,7 +271,10 @@ function try_inject() {
                         self.classList.add(get_L(color[0],color[1],color[2])>.5 ? 'black' : 'white');
                         
                         self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
-                        self.appendChild(make_p(p.reason+' / '+p.time.toFixed(3)+'s / '+parseInt(p.attr[2])+'px / by '+p.attr[6]));
+                        self.appendChild(make_p(
+                            p.reason+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
+                            +format_datetime(new Date(parseInt(p.attr[4])*1000))+' '+p.attr[6]
+                        ));
                         
                         (function(self,uidhash,container) {
                             self.addEventListener('click',function() {

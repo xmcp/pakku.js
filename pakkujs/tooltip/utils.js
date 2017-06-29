@@ -36,6 +36,12 @@ function get_L(r,g,b) {
     return (r+g+b)/3/256;
 }
 
+function _fix2(a) {
+    return a<10 ? '0'+a : ''+a;
+}
 function format_date(x) {
-    return x.getFullYear()+'/'+x.getMonth()+'/'+x.getDate();
+    return _fix2(x.getFullYear()%100)+'/'+x.getMonth()+'/'+x.getDate();
+}
+function format_datetime(x) {
+    return format_date(x)+' '+x.getHours()+':'+_fix2(x.getMinutes());
 }
