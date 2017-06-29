@@ -28,17 +28,23 @@ var panel_src=`
                 border-radius: 5px;
                 border: 1px solid black;
                 padding: 3px;
-                margin-right: .5em;
                 cursor: pointer;
         ">关闭</button>
         <span class="pakku-panel-text"></span>
     </p>
     <hr>
-    <div class="pakku-panel-desc" style="line-height: 1.2em;"></div>
+    <div class="pakku-panel-desc" style="
+            line-height: 1.2em;
+    "></div>
     <hr>
     <div class="pakku-panel-peers" style="
             height: 350px;
             overflow-y: auto;
+    "></div>
+    <hr>
+    <div class="pakku-panel-footer" style="
+        overflow: hidden;
+        text-overflow: ellipsis;
     "></div>
 </div>
 `;
@@ -47,10 +53,17 @@ var style_src=`
 .pakku-panel * {
     user-select: initial !important;
 }
-.pakku-panel-desc:empty~hr {
+.pakku-panel a {
+    color: black;
+    border-bottom: 1px solid black;
+}
+.pakku-panel-footer a {
+    display: inline-block;
+}
+.pakku-panel div:empty~hr {
     display: none;
 }
-.pakku-panel-peers p {
+.pakku-panel * {
     font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
 }
 .pakku-panel-peers p:nth-child(1) {
@@ -63,7 +76,13 @@ var style_src=`
     margin-left: 1em;
     display: none;
 }
+.pakku-panel-footer:empty::after {
+    content: '可以在 pakku 的选项中关闭弹幕信息显示框';
+}
 
+.pakku-panel-peers div {
+    cursor: pointer;
+}
 .pakku-panel-peers div:hover p:nth-child(1) {
     white-space: initial;
     word-wrap: break-word;
@@ -73,10 +92,10 @@ var style_src=`
     display: initial;
 }
 .pakku-panel-peers div.black {
-    background-color: rgba(0,0,0,.6);
+    background-color: rgba(0,0,0,.8);
 }
 .pakku-panel-peers div.white {
-    background-color: rgba(255,255,255,.6);
+    background-color: rgba(255,255,255,.8);
 }
 .pakku-panel-peers div.black:hover {
     background-color: rgba(0,0,0,1);
@@ -88,30 +107,93 @@ var style_src=`
 var global_style_obj=document.createElement('style');
 global_style_obj.innerHTML=style_src;
 
-function make_p(s) {
-    var elem=document.createElement('p');
-    elem.textContent=s;
-    return elem;
-}
-
-function proc_mode(mode) {
-    switch(parseInt(mode)) {
-        case 1: return '←-';
-        // 2,3: ???
-        case 4: return '↓↓';
-        case 5: return '↑↑';
-        case 6: return '-→';
-        case 7: return '**';
-        default: return '['+mode+']';
+var _mem_uidhash={};
+function _load_uidhash(uidhash,logger,callback) {
+    if(_mem_uidhash[uidhash]) {
+        callback(_mem_uidhash[uidhash]);
+        return;
     }
+    var xhr=new XMLHttpRequest();
+    xhr.open('get','http://biliquery.typcn.com/api/user/hash/'+uidhash);
+    xhr.onreadystatechange=function() {
+        if(this.readyState!=4) return;
+        var res;
+        try {
+            if(this.status!=200) throw 1;
+            res=JSON.parse(this.responseText);
+        } catch(e) {
+            logger.textContent=uidhash+' UID 获取失败';
+            throw e;
+        }
+        callback(_mem_uidhash[uidhash]=res);
+    };
+    xhr.send();
+}
+var _mem_info={};
+function _load_info(uid,logger,callback) {
+    if(_mem_info[uid]) {
+        callback(_mem_info[uid]);
+        return;
+    }
+    var xhr=new XMLHttpRequest();
+    xhr.open('get','http://api.bilibili.com/cardrich?type=json&mid='+uid);
+    xhr.onreadystatechange=function() {
+        if(this.readyState!=4) return;
+        var res;
+        try {
+            if(this.status!=200) throw 1;
+            res=JSON.parse(this.responseText);
+        } catch(e) {
+            logger.innerHTML='';
+            logger.appendChild(make_a(
+                uidhash+' ('+uid+') 个人信息加载失败',
+                '//space.bilibili.com/'+uid
+            ));
+            throw e;
+        }
+        callback(_mem_info[uid]=res);
+    }
+    xhr.send();
 }
 
-function proc_rgb(x) {
-    return [
-        Math.ceil(x/256/256),
-        Math.ceil(x/256)%256,
-        x%256
-    ];
+function query_uid(uidhash,logger) {
+    logger.textContent=uidhash+' 正在获取 UID...';
+    _load_uidhash(uidhash,logger,function(res) {
+        if(res.error) {
+            logger.textContent=uidhash+' UID 未收录';
+            return;
+        }
+        var uid;
+        try {
+            uid=parseInt(res.data[0].id);
+        } catch(e) {
+            logger.textContent=uidhash+' UID 无效';
+            throw e;
+        }
+        logger.textContent=uidhash+' ('+uid+') 正在加载个人信息...';
+        _load_info(uid,logger,function(res) {
+            var nickname,lv,exp,regtime;
+            try {
+                nickname=res.data.card.name;
+                lv=res.data.card.level_info.current_level;
+                exp=res.data.card.level_info.current_exp;
+                regtime=new Date(res.data.card.regtime*1000);
+            } catch(e) {
+                logger.innerHTML='';
+                logger.appendChild(make_a(
+                    uidhash+' ('+uid+') 个人信息无效',
+                    '//space.bilibili.com/'+uid
+                ));
+                throw e;
+            }
+            
+            logger.innerHTML='';
+            logger.appendChild(make_a(
+                uidhash+': Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
+                '//space.bilibili.com/'+uid
+            ));
+        })
+    })
 }
 
 console.log('pakku panel script injected: D.length = '+D.length);
@@ -147,34 +229,35 @@ function try_inject() {
         panel_obj.appendChild(global_style_obj);
         
         elem.addEventListener('click',function(e) {
-            console.log('click fired ',e.target);
             var dm_obj=e.target.parentElement;
-            var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title;
             if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
+                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title;
                 var dmno=parseInt(dm_obj.getAttribute('dmno'));
                 var text_container=panel_obj.querySelector('.pakku-panel-text'),
                     desc_container=panel_obj.querySelector('.pakku-panel-desc'),
-                    peers_container=panel_obj.querySelector('.pakku-panel-peers');
+                    peers_container=panel_obj.querySelector('.pakku-panel-peers'),
+                    footer_container=panel_obj.querySelector('.pakku-panel-footer');
                 
                 
                 panel_obj.style.display='block';
-                text_container.textContent='???';
+                text_container.textContent='';
                 desc_container.innerHTML='';
                 peers_container.innerHTML='';
+                footer_container.textContent='';
                 
                 var info=null;
                 // the list might be sorted in a wrong way, so let's guess the index
                 if(D[dmno] && D[dmno].text===dm_str)
                     info=D[dmno];
-                else if(D[D.length-dmno-1] && D[D.length-dmno-1].text===dm_str)
-                    info=D[D.length-dmno-1];
                 else {
+                    var cnt=0;
                     for(var i=0;i<D.length;i++)
                         if(D[i].text===dm_str) {
                             info=D[i];
-                            desc_container.appendChild(make_p('* 数据可能不准确，请按时间排序弹幕列表'));
-                            break;
+                            cnt++;
                         }
+                    if(cnt>1)
+                        desc_container.appendChild(make_p('* 数据可能不准确'));
                 }
                 
                 if(info) {
@@ -186,15 +269,21 @@ function try_inject() {
                         var self=document.createElement('div');
                         var color=proc_rgb(parseInt(p.attr[3]));
                         self.style.color='rgb('+color[0]+','+color[1]+','+color[2]+')';
-                        self.classList.add((color[0]+color[1]+color[2])*2>768 ? 'black' : 'white');
+                        self.classList.add(get_L(color[0],color[1],color[2])>.5 ? 'black' : 'white');
                         
                         self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
                         self.appendChild(make_p(p.reason+' / '+p.time.toFixed(3)+'s / '+parseInt(p.attr[2])+'px / by '+p.attr[6]));
                         
+                        (function(self,uidhash,container) {
+                            self.addEventListener('click',function() {
+                                query_uid(uidhash,container);
+                            });
+                        })(self,p.attr[6],footer_container);
+                        
                         peers_container.appendChild(self);
                     });
                 } else
-                    desc_container.appendChild(make_p('无法显示弹幕详情：可能是刚刚产生的弹幕'));
+                    desc_container.appendChild(make_p('找不到弹幕详情'));
             }
         });
     });

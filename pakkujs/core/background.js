@@ -68,11 +68,15 @@ function inject_panel(tabid,D) {
         code: 'var D='+JSON.stringify(D), // todo: make it less xss-able
         runAt: 'document_start'
     });
+    chrome.tabs.executeScript(tabid,{
+        file: '/tooltip/utils.js',
+        runAt: 'document_start'
+    });
     setTimeout(function() { // the danmu list is created AFTER the xml is loaded
         chrome.tabs.executeScript(tabid,{
-            file: '/assets/panel.js',
+            file: '/tooltip/panel.js',
             runAt: 'document_start'
-        });        
+        });
     },500);
 }
 
