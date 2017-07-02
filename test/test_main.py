@@ -13,12 +13,13 @@ runner.update_settings('MAX_COSINE','1000')
 runner.update_settings('PROC_TYPE7','off')
 runner.update_settings('TRIM_ENDING','off')
 runner.update_settings('TRIM_SPACE','off')
+runner.update_settings('TRIM_WIDTH','off')
 runner.update_settings('TAOLUS','[]')
 runner.update_settings('WHITELIST','[]')
 runner.update_settings('THRESHOLD','20')
 runner.update_settings('MARK_THRESHOLD','1')
 
-# not tested: FLASH_NOTIF POPUP_BADGE TRIM_ENDING TRIM_SPACE
+# not tested: FLASH_NOTIF POPUP_BADGE
 
 print('!= test hook')
 
@@ -191,6 +192,25 @@ runner.update_settings('MAX_COSINE','99')
 assert len(runner.parse_string(demo('cosine_distance')))==2
 runner.update_settings('MAX_COSINE','1000')
 assert len(runner.parse_string(demo('cosine_distance')))==3
+
+print('!= test trim ending')
+runner.update_settings('TRIM_ENDING','on')
+assert len(runner.parse_string(demo('trim_ending')))==3
+runner.update_settings('TRIM_ENDING','off')
+assert len(runner.parse_string(demo('trim_ending')))==6
+
+print('!= test trim space')
+runner.update_settings('TRIM_SPACE','on')
+assert len(runner.parse_string(demo('trim_space')))==2
+runner.update_settings('TRIM_SPACE','off')
+assert len(runner.parse_string(demo('trim_space')))==6
+
+print('!= test trim width')
+runner.update_settings('TRIM_WIDTH','on')
+assert len(runner.parse_string(demo('trim_width')))==3
+runner.update_settings('TRIM_WIDTH','off')
+assert len(runner.parse_string(demo('trim_width')))==6
+
 
 print('!= test exception')
 

@@ -1,0 +1,13 @@
+<i>
+    <chatserver>chat.bilibili.com</chatserver>
+    <chatid>1</chatid>
+    <mission>0</mission>
+    <maxlimit>1500</maxlimit>
+    <source>k-v</source>
+    <d p="0,1,25,0,0,0,0,0">3456789</d>
+    <d p="0,1,25,0,0,0,0,0">34567８９</d>
+    <d p="0,1,25,0,0,0,0,0">３４５６７８９</d>
+    <d p="0,1,25,0,0,0,0,0">+1s +1s</d>
+    <d p="0,1,25,0,0,0,0,0">＋１s +1s</d>
+    <d p="0,1,25,0,0,0,0,0">＋１ｓ +1s</d>
+</i>
