@@ -15,11 +15,11 @@ function make_a(s,u) {
 
 function proc_mode(mode) {
     switch(parseInt(mode)) {
-        case 1: return '←-';
+        case 1: return '|←';
         // 2,3: ???
         case 4: return '↓↓';
         case 5: return '↑↑';
-        case 6: return '-→';
+        case 6: return 'R→';
         case 7: return '**';
         default: return '['+mode+']';
     }

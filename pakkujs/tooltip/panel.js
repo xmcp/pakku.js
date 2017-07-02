@@ -230,7 +230,7 @@ function try_inject() {
         elem.addEventListener('click',function(e) {
             var dm_obj=e.target.parentElement;
             if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
-                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title;
+                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title.replace(/[\r\n]/g,'');
                 var dmno=parseInt(dm_obj.getAttribute('dmno'));
                 var text_container=panel_obj.querySelector('.pakku-panel-text'),
                     desc_container=panel_obj.querySelector('.pakku-panel-desc'),
@@ -272,8 +272,8 @@ function try_inject() {
                         
                         self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
                         self.appendChild(make_p(
-                            p.reason+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
-                            +format_datetime(new Date(parseInt(p.attr[4])*1000))+' '+p.attr[6]
+                            p.reason+' '+p.attr[6]+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
+                            +format_datetime(new Date(parseInt(p.attr[4])*1000))
                         ));
                         
                         (function(self,uidhash,container) {

@@ -50,9 +50,11 @@ function parse(dom,tabid,S,D) {
     function detaolu(inp) {
         var len=inp.length;
         var text='';
-        if(TRIM_ENDING)
-            while(ENDING_CHARS[inp.charAt(len-1)]!==undefined)
+        if(TRIM_ENDING) {
+            while(ENDING_CHARS[inp.charAt(len-1)]!==undefined) // assert str.charAt(-1)==''
                 len--;
+            if(len==0) len=inp.length;
+        }
         for(var i=0;i<len;i++) {
             var to=TRIM_WIDTH ? WIDTH_TABLE[inp.charAt(i)] : undefined;
             if(to!==undefined)
@@ -80,10 +82,9 @@ function parse(dom,tabid,S,D) {
     
     function ext_special_danmu(text) {
         try {
-            return JSON.parse(text)[4];
-        } catch(e) {
-            return text.replace(/\/n/,''); // remove "/n"
-        }
+            text=JSON.parse(text)[4];
+        } catch(e) {}
+        return text.replace(/\/n/g,''); // remove "/n"
     }
     
     function build_text(elem) {
@@ -96,9 +97,10 @@ function parse(dom,tabid,S,D) {
         
         if(dumped) {
             dumped[4]=count<=MARK_THRESHOLD?dumped[4]:make_mark(elem.str,count);
+            elem.disp_str=dumped[4];
             return JSON.stringify(dumped);
         } else // normal case
-            return count<=MARK_THRESHOLD?elem.orig_str:make_mark(elem.str,count);
+            return elem.disp_str= count<=MARK_THRESHOLD ? elem.orig_str : make_mark(elem.str,count);
     }
     
     function dispval(str) {
@@ -109,12 +111,12 @@ function parse(dom,tabid,S,D) {
     var new_dom=parser.parseFromString('<i></i>','text/xml');
     var i_elem=new_dom.childNodes[0];
     
-    function apply_danmu(elem,desc,peers) {
+    function apply_danmu(elem,desc,peers,dispstr) {
         i_elem.appendChild(elem);
         D.push({
-            text: elem.textContent,
+            text: dispstr || elem.textContent,
             desc: desc,
-            peers: peers
+            peers: peers || []
         });
     }
     
@@ -126,31 +128,34 @@ function parse(dom,tabid,S,D) {
 
             if(!PROC_TYPE7 && attr[1]=='7') { // special danmu
                 S.type7++;
-                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[]);
+                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改']);
             } else if(!PROC_TYPE4 && attr[1]=='4') { // bottom danmu
                 S.type4++;
-                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[]);
+                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改']);
             } else if(attr[1]=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/* player.seek filtered by pakku */';
                 }
                 S.script++;
-                apply_danmu(elem,['已忽略代码弹幕'],[]);
+                apply_danmu(elem,['已忽略代码弹幕']);
             } else if(whitelisted(str)) {
                 S.whitelist++;
-                apply_danmu(elem,['命中白名单'],[]);
-            } else
+                apply_danmu(elem,['命中白名单']);
+            } else {
+                var disp_str=attr[1]=='7' ? ext_special_danmu(str) : str;
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
-                    str: attr[1]=='7' ? detaolu(ext_special_danmu(str)) : detaolu(str),
-                    time: parseFloat(attr[0]),
+                    str: detaolu(disp_str),
                     orig_str: str,
+                    disp_str: disp_str,
+                    time: parseFloat(attr[0]),
                     mode: attr[1],
                     size: parseFloat(attr[2]),
                     desc: [], // for D
                     peers: []
                 });
+            }
         } else // not danmu
             i_elem.appendChild(elem);
     });
@@ -243,7 +248,10 @@ function parse(dom,tabid,S,D) {
         var attr=dm.attr.slice();
         attr[2]=Math.ceil(dm.size);
         d.setAttribute('p',attr.join(','));
-        apply_danmu(d,dm.desc,dm.peers);
+        
+        if(dm.mode==7)
+            dm.disp_str=dm.disp_str.replace(/\/n/g,'');
+        apply_danmu(d,dm.desc,dm.peers,dm.disp_str);
     });
     
     console.timeEnd('parse');
