@@ -101,3 +101,11 @@ function req_breaker(details) {
     return {cancel: GLOBAL_SWITCH};
 }
 var update_filter={urls: ['ws://chat.bilibili.com/*','wss://chat.bilibili.com/*']};
+
+function gen_set(st) {
+    var obj={};
+    for(var i=0;i<st.length;i++) {
+        obj[st[i]]=true;
+    }
+    return obj;
+}

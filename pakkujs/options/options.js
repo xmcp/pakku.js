@@ -61,6 +61,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
+        id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
         id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
         id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
@@ -216,6 +217,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
+        localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
@@ -234,7 +236,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     loadconfig();
     [
         'threshold','max-dist','max-cosine',
-        'trim-ending','trim-space',
+        'trim-ending','trim-space','trim-width',
         'ignore-type7','ignore-type4',
         'enlarge','shrink','remove-seek','break-update',
         'mark-threshold','danmu-mark','popup-badge',

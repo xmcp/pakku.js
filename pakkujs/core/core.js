@@ -1,12 +1,20 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var trim_ending_re=/^(.+?)[\.。,，/\?？!！~～@\^、+=\-_♂♀ ]*$/;
-var trim_space_re=/[ 　]+/g;
-
 var LOG_VERBOSE=false;
 var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
+
+var ENDING_CHARS=gen_set('.。,，/?？!！…~～@^、+=-_♂♀');
+var trim_space_re=/[ 　]+/g;
+var WIDTH_TABLE={};
+
+(function() {
+    var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～';
+    var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~';
+    for(var i=0;i<before.length;i++)
+        WIDTH_TABLE[before[i]]=after[i];
+})();
 
 function parse(dom,tabid,S,D) {
     TAOLUS_len=TAOLUS.length;
@@ -35,12 +43,26 @@ function parse(dom,tabid,S,D) {
 
     function make_mark(txt,cnt) {
         return DANMU_MARK=='suffix' ? txt+' [x'+cnt+']' :
-               DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt : txt;
+               DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt :
+               txt;
     }
     
-    function detaolu(text) {
-        text = TRIM_ENDING ? text.replace(trim_ending_re,'$1') : text;
-        text = TRIM_SPACE ? text.replace(trim_space_re,' ') : text;
+    function detaolu(inp) {
+        var len=inp.length;
+        var text='';
+        if(TRIM_ENDING)
+            while(ENDING_CHARS[inp.charAt(len-1)]!==undefined)
+                len--;
+        for(var i=0;i<len;i++) {
+            var to=TRIM_WIDTH ? WIDTH_TABLE[inp.charAt(i)] : undefined;
+            if(to!==undefined)
+                text+=to;
+            else
+                text+=inp.charAt(i);
+        }
+        if(TRIM_SPACE)
+            text=text.replace(trim_space_re,' ');
+        
         for(var i=0;i<TAOLUS_len;i++)
             if(TAOLUS[i][0].test(text)) {
                 S.taolu++;
@@ -60,7 +82,7 @@ function parse(dom,tabid,S,D) {
         try {
             return JSON.parse(text)[4];
         } catch(e) {
-            return text;
+            return text.replace(/\/n/,''); // remove "/n"
         }
     }
     

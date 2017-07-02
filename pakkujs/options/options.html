@@ -211,13 +211,18 @@
                     <p>
                         <input id="trim-ending" type="checkbox">
                         <label for="trim-ending">忽略末尾标点：</label>
-                        <span>如 "<code>LL大法好~</code>" + "<code>LL大法好！！</code>" → "<code>LL大法好 [x2]</code>"</span>
+                        <span>"<code>LL大法好~</code>" 和 "<code>LL大法好！！</code>" 将合并为 "<code>LL大法好 [x2]</code>"</span>
                     </p>
                     <p>
                         <input id="trim-space" type="checkbox">
                         <label for="trim-space">忽略多余空格：</label>
                         <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
+                    </p>
+                    <p>
+                        <input id="trim-width" type="checkbox">
+                        <label for="trim-width">忽略全半角差异：</label>
+                        <span>"<code>-1s</code>" 和 "<code>－１s</code>" 将合并为 "<code>-1s [x2]</code>"</span>
                     </p>
                 </td>
             </tr>

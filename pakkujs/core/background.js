@@ -10,6 +10,7 @@ function loadconfig() {
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
+    window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
@@ -31,6 +32,7 @@ function initconfig() {
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
+    localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';

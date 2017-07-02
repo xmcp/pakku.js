@@ -1,3 +1,5 @@
+var DISCLAIMER=encodeURIComponent('This request is made by pakku chrome extension. Contact developer: github.com/xmcp/pakku.js/issues/new');
+
 function make_p(s) {
     var elem=document.createElement('p');
     elem.textContent=s;
