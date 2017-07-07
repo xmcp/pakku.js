@@ -10,8 +10,9 @@ var trim_space_re=/[ 　]+/g;
 var WIDTH_TABLE={};
 
 (function() {
-    var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～';
-    var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~';
+    var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～ｑｗｅｒｔｙｕｉｏｐａｓｄｆｇｈｊｋｌｚｘｃｖｂｎｍ';
+    var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~qwertyuiopasdfghjklzxcvbnm';
+    if(before.length !== after.length) throw 1;
     for(var i=0;i<before.length;i++)
         WIDTH_TABLE[before[i]]=after[i];
 })();

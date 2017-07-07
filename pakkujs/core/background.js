@@ -34,7 +34,7 @@ function initconfig() {
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
-    localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护\\\\s*[体眼]",""]]';
+    localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护",""]]';
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
@@ -51,7 +51,7 @@ initconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0)  // goto settings
-        chrome.tabs.create({url: 'http://www.bilibili.com/html/help.html#p'},function(tab) {
+        chrome.tabs.create({url: (notifid==='http'?'http':'https') + '://www.bilibili.com/html/help.html#p'},function(tab) {
             console.log(tab.id);
             chrome.tabs.executeScript(tab.id,{
                 file: '/assets/enable_h5_player.js',
@@ -100,8 +100,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             iconUrl: chrome.runtime.getURL('assets/logo.png'),
             title: '你切换到B站 HTML5 播放器了吗？',
             message: '我们不兼容B站的 Flash 播放器。请切换到B站的 HTML5 播放器来让 pakku 过滤弹幕。',
-            contextMessage: '如果你不确定要选什么，请选第一项',
+            contextMessage: '如果你不确定要选什么，选第一项就对了',
             isClickable: false,
+            requireInteraction: true,
             buttons: [
                 {title: '→ 切换到 HTML5 播放器'},
                 {title: '我已经在用 HTML5 播放器了'}
@@ -183,13 +184,14 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
             setbadge('FL!',ERROR_COLOR,details.tabId);
             HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
-                chrome.notifications.create(details.url, {
+                chrome.notifications.create(protocol||'https', {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
                     title: 'pakku 没有在正常工作',
                     message: '切换到B站 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
                     contextMessage: '（在 pakku 的选项中可以关闭此提醒）',
                     isClickable: false,
+                    requireInteraction: true,
                     buttons: [
                         {title: '→ 点我一键切换'},
                         {title: '忽略'}
