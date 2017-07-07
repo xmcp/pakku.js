@@ -27,8 +27,8 @@ function proc_mode(mode) {
 
 function proc_rgb(x) {
     return [
-        Math.ceil(x/256/256),
-        Math.ceil(x/256)%256,
+        Math.floor(x/256/256),
+        Math.floor(x/256)%256,
         x%256
     ];
 }
