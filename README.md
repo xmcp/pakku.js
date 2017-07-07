@@ -22,9 +22,13 @@
 
 ![screenshot_after](https://user-images.githubusercontent.com/6646473/27000990-3ff7deee-4df1-11e7-90ba-32647c1defea.png)
 
-选项页面 ↓
+Browser Action ↓
 
-![screenshot_options](https://user-images.githubusercontent.com/6646473/27258881-64bb0c5e-5438-11e7-82e4-3fa9a93d3cff.png)
+![browser_action](https://user-images.githubusercontent.com/6646473/27863234-b1e279b4-61bb-11e7-985e-f4c7e2eb8ef5.png)
+
+弹幕信息显示 ↓
+
+![tooltip](https://user-images.githubusercontent.com/6646473/27863237-b4798dc0-61bb-11e7-912e-5f534adc32ec.png)
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展以方便使用。
 
