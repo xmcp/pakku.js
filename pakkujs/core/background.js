@@ -123,50 +123,55 @@ function load_danmaku(protocol,id,tabid) {
     
     var xhr=new XMLHttpRequest();
     console.log('load '+protocol+'://comment.bilibili.com/'+id+'.xml');
-    xhr.open('get',protocol+'://comment.bilibili.com/'+id+'.xml',false);
-    try {        
+    
+    try {
+        xhr.open('get',protocol+'://comment.bilibili.com/'+id+'.xml',false);
         xhr.send();
     } catch(e) {
         setbadge('NET!',ERROR_COLOR,tabid);
         HISTORY[tabid]=FailingStatus(id,'网络错误',e.stack);
         throw e;
     }
-    if(xhr.status===200 && xhr.responseXML) {
-        try {
-            chrome.browserAction.setTitle({
-                title: '正在处理弹幕…',
-                tabId: tabid
-            });
-            setbadge('...',LOADING_COLOR,tabid);
-            var S=Status(id);
-            var D=[];
-            
-            var res=parse(xhr.responseXML,tabid,S,D);
-            var counter=S.total-S.onscreen;
-            
-            setbadge((
-                    POPUP_BADGE=='count' ? ''+counter :
-                    POPUP_BADGE=='percent' ? (S.total ? (counter*100/S.total).toFixed(0)+'%' : '0%') :
-                    ''
-                ),SUCCESS_COLOR,tabid
-            );
-            chrome.browserAction.setTitle({
-                title: '已过滤 '+counter+'/'+S.total+' 弹幕',
-                tabId: tabid
-            });
-            if(TOOLTIP)
-                inject_panel(tabid,D);
-            HISTORY[tabid]=S;
-            return 'data:text/xml;charset=utf-8,'+res;
-        } catch(e) {
-            setbadge('JS!',ERROR_COLOR,tabid);
-            HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.stack);
-            throw e;
-        }
-    } else {
+    
+    try {
+        if(xhr.status!==200) throw new Error('xhr.status = '+xhr.status);
+        var rxml=parse_xml_magic(xhr.response);
+    } catch(e) {
         setbadge('SVR!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误','xhr.status = '+xhr.status+'\nxhr.responseXML = '+xhr.responseXML);
-        throw 'network error!';
+        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误',e.stack);
+        throw e;
+    }
+    
+    try {
+        chrome.browserAction.setTitle({
+            title: '正在处理弹幕…',
+            tabId: tabid
+        });
+        setbadge('...',LOADING_COLOR,tabid);
+        var S=Status(id);
+        var D=[];
+        
+        var res=parse(rxml,tabid,S,D);
+        var counter=S.total-S.onscreen;
+        
+        setbadge((
+                POPUP_BADGE=='count' ? ''+counter :
+                POPUP_BADGE=='percent' ? (S.total ? (counter*100/S.total).toFixed(0)+'%' : '0%') :
+                ''
+            ),SUCCESS_COLOR,tabid
+        );
+        chrome.browserAction.setTitle({
+            title: '已过滤 '+counter+'/'+S.total+' 弹幕',
+            tabId: tabid
+        });
+        if(TOOLTIP)
+            inject_panel(tabid,D);
+        HISTORY[tabid]=S;
+        return 'data:text/xml;charset=utf-8,'+res;
+    } catch(e) {
+        setbadge('JS!',ERROR_COLOR,tabid);
+        HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.stack);
+        throw e;
     }
 }
 

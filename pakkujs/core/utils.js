@@ -112,3 +112,11 @@ function gen_set(st) {
     }
     return obj;
 }
+
+// extracted from bilibiliPlayer.min.js
+function parse_xml_magic(k) {
+	try {
+		k = k.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, "");
+	} catch (c) {}
+	return (new window.DOMParser).parseFromString(k, "text/xml");
+}
