@@ -45,7 +45,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             } else {
                 id('result').classList.remove('display-none');
                 id('link-total').href='http://comment.bilibili.com/'+res.cid+'.xml';
-                id('link-display').href='http://comment.bilibili.com/'+res.cid+'.debug.xml';
+                id('link-display').href='http://comment.bilibili.com/'+res.cid+'.xml?debug';
             }
             
             for(var name in res)

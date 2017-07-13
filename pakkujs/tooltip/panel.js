@@ -4,7 +4,7 @@ var panel_src=`
         color: black;
         width: 300px;
         position: absolute;
-        z-index: 99999;
+        z-index: 10000;
         top: 10px;
         padding: 5px;
         border-radius: 5px;
@@ -17,11 +17,6 @@ var panel_src=`
             line-height: calc(1em + 6px);
             vertical-align: middle;
     ">
-        <span style="
-                float: right;
-                font-family: Consolas, Courier, monospace;
-                opacity: .7;
-        ">pakku</span>
         <button type="button" class="pakku-panel-close" style="
                 color: black;
                 background-color: #f3f3f3;
@@ -36,13 +31,13 @@ var panel_src=`
     <div class="pakku-panel-desc" style="
             line-height: 1.2em;
     "></div>
-    <hr>
+    <hr data-for="desc">
     <div class="pakku-panel-peers" style="
             height: 350px;
             overflow-y: auto;
     "></div>
     <hr>
-    <div class="pakku-panel-footer" style="
+    <div class="pakku-panel-footer text-fix" style="
         overflow: hidden;
         text-overflow: ellipsis;
     "></div>
@@ -57,10 +52,16 @@ var style_src=`
     color: black;
     border-bottom: 1px solid black;
 }
+.pakku-panel .text-fix {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    line-height: calc(1em + 6px);
+    vertical-align: middle;
+}
 .pakku-panel-footer a {
     display: inline-block;
 }
-.pakku-panel div:empty~hr {
+.pakku-panel-desc:empty~hr[data-for="desc"] {
     display: none;
 }
 .pakku-panel * {
@@ -216,18 +217,24 @@ function try_inject() {
         return;
     }
     
-    danmu_lists.forEach(function(elem) {
-        console.log('bind danmu-list obj ',elem);
+    danmu_lists.forEach(function(list_elem) {
+        console.log('bind danmu-list obj ',list_elem);
         var panel_obj=document.createElement('div');
+        
         panel_obj.style.display='none';
         panel_obj.innerHTML=panel_src;
         panel_obj.querySelector('.pakku-panel-close').addEventListener('click',function() {
             panel_obj.style.display='none';
-        })
-        elem.appendChild(panel_obj);
+        });
+        document.addEventListener('click',function(e) {
+            if(!panel_obj.contains(e.target) && !list_elem.contains(e.target))
+                panel_obj.style.display='none';
+        });
+        
+        list_elem.appendChild(panel_obj);
         panel_obj.appendChild(global_style_obj);
         
-        elem.addEventListener('click',function(e) {
+        list_elem.addEventListener('click',function(e) {
             var dm_obj=e.target.parentElement;
             if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
                 var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title.replace(/[\r\n]/g,'');

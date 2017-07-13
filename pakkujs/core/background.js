@@ -1,7 +1,7 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var GLOBAL_SWITCH=true;
-var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(\d+)(\.debug)?\.xml$/;
+var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,\d+,)?(\d+)(?:\.xml)?(\?debug)?$/;
 
 function loadconfig() {
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
@@ -114,7 +114,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
 });
 
-function load_danmaku(protocol,id,tabid) {
+function load_danmaku(url,id,tabid) {
     chrome.browserAction.setTitle({
         title: '正在下载弹幕文件…',
         tabId: tabid
@@ -122,10 +122,10 @@ function load_danmaku(protocol,id,tabid) {
     setbadge('↓',LOADING_COLOR,tabid);
     
     var xhr=new XMLHttpRequest();
-    console.log('load '+protocol+'://comment.bilibili.com/'+id+'.xml');
+    console.log('load '+url+' for CID '+id);
     
     try {
-        xhr.open('get',protocol+'://comment.bilibili.com/'+id+'.xml',false);
+        xhr.open('get',url,false);
         xhr.send();
     } catch(e) {
         setbadge('NET!',ERROR_COLOR,tabid);
@@ -183,7 +183,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     if(ret) {
         var protocol=ret[1], cid=ret[2], debug=ret[3];
         if(debug || details.type==='xmlhttprequest')
-            return {redirectUrl: load_danmaku(protocol,cid,details.tabId)||details.url};
+            return {redirectUrl: load_danmaku(details.url,cid,details.tabId)||details.url};
         else {
             console.log(details);
             setbadge('FL!',ERROR_COLOR,details.tabId);
@@ -207,7 +207,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     }
     else
         return {cancel: false};
-}, {urls: ['*://comment.bilibili.com/*.xml']}, ['blocking']);
+}, {urls: ['*://comment.bilibili.com/*']}, ['blocking']);
 
 function load_update_breaker() {
     chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);
