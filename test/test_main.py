@@ -23,18 +23,15 @@ runner.update_settings('MARK_THRESHOLD','1')
 
 print('!= test hook')
 
-runner.b.get('http://comment.bilibili.com/1.xml')
-assert not runner.b.current_url.startswith('data:')
-
-print('!= test global switch')
-
 runner.set_global_switch(False)
-runner.b.get('http://comment.bilibili.com/1.debug.xml')
+runner.b.get('http://comment.bilibili.com/1.xml?debug')
 assert not runner.b.current_url.startswith('data:')
 
 runner.set_global_switch(True)
-runner.b.get('http://comment.bilibili.com/1.debug.xml')
+runner.b.get('http://comment.bilibili.com/1.xml?debug')
 assert runner.b.current_url.startswith('data:')
+runner.b.get('http://comment.bilibili.com/1.xml')
+assert not runner.b.current_url.startswith('data:')
 
 print('!= test xml format')
 
