@@ -94,7 +94,7 @@ runner.update_settings('REMOVE_SEEK','on')
 danmus=runner.parse_string(demo('code_seek_2'))
 assert len(danmus)==2
 assert danmus[0].getAttribute('p').split(',')[1]=='8' # type == code_danmu
-assert 'Player.seek(' not in danmus[0].childNodes[0].data
+assert danmus[0].childNodes[0].data.startswith('/*!')
 
 print('!= test special danmu')
 
