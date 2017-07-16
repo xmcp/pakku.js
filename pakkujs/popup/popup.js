@@ -3,7 +3,6 @@ function id(x) {
 }
 
 id('pakku-logo').href=chrome.runtime.getURL('options/options.html');
-id('version').textContent=' '+chrome.runtime.getManifest().version;
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     var enabled=bgpage.GLOBAL_SWITCH;

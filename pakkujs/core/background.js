@@ -13,6 +13,7 @@ function loadconfig() {
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
+    window.BLACKLIST=fromholyjson(localStorage['BLACKLIST'])||[];
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
@@ -35,12 +36,13 @@ function initconfig() {
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护",""]]';
+    localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
     localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
-    localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'off';
+    localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
     localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
     localStorage['SHRINK']=localStorage['SHRINK']||'off';

@@ -70,6 +70,7 @@ function Status(CID) {
         cosine_distance: 0,
         
         player_seek: 0, // deleted
+        blacklist: 0,
         
         whitelist: 0, // ignored
         type7: 0,

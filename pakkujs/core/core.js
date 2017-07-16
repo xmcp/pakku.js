@@ -10,8 +10,8 @@ var trim_space_re=/[ 　]+/g;
 var WIDTH_TABLE={};
 
 (function() {
-    var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～ｑｗｅｒｔｙｕｉｏｐａｓｄｆｇｈｊｋｌｚｘｃｖｂｎｍ';
-    var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~qwertyuiopasdfghjklzxcvbnm';
+    var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～ｑｗｅｒｔｙｕｉｏｐａｓｄｆｇｈｊｋｌｚｘｃｖｂｎｍＱＷＥＲＴＹＵＩＯＰＡＳＤＦＧＨＪＫＬＺＸＣＶＢＮＭ';
+    var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
     if(before.length !== after.length) throw 1;
     for(var i=0;i<before.length;i++)
         WIDTH_TABLE[before[i]]=after[i];
@@ -20,6 +20,7 @@ var WIDTH_TABLE={};
 function parse(dom,tabid,S,D) {
     TAOLUS_len=TAOLUS.length;
     WHITELIST_len=WHITELIST.length;
+    BLACKLIST_len=BLACKLIST.length;
     
     console.time('parse');
     
@@ -80,6 +81,12 @@ function parse(dom,tabid,S,D) {
                 return true;
         return false;
     }
+    function blacklisted(text) {
+        for(var i=0;i<BLACKLIST_len;i++)
+            if(BLACKLIST[i][0].test(text))
+                return true;
+        return false;
+    }
     
     function ext_special_danmu(text) {
         try {
@@ -126,17 +133,23 @@ function parse(dom,tabid,S,D) {
         if(elem.tagName=='d') { // danmu
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
+            var mode=attr[1];
 
-            if(!PROC_TYPE7 && attr[1]=='7') { // special danmu
+            if(mode!=='8' && blacklisted(str)) {
+                S.blacklist++;
+                return; // aka continue
+            }
+            
+            if(!PROC_TYPE7 && mode=='7') { // special danmu
                 S.type7++;
                 apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改']);
-            } else if(!PROC_TYPE4 && attr[1]=='4') { // bottom danmu
+            } else if(!PROC_TYPE4 && mode=='4') { // bottom danmu
                 S.type4++;
                 apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改']);
-            } else if(attr[1]=='8') { // code danmu
+            } else if(mode=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
-                    elem.childNodes[0].data='/* player.seek filtered by pakku */';
+                    elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
                 S.script++;
                 apply_danmu(elem,['已忽略代码弹幕']);
@@ -144,14 +157,14 @@ function parse(dom,tabid,S,D) {
                 S.whitelist++;
                 apply_danmu(elem,['命中白名单']);
             } else {
-                var disp_str=attr[1]=='7' ? ext_special_danmu(str) : str;
+                var disp_str=mode=='7' ? ext_special_danmu(str) : str;
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
                     str: detaolu(disp_str),
                     orig_str: str,
                     disp_str: disp_str,
                     time: parseFloat(attr[0]),
-                    mode: attr[1],
+                    mode: mode,
                     size: parseFloat(attr[2]),
                     desc: [], // for D
                     peers: []

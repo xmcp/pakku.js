@@ -37,10 +37,6 @@
             padding-top: .2em;
             font-family: Consolas, Courier, monospace;
         }
-        #pakku-title small {
-            font-size: 15px;
-            vertical-align: middle;
-        }
         #switch {
             display: inline-block;
             width: 100px;
@@ -96,20 +92,13 @@
 <body>
     <div id="topbar">    
         <a id="pakku-logo" target="_blank" title="选项"><img src="../assets/logo.png"></a>
-        <p id="pakku-title">pakku<small id="version"></small></p>
+        <p id="pakku-title">pakku</p>
         <p style="margin-bottom: 0"><button id="switch">……</button></p>
         <p id="hint-text">……</p>
     </div>
     <div class="clearfix"></div>
     <div id="result" class="display-none">
         <table>
-            <thead>
-                <tr>
-                    <th style="width: 25%">状态</th>
-                    <th style="width: 50%">类型</th>
-                    <th style="width: 25%">数量</th>
-                </tr>
-            </thead>
             <tbody>
                 <tr class="first-item">
                     <td></td>
@@ -141,6 +130,11 @@
                     <td style="color: #dd0000">已删除</td>
                     <td>删除跳转脚本</td>
                     <td id="status-player_seek"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>命中黑名单</td>
+                    <td id="status-blacklist"></td>
                 </tr>
                 
                 <tr class="first-item">

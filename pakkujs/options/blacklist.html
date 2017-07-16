@@ -1,0 +1,40 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>pakku :: 选项 :: 黑名单</title>
+    <style>
+        code, .code {
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
+        }
+        #rules {
+            width: 100%;
+            height: 350px;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <p>弹幕黑名单属于内部测试功能，你可以通过 <code>localStorage['BLACKLIST']</code> 修改黑名单。</p>
+    <p>我为什么要使用这个黑名单功能（而不用B站本来就有的正则表达式屏蔽）：</p>
+    <li>[xN] 标记将不会影响正则表达式匹配</li>
+    <li>使弹幕密度更加准确</li>
+    <li>略微提升性能</li>
+    <p class="warning">此功能面向高级用户。如果你对上述说明存在疑惑，请关闭此页面。</p>
+    <p>
+        <button type="button" id="clear">清空黑名单</button>
+        目前黑名单的数量：<span id="count">...</span>
+    </p>
+    <textarea id="rules" class="code"><filters>
+    <item enabled="true">r=...</item>
+</filters></textarea>
+    <p>
+        <button type="button" id="import">从 XML 导入</button>
+        <a href="https://raw.githubusercontent.com/xmcp/bilibili-ban-list/master/tv.bilibili.player.xml" target="_blank">→ 官方安利 ←</a>
+    </p>
+    
+    <script src="blacklist.js"></script>
+</body>
+</html>
