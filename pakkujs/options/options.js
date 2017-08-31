@@ -86,19 +86,19 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 cancelbtn=document.createElement('button');
                 
             code1.textContent=cfg_taolus[i][0].source;
-            code1.contentEditable='plaintext-only';
+            code1.contentEditable='true';
             spliter.textContent=' → ';
             code2.textContent=cfg_taolus[i][1];
-            code2.contentEditable='plaintext-only';
+            code2.contentEditable='true';
             
             deletebtn.textContent='删除';
             deletebtn.className='btn';
-            savebtn.textContent='保存';
-            savebtn.className='btn hidden';
             cancelbtn.textContent='取消';
             cancelbtn.className='btn hidden';
+            savebtn.textContent='保存';
+            savebtn.className='btn hidden';
             
-            (function(index,savebtn,cancelbtn,code1,code2) {
+            (function(index,deletebtn,savebtn,cancelbtn,code1,code2) {
                 deletebtn.addEventListener('click',function() {
                     delete cfg_taolus[index];
                     localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
@@ -112,19 +112,20 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 });
                 cancelbtn.addEventListener('click',loadconfig);
                 function show_btn() {
+                    deletebtn.classList.add('hidden');
                     savebtn.classList.remove('hidden');
                     cancelbtn.classList.remove('hidden');
                 }
                 code1.addEventListener('input',show_btn);
                 code2.addEventListener('input',show_btn);
-            })(i,savebtn,cancelbtn,code1,code2);
+            })(i,deletebtn,savebtn,cancelbtn,code1,code2);
             
             container.appendChild(code1);
             container.appendChild(spliter);
             container.appendChild(code2);
             container.appendChild(deletebtn);
-            container.appendChild(savebtn);
             container.appendChild(cancelbtn);
+            container.appendChild(savebtn);
             taolus.appendChild(container);
         }
         
@@ -139,7 +140,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 cancelbtn=document.createElement('button');
                 
             code1.textContent=cfg_whitelist[i][0].source;
-            code1.contentEditable='plaintext-only';
+            code1.contentEditable='true';
             
             deletebtn.textContent='删除';
             deletebtn.className='btn';

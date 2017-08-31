@@ -196,7 +196,7 @@ function query_uid(uidhash,logger) {
     })
 }
 
-console.log('pakku panel script injected: D.length = '+D.length);
+console.log('pakku panel: script injected, D.length = '+D.length);
 for(var i=0;i<D.length;i++)
     D[i].text=D[i].text.replace(/[\r\n\t]/g,'');
 

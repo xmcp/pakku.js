@@ -127,7 +127,7 @@ function load_danmaku(url,id,tabid) {
     console.log('load '+url+' for CID '+id);
     
     try {
-        xhr.open('get',url,false);
+        xhr.open('get',url+'?pakku_request',false);
         xhr.send();
     } catch(e) {
         setbadge('NET!',ERROR_COLOR,tabid);
@@ -169,7 +169,7 @@ function load_danmaku(url,id,tabid) {
         if(TOOLTIP)
             inject_panel(tabid,D);
         HISTORY[tabid]=S;
-        return 'data:text/xml;charset=utf-8,'+res;
+        return res;
     } catch(e) {
         setbadge('JS!',ERROR_COLOR,tabid);
         HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.stack);
@@ -177,17 +177,33 @@ function load_danmaku(url,id,tabid) {
     }
 }
 
+chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
+    if(!GLOBAL_SWITCH)
+        return sendResponse({data: null});
+    if (request.url) {
+        var tabid=sender.tab.id;
+        console.log('message',request);
+        var ret=DANMU_URL_RE.exec(request.url);
+        if(ret) {
+            var protocol=ret[1], cid=ret[2], debug=ret[3];
+            var data=load_danmaku(request.url,cid,tabid);
+            sendResponse({data: data});
+        } else
+            sendResponse({data: null});
+    }
+});
+
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
     if(!GLOBAL_SWITCH)
         return {cancel: false};
     
     var ret=DANMU_URL_RE.exec(details.url);
     if(ret) {
+        console.log('webrequest',details);
         var protocol=ret[1], cid=ret[2], debug=ret[3];
         if(debug || details.type==='xmlhttprequest')
-            return {redirectUrl: load_danmaku(details.url,cid,details.tabId)||details.url};
+            return {redirectUrl: 'data:text/xml;charset=utf-8,'+load_danmaku(details.url,cid,details.tabId)};
         else {
-            console.log(details);
             setbadge('FL!',ERROR_COLOR,details.tabId);
             HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
