@@ -270,7 +270,7 @@ function parse(dom,tabid,S,D) {
     
     console.timeEnd('parse');
     
-    S.total=danmus.length;
+    S.total=danmus.length+S.blacklist;
     S.onscreen=danmus.length-counter;
     
     if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='已禁用';

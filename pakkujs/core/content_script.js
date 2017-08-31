@@ -63,6 +63,10 @@
                     for(var i=0;i<that.pakku_load_callback.length;i++)
                         that.pakku_load_callback[i].bind(that)();
                 });
+            else {
+                console.log('pakku ajax: ignoring request as no onload callback found',this.pakku_url);
+                return that.pakku_send(arg);
+            }
         }
     }
     
