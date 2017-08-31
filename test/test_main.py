@@ -2,6 +2,7 @@
 import testrunner as runner
 from xml.dom.minidom import *
 import json
+import time
 
 def demo(fn):
     with open('demo/%s.xml'%fn,'r',encoding='utf-8') as f:
@@ -21,7 +22,7 @@ runner.update_settings('MARK_THRESHOLD','1')
 
 # not tested: FLASH_NOTIF POPUP_BADGE
 
-print('!= test hook')
+print('!= test webrequest hook')
 
 runner.set_global_switch(False)
 runner.b.get('http://comment.bilibili.com/1.xml?debug')
@@ -44,6 +45,19 @@ danmu=dom.getElementsByTagName('d')[0]
 assert len(danmu.getAttribute('p').split(','))>3
 assert len(danmu.childNodes)==1
 assert isinstance(danmu.childNodes[0],Text)
+
+print('!= test ajax hook')
+
+runner.set_global_switch(False)
+runner.b.get('http://www.bilibili.com/favicon.ico')
+time.sleep(.5) # wait for ajax hook
+assert '[x' not in runner.parse_ajax('//comment.bilibili.com/1.xml')
+
+runner.set_global_switch(True)
+runner.b.get('http://www.bilibili.com/favicon.ico')
+time.sleep(.5) # wait for ajax hook
+assert '[x' in runner.parse_ajax('//comment.bilibili.com/1.xml')
+assert '[x' not in runner.parse_ajax('http://comment.bilibili.com/1.xml?pakku_test')
 
 print('!= test working')
 

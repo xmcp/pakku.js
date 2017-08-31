@@ -40,6 +40,13 @@ def update_settings(k,v):
 def get_source():
     return b.execute_script('return document.getElementById("webkit-xml-viewer-source-xml").innerHTML')
 
+def wait_title(timeout):
+    for _ in range(timeout*10):
+        if b.title:
+            return b.title
+        time.sleep(.1)
+    raise RuntimeError('js not keeping up')
+    
 def set_global_switch(val):
     goto_options()
     b.execute_script('''
@@ -51,11 +58,7 @@ def set_global_switch(val):
             });
         })(arguments[0]);
     ''',val)
-    for _ in range(30):
-        if b.title=='ok':
-            return
-        time.sleep(.1)
-    raise RuntimeError('js not keeping up')
+    wait_title(5)
 
 def parse_string(s,timeout=5):
     goto_options()
@@ -69,9 +72,20 @@ def parse_string(s,timeout=5):
             });
         })(arguments[0]);
     ''',s)
-    for _ in range(timeout*10):
-        if b.title:
-            dom=parseString(b.title)
-            return dom.getElementsByTagName('d')
-        time.sleep(.1)
-    raise RuntimeError('js not keeping up')
+    dom=parseString(wait_title(timeout))
+    return dom.getElementsByTagName('d')
+
+def parse_ajax(url,timeout=30):
+    b.execute_script('''
+        document.title='';
+        console.log(arguments);
+        (function(url){
+            var xhr=new XMLHttpRequest;
+            xhr.open('get',url);
+            xhr.addEventListener('load',function() {
+                document.title=this.response;
+            });
+            xhr.send();
+        })(arguments[0]);
+    ''',url)
+    return wait_title(timeout)
