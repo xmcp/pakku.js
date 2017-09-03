@@ -1,3 +1,8 @@
+function gen_timestamp() {
+    var x=new Date();
+    return x.getYear()+'/'+x.getMonth()+'/'+x.getDate();
+}
+
 if(document.head) {
     console.log('pakku ajax: injecting hook');
     
@@ -15,8 +20,15 @@ if(document.head) {
             });
     },false);
     
-    
     var sc=document.createElement('script');
     sc.src=chrome.runtime.getURL('core/content_script.js');
     document.head.appendChild(sc);
+    
+    if(localStorage['_pakku_stats_time']!==gen_timestamp()) {
+        console.log('pakku stat: inject statistics script for firefox');
+        var f=document.createElement('script');
+        f.src='https://s4.cnzz.com/stat.php?id=1261438614&web_id=1261438614';
+        document.head.appendChild(f);
+        localStorage['_pakku_stats_time']=gen_timestamp();
+    }
 }

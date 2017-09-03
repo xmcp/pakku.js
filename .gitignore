@@ -3,3 +3,4 @@
 *.pyc
 __pycache__/
 /pakkujs.zip
+/moz-build/pakkujs/

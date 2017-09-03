@@ -96,7 +96,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         return;
     }
     if(details.reason=='install') {
-        window.open(chrome.runtime.getURL('options/options.html'));
+        chrome.tabs.create({url: chrome.runtime.getURL('options/options.html')});
         chrome.notifications.create('//init', {
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/logo.png'),

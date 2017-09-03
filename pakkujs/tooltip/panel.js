@@ -1,50 +1,82 @@
+/*
 var panel_src=`
-<div class="pakku-panel" style="
-        background-color: rgba(243,243,243,.8);
-        color: black;
-        width: 300px;
-        position: absolute;
-        z-index: 10000;
-        top: 10px;
-        padding: 5px;
-        border-radius: 5px;
-        left: -305px;
-        box-shadow: 2px 2px 50px black;
-">
-    <p style="
-            overflow-x: hidden;
-            text-overflow: ellipsis;
-            line-height: calc(1em + 6px);
-            vertical-align: middle;
-    ">
-        <button type="button" class="pakku-panel-close" style="
-                color: black;
-                background-color: #f3f3f3;
-                border-radius: 5px;
-                border: 1px solid black;
-                padding: 3px;
-                cursor: pointer;
-        ">关闭</button>
+<div class="pakku-panel">
+    <p class="pakku-panel-title">
+        <button type="button" class="pakku-panel-close">关闭</button>
         <span class="pakku-panel-text"></span>
     </p>
     <hr>
-    <div class="pakku-panel-desc" style="
-            line-height: 1.2em;
-    "></div>
-    <hr data-for="desc">
-    <div class="pakku-panel-peers" style="
-            height: 350px;
-            overflow-y: auto;
-    "></div>
+    <div class="pakku-panel-desc"></div>
+    <hr class="pakku-for-desc">
+    <div class="pakku-panel-peers"></div>
     <hr>
-    <div class="pakku-panel-footer text-fix" style="
-        overflow: hidden;
-        text-overflow: ellipsis;
-    "></div>
+    <div class="pakku-panel-footer text-fix"></div>
 </div>
 `;
+*/
+function make_panel_dom() {
+    var dom=make_elem('div','pakku-panel');
+    var dom_title=make_elem('p','pakku-panel-title');
+    var dom_close=make_elem('button','pakku-panel-close');
+    
+    dom_close.type='button';
+    dom_close.textContent='关闭';
+    
+    dom_title.appendChild(dom_close);
+    dom_title.appendChild(make_elem('span','pakku-panel-text'));
+    
+    dom.appendChild(dom_title);
+    dom.appendChild(make_elem('hr',''));
+    dom.appendChild(make_elem('div','pakku-panel-desc'));
+    dom.appendChild(make_elem('hr','pakku-for-desc'));
+    dom.appendChild(make_elem('div','pakku-panel-peers'));
+    dom.appendChild(make_elem('hr',''));
+    dom.appendChild(make_elem('div','pakku-panel-footer text-fix'));
+    
+    return dom;
+};
 
 var style_src=`
+
+.pakku-panel {
+    background-color: rgba(243,243,243,.8);
+    color: black;
+    width: 300px;
+    position: absolute;
+    z-index: 10000;
+    top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    left: -305px;
+    box-shadow: 2px 2px 50px black;
+}
+.pakku-panel-title {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    line-height: calc(1em + 6px);
+    vertical-align: middle;
+}
+.pakku-panel-close {
+    color: black !important;
+    background-color: #f3f3f3 !important;
+    border-radius: 5px;
+    border: 1px solid black !important;
+    padding: 3px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+.pakku-panel-desc {
+    line-height: 1.2em;
+}
+.pakku-panel-peers {
+    height: 350px;
+    overflow-y: auto;
+}
+.pakku-panel-footer {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .pakku-panel * {
     user-select: initial !important;
 }
@@ -61,7 +93,7 @@ var style_src=`
 .pakku-panel-footer a {
     display: inline-block;
 }
-.pakku-panel-desc:empty~hr[data-for="desc"] {
+.pakku-panel-desc:empty~hr.pakku-for-desc {
     display: none;
 }
 .pakku-panel * {
@@ -105,7 +137,7 @@ var style_src=`
 }
 `;
 var global_style_obj=document.createElement('style');
-global_style_obj.innerHTML=style_src;
+global_style_obj.textContent=style_src;
 
 var _mem_uidhash={};
 function _load_uidhash(uidhash,logger,callback) {
@@ -224,7 +256,7 @@ function try_inject() {
         var panel_obj=document.createElement('div');
         
         panel_obj.style.display='none';
-        panel_obj.innerHTML=panel_src;
+        panel_obj.appendChild(make_panel_dom());
         panel_obj.querySelector('.pakku-panel-close').addEventListener('click',function() {
             panel_obj.style.display='none';
         });

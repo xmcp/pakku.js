@@ -2,6 +2,7 @@
 
 (function() {
     var callbacks={};
+    if(XMLHttpRequest.prototype.pakku_open) return;
     
     window.addEventListener('message',function(event) {
         if (event.source!=window)

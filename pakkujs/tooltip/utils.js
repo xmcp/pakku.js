@@ -12,6 +12,11 @@ function make_a(s,u) {
     elem.textContent=s;
     return elem;
 }
+function make_elem(tagname,classname) {
+    var elem=document.createElement(tagname);
+    elem.className=classname;
+    return elem;
+}
 
 function proc_mode(mode) {
     switch(parseInt(mode)) {

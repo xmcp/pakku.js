@@ -2,6 +2,18 @@
 
 var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
 
+/*for-firefox:
+
+chrome.notifications.create=function(txt,obj,callback) {
+    delete obj['contextMessage'];
+    delete obj['isClickable'];
+    delete obj['requireInteraction'];
+    delete obj['buttons'];
+    browser.notifications.create(txt,obj).then(callback);
+}
+
+*/
+
 if(!Math.log10)
     Math.log10=function(x) {
         return Math.log(x)/Math.log(10);

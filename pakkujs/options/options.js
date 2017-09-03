@@ -1,3 +1,13 @@
+/*for-firefox:
+
+chrome.permissions.request=function(perm,callback) {
+    browser.permissions.request(perm)
+        .then(function() {callback(true)})
+        .catch(function() {callback(false)});
+}
+
+*/
+
 function id(x) {
     return document.getElementById(x);
 }
