@@ -25,6 +25,29 @@ id('version').textContent='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
 var CHROME_VERSION_RE=/Chrome\/(\d+)/;
 
+function highlighter() {
+    if(!location.hash) return;
+    var el=document.querySelector(location.hash);
+    if(!el) return;
+    el=el.closest('p');
+    if(!el) return;
+    
+    var old=document.getElementById('highlighter');
+    if(old) old.parentNode.removeChild(old);
+    
+    var hl=document.createElement('span');
+    hl.id='highlighter';
+    el.appendChild(hl);
+    
+    el.scrollIntoView();
+    setTimeout(function() {
+        scrollBy(0,-100);
+    },0)
+}
+
+highlighter();
+window.addEventListener('hashchange',highlighter);
+
 chrome.runtime.getBackgroundPage(function(bgpage) {
     id('restore').addEventListener('click',function() {
         if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
@@ -59,6 +82,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         setTimeout(function() {
             id('saved-alert').classList.add('saved-hidden');
         },100);
+        var old=document.getElementById('highlighter');
+        if(old) old.parentNode.removeChild(old);
         loadconfig();
     }
     

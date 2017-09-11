@@ -2,7 +2,14 @@ function id(x) {
     return document.getElementById(x);
 }
 
-id('pakku-logo').href=chrome.runtime.getURL('options/options.html');
+var options_href=chrome.runtime.getURL('options/options.html');
+id('pakku-logo').href=options_href;
+
+[].slice.call(document.querySelectorAll('a[data-options-link]')).forEach(function(elem) {
+    elem.target='_blank';
+    elem.href=options_href+'#'+elem.dataset.optionsLink;
+    elem.title='调整相关设置';
+});
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     var enabled=bgpage.GLOBAL_SWITCH;

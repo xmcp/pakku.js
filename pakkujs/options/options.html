@@ -132,6 +132,26 @@
             filter: brightness(.9) contrast(.8);
             -webkit-filter: brightness(.9) contrast(.8);
         }
+        #highlighter {
+            position: relative;
+            top: -0.25em;
+            left: -2em;
+            width: 2em;
+            margin-right: -2em;
+            font-size: 2em;
+            float: left;
+            animation: highlight-blink 1s 2;
+            text-align: right;
+            color: #3b6;
+        }
+        #highlighter::after {
+            content: '→';
+        }
+        @keyframes highlight-blink {
+            from {background-color: #3fa; color: #000;}
+            50% {background-color: #3d7; color: #000;}
+            to {background-color: #3fa; color: #000;}
+        }
     </style>
 </head>
 <body><div id="container">
@@ -301,7 +321,7 @@
                     </p>
                     <p>
                         <span style="font-weight: bold">弹幕黑名单：</span>
-                        <a href="blacklist.html" target="_blank">前去设置</a>
+                        <a id="blacklist-link" href="blacklist.html" target="_blank">前去设置</a>
                         <span> （供高级用户使用）</span>
                     </p>
                     <hr>

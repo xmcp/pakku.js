@@ -16,6 +16,13 @@
         a {
             color: inherit;
         }
+        a[data-options-link] {
+            text-decoration: none !important;
+        }
+        a[data-options-link]::after {
+            content: ' ⌾';
+            color: #aaa;
+        }
         body, #switch {
             font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
         }
@@ -112,34 +119,34 @@
                 </tr>
                 <tr class="first-item">
                     <td style="color: #00aa00">已合并</td>
-                    <td>内容完全一致</td>
+                    <td><a data-options-link="threshold">内容完全一致</a></td>
                     <td id="status-identical"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>根据编辑距离合并</td>
+                    <td><a data-options-link="max-dist">根据编辑距离合并</a></td>
                     <td id="status-edit_distance"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>根据词频向量合并</td>
+                    <td><a data-options-link="max-cosine">根据词频向量合并</a></td>
                     <td id="status-cosine_distance"></td>
                 </tr>
                 
                 <tr class="first-item">
                     <td style="color: #dd0000">已删除</td>
-                    <td>删除跳转脚本</td>
+                    <td><a data-options-link="remove-seek">删除跳转脚本</a></td>
                     <td id="status-player_seek"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>命中黑名单</td>
+                    <td><a data-options-link="blacklist-link">命中黑名单</a></td>
                     <td id="status-blacklist"></td>
                 </tr>
                 
                 <tr class="first-item">
                     <td style="color: #555555">已忽略</td>
-                    <td>命中白名单</td>
+                    <td><a data-options-link="newwhitelist-pattern">命中白名单</a></td>
                     <td id="status-whitelist"></td>
                 </tr>
                 <tr>
@@ -149,29 +156,29 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td>忽略高级弹幕</td>
+                    <td><a data-options-link="ignore-type7">忽略高级弹幕</a></td>
                     <td id="status-type7"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>忽略底部弹幕</td>
+                    <td><a data-options-link="ignore-type4">忽略底部弹幕</a></td>
                     <td id="status-type4"></td>
                 </tr>
                 
                 <tr class="first-item">
                     <td style="color: #0000dd">已修改</td>
-                    <td>放大合并后的弹幕</td>
+                    <td><a data-options-link="enlarge">放大合并后的弹幕</a></td>
                     <td id="status-enlarge"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>缩小密度过高的弹幕</td>
+                    <td><a data-options-link="shrink">缩小密度过高的弹幕</a></td>
                     <td id="status-shrink"></td>
                 </tr>
                 
                 <tr class="first-item">
                     <td>* 信息</td>
-                    <td>命中弹幕套路</td>
+                    <td><a data-options-link="newtaolu-pattern">命中弹幕套路</a></td>
                     <td id="status-taolu"></td>
                 </tr>
                 <tr>
