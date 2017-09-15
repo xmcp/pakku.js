@@ -9,9 +9,7 @@
 [![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
 [![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
 
-## 请在[Chrome Web Store](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh) / [Addons.Mozilla.Org](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/) 中下载本扩展程序
-
-不方便访问 Chrome Web Store 的人和其他Chrome内核浏览器的用户可以 [直接下载CRX文件](http://s.xmcp.ml/pakkujs/latest.crx)，忽略浏览器的提示后将其拖拽至扩展程序页面（chrome://extensions） 来安装。
+## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/) （支持 Chrome 和 Firefox）
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
