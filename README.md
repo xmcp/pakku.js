@@ -1,14 +1,17 @@
 [![Build Status](https://travis-ci.org/xmcp/pakku.js.svg?branch=master)](https://travis-ci.org/xmcp/pakku.js)
+[![license](https://img.shields.io/github/license/xmcp/pakku.js.svg)](https://opensource.org/licenses/GPL-3.0/)
+
 [![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 [![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 [![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![license](https://img.shields.io/github/license/xmcp/pakku.js.svg)](https://opensource.org/licenses/GPL-3.0/)
 
-# 请在[Chrome Web Store](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh) 中下载本扩展程序
+[![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
+[![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
+[![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
 
-不方便翻墙的人和其他Chrome内核浏览器的用户可以 [直接下载CRX文件](http://s.xmcp.ml/pakkujs/latest.crx)，忽略浏览器的提示后将其拖拽至扩展程序页面（chrome://extensions） 来安装。
+## 请在[Chrome Web Store](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh) / [Addons.Mozilla.Org](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/) 中下载本扩展程序
 
-另外 [@fanthos](https://github.com/fanthos) 搞了一个油猴移植版的 [pakku.user.js](https://github.com/fanthos/pakku.user.js)（非官方），虽说把选项页面完全删掉了，不过 Firefox 用户还是可以考虑一下的。
+不方便访问 Chrome Web Store 的人和其他Chrome内核浏览器的用户可以 [直接下载CRX文件](http://s.xmcp.ml/pakkujs/latest.crx)，忽略浏览器的提示后将其拖拽至扩展程序页面（chrome://extensions） 来安装。
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
