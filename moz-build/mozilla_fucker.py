@@ -16,7 +16,7 @@ def change_manifest(s):
     obj=json.loads(s)
     del obj['content_security_policy']
     obj['content_scripts']=[
-        {'matches': ['*://*.bilibili.com/*'], 'js': ['assets/script_injector.js'], 'run_at': 'document_end'}
+        {'matches': ['*://*.bilibili.com/*'], 'js': ['assets/script_injector.js'], 'run_at': 'document_end', 'all_frames': True}
     ]
     obj['permissions']+=obj['optional_permissions']
     return json.dumps(obj,ensure_ascii=False,indent=4)
