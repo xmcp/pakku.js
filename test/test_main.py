@@ -190,10 +190,12 @@ print('!= test edit distance')
 
 runner.update_settings('MAX_DIST','5')
 assert len(runner.parse_string(demo('edit_distance')))==1
-assert len(runner.parse_string(demo('edit_distance_short')))==2
+assert len(runner.parse_string(demo('edit_distance_short_true')))==1
+assert len(runner.parse_string(demo('edit_distance_short_false')))==2
 runner.update_settings('MAX_DIST','0')
 assert len(runner.parse_string(demo('edit_distance')))==2 # as our edit_distance is buggy
-assert len(runner.parse_string(demo('edit_distance_short')))==2
+assert len(runner.parse_string(demo('edit_distance_short_true')))==2
+assert len(runner.parse_string(demo('edit_distance_short_false')))==2
 
 print('!= test cosine distance')
 
