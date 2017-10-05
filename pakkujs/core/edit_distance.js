@@ -14,9 +14,6 @@ function edit_distance (P, Q) {
     'use strict';
     // TODO: Make this less hacky
 
-    if (P.length + Q.length < MIN_DANMU_SIZE)
-        return (MAX_DIST + 1) * +(P != Q);
-
     for (var i = 0; i < P.length; i ++) ed_counts [P.charCodeAt (i)] ++;
     for (var i = 0; i < Q.length; i ++) ed_counts [Q.charCodeAt (i)] --;
 
@@ -80,7 +77,7 @@ function similar(P,Q,S) {
         return '==';
     }
     var dis=edit_distance(P,Q);
-    if(dis<=MAX_DIST) {
+    if((P.length+Q.length < MIN_DANMU_SIZE) ? dis<(P.length+Q.length)/MIN_DANMU_SIZE*MAX_DIST-1 : dis<=MAX_DIST) {
         S.edit_distance++;
         return '≤'+dis;
     }

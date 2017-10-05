@@ -5,7 +5,7 @@ var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
-var ENDING_CHARS=gen_set('.。,，/?？!！…~～@^、+=-_♂♀');
+var ENDING_CHARS=gen_set('.。,，/?？!！…~～@^、+=-_♂♀ ');
 var trim_space_re=/[ 　]+/g;
 var WIDTH_TABLE={};
 

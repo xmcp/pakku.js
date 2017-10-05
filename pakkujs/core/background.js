@@ -53,7 +53,7 @@ initconfig();
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0)  // goto settings
-        chrome.tabs.create({url: (notifid==='http'?'http':'https') + '://www.bilibili.com/html/help.html#p'},function(tab) {
+        chrome.tabs.create({url: (notifid==='http'?'http':'https') + '://www.bilibili.com/blackboard/help.html#p'},function(tab) {
             console.log(tab.id);
             chrome.tabs.executeScript(tab.id,{
                 file: '/assets/enable_h5_player.js',

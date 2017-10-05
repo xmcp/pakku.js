@@ -2,5 +2,5 @@
 /test/driver/
 *.pyc
 __pycache__/
-/pakkujs.zip
+pakkujs.zip
 /moz-build/pakkujs/
