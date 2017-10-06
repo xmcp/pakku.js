@@ -4,9 +4,9 @@
 [![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 [![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 /
-[![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
-[![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
-[![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/)
+[![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 
 ## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/) （支持 Chrome 和 Firefox）
 
