@@ -35,7 +35,7 @@ function initconfig() {
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\s~]+$","yoo..."]]';
-    localStorage['WHITELIST']=localStorage['WHITELIST']||'[["弹\\\\s*幕\\\\s*护",""]]';
+    localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
     localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';

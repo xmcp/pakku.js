@@ -44,7 +44,7 @@
             this.pakku_url=link.href;
             
             var that=this;
-            if(this.pakku_load_callback)
+            if(this.pakku_load_callback) {
                 send_msg_proxy(that.pakku_url, function(resp) {
                     if(!resp || !resp.data)
                         return that.pakku_send(arg);
@@ -64,7 +64,8 @@
                     for(var i=0;i<that.pakku_load_callback.length;i++)
                         that.pakku_load_callback[i].bind(that)();
                 });
-            else {
+                this.abort();
+            } else {
                 console.log('pakku ajax: ignoring request as no onload callback found',this.pakku_url);
                 return that.pakku_send(arg);
             }

@@ -1,11 +1,18 @@
 /*for-firefox:
 
-chrome.permissions.request=function(perm,callback) {
-    browser.permissions.request(perm)
-        .then(function() {callback(true)})
-        .catch(function() {callback(false)});
-}
-
+if(chrome.permissions)
+    chrome.permissions.request=function(perm,callback) {
+        browser.permissions.request(perm)
+            .then(function() {callback(true)})
+            .catch(function() {callback(false)});
+    }
+else
+    chrome.permissions={
+        request: function(perm,callback) {
+            callback(true);
+        }
+    };
+    
 */
 
 function id(x) {
