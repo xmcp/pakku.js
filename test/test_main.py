@@ -227,7 +227,7 @@ assert len(runner.parse_string(demo('trim_width')))==6
 
 print('!= test exception')
 
-assert len(runner.parse_string(demo('production')))<=18000
+assert len(runner.parse_string(demo('production')))<=800
 
 print('== well done! exitting...')
 runner.b.quit()
