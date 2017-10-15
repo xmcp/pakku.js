@@ -18,6 +18,7 @@ function loadconfig() {
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.DANMU_MARK=localStorage['DANMU_MARK'];
+    window.DANMU_SUBSCRIPT=localStorage['DANMU_SUBSCRIPT']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
@@ -41,6 +42,7 @@ function initconfig() {
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
     localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
+    localStorage['DANMU_SUBSCRIPT']=localStorage['DANMU_SUBSCRIPT']||'off';
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';

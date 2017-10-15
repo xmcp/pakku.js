@@ -44,8 +44,14 @@ function parse(dom,tabid,S,D) {
     }
 
     function make_mark(txt,cnt) {
-        return DANMU_MARK=='suffix' ? txt+' [x'+cnt+']' :
-               DANMU_MARK=='prefix' ? '[x'+cnt+'] '+txt :
+        function make_cnt(cnt) {
+            if(DANMU_SUBSCRIPT)
+                return '₍'+to_subscript(cnt)+'₎';
+            else
+                return '[x'+cnt+']';
+        }
+        return DANMU_MARK=='suffix' ? txt+make_cnt(cnt) :
+               DANMU_MARK=='prefix' ? make_cnt(cnt)+txt :
                txt;
     }
     

@@ -1,7 +1,7 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "7.1.4",
+    "version": "7.2",
     "description": "在B站(bilibili.com)看视频时，经常烦恼于低质量的弹幕刷屏？现在只需一键，即可合并那些刷屏的相似弹幕。",
     "icons": {
         "128": "assets/logo.png",

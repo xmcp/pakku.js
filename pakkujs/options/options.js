@@ -100,6 +100,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
         id('danmu-mark').value=localStorage['DANMU_MARK'];
+        id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
         id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
@@ -114,6 +115,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('tooltip').checked=localStorage['TOOLTIP']==='on';
         
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
+        id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
         var taolus=id('taolus');
@@ -265,6 +267,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['DANMU_MARK']=id('danmu-mark').value;
+        localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
@@ -282,7 +285,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         'trim-ending','trim-space','trim-width',
         'ignore-type7','ignore-type4',
         'enlarge','shrink','remove-seek','break-update',
-        'mark-threshold','danmu-mark','popup-badge',
+        'mark-threshold','danmu-mark','danmu-subscript','popup-badge',
         'tooltip','flash-notif'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);

@@ -126,6 +126,11 @@ function gen_set(st) {
     return obj;
 }
 
+function to_subscript(x) {
+    // \u2080 is subscript_number_0
+    return x ? to_subscript((x/10)|0)+String.fromCharCode(0x2080+x%10) : '';
+}
+
 // extracted from bilibiliPlayer.min.js
 function parse_xml_magic(k) {
 	try {
