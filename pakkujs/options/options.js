@@ -28,9 +28,10 @@ function try_regexp(x) {
     }
 }
 
-id('version').textContent='v'+chrome.runtime.getManifest().version;
+var version='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
 var CHROME_VERSION_RE=/Chrome\/(\d+)/;
+id('version').textContent=version;
 
 function highlighter() {
     if(!location.hash) return;
@@ -70,7 +71,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         }, function(granted) {
             if(granted) {
                 bgpage.load_update_breaker();
-                alert('警告：此功能属于实验性质，可能会影响B站播放器正常工作。\n如果你遇到任何播放问题，请尝试关闭此功能。')
             } else {
                 localStorage['BREAK_UPDATE']=false;
                 loadconfig();
@@ -95,28 +95,37 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     function loadconfig() {
+        // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
-        id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
-        id('danmu-mark').value=localStorage['DANMU_MARK'];
-        id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
-        id('popup-badge').value=localStorage['POPUP_BADGE'];
+        // 弹幕套路
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
-        id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
-        id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
-        id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
-        id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on'; // compatibility reason
+        // 例外项
+        id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on';
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
+        // 显示设置
+        id('danmu-mark').value=localStorage['DANMU_MARK'];
+        id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
+        id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
+        id('popup-badge').value=localStorage['POPUP_BADGE'];
+        // 实验室
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
+        id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
+        id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
+        id('auto-prevent-shade').checked=localStorage['AUTO_PREVENT_SHADE']==='on';
+        id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
+        // 其他
+        id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
         id('tooltip').checked=localStorage['TOOLTIP']==='on';
         
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         
+        // TAOLUS
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
         var taolus=id('taolus');
         taolus.innerHTML='';
@@ -173,6 +182,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             taolus.appendChild(container);
         }
         
+        // WHITELIST
         window.cfg_whitelist=bgpage.fromholyjson(localStorage['WHITELIST']);
         var whitelist=id('whitelist');
         whitelist.innerHTML='';
@@ -256,24 +266,33 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
     
     function update() {
+        // 弹幕合并
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
-        localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
+        // 弹幕套路
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
-        localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
-        localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
-        localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
-        localStorage['DANMU_MARK']=id('danmu-mark').value;
-        localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
-        localStorage['POPUP_BADGE']=id('popup-badge').value;
+        // 例外项
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
+        // 显示设置
+        localStorage['DANMU_MARK']=id('danmu-mark').value;
+        localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
+        localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
+        localStorage['POPUP_BADGE']=id('popup-badge').value;
+        // 实验室
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
+        localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
+        localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
+        localStorage['AUTO_PREVENT_SHADE']=id('auto-prevent-shade').checked?'on':'off';
+        localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
+        // 其他
+        localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
+        
         reload();
         if(this.id==='break-update' && this.checked)
             get_ws_permission();
@@ -281,13 +300,36 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     loadconfig();
     [
+        // 弹幕合并
         'threshold','max-dist','max-cosine',
+        // 弹幕套路
         'trim-ending','trim-space','trim-width',
+        // 例外项
         'ignore-type7','ignore-type4',
-        'enlarge','shrink','remove-seek','break-update',
+        // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','popup-badge',
-        'tooltip','flash-notif'
+        // 实验室
+        'enlarge','shrink','remove-seek','break-update','auto-prevent-shade','auto-disable-danmu',
+        // 其他
+        'tooltip','flash-notif',
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
 });
+
+// version check
+var xhr=new XMLHttpRequest();
+/*for-firefox: xhr.open('get','https://img.shields.io/amo/v/pakkujs.json'); // */ xhr.open('get','https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json');
+xhr.onload=function() {
+    var latest_ver=JSON.parse(this.responseText);
+    console.log('latest version ',latest_ver);
+    if(latest_ver.value!=version) {
+        var note=document.createElement('a');
+        note.href='http://s.xmcp.ml/pakkujs/?src=update_banner';
+        note.id='update-note';
+        note.target='_blank';
+        note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';
+        document.body.appendChild(note);
+    }
+};
+xhr.send();

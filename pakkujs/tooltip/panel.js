@@ -232,7 +232,7 @@ console.log('pakku panel: script injected, D.length = '+D.length);
 for(var i=0;i<D.length;i++)
     D[i].text=D[i].text.replace(/[\r\n\t]/g,'');
 
-var try_left=20;
+var try_left=50;
 function try_inject() {
     var danmu_lists=[].slice.call(document.querySelectorAll('.bilibili-player-danmaku'));
     // maybe player is in an iframe
@@ -247,7 +247,7 @@ function try_inject() {
     })
     if(!danmu_lists.length) { // maybe player is not ready yet
         if(--try_left)
-            setTimeout(try_inject,500);
+            setTimeout(try_inject,200);
         return;
     }
     
@@ -329,6 +329,23 @@ function try_inject() {
                     desc_container.appendChild(make_p('找不到弹幕详情'));
             }
         });
+        
+        // automation
+        var root_elem=list_elem.closest('.bilibili-player');
+        if(root_elem) {
+            if(OPT['AUTO_PREVENT_SHADE']) {
+                var shade_elem=root_elem.querySelector('input.bilibili-player-setting-preventshade');
+                console.log('prevent shade elem ',shade_elem);
+                if(shade_elem && !shade_elem.checked)
+                    shade_elem.click();
+            }
+            if(OPT['AUTO_DISABLE_DANMU']) {
+                var disable_elem=root_elem.querySelector('.bilibili-player-video-btn-danmaku');
+                console.log('disable danmu elem ',disable_elem);
+                if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
+                    disable_elem.click();
+            }
+        }
     });
 }
 try_inject();

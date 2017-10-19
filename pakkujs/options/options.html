@@ -155,6 +155,17 @@
             50% {background-color: #3d7; color: #000;}
             to {background-color: #3fa; color: #000;}
         }
+        #update-note {
+            display: block;
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%; height: 60px;
+            background-color: yellow;
+            color: black;
+            font-size: 20px;
+            line-height: 60px;
+            text-align: center;
+        }
     </style>
 </head>
 <body><div id="container">
@@ -371,6 +382,15 @@
                         <a id="blacklist-link" href="blacklist.html" target="_blank">前去设置</a>
                         <span> （供高级用户使用）</span>
                     </p>
+                    <p>
+                        <b>播放器自动化：</b>弹幕载入后，自动
+                        <input id="auto-prevent-shade" type="checkbox">
+                        <label for="auto-prevent-shade">打开防挡字幕</label>
+                        /
+                        <input id="auto-disable-danmu" type="checkbox">
+                        <label for="auto-disable-danmu">关闭弹幕</label>
+                    </p>
+                    
                     <hr>
                     <p>
                         <strong>觉得这些功能很赞？</strong>

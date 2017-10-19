@@ -1,7 +1,7 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "7.2",
+    "version": "7.3",
     "description": "在B站(bilibili.com)看视频时，经常烦恼于低质量的弹幕刷屏？现在只需一键，即可合并那些刷屏的相似弹幕。",
     "icons": {
         "128": "assets/logo.png",
@@ -22,7 +22,7 @@
         "wss://*.bilibili.com/*"
     ],
     "content_security_policy":
-        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://comment.bilibili.com https://comment.bilibili.com; style-src 'self' 'unsafe-inline'",
+        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://comment.bilibili.com https://comment.bilibili.com https://img.shields.io; style-src 'self' 'unsafe-inline'",
     
     "options_ui": {
         "page": "options/options.html",

@@ -4,50 +4,67 @@ var GLOBAL_SWITCH=true;
 var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,\d+,)?(\d+)(?:\.xml)?(\?debug)?$/;
 
 function loadconfig() {
+    // 弹幕合并
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
-    window.MARK_THRESHOLD=parseInt(localStorage['MARK_THRESHOLD']||1);
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
+    // 弹幕套路
+    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
-    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
+    // 例外项
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
-    window.BLACKLIST=fromholyjson(localStorage['BLACKLIST'])||[];
-    window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
-    window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
-    window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
-    window.DANMU_MARK=localStorage['DANMU_MARK'];
-    window.DANMU_SUBSCRIPT=localStorage['DANMU_SUBSCRIPT']==='on';
-    window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
+    // 显示设置
+    window.DANMU_MARK=localStorage['DANMU_MARK'];
+    window.MARK_THRESHOLD=parseInt(localStorage['MARK_THRESHOLD']||1);
+    window.DANMU_SUBSCRIPT=localStorage['DANMU_SUBSCRIPT']==='on';
+    window.POPUP_BADGE=localStorage['POPUP_BADGE'];
+    // 实验室
     window.ENLARGE=localStorage['ENLARGE']==='on';
     window.SHRINK=localStorage['SHRINK']==='on';
+    window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
+    window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
+    window.BLACKLIST=fromholyjson(localStorage['BLACKLIST'])||[];
+    window.AUTO_PREVENT_SHADE=localStorage['AUTO_PREVENT_SHADE']==='on';
+    window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
+    // 其他
+    window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.TOOLTIP=localStorage['TOOLTIP']==='on';
+    
     load_update_breaker();
 }
 function initconfig() {    
+    // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
-    localStorage['MARK_THRESHOLD']=localStorage['MARK_THRESHOLD']||1;
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
+    // 弹幕套路
+    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\s~]+$","yoo..."]]';
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
-    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\s~]+$","yoo..."]]';
+    // 例外项
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
-    localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
-    localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
-    localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
-    localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
-    localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
-    localStorage['DANMU_SUBSCRIPT']=localStorage['DANMU_SUBSCRIPT']||'off';
-    localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
+    // 显示设置
+    localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'suffix';
+    localStorage['MARK_THRESHOLD']=localStorage['MARK_THRESHOLD']||1;
+    localStorage['DANMU_SUBSCRIPT']=localStorage['DANMU_SUBSCRIPT']||'on';
+    localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
+    // 实验室
     localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
     localStorage['SHRINK']=localStorage['SHRINK']||'off';
+    localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
+    localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
+    localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
+    localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
+    localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
+    // 其他
+    localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
     loadconfig();
 }
@@ -69,9 +86,9 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     chrome.notifications.clear(notifid);
 });
 
-function inject_panel(tabid,D) {
+function inject_panel(tabid,D,OPT) {
     chrome.tabs.executeScript(tabid,{
-        code: 'var D='+JSON.stringify(D), // todo: make it less xss-able
+        code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         runAt: 'document_start'
     });
     chrome.tabs.executeScript(tabid,{
@@ -83,7 +100,7 @@ function inject_panel(tabid,D) {
             file: '/tooltip/panel.js',
             runAt: 'document_start'
         });
-    },500);
+    },200);
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
@@ -168,8 +185,13 @@ function load_danmaku(url,id,tabid) {
             title: '已过滤 '+counter+'/'+S.total+' 弹幕',
             tabId: tabid
         });
+        
         if(TOOLTIP)
-            inject_panel(tabid,D);
+            inject_panel(tabid,D,{
+                AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
+                AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU
+            });
+        
         HISTORY[tabid]=S;
         return res;
     } catch(e) {
