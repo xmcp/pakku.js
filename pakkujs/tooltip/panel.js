@@ -334,8 +334,9 @@ function try_inject() {
         var root_elem=list_elem.closest('.bilibili-player');
         if(root_elem) {
             if(OPT['AUTO_PREVENT_SHADE']) {
-                var shade_elem=root_elem.querySelector('input.bilibili-player-setting-preventshade');
+                var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
                 console.log('prevent shade elem ',shade_elem);
+                console.log('!!!',shade_elem.checked);
                 if(shade_elem && !shade_elem.checked)
                     shade_elem.click();
             }
