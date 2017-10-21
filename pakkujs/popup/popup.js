@@ -25,7 +25,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             function(d) {
                 var general = enabled ? '本页面没有发现B站播放器' : 'zzzzzzzzzz'
                 if(d[0] && d[0].id)
-                    chrome.browserAction.getTitle( // fuck chrome APIs
+                    chrome.browserAction.getTitle(
                         {tabId: d[0].id},
                         function(res) {
                             if(res!=='pakku' && res!=='')

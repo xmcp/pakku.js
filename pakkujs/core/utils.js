@@ -36,6 +36,18 @@ var ERROR_COLOR='#ff4444';
 var LOADING_COLOR='#4444ff';
 var SUCCESS_COLOR='#33aa33';
 
+(function() {
+    var now=new Date();
+    if(now.getMonth()==10/*Nov*/ && now.getDate()==1) {
+        console.log('easter egg fired');
+        chrome.browserAction.setIcon({path: '/assets/waifu_display.png'});
+        chrome.browserAction.setTitle({title: '11月1日是星空凛的生日'});
+    } else {
+        chrome.browserAction.setIcon({path: '/assets/icon_display.png'});
+        chrome.browserAction.setTitle({title: 'pakku'});
+    }
+})();
+
 function setbadge(text,color,tabid) {
     chrome.browserAction.setBadgeText({
         text: text,
