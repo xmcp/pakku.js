@@ -8,7 +8,7 @@
 [![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 [![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 
-## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/) （支持 Chrome 和 Firefox）
+## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_1) （支持 Chrome 和 Firefox）
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
@@ -32,4 +32,4 @@ Browser Action ↓
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
 
-#### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/) （支持 Chrome 和 Firefox）
+#### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）
