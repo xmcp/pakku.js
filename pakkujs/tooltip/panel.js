@@ -146,7 +146,7 @@ function _load_uidhash(uidhash,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash+'?_ABOUT_THIS_REQUEST_='+DISCLAIMER);
+    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash+'?_ABOUT='+DISCLAIMER);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
@@ -252,6 +252,12 @@ function try_inject() {
     }
     
     danmu_lists.forEach(function(list_elem) {
+        if(list_elem.classList.contains('__pakku_injected')) {
+            console.log('skipped danmu-list obj ',list_elem);
+            return; // aka continue
+        }
+        list_elem.classList.add('__pakku_injected');
+        
         console.log('bind danmu-list obj ',list_elem);
         var panel_obj=document.createElement('div');
         

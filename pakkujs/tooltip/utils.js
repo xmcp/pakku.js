@@ -1,4 +1,4 @@
-var DISCLAIMER=encodeURIComponent('This request is made by pakku chrome extension. Contact developer: github.com/xmcp/pakku.js/issues/new');
+var DISCLAIMER=encodeURIComponent('Contact developer: github.com/xmcp/pakku.js/issues/new');
 
 function make_p(s) {
     var elem=document.createElement('p');
@@ -47,7 +47,7 @@ function _fix2(a) {
     return a<10 ? '0'+a : ''+a;
 }
 function format_date(x) {
-    return _fix2(x.getFullYear()%100)+'/'+x.getMonth()+'/'+x.getDate();
+    return _fix2(x.getFullYear()%100)+'/'+(x.getMonth()+1)+'/'+x.getDate();
 }
 function format_datetime(x) {
     return format_date(x)+' '+x.getHours()+':'+_fix2(x.getMinutes());
