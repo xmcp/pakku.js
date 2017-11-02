@@ -146,7 +146,8 @@ function _load_uidhash(uidhash,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash);
+    xhr.responseType='text';
+    xhr.open('get','https://biliquery.typcn.com/api/user/hash/'+uidhash);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
@@ -168,7 +169,8 @@ function _load_info(uid,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','//api.bilibili.com/cardrich?type=json&mid='+uid);
+    xhr.responseType='text';
+    xhr.open('get','https://api.bilibili.com/cardrich?type=json&mid='+uid);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;

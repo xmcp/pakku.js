@@ -21,7 +21,7 @@
     XMLHttpRequest.prototype.pakku_open=XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open=function(method,url,async,user,password) {
         this.pakku_url=url;
-        return this.pakku_open(method,url,async,user,password);
+        return this.pakku_open(method,url,async===undefined?true:async,user,password);
     };
     
     XMLHttpRequest.prototype.pakku_addEventListener=XMLHttpRequest.prototype.addEventListener;
@@ -35,7 +35,6 @@
     
     XMLHttpRequest.prototype.pakku_send=XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send=function(arg) {
-        //console.log(this.pakku_url);
         if(this.pakku_url.indexOf('.xml')==-1)
             return this.pakku_send(arg);
         else {
