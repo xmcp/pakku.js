@@ -146,7 +146,7 @@ function _load_uidhash(uidhash,logger,callback) {
         return;
     }
     var xhr=new XMLHttpRequest();
-    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash+'?_ABOUT='+DISCLAIMER);
+    xhr.open('get','//biliquery.typcn.com/api/user/hash/'+uidhash);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;

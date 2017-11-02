@@ -323,7 +323,7 @@ var xhr=new XMLHttpRequest();
 xhr.onload=function() {
     var latest_ver=JSON.parse(this.responseText);
     console.log('latest version ',latest_ver);
-    if(latest_ver.value!=version) {
+    if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
         var note=document.createElement('a');
         note.href='http://s.xmcp.ml/pakkujs/?src=update_banner';
         note.id='update-note';

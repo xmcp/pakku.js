@@ -1,5 +1,3 @@
-var DISCLAIMER=encodeURIComponent('Contact developer: github.com/xmcp/pakku.js/issues/new');
-
 function make_p(s) {
     var elem=document.createElement('p');
     elem.textContent=s;
