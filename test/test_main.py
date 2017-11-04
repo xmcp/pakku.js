@@ -21,6 +21,7 @@ runner.update_settings('TAOLUS','[]')
 runner.update_settings('WHITELIST','[]')
 runner.update_settings('THRESHOLD','20')
 runner.update_settings('MARK_THRESHOLD','1')
+runner.update_settings('HIDE_THRESHOLD','0')
 
 # not tested: FLASH_NOTIF POPUP_BADGE
 
@@ -233,6 +234,14 @@ assert danmus[0].childNodes[0].data=='₍₂₎testｔｅｓｔ[]【】'
 runner.update_settings('DANMU_SUBSCRIPT','off')
 danmus=runner.parse_string(demo('unicode_2'))
 assert danmus[0].childNodes[0].data=='[x2]testｔｅｓｔ[]【】'
+
+print('!= test hide threshold')
+runner.update_settings('HIDE_THRESHOLD',10)
+assert len(runner.parse_string(demo('unicode_10_and_1')))==2
+runner.update_settings('HIDE_THRESHOLD',9)
+assert len(runner.parse_string(demo('unicode_10_and_1')))==1
+runner.update_settings('HIDE_THRESHOLD',0)
+assert len(runner.parse_string(demo('unicode_10_and_1')))==2
 
 print('!= test exception')
 
