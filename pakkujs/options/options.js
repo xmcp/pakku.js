@@ -118,6 +118,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('auto-prevent-shade').checked=localStorage['AUTO_PREVENT_SHADE']==='on';
         id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
+        id('hide-threshold').value=localStorage['HIDE_THRESHOLD'];
         // 其他
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
         id('tooltip').checked=localStorage['TOOLTIP']==='on';
@@ -289,6 +290,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['AUTO_PREVENT_SHADE']=id('auto-prevent-shade').checked?'on':'off';
         localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
+        localStorage['HIDE_THRESHOLD']=parseInt(id('hide-threshold').value)>=0?parseInt(id('hide-threshold').value):0;
         // 其他
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
@@ -309,7 +311,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','popup-badge',
         // 实验室
-        'enlarge','shrink','remove-seek','break-update','auto-prevent-shade','auto-disable-danmu',
+        'enlarge','shrink','remove-seek','break-update','auto-prevent-shade','auto-disable-danmu','hide-threshold',
         // 其他
         'tooltip','flash-notif',
     ].forEach(function(elem) {

@@ -17,21 +17,19 @@
     </style>
 </head>
 <body>
-    <p>弹幕黑名单属于内部测试功能，你可以通过 <code>localStorage['BLACKLIST']</code> 修改黑名单。</p>
-    <p>我为什么要使用这个黑名单功能（而不用B站本来就有的正则表达式屏蔽）：</p>
-    <li>[xN] 标记将不会影响正则表达式匹配</li>
-    <li>使弹幕密度更加准确</li>
-    <li>略微提升性能</li>
+    <p>B站播放器本身已经提供了基于正则表达式的弹幕屏蔽功能。</p>
+    <p>但是，你可能会发现，pakku 为弹幕添加的 [xN] 后缀可能会干扰正则表达式的识别，造成屏蔽失效。</p>
+    <p>如果你遇到了这样的问题，你可以把屏蔽词导入到 pakku 的黑名单中，避免这一问题。</p>
     <p class="warning">此功能面向高级用户。如果你对上述说明存在疑惑，请关闭此页面。</p>
     <p>
         <button type="button" id="clear">清空黑名单</button>
         目前黑名单的数量：<span id="count">...</span>
     </p>
     <textarea id="rules" class="code"><filters>
-    <item enabled="true">r=在此输入正则表达式规则 B站播放器支持导出为XML格式 \</item>
+    <item enabled="true">r=在此输入正则表达式规则 *Tips: 在B站播放器的屏蔽词列表点击右键，选择“导出XML文件” \</item>
 </filters></textarea>
     <p>
-        <button type="button" id="import">从 XML 导入</button>
+        <button type="button" id="import">导入到黑名单</button>
         <a href="https://raw.githubusercontent.com/xmcp/bilibili-ban-list/master/tv.bilibili.player.xml" target="_blank">→ 官方安利 ←</a>
     </p>
     

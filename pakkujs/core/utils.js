@@ -95,6 +95,7 @@ function Status(CID) {
         
         player_seek: 0, // deleted
         blacklist: 0,
+        count_hide: 0,
         
         whitelist: 0, // ignored
         type7: 0,

@@ -30,6 +30,7 @@ function loadconfig() {
     window.BLACKLIST=fromholyjson(localStorage['BLACKLIST'])||[];
     window.AUTO_PREVENT_SHADE=localStorage['AUTO_PREVENT_SHADE']==='on';
     window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
+    window.HIDE_THRESHOLD=parseInt(localStorage['HIDE_THRESHOLD']||0);
     // 其他
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     window.TOOLTIP=localStorage['TOOLTIP']==='on';
@@ -63,6 +64,7 @@ function initconfig() {
     localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
     localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
+    localStorage['HIDE_THRESHOLD']=localStorage['HIDE_THRESHOLD']||0;
     // 其他
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';

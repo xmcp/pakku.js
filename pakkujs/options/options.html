@@ -104,7 +104,7 @@
         }
         #saved-alert {
             position: fixed;
-            top: 10px; right: -5px;
+            top: 35px; right: -5px;
             width: 100px;
             height: 30px;
             line-height: 30px;
@@ -119,8 +119,13 @@
             right: -110px;
             transition: right .2s ease 1s;
         }
-        p.img-panel {
-            margin-top: -.7em;
+        .img-widget p.img-panel {
+            max-height: 50px;
+            overflow-y: hidden;
+            transition: max-height ease-out .3s;
+        }
+        .img-widget:hover p.img-panel {
+            max-height: 410px;
         }
         .img-active {
             border: 2px solid #00aa00;
@@ -274,96 +279,108 @@
                     </form>
                     <div class="list" id="whitelist"></div>
                     <hr>
-                    <p>
-                        <input id="ignore-type7" type="checkbox">
-                        <label for="ignore-type7">放过所有高级弹幕：</label>
-                        <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
-                        <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
-                    </p>
-                    <p>
-                        <input id="ignore-type4" type="checkbox">
-                        <label for="ignore-type4">放过所有底部弹幕：</label>
-                        <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
-                    </p>
-                    <p class="warning">
-                        * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
-                        <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
-                    </p>
+                    <div class="img-widget">
+                        <p>
+                            <input id="ignore-type7" type="checkbox">
+                            <label for="ignore-type7">放过所有高级弹幕：</label>
+                            <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
+                            <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
+                        </p>
+                    </div>
+                    <div class="img-widget">
+                        <p>
+                            <input id="ignore-type4" type="checkbox">
+                            <label for="ignore-type4">放过所有底部弹幕：</label>
+                            <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
+                        </p>
+                        <p class="warning">
+                            * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
+                            <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
+                        </p>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>显示设置</td>
                 <td>
-                    <p>
-                        <label for="danmu-mark">弹幕数量标记 ：</label>
-                        <select id="danmu-mark">
-                            <option value="suffix">显示在结尾</option>
-                            <option value="prefix">显示在开头</option>
-                            <option value="off">不显示</option>
-                        </select>
-                        <span id="mark-threshold-panel">
-                            ，仅当数字大于
-                            <input id="mark-threshold" type="number" min="1" step="1" max="9999">
-                            时显示
-                        </span>
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
-                        <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
-                        <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
-                    </p>
+                    <div class="img-widget">
+                        <p>
+                            <label for="danmu-mark">弹幕数量标记 ：</label>
+                            <select id="danmu-mark">
+                                <option value="suffix">显示在结尾</option>
+                                <option value="prefix">显示在开头</option>
+                                <option value="off">不显示</option>
+                            </select>
+                            <span id="mark-threshold-panel">
+                                ，仅当数字大于
+                                <input id="mark-threshold" type="number" min="1" step="1" max="9999">
+                                时显示
+                            </span>
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
+                            <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
+                            <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
+                        </p>
+                    </div>
                     <p id="danmu-subscript-panel">
                         <input id="danmu-subscript" type="checkbox">
                         <label for="danmu-subscript">显示成下标格式：</label>
                         <span><code class="font-bili-danmu">就像这样₍₂₎</code>，<code class="font-bili-danmu">而不是这样[x2]</code></span>
                     </p>
-                    <p>
-                        <label for="popup-badge">扩展程序角标 </label>
-                        <select id="popup-badge">
-                            <option value="percent">显示被合并弹幕百分比</option>
-                            <option value="count">显示被合并弹幕数量</option>
-                            <option value="off">不显示角标</option>
-                        </select>
-                        <label for="popup-badge">：</label>
-                        <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
-                    </p>
-                    <p class="warning">
-                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
-                        <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
-                        <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
-                    </p>
+                    <div class="img-widget">
+                        <p>
+                            <label for="popup-badge">扩展程序角标 </label>
+                            <select id="popup-badge">
+                                <option value="percent">显示被合并弹幕百分比</option>
+                                <option value="count">显示被合并弹幕数量</option>
+                                <option value="off">不显示角标</option>
+                            </select>
+                            <label for="popup-badge">：</label>
+                            <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
+                        </p>
+                        <p class="warning">
+                            * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
+                            <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
+                            <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
+                        </p>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>实验室</td>
                 <td>
-                    <p>
-                        <input id="enlarge" type="checkbox">
-                        <label for="enlarge">弹幕合并后增大字号：</label>
-                        <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
-                        <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
-                    </p>
-                    <p>
-                        <input id="shrink" type="checkbox">
-                        <label for="shrink">弹幕密度过大时减小字号：</label>
-                        <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
-                    </p>
-                    <p class="img-panel">
-                        <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
-                        <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
-                    </p>
+                    <div class="img-widget">
+                        <p>
+                            <input id="enlarge" type="checkbox">
+                            <label for="enlarge">弹幕合并后增大字号：</label>
+                            <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
+                            <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
+                        </p>
+                    </div>
+                    <div class="img-widget">
+                        <p>
+                            <input id="shrink" type="checkbox">
+                            <label for="shrink">弹幕密度过大时减小字号：</label>
+                            <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
+                        </p>
+                        <p class="img-panel">
+                            <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
+                            <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
+                        </p>
+                    </div>
                     <p>
                         <input id="remove-seek" type="checkbox">
                         <label for="remove-seek">屏蔽跳转脚本：</label>
@@ -392,6 +409,15 @@
                     </p>
                     <p class="warning">
                         * 打开“<a href="#tooltip">弹幕信息显示框</a>”后才生效
+                    </p>
+                    <p>
+                        <label for="hide-threshold">眼不见心不烦模式：</label>
+                        重复数量大于
+                        <input id="hide-threshold" type="number" min="0" step="1" max="999">
+                        的弹幕，直接屏蔽
+                    </p>
+                    <p class="warning">
+                        * 设为 0 来禁用此功能
                     </p>
                     
                     <hr>

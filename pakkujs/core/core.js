@@ -254,6 +254,12 @@ function parse(dom,tabid,S,D) {
         counter+=dm.peers.length-1;
         S.maxcombo=Math.max(S.maxcombo,dm.peers.length);
         
+        if(HIDE_THRESHOLD && HIDE_THRESHOLD<dm.peers.length) {
+            S.count_hide+=1;
+            counter+=1;
+            return; // aka continue
+        }
+        
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
 
@@ -285,6 +291,7 @@ function parse(dom,tabid,S,D) {
     if(!ENLARGE && S.enlarge==0) S.enlarge='已禁用';
     if(!SHRINK && S.shrink==0) S.shrink='已禁用';
     if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';
+    if(!HIDE_THRESHOLD && S.count_hide==0) S.count_hide='已禁用';
     
     var serializer=new XMLSerializer();
     return serializer.serializeToString(new_dom);
