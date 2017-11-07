@@ -126,5 +126,3 @@ function make_crc32_cracker () {
         crack: crack
     };
 }
-
-window.crack_crc32 = make_crc32_cracker();

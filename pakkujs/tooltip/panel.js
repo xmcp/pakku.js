@@ -139,20 +139,10 @@ var style_src=`
 var global_style_obj=document.createElement('style');
 global_style_obj.textContent=style_src;
 
-var _mem_uidhash={};
-function _load_uidhash(uidhash,logger,callback) {
-    if(_mem_uidhash[uidhash]) {
-        return _mem_uidhash[uidhash];
-    }
-    var crack_res = crack_crc32.crack(parseInt(uidhash, 16));
-    if (crack_res.length < 1) {
-        logger.textContent=uidhash+' UID 获取失败';
-        return _mem_uidhash[uidhash] = null;
-    } else {
-        // FIXME: CRC32 collision can and *will* happpen!
-        crack_res.sort();
-        return _mem_uidhash[uidhash] = crack_res[0];
-    }
+var _crc32_cracker=null;
+function _crack_uidhashes(uidhash) {
+    _crc32_cracker=_crc32_cracker||make_crc32_cracker();
+    return _crc32_cracker.crack(parseInt(uidhash,16));
 }
 var _mem_info={};
 function _load_info(uid,logger,callback) {
@@ -184,31 +174,43 @@ function _load_info(uid,logger,callback) {
 
 function query_uid(uidhash,logger) {
     logger.textContent=uidhash+' 正在获取 UID...';
-    var uid = _load_uidhash(uidhash,logger);
-    if (uid !== null) {
-        logger.textContent=uidhash+' ('+uid+') 正在加载个人信息...';
-        _load_info(uid,logger,function(res) {
-            var nickname,lv,exp,regtime;
-            try {
-                nickname=res.data.card.name;
-                lv=res.data.card.level_info.current_level;
-                exp=res.data.card.level_info.current_exp;
-                regtime=new Date(res.data.card.regtime*1000);
-            } catch(e) {
-                logger.innerHTML='';
-                logger.appendChild(make_a(
-                    uidhash+' ('+uid+') 个人信息无效',
+    var uids = _crack_uidhashes(uidhash);
+    if(uids.length) {
+        logger.textContent='';
+        uids.forEach(function(uid) {
+            var subitem=document.createElement('p');
+            subitem.textContent=uid+' 正在加载个人信息...';
+            logger.appendChild(subitem);
+            _load_info(uid,subitem,function(res) {
+                var nickname,lv,exp,regtime;
+                
+                if(!res.data) { // does not exist
+                    subitem.parentNode.removeChild(subitem);
+                    return;
+                }
+                try {
+                    nickname=res.data.card.name;
+                    lv=res.data.card.level_info.current_level;
+                    exp=res.data.card.level_info.current_exp;
+                    regtime=new Date(res.data.card.regtime*1000);
+                } catch(e) {
+                    subitem.textContent='';
+                    subitem.appendChild(make_a(
+                        uid+' 个人信息加载失败',
+                        '//space.bilibili.com/'+uid
+                    ));
+                    throw e;
+                }
+                
+                subitem.textContent='';
+                subitem.appendChild(make_a(
+                    uid+' Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
                     '//space.bilibili.com/'+uid
                 ));
-                throw e;
-            }
-            
-            logger.innerHTML='';
-            logger.appendChild(make_a(
-                uidhash+': Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
-                '//space.bilibili.com/'+uid
-            ));
+            });
         });
+    } else {
+        logger.textContent=uidhash+' UID 不存在';
     }
 }
 
