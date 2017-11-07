@@ -142,25 +142,17 @@ global_style_obj.textContent=style_src;
 var _mem_uidhash={};
 function _load_uidhash(uidhash,logger,callback) {
     if(_mem_uidhash[uidhash]) {
-        callback(_mem_uidhash[uidhash]);
-        return;
+        return _mem_uidhash[uidhash];
     }
-    var xhr=new XMLHttpRequest();
-    xhr.responseType='text';
-    xhr.open('get','https://biliquery.typcn.com/api/user/hash/'+uidhash);
-    xhr.onreadystatechange=function() {
-        if(this.readyState!=4) return;
-        var res;
-        try {
-            if(this.status!=200) throw 1;
-            res=JSON.parse(this.responseText);
-        } catch(e) {
-            logger.textContent=uidhash+' UID 获取失败';
-            throw e;
-        }
-        callback(_mem_uidhash[uidhash]=res);
-    };
-    xhr.send();
+    var crack_res = crack_crc32.crack(parseInt(uidhash, 16));
+    if (crack_res.length < 1) {
+        logger.textContent=uidhash+' UID 获取失败';
+        return _mem_uidhash[uidhash] = null;
+    } else {
+        // FIXME: CRC32 collision can and *will* happpen!
+        crack_res.sort();
+        return _mem_uidhash[uidhash] = crack_res[0];
+    }
 }
 var _mem_info={};
 function _load_info(uid,logger,callback) {
@@ -192,18 +184,8 @@ function _load_info(uid,logger,callback) {
 
 function query_uid(uidhash,logger) {
     logger.textContent=uidhash+' 正在获取 UID...';
-    _load_uidhash(uidhash,logger,function(res) {
-        if(res.error) {
-            logger.textContent=uidhash+' UID 未收录';
-            return;
-        }
-        var uid;
-        try {
-            uid=parseInt(res.data[0].id);
-        } catch(e) {
-            logger.textContent=uidhash+' UID 无效';
-            throw e;
-        }
+    var uid = _load_uidhash(uidhash,logger);
+    if (uid !== null) {
         logger.textContent=uidhash+' ('+uid+') 正在加载个人信息...';
         _load_info(uid,logger,function(res) {
             var nickname,lv,exp,regtime;
@@ -226,8 +208,8 @@ function query_uid(uidhash,logger) {
                 uidhash+': Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
                 '//space.bilibili.com/'+uid
             ));
-        })
-    })
+        });
+    }
 }
 
 console.log('pakku panel: script injected, D.length = '+D.length);
