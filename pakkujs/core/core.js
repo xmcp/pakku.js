@@ -270,8 +270,8 @@ function parse(dom,tabid,S,D) {
         
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
-
         d.appendChild(tn);
+        
         if(ENLARGE) {
             var enlarge_rate=enlarge(dm.peers.length);
             if(enlarge_rate>1.0001)
@@ -284,6 +284,7 @@ function parse(dom,tabid,S,D) {
             var width=get_width(dm.disp_str,dm.size);
             if(width>SCROLL_THRESHOLD) {                
                 dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
+                tn.textContent=dm.disp_str=(attr[1]=='4'?'↓':'↑')+dm.disp_str;
                 attr[1]='1';
                 S.scroll+=1;
             }
@@ -293,6 +294,7 @@ function parse(dom,tabid,S,D) {
         
         if(dm.mode==7)
             dm.disp_str=dm.disp_str.replace(/\/n/g,'');
+        
         apply_danmu(d,dm.desc,dm.peers,dm.disp_str);
     });
     
