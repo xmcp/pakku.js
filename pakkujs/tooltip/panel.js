@@ -1,3 +1,5 @@
+// (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 /*
 var panel_src=`
 <div class="pakku-panel">

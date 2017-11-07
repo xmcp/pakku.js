@@ -1,3 +1,5 @@
+// (C) 2017 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 function make_crc32_cracker () {
 
     var POLY = 0xedb88320;

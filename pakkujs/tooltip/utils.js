@@ -1,3 +1,5 @@
+// (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 function make_p(s) {
     var elem=document.createElement('p');
     elem.textContent=s;
