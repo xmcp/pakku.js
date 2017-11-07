@@ -1,3 +1,5 @@
+// (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 /*
 var panel_src=`
 <div class="pakku-panel">
@@ -139,28 +141,10 @@ var style_src=`
 var global_style_obj=document.createElement('style');
 global_style_obj.textContent=style_src;
 
-var _mem_uidhash={};
-function _load_uidhash(uidhash,logger,callback) {
-    if(_mem_uidhash[uidhash]) {
-        callback(_mem_uidhash[uidhash]);
-        return;
-    }
-    var xhr=new XMLHttpRequest();
-    xhr.responseType='text';
-    xhr.open('get','https://biliquery.typcn.com/api/user/hash/'+uidhash);
-    xhr.onreadystatechange=function() {
-        if(this.readyState!=4) return;
-        var res;
-        try {
-            if(this.status!=200) throw 1;
-            res=JSON.parse(this.responseText);
-        } catch(e) {
-            logger.textContent=uidhash+' UID 获取失败';
-            throw e;
-        }
-        callback(_mem_uidhash[uidhash]=res);
-    };
-    xhr.send();
+var _crc32_cracker=null;
+function _crack_uidhashes(uidhash) {
+    _crc32_cracker=_crc32_cracker||make_crc32_cracker();
+    return _crc32_cracker.crack(parseInt(uidhash,16));
 }
 var _mem_info={};
 function _load_info(uid,logger,callback) {
@@ -192,42 +176,44 @@ function _load_info(uid,logger,callback) {
 
 function query_uid(uidhash,logger) {
     logger.textContent=uidhash+' 正在获取 UID...';
-    _load_uidhash(uidhash,logger,function(res) {
-        if(res.error) {
-            logger.textContent=uidhash+' UID 未收录';
-            return;
-        }
-        var uid;
-        try {
-            uid=parseInt(res.data[0].id);
-        } catch(e) {
-            logger.textContent=uidhash+' UID 无效';
-            throw e;
-        }
-        logger.textContent=uidhash+' ('+uid+') 正在加载个人信息...';
-        _load_info(uid,logger,function(res) {
-            var nickname,lv,exp,regtime;
-            try {
-                nickname=res.data.card.name;
-                lv=res.data.card.level_info.current_level;
-                exp=res.data.card.level_info.current_exp;
-                regtime=new Date(res.data.card.regtime*1000);
-            } catch(e) {
-                logger.innerHTML='';
-                logger.appendChild(make_a(
-                    uidhash+' ('+uid+') 个人信息无效',
+    var uids = _crack_uidhashes(uidhash);
+    if(uids.length) {
+        logger.textContent='';
+        uids.forEach(function(uid) {
+            var subitem=document.createElement('p');
+            subitem.textContent=uid+' 正在加载个人信息...';
+            logger.appendChild(subitem);
+            _load_info(uid,subitem,function(res) {
+                var nickname,lv,exp,regtime;
+                
+                if(!res.data) { // does not exist
+                    subitem.parentNode.removeChild(subitem);
+                    return;
+                }
+                try {
+                    nickname=res.data.card.name;
+                    lv=res.data.card.level_info.current_level;
+                    exp=res.data.card.level_info.current_exp;
+                    regtime=new Date(res.data.card.regtime*1000);
+                } catch(e) {
+                    subitem.textContent='';
+                    subitem.appendChild(make_a(
+                        uid+' 个人信息加载失败',
+                        '//space.bilibili.com/'+uid
+                    ));
+                    throw e;
+                }
+                
+                subitem.textContent='';
+                subitem.appendChild(make_a(
+                    uid+' Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
                     '//space.bilibili.com/'+uid
                 ));
-                throw e;
-            }
-            
-            logger.innerHTML='';
-            logger.appendChild(make_a(
-                uidhash+': Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
-                '//space.bilibili.com/'+uid
-            ));
-        })
-    })
+            });
+        });
+    } else {
+        logger.textContent=uidhash+' UID 不存在';
+    }
 }
 
 console.log('pakku panel: script injected, D.length = '+D.length);
