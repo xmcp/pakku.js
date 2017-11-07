@@ -334,6 +334,15 @@
                         <label for="danmu-subscript">显示成下标格式：</label>
                         <span><code class="font-bili-danmu">就像这样₍₂₎</code>，<code class="font-bili-danmu">而不是这样[x2]</code></span>
                     </p>
+                    <p>
+                        <label for="scroll-threshold">关怀小屏幕用户：</label>
+                        将总长度超过
+                        <input id="scroll-threshold" type="number" min="1" step="1" max="9999">
+                        像素的底部、顶部弹幕转换为滚动弹幕
+                    </p>
+                    <p class="warning">
+                        * 设为 0 来禁用此功能
+                    </p>
                     <div class="img-widget">
                         <p>
                             <label for="popup-badge">扩展程序角标 </label>
@@ -412,9 +421,9 @@
                     </p>
                     <p>
                         <label for="hide-threshold">眼不见心不烦模式：</label>
-                        重复数量大于
+                        不显示重复数量大于
                         <input id="hide-threshold" type="number" min="0" step="1" max="999">
-                        的弹幕，直接屏蔽
+                        的弹幕
                     </p>
                     <p class="warning">
                         * 设为 0 来禁用此功能

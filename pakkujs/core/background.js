@@ -22,6 +22,7 @@ function loadconfig() {
     window.MARK_THRESHOLD=parseInt(localStorage['MARK_THRESHOLD']||1);
     window.DANMU_SUBSCRIPT=localStorage['DANMU_SUBSCRIPT']==='on';
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
+    window.SCROLL_THRESHOLD=parseInt(localStorage['SCROLL_THRESHOLD']||900);
     // 实验室
     window.ENLARGE=localStorage['ENLARGE']==='on';
     window.SHRINK=localStorage['SHRINK']==='on';
@@ -43,7 +44,7 @@ function initconfig() {
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
     // 弹幕套路
-    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\s~]+$","yoo..."]]';
+    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\\\\s~]+$","yoo..."]]';
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
@@ -56,6 +57,7 @@ function initconfig() {
     localStorage['MARK_THRESHOLD']=localStorage['MARK_THRESHOLD']||1;
     localStorage['DANMU_SUBSCRIPT']=localStorage['DANMU_SUBSCRIPT']||'on';
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
+    localStorage['SCROLL_THRESHOLD']=localStorage['SCROLL_THRESHOLD']||900;
     // 实验室
     localStorage['ENLARGE']=localStorage['ENLARGE']||'off';
     localStorage['SHRINK']=localStorage['SHRINK']||'off';

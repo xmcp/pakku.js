@@ -111,6 +111,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
         id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
         id('popup-badge').value=localStorage['POPUP_BADGE'];
+        id('scroll-threshold').value=localStorage['SCROLL_THRESHOLD'];
         // 实验室
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
@@ -283,6 +284,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
         localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
+        localStorage['SCROLL_THRESHOLD']=parseInt(id('scroll-threshold').value)>=0?parseInt(id('scroll-threshold').value):0;
         // 实验室
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
@@ -309,7 +311,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 例外项
         'ignore-type7','ignore-type4',
         // 显示设置
-        'mark-threshold','danmu-mark','danmu-subscript','popup-badge',
+        'mark-threshold','danmu-mark','danmu-subscript','popup-badge','scroll-threshold',
         // 实验室
         'enlarge','shrink','remove-seek','break-update','auto-prevent-shade','auto-disable-danmu','hide-threshold',
         // 其他

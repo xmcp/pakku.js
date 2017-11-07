@@ -42,6 +42,14 @@ function parse(dom,tabid,S,D) {
             return Math.log10(count);
         }
     }
+    
+    // https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript
+    var _get_width_cvs=document.createElement('canvas');
+    function get_width(text,size) {
+        var ctx=_get_width_cvs.getContext('2d');
+        ctx.font=parseInt(size)+'pt 黑体';
+        return ctx.measureText(text).width;
+    }
 
     function make_mark(txt,cnt) {
         function make_cnt(cnt) {
@@ -272,6 +280,14 @@ function parse(dom,tabid,S,D) {
         }
         
         var attr=dm.attr.slice();
+        if(SCROLL_THRESHOLD && (attr[1]=='4'||attr[1]=='5')) {
+            var width=get_width(dm.disp_str,dm.size);
+            if(width>SCROLL_THRESHOLD) {                
+                dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
+                attr[1]='1';
+                S.scroll+=1;
+            }
+        }
         attr[2]=Math.ceil(dm.size);
         d.setAttribute('p',attr.join(','));
         
@@ -292,6 +308,7 @@ function parse(dom,tabid,S,D) {
     if(!SHRINK && S.shrink==0) S.shrink='已禁用';
     if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';
     if(!HIDE_THRESHOLD && S.count_hide==0) S.count_hide='已禁用';
+    if(!SCROLL_THRESHOLD && S.scroll==0) S.scroll='已禁用';
     
     var serializer=new XMLSerializer();
     return serializer.serializeToString(new_dom);

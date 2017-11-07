@@ -104,6 +104,7 @@ function Status(CID) {
         
         enlarge: 0, // modified
         shrink: 0,
+        scroll: 0,
         
         taolu: 0, // other
         total: 0,
