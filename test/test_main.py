@@ -11,8 +11,8 @@ def demo(fn):
 print('== reset settings')
 runner.update_settings('MAX_DIST','0')
 runner.update_settings('MAX_COSINE','1000')
-runner.update_settings('PROC_TYPE7','off')
-runner.update_settings('PROC_TYPE4','off')
+runner.update_settings('PROC_TYPE7','on')
+runner.update_settings('PROC_TYPE4','on')
 runner.update_settings('TRIM_ENDING','off')
 runner.update_settings('TRIM_SPACE','off')
 runner.update_settings('TRIM_WIDTH','off')
@@ -22,6 +22,7 @@ runner.update_settings('WHITELIST','[]')
 runner.update_settings('THRESHOLD','20')
 runner.update_settings('MARK_THRESHOLD','1')
 runner.update_settings('HIDE_THRESHOLD','0')
+runner.update_settings('SCROLL_THRESHOLD','0')
 
 # not tested: FLASH_NOTIF POPUP_BADGE
 
@@ -100,6 +101,18 @@ runner.update_settings('SHRINK','off')
 assert runner.parse_string(demo('different_2'))[0].getAttribute('p').split(',')[2]=='25'
 assert runner.parse_string(demo('different_100'))[0].getAttribute('p').split(',')[2]=='25'
 
+print('!= test scroll threshold')
+
+runner.update_settings('SCROLL_THRESHOLD',50)
+assert runner.parse_string(demo('top'))[0].getAttribute('p').split(',')[1]=='1'
+assert runner.parse_string(demo('bottom_2'))[0].getAttribute('p').split(',')[1]=='1'
+runner.update_settings('SCROLL_THRESHOLD',1000)
+assert runner.parse_string(demo('top'))[0].getAttribute('p').split(',')[1]=='5'
+assert runner.parse_string(demo('bottom_2'))[0].getAttribute('p').split(',')[1]=='4'
+runner.update_settings('SCROLL_THRESHOLD',0)
+assert runner.parse_string(demo('top'))[0].getAttribute('p').split(',')[1]=='5'
+assert runner.parse_string(demo('bottom_2'))[0].getAttribute('p').split(',')[1]=='4'
+
 print('!= test code danmu')
 
 runner.update_settings('REMOVE_SEEK','off')
@@ -112,6 +125,12 @@ danmus=runner.parse_string(demo('code_seek_2'))
 assert len(danmus)==2
 assert danmus[0].getAttribute('p').split(',')[1]=='8' # type == code_danmu
 assert danmus[0].childNodes[0].data.startswith('/*!')
+
+print('!= test bottom danmu')
+runner.update_settings('PROC_TYPE4','off')
+assert len(runner.parse_string(demo('bottom_2')))==2
+runner.update_settings('PROC_TYPE4','on')
+assert len(runner.parse_string(demo('bottom_2')))==1
 
 print('!= test special danmu')
 
