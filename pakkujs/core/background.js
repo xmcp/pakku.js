@@ -96,6 +96,10 @@ function inject_panel(tabid,D,OPT) {
         runAt: 'document_start'
     });
     chrome.tabs.executeScript(tabid,{
+        file: '/tooltip/crc32-crack.js',
+        runAt: 'document_start'
+    });
+    chrome.tabs.executeScript(tabid,{
         file: '/tooltip/utils.js',
         runAt: 'document_start'
     });
