@@ -218,7 +218,7 @@ function query_uid(uidhash,logger) {
 
 console.log('pakku panel: script injected, D.length = '+D.length);
 for(var i=0;i<D.length;i++)
-    D[i].text=D[i].text.replace(/[\r\n\t]/g,'');
+    D[i].text=D[i].text.replace(/([\r\n\t]|\/n)/g,'');
 
 var try_left=50;
 function try_inject() {
@@ -265,7 +265,7 @@ function try_inject() {
         list_elem.addEventListener('click',function(e) {
             var dm_obj=e.target.parentElement;
             if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
-                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title.replace(/[\r\n\t]/g,'');
+                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title.replace(/([\r\n\t]|\/n)/g,'');
                 var dmno=parseInt(dm_obj.getAttribute('dmno'));
                 var text_container=panel_obj.querySelector('.pakku-panel-text'),
                     desc_container=panel_obj.querySelector('.pakku-panel-desc'),

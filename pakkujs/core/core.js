@@ -48,7 +48,7 @@ function parse(dom,tabid,S,D) {
     function get_width(text,size) {
         var ctx=_get_width_cvs.getContext('2d');
         ctx.font=parseInt(size)+'pt 黑体';
-        return ctx.measureText(text).width;
+        return ctx.measureText(text.replace(/\/n/g,'')).width;
     }
 
     function make_mark(txt,cnt) {
@@ -106,7 +106,7 @@ function parse(dom,tabid,S,D) {
         try {
             text=JSON.parse(text)[4];
         } catch(e) {}
-        return text.replace(/\/n/g,''); // remove "/n"
+        return text.replace(/\/n/g,'');
     }
     
     function build_text(elem) {
@@ -171,7 +171,7 @@ function parse(dom,tabid,S,D) {
                 S.whitelist++;
                 apply_danmu(elem,['命中白名单']);
             } else {
-                var disp_str=mode=='7' ? ext_special_danmu(str) : str;
+                var disp_str=mode=='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');
                 danmus.push({
                     attr: attr, // thus we can build it into new_dom again
                     str: detaolu(disp_str),
