@@ -281,12 +281,12 @@ function try_inject() {
                 
                 var info=null;
                 // the list might be sorted in a wrong way, so let's guess the index
-                if(D[dmno] && D[dmno].text===dm_str)
+                if(D[dmno] && D[dmno].text.indexOf(dm_str)===0)
                     info=D[dmno];
                 else {
                     var cnt=0;
                     for(var i=0;i<D.length;i++)
-                        if(D[i].text===dm_str) {
+                        if(D[i].text.indexOf(dm_str)===0) {
                             info=D[i];
                             cnt++;
                         }

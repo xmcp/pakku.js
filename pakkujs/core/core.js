@@ -149,7 +149,7 @@ function parse(dom,tabid,S,D) {
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             var mode=attr[1];
 
-            if(mode!=='8' && blacklisted(str)) {
+            if(mode!=='8' && mode !== '9' && blacklisted(str)) {
                 S.blacklist++;
                 return; // aka continue
             }
@@ -167,6 +167,9 @@ function parse(dom,tabid,S,D) {
                 }
                 S.script++;
                 apply_danmu(elem,['已忽略代码弹幕']);
+            } else if(mode=='9') { // bas danmu
+                S.script++;
+                apply_danmu(elem,['已忽略 BAS 弹幕']);
             } else if(whitelisted(str)) {
                 S.whitelist++;
                 apply_danmu(elem,['命中白名单']);
