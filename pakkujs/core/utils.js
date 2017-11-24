@@ -101,6 +101,7 @@ function Status(CID) {
         type7: 0,
         type4: 0,
         script: 0,
+        bas: 0,
         
         enlarge: 0, // modified
         shrink: 0,
