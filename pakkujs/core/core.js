@@ -167,8 +167,8 @@ function parse(dom,tabid,S,D) {
                 }
                 S.script++;
                 apply_danmu(elem,['已忽略代码弹幕']);
-            } else if (mode == '9') { // BAS Danmuku
-                S.bas++;
+            } else if(mode=='9') { // bas danmu
+                S.script++;
                 apply_danmu(elem,['已忽略 BAS 弹幕']);
             } else if(whitelisted(str)) {
                 S.whitelist++;
