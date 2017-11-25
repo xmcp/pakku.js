@@ -26,7 +26,9 @@ function proc_mode(mode) {
         case 5: return '↑↑';
         case 6: return 'R→';
         case 7: return '**';
-        default: return '['+mode+']';
+        case 8: return '[CODE]';
+        case 9: return '[BAS]';
+        default: return '[MODE'+mode+']';
     }
 }
 

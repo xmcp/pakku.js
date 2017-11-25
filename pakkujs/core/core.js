@@ -148,6 +148,18 @@ function parse(dom,tabid,S,D) {
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             var mode=attr[1];
+            var disp_str=mode=='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
+            var dm_obj={
+                attr: attr, // thus we can build it into new_dom again
+                str: detaolu(disp_str),
+                orig_str: str,
+                disp_str: disp_str,
+                time: parseFloat(attr[0]),
+                mode: mode,
+                size: parseFloat(attr[2]),
+                desc: [], // for D
+                peers: []
+            };
 
             if(mode!=='8' && mode !== '9' && blacklisted(str)) {
                 S.blacklist++;
@@ -156,36 +168,25 @@ function parse(dom,tabid,S,D) {
             
             if(!PROC_TYPE7 && mode=='7') { // special danmu
                 S.type7++;
-                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改']);
+                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
             } else if(!PROC_TYPE4 && mode=='4') { // bottom danmu
                 S.type4++;
-                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改']);
+                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
             } else if(mode=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
                 S.script++;
-                apply_danmu(elem,['已忽略代码弹幕']);
+                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
             } else if(mode=='9') { // bas danmu
                 S.script++;
-                apply_danmu(elem,['已忽略 BAS 弹幕']);
+                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
             } else if(whitelisted(str)) {
                 S.whitelist++;
-                apply_danmu(elem,['命中白名单']);
+                apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')]);
             } else {
-                var disp_str=mode=='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');
-                danmus.push({
-                    attr: attr, // thus we can build it into new_dom again
-                    str: detaolu(disp_str),
-                    orig_str: str,
-                    disp_str: disp_str,
-                    time: parseFloat(attr[0]),
-                    mode: mode,
-                    size: parseFloat(attr[2]),
-                    desc: [], // for D
-                    peers: []
-                });
+                danmus.push(dm_obj);
             }
         } else // not danmu
             i_elem.appendChild(elem);

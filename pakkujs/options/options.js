@@ -321,6 +321,15 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
 });
 
+[].slice.call(document.querySelectorAll('.donate')).forEach(function(elem) {
+    elem.addEventListener('mouseover',function() {
+        document.body.classList.add('donate-show');
+    });
+    elem.addEventListener('mouseout',function() {
+        document.body.classList.remove('donate-show');
+    });
+})
+
 // version check
 var xhr=new XMLHttpRequest();
 /*for-firefox: xhr.open('get','https://img.shields.io/amo/v/pakkujs.json'); // */ xhr.open('get','https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json');
@@ -334,6 +343,8 @@ xhr.onload=function() {
         note.target='_blank';
         note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';
         document.body.appendChild(note);
+    } else {
+        id('version-checker').textContent='✓ 是最新版本';
     }
 };
 xhr.send();

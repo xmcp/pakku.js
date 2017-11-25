@@ -41,7 +41,7 @@ function make_panel_dom() {
 var style_src=`
 
 .pakku-panel {
-    background-color: rgba(243,243,243,.8);
+    background-color: rgba(247,247,247,.8);
     color: black;
     width: 300px;
     position: absolute;
@@ -109,9 +109,10 @@ var style_src=`
 }
 .pakku-panel-peers p:nth-child(2) {
     display: none;
+    font-weight: normal;
 }
 .pakku-panel-footer:empty::after {
-    content: '可以在 pakku 的选项中关闭弹幕信息显示框';
+    content: '在列表中点击来查询弹幕发送者';
 }
 
 .pakku-panel-peers div {
@@ -126,10 +127,10 @@ var style_src=`
     display: initial;
 }
 .pakku-panel-peers div.black {
-    background-color: rgba(0,0,0,.8);
+    background-color: rgba(32,32,32,.8);
 }
 .pakku-panel-peers div.white {
-    background-color: rgba(255,255,255,.8);
+    background-color: rgba(223,223,223,.8);
 }
 .pakku-panel-peers div.black:hover {
     background-color: rgba(0,0,0,1);
@@ -265,7 +266,9 @@ function try_inject() {
         list_elem.addEventListener('click',function(e) {
             var dm_obj=e.target.parentElement;
             if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
-                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title.replace(/([\r\n\t]|\/n)/g,'');
+                var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title;
+                var dm_ultralong=dm_str.length>498;
+                dm_str=dm_str.replace(/([\r\n\t]|\/n)/g,'');
                 var dmno=parseInt(dm_obj.getAttribute('dmno'));
                 var text_container=panel_obj.querySelector('.pakku-panel-text'),
                     desc_container=panel_obj.querySelector('.pakku-panel-desc'),
@@ -281,12 +284,12 @@ function try_inject() {
                 
                 var info=null;
                 // the list might be sorted in a wrong way, so let's guess the index
-                if(D[dmno] && D[dmno].text.indexOf(dm_str)===0)
+                if(D[dmno] && (dm_ultralong ? D[dmno].text.indexOf(dm_str)===0 : D[dmno].text===dm_str))
                     info=D[dmno];
                 else {
                     var cnt=0;
                     for(var i=0;i<D.length;i++)
-                        if(D[i].text.indexOf(dm_str)===0) {
+                        if((dm_ultralong ? D[i].text.indexOf(dm_str)===0 : D[i].text===dm_str)) {
                             info=D[i];
                             cnt++;
                         }

@@ -2,21 +2,19 @@
 <head>
     <meta charset="utf-8">
     <title>pakku :: 选项</title>
+    <link rel="stylesheet" href="/assets/icomoon/icon.css">
     <style>
         body {
-            background-color: #f3f3f3;
+            background-color: #f7f7f7;
             font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
             min-width: 800px;
+            margin: 0;
         }
         .hidden {
             display: none;
         }
         .font-bili-danmu {
             font-family: SimHei, "Microsoft JhengHei", Arial, Helvetica, sans-serif;
-        }
-        #container {
-            max-width: 950px;
-            margin: auto;
         }
         a {
             color: #000077;
@@ -28,16 +26,13 @@
             border-top: 1px solid #aaa;
             margin: 2em 0 2em 0;
         }
-        #title small {
+        #title {
             font-size: 18px;
             vertical-align: middle;
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
         }
-        #title {
+        #logo-text {
             font-size: 50px;
-            font-family: Consolas, Courier, monospace;
-            margin: 0;
-            padding: 10px 0 10px 0;
-            text-align: center;
         }
         #title img {
             vertical-align: middle;
@@ -55,7 +50,7 @@
             margin-bottom: 1em;
         }
         p.warning {
-            margin-top: -1em;
+            margin-top: -.7em;
             margin-left: 3em;
             color: rgba(0,0,0,.8);
             font-size: .85em;
@@ -72,19 +67,32 @@
             border-spacing: 0;
             width: 100%;
         }
+        tr {
+            transition: background-color, box-shadow 200ms;
+        }
+        tr:hover:not(#title) {
+            background-color: #fcfcfc;
+            box-shadow: 0 2px 25px rgba(0,0,0,.3);
+        }
         td {
             border-top: 1px solid #aaa;
             padding: 1em;
         }
-        tr:hover {
-            background-color: #fafafa;
+        td:nth-child(1), td:nth-child(4) {
+            width: calc(50% - 450px);
         }
-        td:nth-child(1) {
-            font-weight: bold;
+        td:nth-child(2) {
+            min-width: 150px;
+            width: 150px;
+            font-size: 1.5em;
             padding-right: 1em;
-            padding-top: 2em;
+            padding-top: 1em;
             text-align: right;
             vertical-align: top;
+        }
+        td:nth-child(3) {
+            min-width: 750px;
+            width: 750px;
         }
         .list {
             margin-bottom: 1em;
@@ -119,13 +127,22 @@
             right: -110px;
             transition: right .2s ease 1s;
         }
-        .img-widget p.img-panel {
-            max-height: 50px;
-            overflow-y: hidden;
-            transition: max-height ease-out .3s;
+        td p {
+            position: relative;
         }
-        .img-widget:hover p.img-panel {
-            max-height: 410px;
+        .img-panel {
+            position: absolute;
+            bottom: 2em;
+            left: -50px;
+            width: 850px;
+            display: none;
+            pointer-events: none;
+        }
+        p:hover .img-panel {
+            display: inline-block;
+        }
+        .darkblue, .icon-image {
+            color: darkblue;
         }
         .img-active {
             border: 2px solid #00aa00;
@@ -133,19 +150,15 @@
         .img-inactive {
             cursor: pointer;
             border: 2px solid #ff4444;
-            filter: blur(1px) brightness(.7) contrast(.5);
-            -webkit-filter: blur(1px) brightness(.7) contrast(.5);
-        }
-        .img-inactive:hover {
-            filter: brightness(.9) contrast(.8);
-            -webkit-filter: brightness(.9) contrast(.8);
+            filter: brightness(.8) contrast(.5);
+            -webkit-filter: brightness(.8) contrast(.5);
         }
         #highlighter {
             position: relative;
             top: -0.25em;
-            left: -2em;
-            width: 2em;
-            margin-right: -2em;
+            left: -5em;
+            width: 5em;
+            margin-right: -5em;
             font-size: 2em;
             float: left;
             animation: highlight-blink 1s 2;
@@ -171,21 +184,46 @@
             line-height: 30px;
             text-align: center;
         }
+        #version-checker {
+            font-size: .8em;
+            opacity: .6;
+        }
+        #donate-img {
+            display: none;
+            position: fixed;
+            z-index: 999;
+        }
+        .donate-show #donate-img {
+            display: initial;
+            width: 350px; height: 350px;
+            margin: auto;
+            top: 0; bottom: 0; left: 0; right: 0;
+            border: 5px solid #22AB39;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body><div id="container">
-    <p id="title">
-        <span>pakku</span>
-        <img src="../assets/logo.png" height="128" width="128">
-        <small>
-            <span id="version"></span>
-            <a href="https://github.com/xmcp/pakku.js" target="_blank">by @xmcp</a>
-        </small>
-    </p>
-    
-    <table>
+<body>
+    <table class="full-width">
         <tbody>
+            <tr id="title">
+                <td></td>
+                <td>
+                    <img src="../assets/logo.png" height="128" width="128">
+                </td>
+                <td>
+                    <p><span id="logo-text">pakku <small>:: 哔哩哔哩弹幕过滤器</small></span></p>
+                    <p>
+                        <span id="version"></span> by @xmcp 
+                        <a class="donate"><span class="icon-coin"></span>打赏</a>
+                        <a href="https://github.com/xmcp/pakku.js/issues" target="_blank"><span class="icon-github"></span>报告问题</a>
+                        <span id="version-checker"></span>
+                    </p>
+                </td>
+                <td></td>
+            </tr>
             <tr>
+                <td></td>
                 <td>弹幕合并</td>
                 <td>
                     <p>
@@ -232,8 +270,10 @@
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
                     </p>
                 </td>
+                <td></td>
             </tr>
             <tr>
+                <td></td>
                 <td>弹幕套路</td>
                 <td>
                     <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
@@ -247,7 +287,6 @@
                         </p>
                     </form>
                     <div class="list" id="taolus"></div>
-                    <hr>
                     <p>
                         <input id="trim-ending" type="checkbox">
                         <label for="trim-ending">忽略末尾标点：</label>
@@ -265,8 +304,10 @@
                         <span>"<code>-1s</code>" 和 "<code>－１s</code>" 将合并为 "<code>-1s [x2]</code>"</span>
                     </p>
                 </td>
+                <td></td>
             </tr>
             <tr>
+                <td></td>
                 <td>例外项</td>
                 <td>
                     <p>你可以设置基于弹幕内容的白名单，属于白名单的弹幕永远不会被合并：</p>
@@ -278,56 +319,52 @@
                         </p>
                     </form>
                     <div class="list" id="whitelist"></div>
-                    <hr>
-                    <div class="img-widget">
-                        <p>
-                            <input id="ignore-type7" type="checkbox">
-                            <label for="ignore-type7">放过所有高级弹幕：</label>
-                            <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
-                        </p>
-                        <p class="img-panel">
+                    <p>
+                        <input id="ignore-type7" type="checkbox">
+                        <label for="ignore-type7">放过所有高级弹幕 <span class="icon-image"></span>：</label>
+                        <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
+                        <span class="img-panel">
                             <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
                             <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
-                        </p>
-                    </div>
-                    <div class="img-widget">
-                        <p>
-                            <input id="ignore-type4" type="checkbox">
-                            <label for="ignore-type4">放过所有底部弹幕：</label>
-                            <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
-                        </p>
-                        <p class="warning">
-                            * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
-                        </p>
-                        <p class="img-panel">
+                        </span>
+                    </p>
+                    <p>
+                        <input id="ignore-type4" type="checkbox">
+                        <label for="ignore-type4">放过所有底部弹幕 <span class="icon-image"></span>：</label>
+                        <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
+                        <span class="img-panel">
                             <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
                             <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
-                        </p>
-                    </div>
+                        </span>
+                    </p>
+                    <p class="warning">
+                        * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
+                    </p>
                 </td>
+                <td></td>
             </tr>
             <tr>
+                <td></td>
                 <td>显示设置</td>
                 <td>
-                    <div class="img-widget">
-                        <p>
-                            <label for="danmu-mark">弹幕数量标记 ：</label>
-                            <select id="danmu-mark">
-                                <option value="suffix">显示在结尾</option>
-                                <option value="prefix">显示在开头</option>
-                                <option value="off">不显示</option>
-                            </select>
-                            <span id="mark-threshold-panel">
-                                ，仅当数字大于
-                                <input id="mark-threshold" type="number" min="1" step="1" max="9999">
-                                时显示
-                            </span>
-                        </p>
-                        <p class="img-panel">
+                    <p>
+                        <label for="danmu-mark">弹幕数量标记 <span class="icon-image"></span> </label>
+                        <select id="danmu-mark">
+                            <option value="suffix">显示在结尾</option>
+                            <option value="prefix">显示在开头</option>
+                            <option value="off">不显示</option>
+                        </select>
+                        <span id="mark-threshold-panel">
+                            ，仅当数字大于
+                            <input id="mark-threshold" type="number" min="1" step="1" max="9999">
+                            时显示
+                        </span>
+                        <span class="img-panel">
                             <img src="img/danmu-suffix.png" height="100" width="200" data-name="DANMU_MARK" data-value="suffix">
                             <img src="img/danmu-prefix.png" height="100" width="200" data-name="DANMU_MARK" data-value="prefix">
                             <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
-                        </p>
+                        </span>
+                    </p>
                     </div>
                     <p id="danmu-subscript-panel">
                         <input id="danmu-subscript" type="checkbox">
@@ -343,52 +380,50 @@
                     <p class="warning">
                         * 设为 0 来禁用此功能
                     </p>
-                    <div class="img-widget">
-                        <p>
-                            <label for="popup-badge">扩展程序角标 </label>
-                            <select id="popup-badge">
-                                <option value="percent">显示被合并弹幕百分比</option>
-                                <option value="count">显示被合并弹幕数量</option>
-                                <option value="off">不显示角标</option>
-                            </select>
-                            <label for="popup-badge">：</label>
-                            <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
-                        </p>
-                        <p class="warning">
-                            * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
-                        </p>
-                        <p class="img-panel">
+                    <p>
+                        <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
+                        <select id="popup-badge">
+                            <option value="percent">显示被合并弹幕百分比</option>
+                            <option value="count">显示被合并弹幕数量</option>
+                            <option value="off">不显示角标</option>
+                        </select>
+                        <label for="popup-badge">：</label>
+                        <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
+                        <span class="img-panel">
                             <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
                             <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
                             <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
-                        </p>
-                    </div>
+                        </span>
+                    </p>
+                    <p class="warning">
+                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
+                    </p>
                 </td>
+                <td></td>
             </tr>
             <tr>
+                <td></td>
                 <td>实验室</td>
                 <td>
-                    <div class="img-widget">
-                        <p>
-                            <input id="enlarge" type="checkbox">
-                            <label for="enlarge">弹幕合并后增大字号：</label>
-                            <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
-                        </p>
-                        <p class="img-panel">
+                    <p>
+                        <input id="enlarge" type="checkbox">
+                        <label for="enlarge">弹幕合并后增大字号 <span class="icon-image"></span>：</label>
+                        <span>超过10条弹幕合并后字号将相应变大，避免内容被忽略</span>
+                        <span class="img-panel">
                             <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
                             <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
-                        </p>
+                        </span>
+                    </p>
                     </div>
-                    <div class="img-widget">
-                        <p>
-                            <input id="shrink" type="checkbox">
-                            <label for="shrink">弹幕密度过大时减小字号：</label>
-                            <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
-                        </p>
-                        <p class="img-panel">
+                    <p>
+                        <input id="shrink" type="checkbox">
+                        <label for="shrink">弹幕密度过大时减小字号 <span class="icon-image"></span>：</label>
+                        <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
+                        <span class="img-panel">
                             <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
                             <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
-                        </p>
+                        </span>
+                    </p>
                     </div>
                     <p>
                         <input id="remove-seek" type="checkbox">
@@ -417,7 +452,7 @@
                         <label for="auto-disable-danmu">关闭弹幕</label>
                     </p>
                     <p class="warning">
-                        * 打开“<a href="#tooltip">弹幕信息显示框</a>”后才生效
+                        * 选中后面的“<a href="#tooltip">弹幕信息显示框</a>”选项才生效
                     </p>
                     <p>
                         <label for="hide-threshold">眼不见心不烦模式：</label>
@@ -428,26 +463,20 @@
                     <p class="warning">
                         * 设为 0 来禁用此功能
                     </p>
-                    
-                    <hr>
-                    <p>
-                        <strong>觉得这些功能很赞？</strong>
-                        请把 pakku ( <code>http://s.xmcp.ml/pakku</code> ) 安利给更多的小伙伴们 _(:3」∠)_
-                    </p>
-                    <p>
-                        <strong>想添加更多功能？</strong>
-                        把你的脑洞 <a href="https://www.zhihu.com/people/xmcp" target="_blank">知乎私信给开发者</a>
-                        或者 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">丢到 GitHub 上</a>
-                    </p>
                 </td>
+                <td></td>
             </tr>
             <tr>
-                <td>其他</td>
+                <td></td>
+                <td>其他设置</td>
                 <td>
                     <p>
                         <input id="tooltip" type="checkbox">
-                        <label for="tooltip">弹幕信息显示框：</label>
+                        <label for="tooltip">弹幕信息显示框 <span class="icon-image"></span>：</label>
                         <span>在弹幕列表中点击即可显示这条弹幕的详细信息</span>
+                        <span class="img-panel">
+                            <img src="img/tooltip.png" height="300" width="600" data-name="TOOLTIP" data-value="on">
+                        </span>
                     </p>
                     <p class="warning">
                         * 还可以查询弹幕发送者。
@@ -467,24 +496,54 @@
                         * 你的所有设置，包括 <b>弹幕套路</b> 和 <b>白名单</b>，都将会被重置为默认值。
                     </p>
                 </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>关于</td>
+                <td>
+                    <p>
+                        <strong>xmcp/pakku.js</strong>
+                        在 <a href="https://github.com/xmcp/pakku.js/" target="_blank"><a href="https://github.com/xmcp/pakku.js/issues" target="_blank"><span class="icon-github"></span>GitHub</a> 开放源代码。
+                        使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>。
+                    </p>
+                    <p class="donate">
+                        <strong>我，开发者，打钱 <span class="icon-coin darkblue"></span></strong>
+                        欢迎使用微信投喂开发者 (｀・ω・´)
+                    </p>
+                    <hr>
+                    <p>
+                        <strong>觉得 pakku 很赞？</strong>
+                        请把 pakku ( <code>http://s.xmcp.ml/pakku</code> ) 安利给更多的小伙伴们 _(:3」∠)_
+                    </p>
+                    <p>
+                        <strong>或者给个五星好评吧！</strong>
+                        <a href="https://chrome.google.com/webstore/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh/reviews" target="_blank">
+                            <span class="icon-chrome"></span>
+                            Chrome 用户点我评分
+                        </a>（需要魔法上网）；
+                        <a href="https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/reviews/" target="_blank">
+                            <span class="icon-firefox"></span>
+                            Firefox 用户点我评分
+                        </a> 。
+                    </p>
+                    <p>
+                        <strong>想要更多功能？</strong>
+                        把你的脑洞 <a href="https://www.zhihu.com/people/xmcp" target="_blank">知乎私信给开发者</a>
+                        或者 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">丢到 GitHub 上</a>
+                    </p>
+                </td>
+                <td></td>
             </tr>
         </tbody>
     </table>
     
-    <br>
+    <br><br>
     
-    <p><small>
-        请使用 <a href="http://www.bilibili.com/blackboard/help.html#p" target="_blank">哔哩哔哩 HTML5 播放器</a> /
-        在 <a href="https://github.com/xmcp/pakku.js/" target="_blank">GitHub</a> 开放源代码 /
-        如有问题请 <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">去 GitHub 提交 Issue</a> 或 <a href="https://www.zhihu.com/people/xmcp" target="_blank">知乎私信开发者</a> /
-        使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>
-    </small></p>
-    
-    <br>
-
     <div id="saved-alert" class="saved-hidden">✓ 已保存</div>
+    <img id="donate-img" src="http://s.xmcp.ml/pakkujs/donate.png">
     
     <script src="options.js"></script>
     <iframe src="http://s.xmcp.ml/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>
-</div></body>
+</body>
 </html>
