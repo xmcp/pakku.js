@@ -5,7 +5,7 @@
 [![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 /
 [![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
-[![Mozilla Add-on - Downloads](https://img.shields.io/amo/d/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Downloads](https://img.shields.io/amo/users/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 [![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 
 ## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_1) （支持 Chrome 和 Firefox）
@@ -24,11 +24,11 @@
 
 Browser Action ↓
 
-![browser_action](https://user-images.githubusercontent.com/6646473/27863234-b1e279b4-61bb-11e7-985e-f4c7e2eb8ef5.png)
+![browser_action](https://user-images.githubusercontent.com/6646473/33228331-7634e16a-d1f3-11e7-959e-900e94c4dda2.png)
 
-弹幕信息显示 ↓
+弹幕信息显示（支持查询弹幕发送者） ↓
 
-![tooltip](https://user-images.githubusercontent.com/6646473/27863237-b4798dc0-61bb-11e7-912e-5f534adc32ec.png)
+![tooltip](https://user-images.githubusercontent.com/6646473/33228335-9a230cd2-d1f3-11e7-8a1f-96adc513f752.png)
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
 
