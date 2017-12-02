@@ -333,7 +333,6 @@ function try_inject() {
             if(OPT['AUTO_PREVENT_SHADE']) {
                 var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
                 console.log('prevent shade elem ',shade_elem);
-                console.log('!!!',shade_elem.checked);
                 if(shade_elem && !shade_elem.checked)
                     shade_elem.click();
             }
@@ -342,6 +341,11 @@ function try_inject() {
                 console.log('disable danmu elem ',disable_elem);
                 if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
                     disable_elem.click();
+            }
+            if(OPT['FLUCTLIGHT']) {
+                var seekbar=root_elem.querySelector('.bilibili-player-video-progress-detail');
+                console.log('seekbar fluctlight ',seekbar);
+                bind_seekbar(seekbar);
             }
         }
     });

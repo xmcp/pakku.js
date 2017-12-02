@@ -269,24 +269,6 @@
                         * 能有效击杀 "<code>yeah!~</code>" 和 "<code>yeah!~yeah!~yeah!~yeah!~</code>" 等。
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
                     </p>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>弹幕套路</td>
-                <td>
-                    <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
-                    <form id="newtaolu-form">
-                        <p>
-                            <input id="newtaolu-pattern" placeholder="正则表达式" required>
-                            →
-                            <input id="newtaolu-name" placeholder="替换文本" required>
-                            <button type="submit">添加</button>
-                            &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
-                        </p>
-                    </form>
-                    <div class="list" id="taolus"></div>
                     <p>
                         <input id="trim-ending" type="checkbox">
                         <label for="trim-ending">忽略末尾标点：</label>
@@ -308,7 +290,25 @@
             </tr>
             <tr>
                 <td></td>
-                <td>例外项</td>
+                <td>弹幕特征</td>
+                <td>
+                    <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
+                    <form id="newtaolu-form">
+                        <p>
+                            <input id="newtaolu-pattern" placeholder="正则表达式" required>
+                            →
+                            <input id="newtaolu-name" placeholder="替换文本" required>
+                            <button type="submit">添加</button>
+                            &nbsp; <small><a href="regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
+                        </p>
+                    </form>
+                    <div class="list" id="taolus"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>白名单</td>
                 <td>
                     <p>你可以设置基于弹幕内容的白名单，属于白名单的弹幕永远不会被合并：</p>
                     <form id="newwhitelist-form">
@@ -365,46 +365,11 @@
                             <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
                         </span>
                     </p>
-                    </div>
                     <p id="danmu-subscript-panel">
                         <input id="danmu-subscript" type="checkbox">
-                        <label for="danmu-subscript">显示成下标格式：</label>
+                        <label for="danmu-subscript">数量标记显示成下标：</label>
                         <span><code class="font-bili-danmu">就像这样₍₂₎</code>，<code class="font-bili-danmu">而不是这样[x2]</code></span>
                     </p>
-                    <p>
-                        <label for="scroll-threshold">关怀小屏幕用户：</label>
-                        将总长度超过
-                        <input id="scroll-threshold" type="number" min="1" step="1" max="9999">
-                        像素的底部、顶部弹幕转换为滚动弹幕
-                    </p>
-                    <p class="warning">
-                        * 设为 0 来禁用此功能
-                    </p>
-                    <p>
-                        <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
-                        <select id="popup-badge">
-                            <option value="percent">显示被合并弹幕百分比</option>
-                            <option value="count">显示被合并弹幕数量</option>
-                            <option value="off">不显示角标</option>
-                        </select>
-                        <label for="popup-badge">：</label>
-                        <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
-                        <span class="img-panel">
-                            <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
-                            <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
-                            <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
-                        </span>
-                    </p>
-                    <p class="warning">
-                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
-                    </p>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>实验室</td>
-                <td>
                     <p>
                         <input id="enlarge" type="checkbox">
                         <label for="enlarge">弹幕合并后增大字号 <span class="icon-image"></span>：</label>
@@ -414,7 +379,6 @@
                             <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
                         </span>
                     </p>
-                    </div>
                     <p>
                         <input id="shrink" type="checkbox">
                         <label for="shrink">弹幕密度过大时减小字号 <span class="icon-image"></span>：</label>
@@ -424,7 +388,48 @@
                             <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
                         </span>
                     </p>
-                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+            <td></td>
+            <td>播放器增强</td>
+            <td>
+                    <p>
+                        <input id="tooltip" type="checkbox">
+                        <label for="tooltip">弹幕信息显示框 <span class="icon-image"></span>：</label>
+                        <span>在弹幕列表中点击即可显示这条弹幕的详细信息</span>
+                        <span class="img-panel">
+                            <img src="img/tooltip.png" height="300" width="600" data-name="TOOLTIP" data-value="on">
+                        </span>
+                    </p>
+                    <p class="warning">
+                        * 还可以查询弹幕发送者。
+                        感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
+                    </p>
+                    <p id="auto-panel">
+                        <b>播放器自动化：</b>弹幕载入后，自动
+                        <input id="auto-prevent-shade" type="checkbox">
+                        <label for="auto-prevent-shade">打开防挡字幕</label>
+                        /
+                        <input id="auto-disable-danmu" type="checkbox">
+                        <label for="auto-disable-danmu">关闭弹幕</label>
+                    </p>
+                    <p id="fluctlight-panel">
+                        <input id="fluctlight" type="checkbox">
+                        <label for="fluctlight">缩略图上方显示弹幕列表 <span class="icon-image"></span></label>
+                        <span class="img-panel">
+                            <img src="img/fluctlight.png" height="240" width="300" data-name="FLUCTLIGHT" data-value="on">
+                        </span>
+                    </p>
+                
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>实验室</td>
+                <td>
                     <p>
                         <input id="remove-seek" type="checkbox">
                         <label for="remove-seek">屏蔽跳转脚本：</label>
@@ -444,21 +449,19 @@
                         <span> （供高级用户使用）</span>
                     </p>
                     <p>
-                        <b>播放器自动化：</b>弹幕载入后，自动
-                        <input id="auto-prevent-shade" type="checkbox">
-                        <label for="auto-prevent-shade">打开防挡字幕</label>
-                        /
-                        <input id="auto-disable-danmu" type="checkbox">
-                        <label for="auto-disable-danmu">关闭弹幕</label>
-                    </p>
-                    <p class="warning">
-                        * 选中后面的“<a href="#tooltip">弹幕信息显示框</a>”选项才生效
-                    </p>
-                    <p>
                         <label for="hide-threshold">眼不见心不烦模式：</label>
                         不显示重复数量大于
                         <input id="hide-threshold" type="number" min="0" step="1" max="999">
                         的弹幕
+                    </p>
+                    <p class="warning">
+                        * 设为 0 来禁用此功能
+                    </p>
+                    <p>
+                        <label for="scroll-threshold">关怀小屏幕用户：</label>
+                        将总长度超过
+                        <input id="scroll-threshold" type="number" min="1" step="1" max="9999">
+                        像素的底部、顶部弹幕转换为滚动弹幕
                     </p>
                     <p class="warning">
                         * 设为 0 来禁用此功能
@@ -471,16 +474,22 @@
                 <td>其他设置</td>
                 <td>
                     <p>
-                        <input id="tooltip" type="checkbox">
-                        <label for="tooltip">弹幕信息显示框 <span class="icon-image"></span>：</label>
-                        <span>在弹幕列表中点击即可显示这条弹幕的详细信息</span>
+                        <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
+                        <select id="popup-badge">
+                            <option value="percent">显示被合并弹幕百分比</option>
+                            <option value="count">显示被合并弹幕数量</option>
+                            <option value="off">不显示角标</option>
+                        </select>
+                        <label for="popup-badge">：</label>
+                        <span>在右上角的 pakku 图标上显示合并了多少弹幕</span>
                         <span class="img-panel">
-                            <img src="img/tooltip.png" height="300" width="600" data-name="TOOLTIP" data-value="on">
+                            <img src="img/popup-percent.png" height="34" width="34" data-name="POPUP_BADGE" data-value="percent">
+                            <img src="img/popup-count.png" height="34" width="34" data-name="POPUP_BADGE" data-value="count">
+                            <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
                         </span>
                     </p>
                     <p class="warning">
-                        * 还可以查询弹幕发送者。
-                        感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
+                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
                     </p>
                     <p>
                         <input id="flash-notif" type="checkbox">
@@ -493,7 +502,7 @@
                         <span>也许可以帮你一把</span>
                     </p>
                     <p class="warning">
-                        * 你的所有设置，包括 <b>弹幕套路</b> 和 <b>白名单</b>，都将会被重置为默认值。
+                        * 你的所有设置，包括 <b>弹幕特征</b> 和 <b>白名单</b>，都将会被重置为默认值。
                     </p>
                 </td>
                 <td></td>
@@ -504,12 +513,12 @@
                 <td>
                     <p>
                         <strong>xmcp/pakku.js</strong>
-                        在 <a href="https://github.com/xmcp/pakku.js/" target="_blank"><a href="https://github.com/xmcp/pakku.js/issues" target="_blank"><span class="icon-github"></span>GitHub</a> 开放源代码。
+                        在 <a href="https://github.com/xmcp/pakku.js/" target="_blank"><span class="icon-github"></span>GitHub</a> 开放源代码。
                         使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>。
                     </p>
                     <p class="donate">
                         <strong>我，开发者，打钱 <span class="icon-coin darkblue"></span></strong>
-                        欢迎使用微信投喂开发者 (｀・ω・´)
+                        →使用微信投喂开发者← (｀・ω・´)
                     </p>
                     <hr>
                     <p>

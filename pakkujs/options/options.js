@@ -99,33 +99,38 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('threshold').value=localStorage['THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
-        // 弹幕套路
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
-        // 例外项
+        // 弹幕特征
+        // 白名单
         id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on';
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
         // 显示设置
         id('danmu-mark').value=localStorage['DANMU_MARK'];
         id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
         id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
-        id('popup-badge').value=localStorage['POPUP_BADGE'];
-        id('scroll-threshold').value=localStorage['SCROLL_THRESHOLD'];
-        // 实验室
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
-        id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
-        id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
+        // 播放器增强
+        id('tooltip').checked=localStorage['TOOLTIP']==='on';
         id('auto-prevent-shade').checked=localStorage['AUTO_PREVENT_SHADE']==='on';
         id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
+        id('fluctlight').checked=localStorage['FLUCTLIGHT']==='on';
+        // 实验室
+        id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
+        id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('hide-threshold').value=localStorage['HIDE_THRESHOLD'];
+        id('scroll-threshold').value=localStorage['SCROLL_THRESHOLD'];
         // 其他
+        id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
-        id('tooltip').checked=localStorage['TOOLTIP']==='on';
         
+        // opacity stuff
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
+        id('auto-panel').style.opacity=localStorage['TOOLTIP']==='off'?.3:1;
+        id('fluctlight-panel').style.opacity=localStorage['TOOLTIP']==='off'?.3:1;
         
         // TAOLUS
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
@@ -272,30 +277,32 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
-        // 弹幕套路
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
-        // 例外项
+        // 弹幕特征
+        // 白名单
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
         // 显示设置
         localStorage['DANMU_MARK']=id('danmu-mark').value;
         localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
         localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
-        localStorage['POPUP_BADGE']=id('popup-badge').value;
-        localStorage['SCROLL_THRESHOLD']=parseInt(id('scroll-threshold').value)>=0?parseInt(id('scroll-threshold').value):0;
-        // 实验室
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
-        localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
-        localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
+        // 播放器增强
+        localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
         localStorage['AUTO_PREVENT_SHADE']=id('auto-prevent-shade').checked?'on':'off';
         localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
+        localStorage['FLUCTLIGHT']=id('fluctlight').checked?'on':'off';
+        // 实验室
+        localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
+        localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['HIDE_THRESHOLD']=parseInt(id('hide-threshold').value)>=0?parseInt(id('hide-threshold').value):0;
+        localStorage['SCROLL_THRESHOLD']=parseInt(id('scroll-threshold').value)>=0?parseInt(id('scroll-threshold').value):0;
         // 其他
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
-        localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
+        localStorage['POPUP_BADGE']=id('popup-badge').value;
         
         reload();
         if(this.id==='break-update' && this.checked)
@@ -305,17 +312,18 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     loadconfig();
     [
         // 弹幕合并
-        'threshold','max-dist','max-cosine',
-        // 弹幕套路
-        'trim-ending','trim-space','trim-width',
-        // 例外项
+        'threshold','max-dist','max-cosine','trim-ending','trim-space','trim-width',
+        // 弹幕特征
+        // 白名单
         'ignore-type7','ignore-type4',
         // 显示设置
-        'mark-threshold','danmu-mark','danmu-subscript','popup-badge','scroll-threshold',
+        'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink',
+        // 播放器增强
+        'tooltip','auto-prevent-shade','auto-disable-danmu','fluctlight',
         // 实验室
-        'enlarge','shrink','remove-seek','break-update','auto-prevent-shade','auto-disable-danmu','hide-threshold',
+        'remove-seek','break-update','hide-threshold','scroll-threshold',
         // 其他
-        'tooltip','flash-notif',
+        'popup-badge','flash-notif',
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
