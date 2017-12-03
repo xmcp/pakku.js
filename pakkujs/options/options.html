@@ -27,7 +27,6 @@
             margin: 2em 0 2em 0;
         }
         #title {
-            font-size: 18px;
             vertical-align: middle;
             font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
         }
@@ -68,11 +67,14 @@
             width: 100%;
         }
         tr {
-            transition: background-color, box-shadow 200ms;
+            transition: box-shadow 200ms, background-color 200ms;
         }
         tr:hover:not(#title) {
             background-color: #fcfcfc;
             box-shadow: 0 2px 25px rgba(0,0,0,.3);
+        }
+        tr.advanced:hover:not(#title) {
+            background-color: rgba(128,128,255,.15);
         }
         td {
             border-top: 1px solid #aaa;
@@ -201,6 +203,12 @@
             border: 5px solid #22AB39;
             pointer-events: none;
         }
+        label[for=show-advanced], .advanced {
+            background-color: rgba(0,0,255,.15);
+        }
+        body:not(.i-am-advanced) .advanced:not(.js-show-this) {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -214,6 +222,9 @@
                 <td>
                     <p><span id="logo-text">pakku <small>:: 哔哩哔哩弹幕过滤器</small></span></p>
                     <p>
+                        <input id="show-advanced" type="checkbox">
+                        <label for="show-advanced">我是高端用户，给我显示所有设置</label>
+                        |
                         <span id="version"></span> by @xmcp 
                         <a class="donate"><span class="icon-coin"></span>打赏</a>
                         <a href="https://github.com/xmcp/pakku.js/issues" target="_blank"><span class="icon-github"></span>报告问题</a>
@@ -269,18 +280,18 @@
                         * 能有效击杀 "<code>yeah!~</code>" 和 "<code>yeah!~yeah!~yeah!~yeah!~</code>" 等。
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="trim-ending" type="checkbox">
                         <label for="trim-ending">忽略末尾标点：</label>
                         <span>"<code>LL大法好~</code>" 和 "<code>LL大法好！！</code>" 将合并为 "<code>LL大法好 [x2]</code>"</span>
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="trim-space" type="checkbox">
                         <label for="trim-space">忽略多余空格：</label>
                         <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
                             "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="trim-width" type="checkbox">
                         <label for="trim-width">忽略全半角差异：</label>
                         <span>"<code>-1s</code>" 和 "<code>－１s</code>" 将合并为 "<code>-1s [x2]</code>"</span>
@@ -288,7 +299,7 @@
                 </td>
                 <td></td>
             </tr>
-            <tr>
+            <tr class="advanced">
                 <td></td>
                 <td>弹幕特征</td>
                 <td>
@@ -306,7 +317,7 @@
                 </td>
                 <td></td>
             </tr>
-            <tr>
+            <tr class="advanced">
                 <td></td>
                 <td>白名单</td>
                 <td>
@@ -365,7 +376,7 @@
                             <img src="img/danmu-off.png" height="100" width="200" data-name="DANMU_MARK" data-value="off">
                         </span>
                     </p>
-                    <p id="danmu-subscript-panel">
+                    <p id="danmu-subscript-panel" class="advanced">
                         <input id="danmu-subscript" type="checkbox">
                         <label for="danmu-subscript">数量标记显示成下标：</label>
                         <span><code class="font-bili-danmu">就像这样₍₂₎</code>，<code class="font-bili-danmu">而不是这样[x2]</code></span>
@@ -435,7 +446,7 @@
                         <label for="remove-seek">屏蔽跳转脚本：</label>
                         <span>过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="break-update" type="checkbox">
                         <label for="break-update">阻止弹幕动态更新：</label>
                         <span>阻止播放器通过 WebSocket 更新在线人数和实时弹幕</span>
@@ -443,10 +454,9 @@
                     <p class="warning">
                         * 观看视频时将不会动态更新弹幕，也不会显示在线人数。<b>仅支持部分浏览器</b>（比如 Chrome 59+）
                     </p>
-                    <p>
+                    <p class="advanced">
                         <span style="font-weight: bold">弹幕黑名单：</span>
                         <a id="blacklist-link" href="blacklist.html" target="_blank">前去设置</a>
-                        <span> （供高级用户使用）</span>
                     </p>
                     <p>
                         <label for="hide-threshold">眼不见心不烦模式：</label>
@@ -473,7 +483,7 @@
                 <td></td>
                 <td>其他设置</td>
                 <td>
-                    <p>
+                    <p class="advanced">
                         <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
                         <select id="popup-badge">
                             <option value="percent">显示被合并弹幕百分比</option>
@@ -488,21 +498,23 @@
                             <img src="img/popup-off.png" height="34" width="34" data-name="POPUP_BADGE" data-value="off">
                         </span>
                     </p>
-                    <p class="warning">
+                    <p class="warning advanced">
                         * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="flash-notif" type="checkbox">
                         <label for="flash-notif">播放器兼容提示：</label>
                         <span>pakku 不支持B站 Flash 播放器，检测到 Flash 播放器时将给出提醒</span>
                     </p>
                     <p>
+                        （有一些 <a href="#show-advanced">复杂的设置</a> 被隐藏了，一般人不需要修改它们。
+                        <span class="advanced">但你好像不是一般人。</span>
+                        ）
+                    </p>
+                    <p>
                         <label for="restore">不小心把设置调乱了？</label>
                         <button type="button" id="restore">重置所有设置</button>
                         <span>也许可以帮你一把</span>
-                    </p>
-                    <p class="warning">
-                        * 你的所有设置，包括 <b>弹幕特征</b> 和 <b>白名单</b>，都将会被重置为默认值。
                     </p>
                 </td>
                 <td></td>

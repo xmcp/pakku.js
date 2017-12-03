@@ -37,8 +37,12 @@ function highlighter() {
     if(!location.hash) return;
     var el=document.querySelector(location.hash);
     if(!el) return;
+
+    var adv_obj=el.closest('.advanced');
+    if(adv_obj) adv_obj.classList.add('js-show-this');
     el=el.closest('p');
     if(!el) return;
+    
     
     var old=document.getElementById('highlighter');
     if(old) old.parentNode.removeChild(old);
@@ -95,6 +99,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     function loadconfig() {
+        id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
@@ -126,6 +131,9 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
         
+        // advanced options
+        if(id('show-advanced').checked) document.body.classList.add('i-am-advanced');
+        else document.body.classList.remove('i-am-advanced');
         // opacity stuff
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
@@ -273,6 +281,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
     
     function update() {
+        localStorage['_ADVANCED_USER']=id('show-advanced').checked?'on':'off';
         // 弹幕合并
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
@@ -311,6 +320,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     loadconfig();
     [
+        'show-advanced',
         // 弹幕合并
         'threshold','max-dist','max-cosine','trim-ending','trim-space','trim-width',
         // 弹幕特征
