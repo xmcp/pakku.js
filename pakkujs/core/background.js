@@ -64,7 +64,7 @@ function initconfig() {
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
     localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
-    localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'on';
+    localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';
     // 实验室
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';

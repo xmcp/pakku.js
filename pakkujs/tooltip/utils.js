@@ -54,3 +54,14 @@ function format_date(x) {
 function format_datetime(x) {
     return format_date(x)+' '+x.getHours()+':'+_fix2(x.getMinutes());
 }
+
+function zero_array(len) {
+    var x=new Array(len);
+    for(var i=0;i<len;i++) x[i]=0;
+    return x;
+}
+
+function parse_time(time) { // MMMMMM:SS -> seconds
+    var res=/(\d+)\:(\d{2})/.exec(time);
+    return parseInt(res[1])*60+parseInt(res[2]);
+}

@@ -343,9 +343,14 @@ function try_inject() {
                     disable_elem.click();
             }
             if(OPT['FLUCTLIGHT']) {
-                var seekbar=root_elem.querySelector('.bilibili-player-video-progress-detail');
-                console.log('seekbar fluctlight ',seekbar);
-                bind_seekbar(seekbar);
+                var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
+                var video_elem=root_elem.querySelector('video');
+                var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total');
+                console.log('seekbar fluctlight',seekbar_elem);
+                if(seekbar_elem && (video_elem || total_time_elem)) {
+                    inject_fluctlight_graph(seekbar_elem,video_elem,total_time_elem);
+                    inject_fluctlight_details(seekbar_elem);
+                }
             }
         }
     });
