@@ -1,8 +1,8 @@
 var MAX_TIMEDELTA=10;
 
-function inject_fluctlight_graph(bar_elem,video_elem,total_time_elem) {
+function inject_fluctlight_graph(bar_elem,root_elem) {
     var HEIGHT=600;
-    var WIDTH=parseInt(bar_elem.style.width.replace('px',''));
+    var WIDTH=parseInt(bar_elem.style.width.replace('px',''))||0;
     
     var canvas_elem=document.createElement('canvas');
     var ctx=canvas_elem.getContext('2d');
@@ -14,8 +14,13 @@ function inject_fluctlight_graph(bar_elem,video_elem,total_time_elem) {
     
     var DURATION=0;
     function getduration() {
-        if(!DURATION)
-            DURATION=parse_time(total_time_elem.textContent)||video_elem.duration;
+        if(!DURATION) {
+            var video_elem=root_elem.querySelector('video');
+            var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total');
+            DURATION = 0 || // avoid auto ;
+                (total_time_elem ? parse_time(total_time_elem.textContent) : 0) ||
+                (video_elem ? video_elem.duration : 0) ;
+        }
     }
     getduration();
 

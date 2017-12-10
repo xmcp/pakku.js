@@ -344,11 +344,9 @@ function try_inject() {
             }
             if(OPT['FLUCTLIGHT']) {
                 var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
-                var video_elem=root_elem.querySelector('video');
-                var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total');
                 console.log('seekbar fluctlight',seekbar_elem);
-                if(seekbar_elem && (video_elem || total_time_elem)) {
-                    inject_fluctlight_graph(seekbar_elem,video_elem,total_time_elem);
+                if(seekbar_elem) {
+                    inject_fluctlight_graph(seekbar_elem,root_elem);
                     inject_fluctlight_details(seekbar_elem);
                 }
             }
