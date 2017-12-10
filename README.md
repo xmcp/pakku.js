@@ -30,6 +30,11 @@ Browser Action ↓
 
 ![tooltip](https://user-images.githubusercontent.com/6646473/33228335-9a230cd2-d1f3-11e7-8a1f-96adc513f752.png)
 
+弹幕密度分析图 ↓
+
+![fluctlight](https://user-images.githubusercontent.com/6646473/33803656-aaac2e66-ddcf-11e7-8d6f-be3de9f5350e.png)
+
+
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
 
 #### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）
