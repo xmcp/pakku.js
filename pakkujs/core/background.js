@@ -6,6 +6,7 @@ var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,\d+,)?(\d+
 function loadconfig() {
     // 弹幕合并
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
+    window.CROSS_MODE=localStorage['CROSS_MODE']==='on';
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
@@ -43,6 +44,7 @@ function loadconfig() {
 function initconfig() {    
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
+    localStorage['CROSS_MODE']=localStorage['CROSS_MODE']||'on';
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';

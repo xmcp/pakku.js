@@ -238,10 +238,14 @@
                 <td>弹幕合并</td>
                 <td>
                     <p>
-                        <label for="threshold">时间阈值：</label>
-                        合并
+                        合并时间差在
                         <input id="threshold" type="number" min="1" step="1" max="120">
                         秒之内的重复弹幕
+                        <span class="advanced">
+                            ，而且
+                            <input id="cross-mode" type="checkbox">
+                            <label for="cross-mode">合并不同类型的弹幕</label>
+                        </span>
                     </p>
                     <p class="warning">
                         * 在低配电脑中，超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢

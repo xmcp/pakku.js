@@ -37,7 +37,7 @@ function highlighter() {
     if(!location.hash) return;
     var el=document.querySelector(location.hash);
     if(!el) return;
-
+    
     var adv_obj=el.closest('.advanced');
     if(adv_obj) adv_obj.classList.add('js-show-this');
     el=el.closest('p');
@@ -76,7 +76,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             if(granted) {
                 bgpage.load_update_breaker();
             } else {
-                localStorage['BREAK_UPDATE']=false;
+                localStorage['BREAK_UPDATE']='off';
                 loadconfig();
                 var chrome_version=CHROME_VERSION_RE.exec(navigator.userAgent);
                 if(!chrome_version)
@@ -86,6 +86,32 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             }
         });
     }
+
+    id('version').addEventListener('click',function(event) {
+        /*for-firefox: return; */
+        if(event.altKey && event.ctrlKey) {
+            var inp=prompt('Input nothing to export settings; paste the settings to import them.');
+            if(inp===null) return;
+            if(!inp) { // export
+                document.open();
+                document['wri'+/*Use of document.write strongly discouraged.*/'te'](JSON.stringify(localStorage));
+                document.close();
+            } else { // import
+                var dat=JSON.parse(inp);
+                localStorage.clear();
+                for(var k in dat) {
+                    localStorage[k]=dat[k];
+                }
+                chrome.runtime.getBackgroundPage(function(bgpage) {
+                    bgpage.initconfig();
+                    loadconfig();
+                    if(localStorage['BREAK_UPDATE']==='on')
+                        get_ws_permission();
+                });
+
+            }
+        }
+    })
     
     function reload() {
         bgpage.loadconfig();
@@ -102,6 +128,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
+        id('cross-mode').checked=localStorage['CROSS_MODE']==='on';
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
@@ -284,6 +311,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['_ADVANCED_USER']=id('show-advanced').checked?'on':'off';
         // 弹幕合并
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
+        localStorage['CROSS_MODE']=id('cross-mode').checked?'on':'off';
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
@@ -322,7 +350,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     [
         'show-advanced',
         // 弹幕合并
-        'threshold','max-dist','max-cosine','trim-ending','trim-space','trim-width',
+        'threshold','cross-mode','max-dist','max-cosine','trim-ending','trim-space','trim-width',
         // 弹幕特征
         // 白名单
         'ignore-type7','ignore-type4',

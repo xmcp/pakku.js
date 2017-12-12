@@ -204,6 +204,7 @@ function parse(dom,tabid,S,D) {
         if(LOG_VERBOSE)
             console.log(dm.attr[7],dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
+            if(!CROSS_MODE && dm.mode!=danmu_chunk[i].mode) continue;
             var sim=similar(dm.str,danmu_chunk[i].str,S);
             if(sim) {
                 if(LOG_VERBOSE) {

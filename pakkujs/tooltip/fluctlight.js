@@ -1,4 +1,6 @@
-var MAX_TIMEDELTA=10;
+var DETAILS_MAX_TIMEDELTA=10;
+var GRAPH_MAX_TIMEDELTA=5;
+var GRAPH_DENSITY_POWER=.8;
 
 function inject_fluctlight_graph(bar_elem,root_elem) {
     var HEIGHT=600;
@@ -46,7 +48,7 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
             return function(p) {
                 var dispv=dispval(p.orig_str);
                 arr[Math.max(0,block(p.time))]+=dispv;
-                arr[block(p.time+MAX_TIMEDELTA)+1]-=dispv;
+                arr[block(p.time+GRAPH_MAX_TIMEDELTA)+1]-=dispv;
             }
         }
         
@@ -80,7 +82,7 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-        ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],.75)/2);
+        ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)/2);
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // before
@@ -92,7 +94,7 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-            ctx.lineTo(w,HEIGHT-Math.pow(den_aft[w],.75)/2);
+            ctx.lineTo(w,HEIGHT-Math.pow(den_aft[w],GRAPH_DENSITY_POWER)/2);
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // clear
@@ -120,8 +122,8 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
             ctx.globalCompositeOperation='source-over';
-            drawline(hlblock,Math.pow(den_bef[hlblock],.75)/2,2,'#aa4444',1);
-            drawline(hlblock,Math.pow(den_aft[hlblock],.75)/2,2,'#4400ff',1);
+            drawline(hlblock,Math.pow(den_bef[hlblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
+            drawline(hlblock,Math.pow(den_aft[hlblock],GRAPH_DENSITY_POWER)/2,2,'#0000cc',1);
         }
     }
     redraw();
@@ -195,7 +197,7 @@ function inject_fluctlight_details(bar_elem) {
                 var danmus=[];
                 for(var i=0;i<D.length && danmus.length<MAX_FLUCT;i++) {
                     var d=D[i];
-                    if(d.peers && time-d.peers[0].time>=0 && time-d.peers[0].time<=MAX_TIMEDELTA)
+                    if(d.peers && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA)
                         danmus.push(d);
                 }
                 danmus.sort(function(a,b) {
