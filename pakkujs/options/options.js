@@ -88,20 +88,15 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
 
     id('version').addEventListener('click',function(event) {
-        /*for-firefox: return; */
         if(event.altKey && event.ctrlKey) {
             var inp=prompt('Input nothing to export settings; paste the settings to import them.');
             if(inp===null) return;
             if(!inp) { // export
-                document.open();
-                document['wri'+/*Use of document.write strongly discouraged.*/'te'](JSON.stringify(localStorage));
-                document.close();
+                document.body.textContent=JSON.stringify(localStorage);
             } else { // import
                 var dat=JSON.parse(inp);
                 localStorage.clear();
-                for(var k in dat) {
-                    localStorage[k]=dat[k];
-                }
+                Object.assign(localStorage,dat);
                 chrome.runtime.getBackgroundPage(function(bgpage) {
                     bgpage.initconfig();
                     loadconfig();

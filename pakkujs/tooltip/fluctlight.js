@@ -72,6 +72,8 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
             den_bef[w]+=den_bef[w-1];
             den_aft[w]+=den_aft[w-1];
         }
+        for(var w=WIDTH;w>0;w--)
+            den_bef[w]=Math.max(den_bef[w],den_bef[w-1]);
         return true;
     }
     function redraw(hltime) {
@@ -87,7 +89,7 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
         ctx.closePath();
         // before
         ctx.globalCompositeOperation='source-over';
-        ctx.globalAlpha=.7;
+        ctx.globalAlpha=.8;
         ctx.fillStyle='#ff4444';
         ctx.fill();
 
@@ -103,8 +105,8 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
         ctx.fill();
         // after
         ctx.globalCompositeOperation='source-over';
-        ctx.fillStyle='#aa44ff';
-        ctx.globalAlpha=.7;
+        ctx.fillStyle='#7744ff';
+        ctx.globalAlpha=.8;
         ctx.fill();
 
         var hlblock=(hltime===undefined)?undefined:block(hltime);
@@ -117,7 +119,7 @@ function inject_fluctlight_graph(bar_elem,root_elem) {
             gra.addColorStop(.9,'rgba(255,255,255,1)')
             gra.addColorStop(1,'rgba(255,255,255,0)')
             ctx.globalCompositeOperation='destination-out';
-            ctx.globalAlpha=.3;
+            ctx.globalAlpha=.4;
             ctx.fillStyle=gra;
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
