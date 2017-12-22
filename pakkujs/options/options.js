@@ -1,4 +1,8 @@
+var IS_FIREFOX=false;
+
 /*for-firefox:
+
+IS_FIREFOX=true;
 
 if(chrome.permissions)
     chrome.permissions.request=function(perm,callback) {
@@ -14,6 +18,11 @@ else
     };
     
 */
+
+if(!IS_FIREFOX && navigator.userAgent.indexOf('Firefox/')!==-1 && InstallTrigger) {
+    if(confirm('您正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请卸载当前版本，然后在 Firefox 附加组件中心下载 pakku。\n\n现在前往下载吗？'))
+        location.href='https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/';
+}
 
 function id(x) {
     return document.getElementById(x);
@@ -31,7 +40,7 @@ function try_regexp(x) {
 var version='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
 var CHROME_VERSION_RE=/Chrome\/(\d+)/;
-id('version').textContent=version;
+id('version').textContent=version+'_'+(IS_FIREFOX?'F':'C');
 
 function highlighter() {
     if(!location.hash) return;
@@ -373,7 +382,10 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
 // version check
 var xhr=new XMLHttpRequest();
-/*for-firefox: xhr.open('get','https://img.shields.io/amo/v/pakkujs.json'); // */ xhr.open('get','https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json');
+xhr.open('get', IS_FIREFOX ?
+    'https://img.shields.io/amo/v/pakkujs.json' :
+    'https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json'
+);
 xhr.onload=function() {
     var latest_ver=JSON.parse(this.responseText);
     console.log('latest version ',latest_ver);
