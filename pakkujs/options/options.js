@@ -142,6 +142,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 白名单
         id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on';
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
+        id('ignore-pool1').checked=localStorage['PROC_POOL1']!=='on';
         // 显示设置
         id('danmu-mark').value=localStorage['DANMU_MARK'];
         id('mark-threshold').value=localStorage['MARK_THRESHOLD'];
@@ -325,6 +326,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 白名单
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
+        localStorage['PROC_POOL1']=id('ignore-pool1').checked?'off':'on';
         // 显示设置
         localStorage['DANMU_MARK']=id('danmu-mark').value;
         localStorage['MARK_THRESHOLD']=parseInt(id('mark-threshold').value)>0?parseInt(id('mark-threshold').value):1;
@@ -357,7 +359,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         'threshold','cross-mode','max-dist','max-cosine','trim-ending','trim-space','trim-width',
         // 弹幕特征
         // 白名单
-        'ignore-type7','ignore-type4',
+        'ignore-type7','ignore-type4','ignore-pool1',
         // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink',
         // 播放器增强

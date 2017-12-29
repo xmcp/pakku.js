@@ -225,7 +225,7 @@ function inject_fluctlight_details(bar_elem) {
     // inject fluctlight
     fluct.setAttribute('style',`
         position: relative;
-        width: 156px;
+        width: 160px;
         background-color: white;
         opacity: .8;
         overflow-x: hidden;
@@ -233,6 +233,7 @@ function inject_fluctlight_details(bar_elem) {
         font-size: 12px;
         line-height: 14px;
         padding: 2px;
+        box-sizing: border-box;
     `);
     fluct.dataset['current_time']='';
     time_elem.parentNode.appendChild(fluct);

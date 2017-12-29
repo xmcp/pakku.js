@@ -1,7 +1,6 @@
 // (C) 2017 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var LOG_VERBOSE=false;
-var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
@@ -134,6 +133,7 @@ function parse(dom,tabid,S,D) {
     var i_elem=new_dom.childNodes[0];
     
     function apply_danmu(elem,desc,peers,dispstr) {
+        S.onscreen++;
         i_elem.appendChild(elem);
         D.push({
             text: dispstr || elem.textContent,
@@ -145,6 +145,8 @@ function parse(dom,tabid,S,D) {
     var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName=='d') { // danmu
+            S.total++;
+
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             var mode=attr[1];
@@ -161,33 +163,47 @@ function parse(dom,tabid,S,D) {
                 peers: []
             };
 
-            if(mode!=='8' && mode !== '9' && blacklisted(str)) {
-                S.blacklist++;
-                return; // aka continue
+            if(!PROC_POOL1 && attr[5]==='1') {
+                S.batch_ignore++;
+                apply_danmu(elem,['已忽略字幕弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
+                return;
             }
-            
+            if(mode!=='8' && mode !== '9' && blacklisted(disp_str)) {
+                S.blacklist++;
+                return;
+            }
             if(!PROC_TYPE7 && mode=='7') { // special danmu
-                S.type7++;
+                S.batch_ignore++;
                 apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
-            } else if(!PROC_TYPE4 && mode=='4') { // bottom danmu
-                S.type4++;
+                return;
+            }
+            if(!PROC_TYPE4 && mode=='4') { // bottom danmu
+                S.batch_ignore++;
                 apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
-            } else if(mode=='8') { // code danmu
+                return;
+            }
+            if(mode=='8') { // code danmu
                 if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
                 S.script++;
                 apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
-            } else if(mode=='9') { // bas danmu
+                return;
+            }
+            if(mode=='9') { // bas danmu
                 S.script++;
                 apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
-            } else if(whitelisted(str)) {
+                return;
+            }
+            if(whitelisted(disp_str)) {
                 S.whitelist++;
                 apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')]);
-            } else {
-                danmus.push(dm_obj);
+                return;
             }
+            // finaly,
+            danmus.push(dm_obj);
+            return;
         } else // not danmu
             i_elem.appendChild(elem);
     });
@@ -195,7 +211,6 @@ function parse(dom,tabid,S,D) {
 
     var danmu_chunk=Array();
     var last_time=0;
-    var counter=0;
 
     danmus.forEach(function(dm) {
         while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
@@ -235,23 +250,6 @@ function parse(dom,tabid,S,D) {
             }
             S.maxdispval=Math.max(S.maxdispval,chunkval);
             
-            if(LOG_DISPVAL)
-                if(dm.time-last_log_dispval_time>=.25) {
-                    var rate=1/(chunkval>DISPVAL_THRESHOLD?Math.min(Math.sqrt(chunkval)/dispval_base,2):1);
-                    var logger=new_dom.createElement('d');
-                    
-                    // type=7(SPECIAL) size=50px color=0xFFFF00
-                    logger.setAttribute('p',dm.time+',7,50,16776960,0,0,0,0');
-                    // pos=(0,50%)->(0,50%) alpha=1->0 keep_time=0.8s
-                    logger.textContent=
-                        '[0,0,"1-0",0.8,'+
-                        '" dispval '+chunkval.toFixed(1)+'/n size '+rate.toFixed(2)+'"'+
-                        ',0,0.5,0,0.5,0,0,true,"Consolas",1]';
-                    
-                    apply_danmu(logger,['LOG_DISPVAL helper'],[]);
-                    last_log_dispval_time=dm.time;
-                }
-            
             if(chunkval>DISPVAL_THRESHOLD) {
                 if(LOG_VERBOSE)
                     console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
@@ -264,12 +262,10 @@ function parse(dom,tabid,S,D) {
     }
     
     out_danmus.forEach(function(dm) {
-        counter+=dm.peers.length-1;
         S.maxcombo=Math.max(S.maxcombo,dm.peers.length);
         
         if(HIDE_THRESHOLD && HIDE_THRESHOLD<dm.peers.length) {
             S.count_hide+=1;
-            counter+=1;
             return; // aka continue
         }
         
@@ -305,12 +301,8 @@ function parse(dom,tabid,S,D) {
     
     console.timeEnd('parse');
     
-    S.total=danmus.length+S.blacklist;
-    S.onscreen=danmus.length-counter;
-    
     if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='已禁用';
-    if(PROC_TYPE7 && S.type7==0) S.type7='已禁用';
-    if(PROC_TYPE4 && S.type4==0) S.type4='已禁用';
+    if(PROC_TYPE7 && PROC_TYPE4 && PROC_POOL1 && S.batch_ignore==0) S.batch_ignore='已禁用';
     if(!ENLARGE && S.enlarge==0) S.enlarge='已禁用';
     if(!SHRINK && S.shrink==0) S.shrink='已禁用';
     if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';

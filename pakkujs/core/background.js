@@ -18,6 +18,7 @@ function loadconfig() {
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
+    window.PROC_POOL1=localStorage['PROC_POOL1']==='on';
     // 显示设置
     window.DANMU_MARK=localStorage['DANMU_MARK'];
     window.MARK_THRESHOLD=parseInt(localStorage['MARK_THRESHOLD']||1);
@@ -56,6 +57,7 @@ function initconfig() {
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
+    localStorage['PROC_POOL1']=localStorage['PROC_POOL1']||'off';
     // 显示设置
     localStorage['DANMU_MARK']=localStorage['DANMU_MARK']||'prefix';
     localStorage['MARK_THRESHOLD']=localStorage['MARK_THRESHOLD']||1;

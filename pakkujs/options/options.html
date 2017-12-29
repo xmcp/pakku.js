@@ -334,26 +334,16 @@
                         </p>
                     </form>
                     <div class="list" id="whitelist"></div>
-                    <p>
+                    <p id="batch-ignore-panel">
+                        按照弹幕类型
+                        <input id="ignore-pool1" type="checkbox">
+                        <label for="ignore-pool1">放过所有字幕弹幕
+                        /
                         <input id="ignore-type7" type="checkbox">
-                        <label for="ignore-type7">放过所有高级弹幕 <span class="icon-image"></span>：</label>
-                        <span>高级弹幕可能包含排版和动画，合并后可能影响高级弹幕的表现效果</span>
-                        <span class="img-panel">
-                            <img src="img/type7-combined.png" height="200" width="250" data-name="PROC_TYPE7" data-value="on">
-                            <img src="img/type7-skipped.png" height="200" width="250" data-name="PROC_TYPE7" data-value="off">
-                        </span>
-                    </p>
-                    <p>
+                        <label for="ignore-type7">放过所有高级弹幕
+                        /
                         <input id="ignore-type4" type="checkbox">
-                        <label for="ignore-type4">放过所有底部弹幕 <span class="icon-image"></span>：</label>
-                        <span>底部弹幕可能包含字幕、歌词、计数君，你可能不希望它们被合并</span>
-                        <span class="img-panel">
-                            <img src="img/type4-combined.png" height="200" width="250" data-name="PROC_TYPE4" data-value="on">
-                            <img src="img/type4-skipped.png" height="200" width="250" data-name="PROC_TYPE4" data-value="off">
-                        </span>
-                    </p>
-                    <p class="warning">
-                        * 选中后，<b>所有</b> 底部弹幕都不会被合并，请谨慎选择。
+                        <label for="ignore-type4">放过所有底部弹幕
                     </p>
                 </td>
                 <td></td>
