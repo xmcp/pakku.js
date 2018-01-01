@@ -1,4 +1,4 @@
-// (C) 2017 @dramforever, @xmcp, @fanthos. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2018 @dramforever, @xmcp, @fanthos. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var ed_counts = new Int16Array (0x10ffff);
 var ed_a = new Int16Array (1048576);

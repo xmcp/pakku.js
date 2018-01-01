@@ -1,4 +1,4 @@
-// (C) 2017 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2018 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 function make_crc32_cracker () {
 
