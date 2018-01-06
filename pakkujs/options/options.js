@@ -169,8 +169,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // opacity stuff
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
-        id('auto-panel').style.opacity=localStorage['TOOLTIP']==='off'?.3:1;
-        id('fluctlight-panel').style.opacity=localStorage['TOOLTIP']==='off'?.3:1;
         
         // TAOLUS
         window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);

@@ -103,21 +103,15 @@ function inject_panel(tabid,D,OPT) {
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         runAt: 'document_start'
     });
-    chrome.tabs.executeScript(tabid,{
-        file: '/tooltip/crc32-crack.js',
-        runAt: 'document_start'
-    });
-    chrome.tabs.executeScript(tabid,{
-        file: '/tooltip/utils.js',
-        runAt: 'document_start'
-    });
-    chrome.tabs.executeScript(tabid,{
-        file: '/tooltip/fluctlight.js',
-        runAt: 'document_start'
-    });
-    setTimeout(function() { // the danmu list is created AFTER the xml is loaded
+    ['crc32-crack','utils','fluctlight','panel'].forEach(function(name) {
         chrome.tabs.executeScript(tabid,{
-            file: '/tooltip/panel.js',
+            file: '/injected/'+name+'.js',
+            runAt: 'document_start'
+        });
+    });
+    setTimeout(function() {
+        chrome.tabs.executeScript(tabid,{
+            file: '/injected/do_inject.js',
             runAt: 'document_start'
         });
     },200);
@@ -206,12 +200,12 @@ function load_danmaku(url,id,tabid) {
             tabId: tabid
         });
         
-        if(TOOLTIP)
-            inject_panel(tabid,D,{
-                AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
-                AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
-                FLUCTLIGHT: FLUCTLIGHT
-            });
+        inject_panel(tabid,D,{
+            TOOLTIP: TOOLTIP,
+            AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
+            AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
+            FLUCTLIGHT: FLUCTLIGHT
+        });
         
         HISTORY[tabid]=S;
         return res;

@@ -2,7 +2,7 @@ var DETAILS_MAX_TIMEDELTA=10;
 var GRAPH_MAX_TIMEDELTA=5;
 var GRAPH_DENSITY_POWER=.8;
 
-function inject_fluctlight_graph(bar_elem,root_elem) {
+function inject_fluctlight_graph(bar_elem) {
     var HEIGHT=600;
     var WIDTH=parseInt(bar_elem.style.width.replace('px',''))||0;
     

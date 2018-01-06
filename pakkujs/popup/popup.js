@@ -29,7 +29,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                         {tabId: d[0].id},
                         function(res) {
                             if(res!=='pakku' && res!=='')
-                                hint_text.textContent=enabled ? res : '刷新页面即可生效';
+                                hint_text.textContent=enabled ? res : '刷新页面才能完全生效';
                             else
                                 hint_text.textContent=general;
                         }
@@ -65,6 +65,9 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         chrome.browserAction.setBadgeText({
             text: enabled?'':'zzz'
         });
+        chrome.tabs.executeScript({
+            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
+        })
         loadui();
     });
     loadui();

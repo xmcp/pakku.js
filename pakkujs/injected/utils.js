@@ -1,4 +1,6 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+if(typeof root_elem=='undefined')
+    var root_elem=null;
 
 function make_p(s) {
     var elem=document.createElement('p');
@@ -64,4 +66,32 @@ function zero_array(len) {
 function parse_time(time) { // MMMMMM:SS -> seconds
     var res=/(\d+)\:(\d{2})/.exec(time);
     return parseInt(res[1])*60+parseInt(res[2]);
+}
+
+// https://stackoverflow.com/questions/24025165/simulating-a-mousedown-click-mouseup-sequence-in-tampermonkey
+function triggerMouseEvent(node, eventType) {
+    var clickEvent=document.createEvent('MouseEvents');
+    clickEvent.initEvent(eventType,true,true);
+    node.dispatchEvent(clickEvent);
+}
+
+function reload_danmaku_magic(nonce) {
+    if(!root_elem) {
+        console.log('pakku magic reload: root_elem not found');
+        return;
+    }
+    var date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
+    var elem=date_picker.querySelector('.js-action.__pakku_injected');
+    if(elem)
+        elem.parentNode.removeChild(elem);
+    
+    elem=document.createElement('span');
+    elem.className='js-action __pakku_injected';
+    elem.dataset['action']='changeDay';
+    elem.dataset['timestamp']=nonce;
+    elem.style.display='none';
+    date_picker.appendChild(elem);
+
+    console.log('pakku magic reload: reload with nonce',nonce);
+    triggerMouseEvent(elem,'mousedown');
 }
