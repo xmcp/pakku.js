@@ -1,6 +1,12 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
+var GLOBAL_SWITCH=true;
+var HISTORY={};
+var BOUNCE={
+    nonce: '',
+    result: ''
+}
 
 /*for-firefox:
 
@@ -30,6 +36,17 @@ function toholyjson(obj) {
     for(var i in obj)
         item.push([obj[i][0].source,obj[i][1]]);
     return JSON.stringify(item);
+}
+
+function set_global_switch(sw,_do_no_reload) {
+    GLOBAL_SWITCH=sw;
+    chrome.browserAction.setBadgeText({
+        text: GLOBAL_SWITCH?'':'zzz'
+    });
+    if(!_do_no_reload)
+        chrome.tabs.executeScript({
+            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
+        });
 }
 
 var ERROR_COLOR='#ff4444';
@@ -72,8 +89,6 @@ function migrate_legacy_fuzz() {
         loadconfig();
     }
 }
-
-var HISTORY={};
 
 function Status(CID) {
     return {

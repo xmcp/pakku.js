@@ -138,6 +138,7 @@ function parse(dom,tabid,S,D) {
         D.push({
             text: dispstr || elem.textContent,
             desc: desc,
+            xml_src: elem.outerHTML,
             peers: peers || []
         });
     }

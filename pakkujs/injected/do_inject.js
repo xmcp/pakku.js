@@ -1,3 +1,5 @@
+// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 console.log('pakku panel: script injected, D.length = '+D.length);
 for(var i=0;i<D.length;i++)
     D[i].text=D[i].text.replace(/([\r\n\t]|\/n)/g,'');
@@ -57,6 +59,10 @@ function try_inject() {
             inject_fluctlight_graph(seekbar_elem);
             inject_fluctlight_details(seekbar_elem);
         }
+    }
+    if(OPT['FOOLBAR']) {
+        console.log('pakku injector: foolbar');
+        inject_foolbar();
     }
 }
 try_inject();

@@ -128,3 +128,9 @@ function make_crc32_cracker () {
         crack: crack
     };
 }
+
+var _crc32_cracker=null;
+function crack_uidhash(uidhash) {
+    _crc32_cracker=_crc32_cracker||make_crc32_cracker();
+    return _crc32_cracker.crack(parseInt(uidhash,16));
+}

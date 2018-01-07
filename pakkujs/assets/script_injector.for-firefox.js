@@ -11,7 +11,7 @@ if(document.head) {
         if (event.source!=window)
             return;
         if (event.data.type && event.data.type=='pakku_ajax_request')
-            chrome.runtime.sendMessage({url: event.data.arg},function(resp) {
+            chrome.runtime.sendMessage({type: 'ajax_hook', url: event.data.arg},function(resp) {
                 window.postMessage({
                     type: 'pakku_ajax_response',
                     arg: event.data.arg,

@@ -1,45 +1,6 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-/*
-var panel_src=`
-<div class="pakku-panel">
-    <p class="pakku-panel-title">
-        <button type="button" class="pakku-panel-close">关闭</button>
-        <span class="pakku-panel-text"></span>
-    </p>
-    <hr>
-    <div class="pakku-panel-desc"></div>
-    <hr class="pakku-for-desc">
-    <div class="pakku-panel-peers"></div>
-    <hr>
-    <div class="pakku-panel-footer text-fix"></div>
-</div>
-`;
-*/
-function make_panel_dom() {
-    var dom=make_elem('div','pakku-panel');
-    var dom_title=make_elem('p','pakku-panel-title');
-    var dom_close=make_elem('button','pakku-panel-close');
-    
-    dom_close.type='button';
-    dom_close.textContent='关闭';
-    
-    dom_title.appendChild(dom_close);
-    dom_title.appendChild(make_elem('span','pakku-panel-text'));
-    
-    dom.appendChild(dom_title);
-    dom.appendChild(make_elem('hr',''));
-    dom.appendChild(make_elem('div','pakku-panel-desc'));
-    dom.appendChild(make_elem('hr','pakku-for-desc'));
-    dom.appendChild(make_elem('div','pakku-panel-peers'));
-    dom.appendChild(make_elem('hr',''));
-    dom.appendChild(make_elem('div','pakku-panel-footer text-fix'));
-    
-    return dom;
-};
-
-var style_src=`
-
+var PANEL_CSS=`
 .pakku-panel {
     background-color: rgba(247,247,247,.8);
     color: black;
@@ -55,10 +16,11 @@ var style_src=`
 .pakku-panel-title {
     overflow-x: hidden;
     text-overflow: ellipsis;
-    line-height: calc(1em + 6px);
     vertical-align: middle;
 }
 .pakku-panel-close {
+    font: inherit; /* fix for bangumi page */
+    line-height: 1em;
     color: black !important;
     background-color: #f3f3f3 !important;
     border-radius: 5px;
@@ -86,10 +48,12 @@ var style_src=`
     color: black;
     border-bottom: 1px solid black;
 }
+.pakku-panel hr {
+    margin: .5em 0; /* fix for bangumi page */
+}
 .pakku-panel .text-fix {
     overflow-x: hidden;
     text-overflow: ellipsis;
-    line-height: calc(1em + 6px);
     vertical-align: middle;
 }
 .pakku-panel-footer a {
@@ -139,14 +103,29 @@ var style_src=`
     background-color: rgba(255,255,255,1);
 }
 `;
-var global_style_obj=document.createElement('style');
-global_style_obj.textContent=style_src;
 
-var _crc32_cracker=null;
-function _crack_uidhashes(uidhash) {
-    _crc32_cracker=_crc32_cracker||make_crc32_cracker();
-    return _crc32_cracker.crack(parseInt(uidhash,16));
-}
+function make_panel_dom() {
+    var dom=make_elem('div','pakku-panel');
+    var dom_title=make_elem('p','pakku-panel-title');
+    var dom_close=make_elem('button','pakku-panel-close');
+    
+    dom_close.type='button';
+    dom_close.textContent='关闭';
+    
+    dom_title.appendChild(dom_close);
+    dom_title.appendChild(make_elem('span','pakku-panel-text'));
+    
+    dom.appendChild(dom_title);
+    dom.appendChild(make_elem('hr',''));
+    dom.appendChild(make_elem('div','pakku-panel-desc'));
+    dom.appendChild(make_elem('hr','pakku-for-desc'));
+    dom.appendChild(make_elem('div','pakku-panel-peers'));
+    dom.appendChild(make_elem('hr',''));
+    dom.appendChild(make_elem('div','pakku-panel-footer text-fix'));
+    
+    return dom;
+};
+
 var _mem_info={};
 function _load_info(uid,logger,callback) {
     if(_mem_info[uid]) {
@@ -177,7 +156,7 @@ function _load_info(uid,logger,callback) {
 
 function query_uid(uidhash,logger) {
     logger.textContent=uidhash+' 正在获取 UID...';
-    var uids = _crack_uidhashes(uidhash);
+    var uids = crack_uidhash(uidhash);
     if(uids.length) {
         logger.textContent='';
         uids.forEach(function(uid) {
@@ -218,6 +197,7 @@ function query_uid(uidhash,logger) {
 }
 
 function inject_panel(list_elem) {
+    inject_css(PANEL_CSS);
     var panel_obj=document.createElement('div');
     panel_obj.style.display='none';
     panel_obj.appendChild(make_panel_dom());
@@ -230,7 +210,6 @@ function inject_panel(list_elem) {
     });
     
     list_elem.appendChild(panel_obj);
-    panel_obj.appendChild(global_style_obj);
     
     list_elem.addEventListener('click',function(e) {
         var dm_obj=e.target.parentElement;

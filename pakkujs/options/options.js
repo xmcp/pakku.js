@@ -154,6 +154,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('auto-prevent-shade').checked=localStorage['AUTO_PREVENT_SHADE']==='on';
         id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
         id('fluctlight').checked=localStorage['FLUCTLIGHT']==='on';
+        id('foolbar').checked=localStorage['FOOLBAR']==='on';
         // 实验室
         id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
         id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
@@ -336,6 +337,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['AUTO_PREVENT_SHADE']=id('auto-prevent-shade').checked?'on':'off';
         localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
         localStorage['FLUCTLIGHT']=id('fluctlight').checked?'on':'off';
+        localStorage['FOOLBAR']=id('foolbar').checked?'on':'off';
         // 实验室
         localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
@@ -361,7 +363,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink',
         // 播放器增强
-        'tooltip','auto-prevent-shade','auto-disable-danmu','fluctlight',
+        'tooltip','auto-prevent-shade','auto-disable-danmu','fluctlight','foolbar',
         // 实验室
         'remove-seek','break-update','hide-threshold','scroll-threshold',
         // 其他

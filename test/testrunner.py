@@ -57,7 +57,7 @@ def set_global_switch(val):
         document.title='';
         (function(val){
             chrome.runtime.getBackgroundPage(function(page){
-                page.GLOBAL_SWITCH=val;
+                page.set_global_switch(val);
                 document.title='ok';
             });
         })(arguments[0]);

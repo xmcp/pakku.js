@@ -1,7 +1,6 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var GLOBAL_SWITCH=true;
-var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,\d+,)?(\d+)(?:\.xml)?(\?debug)?$/;
+var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
 
 function loadconfig() {
     // 弹幕合并
@@ -30,6 +29,7 @@ function loadconfig() {
     window.AUTO_PREVENT_SHADE=localStorage['AUTO_PREVENT_SHADE']==='on';
     window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
     window.FLUCTLIGHT=localStorage['FLUCTLIGHT']==='on';
+    window.FOOLBAR=localStorage['FOOLBAR']==='on';
     // 实验室
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
@@ -69,6 +69,7 @@ function initconfig() {
     localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
     localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';
+    localStorage['FOOLBAR']=localStorage['FOOLBAR']||'off';
     // 实验室
     localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
@@ -103,7 +104,7 @@ function inject_panel(tabid,D,OPT) {
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         runAt: 'document_start'
     });
-    ['crc32-crack','utils','fluctlight','panel'].forEach(function(name) {
+    ['crc32-crack','utils','fluctlight','panel','foolbar'].forEach(function(name) {
         chrome.tabs.executeScript(tabid,{
             file: '/injected/'+name+'.js',
             runAt: 'document_start'
@@ -204,7 +205,8 @@ function load_danmaku(url,id,tabid) {
             TOOLTIP: TOOLTIP,
             AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
-            FLUCTLIGHT: FLUCTLIGHT
+            FLUCTLIGHT: FLUCTLIGHT,
+            FOOLBAR: FOOLBAR
         });
         
         HISTORY[tabid]=S;
@@ -217,18 +219,26 @@ function load_danmaku(url,id,tabid) {
 }
 
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
-    if(!GLOBAL_SWITCH)
-        return sendResponse({data: null});
-    if (request.url) {
+    if (request.type==='ajax_hook') {
+        if(!GLOBAL_SWITCH)
+            return sendResponse({data: null});
         var tabid=sender.tab.id;
         console.log('message',request);
         var ret=DANMU_URL_RE.exec(request.url);
         if(ret) {
-            var protocol=ret[1], cid=ret[2], debug=ret[3];
+            var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
+            if(nonce==BOUNCE.nonce)
+                return sendResponse({data: BOUNCE.result});
             var data=load_danmaku(request.url,cid,tabid);
             sendResponse({data: data});
         } else
             sendResponse({data: null});
+    } else if(request.type==='foolbar') {
+        if(!GLOBAL_SWITCH)
+            set_global_switch(true,'yes do not reload');
+        BOUNCE.nonce=request.nonce;
+        BOUNCE.result=request.result;
+        return sendResponse({error: null});
     }
 });
 
@@ -239,7 +249,9 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     var ret=DANMU_URL_RE.exec(details.url);
     if(ret) {
         console.log('webrequest',details);
-        var protocol=ret[1], cid=ret[2], debug=ret[3];
+        var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
+        if(nonce==BOUNCE.nonce)
+            return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
         if(debug || details.type==='xmlhttprequest')
             return {redirectUrl: 'data:text/xml;charset=utf-8,'+load_danmaku(details.url,cid,details.tabId)};
         else {
@@ -265,6 +277,24 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     else
         return {cancel: false};
 }, {urls: ['*://comment.bilibili.com/*']}, ['blocking']);
+
+chrome.commands.onCommand.addListener(function(name) {
+    if(name==='toggle-global-switch') {
+        set_global_switch(!GLOBAL_SWITCH);
+        var status=(GLOBAL_SWITCH?'ON':'OFF');
+        chrome.notifications.create('//switch', {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/logo.png'),
+            title: '[ '+status+' ]',
+            message: 'Pakku is '+status
+        });
+        if(this._clearer)
+            clearTimeout(this._clearer);
+        this._clearer=setTimeout(function() {
+            chrome.notifications.clear('//switch');
+        },700);
+    }
+});
 
 function load_update_breaker() {
     chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);

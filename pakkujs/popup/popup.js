@@ -61,13 +61,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     );
     
     btn.addEventListener('click',function() {
-        bgpage.GLOBAL_SWITCH=enabled=!enabled;
-        chrome.browserAction.setBadgeText({
-            text: enabled?'':'zzz'
-        });
-        chrome.tabs.executeScript({
-            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
-        })
+        bgpage.set_global_switch((enabled=!enabled));
         loadui();
     });
     loadui();

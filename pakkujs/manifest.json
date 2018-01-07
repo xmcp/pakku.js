@@ -1,7 +1,7 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "8.1",
+    "version": "8.2",
     "description": "瞬间过滤B站(bilibili.com)刷屏的相似弹幕，还你清爽的弹幕视频体验。",
     "icons": {
         "128": "assets/logo.png",
@@ -9,7 +9,6 @@
     },
     
     "manifest_version": 2,
-    "minimum_chrome_version": "32",
     
     "permissions": [
         "*://*.bilibili.com/*",
@@ -32,6 +31,14 @@
         "default_icon": "assets/icon_display.png",
         "default_popup": "popup/popup.html",
         "default_title": "pakku"
+    },
+    "commands": {
+        "toggle-global-switch": {
+            "suggested_key": {
+                "default": "Alt+R"
+            },
+            "description": "切换工作状态"
+        }
     },
     
     "background": {
