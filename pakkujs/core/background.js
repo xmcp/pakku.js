@@ -303,8 +303,16 @@ function load_update_breaker() {
 if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
-    }, {urls: ['http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci']}, ['blocking']);
+    }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url']}, ['blocking']);
 
+    chrome.webRequest.onBeforeRequest.addListener(function(details) {
+        TAOLUS=[[/.*/,"pakku_another_str"]];
+        chrome.tabs.executeScript({
+            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
+        });
+        return {cancel: true};
+    }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/change_taolus_and_reload']}, ['blocking']);
+    
     function parse_string(str) {
         var parser=new DOMParser();
         var dom=parser.parseFromString(str,'text/xml');

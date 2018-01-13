@@ -19,7 +19,7 @@ time.sleep(5)
 
 print('== finding pakkujs')
 
-b.get('http://_get_pakkujs_options_page.bilibili.com/_xmcp_used_for_travis_ci')
+b.get('http://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url')
 opt_url=b.title
 if not opt_url.startswith('chrome-extension://'):
     raise RuntimeError('! bad opt_url: '+opt_url)

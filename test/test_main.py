@@ -13,6 +13,7 @@ runner.update_settings('MAX_DIST','0')
 runner.update_settings('MAX_COSINE','1000')
 runner.update_settings('PROC_TYPE7','on')
 runner.update_settings('PROC_TYPE4','on')
+runner.update_settings('PROC_POOL1','on')
 runner.update_settings('TRIM_ENDING','off')
 runner.update_settings('TRIM_SPACE','off')
 runner.update_settings('TRIM_WIDTH','off')
@@ -25,6 +26,36 @@ runner.update_settings('HIDE_THRESHOLD','0')
 runner.update_settings('SCROLL_THRESHOLD','0')
 
 # not tested: FLASH_NOTIF POPUP_BADGE
+
+print('!= test injected ui')
+runner.update_settings('TAOLUS','[[".*","pakku_test_str"]]')
+runner.update_settings('TOOLTIP','on')
+runner.update_settings('FLUCTLIGHT','on')
+runner.update_settings('FOOLBAR','on')
+runner.b.get('https://www.bilibili.com/video/av314')
+for _ in range(60):
+    try:
+        runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row')
+    except:
+        time.sleep(.5)
+    else:
+        break
+
+time.sleep(1)
+
+assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row:first-child').text
+assert runner.b.find_element_by_css_selector('.bilibili-player .__pakku_injected')
+assert runner.b.find_element_by_css_selector('.bilibili-player .pakku-panel')
+assert runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-video-progress canvas')
+assert runner.b.find_element_by_css_selector('.pakku-foolbar')
+
+print('!= test reload')
+runner.b.execute_script('fetch("https://_xmcp_pakku_internal_test_domain.bilibili.com/change_taolus_and_reload")')
+time.sleep(3)
+assert 'pakku_another_str' in runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row:first-child').text
+assert len(runner.b.find_elements_by_css_selector('.bilibili-player .bilibili-player-video-progress canvas'))==1
+
+runner.update_settings('TAOLUS','[]')
 
 print('!= test webrequest hook')
 
