@@ -73,9 +73,6 @@
             background-color: #fcfcfc;
             box-shadow: 0 2px 25px rgba(0,0,0,.3);
         }
-        tr.advanced:hover:not(#title) {
-            background-color: rgba(128,128,255,.15);
-        }
         td {
             border-top: 1px solid #aaa;
             padding: 1em;
@@ -238,14 +235,10 @@
                 <td>弹幕合并</td>
                 <td>
                     <p>
+                        <label for="threshold">时间阈值：</label>
                         合并时间差在
                         <input id="threshold" type="number" min="1" step="1" max="120">
                         秒之内的重复弹幕
-                        <span class="advanced">
-                            ，而且
-                            <input id="cross-mode" type="checkbox">
-                            <label for="cross-mode">合并不同类型的弹幕</label>
-                        </span>
                     </p>
                     <p class="warning">
                         * 在低配电脑中，超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢
@@ -303,39 +296,40 @@
                 </td>
                 <td></td>
             </tr>
-            <tr class="advanced">
+            <tr>
                 <td></td>
-                <td>弹幕特征</td>
+                <td>例外设置</td>
                 <td>
-                    <p>满足同样特征的弹幕，即使内容不同也会被合并：</p>
-                    <form id="newtaolu-form">
-                        <p>
-                            <input id="newtaolu-pattern" placeholder="正则表达式" required>
-                            →
-                            <input id="newtaolu-name" placeholder="替换文本" required>
-                            <button type="submit">添加</button>
-                            &nbsp; <small><a href="http://s.xmcp.ml/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
-                        </p>
-                    </form>
-                    <div class="list" id="taolus"></div>
-                </td>
-                <td></td>
-            </tr>
-            <tr class="advanced">
-                <td></td>
-                <td>白名单</td>
-                <td>
-                    <p>你可以设置基于弹幕内容的白名单，属于白名单的弹幕永远不会被合并：</p>
-                    <form id="newwhitelist-form">
-                        <p>
-                            <input id="newwhitelist-pattern" placeholder="正则表达式" required>
-                            <button type="submit">添加</button>
-                            &nbsp; <small><a href="http://s.xmcp.ml/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
-                        </p>
-                    </form>
-                    <div class="list" id="whitelist"></div>
+                    <div class="advanced">
+                        <p><b>强制合并</b>：（符合这些规则的弹幕，即使内容不相同也会被合并）</p>
+                        <form id="newtaolu-form">
+                            <p>
+                                <input id="newtaolu-pattern" placeholder="正则表达式" required>
+                                →
+                                <input id="newtaolu-name" placeholder="合并后的文字" required>
+                                <button type="submit">添加</button>
+                                &nbsp; <small><a href="http://s.xmcp.ml/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
+                            </p>
+                        </form>
+                        <div class="list" id="taolus"></div>
+                        <hr>
+                        <p><b>强制忽略</b>：（符合这些规则的弹幕，即使内容相同也不会被合并）</p>
+                        <form id="newwhitelist-form">
+                            <p>
+                                <input id="newwhitelist-pattern" placeholder="正则表达式" required>
+                                <button type="submit">添加</button>
+                                &nbsp; <small><a href="http://s.xmcp.ml/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
+                            </p>
+                        </form>
+                        <div class="list" id="whitelist"></div>
+                        <hr>
+                    </div>
+                    <p>
+                        <input id="cross-mode" type="checkbox">
+                        <label for="cross-mode">合并不同类型的弹幕：</label>
+                        取消勾选后，底部弹幕不会跟滚动弹幕合并到一起
+                    </p>
                     <p id="batch-ignore-panel">
-                        按照弹幕类型
                         <input id="ignore-pool1" type="checkbox">
                         <label for="ignore-pool1">放过所有字幕弹幕
                         /
@@ -431,6 +425,7 @@
                     <p class="advanced" style="display: none">
                         <input id="foolbar" type="checkbox">
                         <label for="foolbar">FoolBar（暂定）</label>
+                        (Chrome only)
                     </p>
                 
             </td>

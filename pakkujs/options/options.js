@@ -132,14 +132,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
-        id('cross-mode').checked=localStorage['CROSS_MODE']==='on';
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
-        // 弹幕特征
-        // 白名单
+        // 例外设置
+        id('cross-mode').checked=localStorage['CROSS_MODE']==='on';
         id('ignore-type7').checked=localStorage['PROC_TYPE7']!=='on';
         id('ignore-type4').checked=localStorage['PROC_TYPE4']!=='on';
         id('ignore-pool1').checked=localStorage['PROC_POOL1']!=='on';
@@ -315,14 +314,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['_ADVANCED_USER']=id('show-advanced').checked?'on':'off';
         // 弹幕合并
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>0?parseInt(id('threshold').value):20;
-        localStorage['CROSS_MODE']=id('cross-mode').checked?'on':'off';
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
-        // 弹幕特征
-        // 白名单
+        // 例外设置
+        localStorage['CROSS_MODE']=id('cross-mode').checked?'on':'off';
         localStorage['PROC_TYPE7']=id('ignore-type7').checked?'off':'on';
         localStorage['PROC_TYPE4']=id('ignore-type4').checked?'off':'on';
         localStorage['PROC_POOL1']=id('ignore-pool1').checked?'off':'on';
@@ -356,10 +354,9 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     [
         'show-advanced',
         // 弹幕合并
-        'threshold','cross-mode','max-dist','max-cosine','trim-ending','trim-space','trim-width',
-        // 弹幕特征
-        // 白名单
-        'ignore-type7','ignore-type4','ignore-pool1',
+        'threshold','max-dist','max-cosine','trim-ending','trim-space','trim-width',
+        // 例外设置
+        'cross-mode','ignore-type7','ignore-type4','ignore-pool1',
         // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink',
         // 播放器增强
@@ -393,7 +390,7 @@ xhr.onload=function() {
     console.log('latest version ',latest_ver);
     if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
         var note=document.createElement('a');
-        note.href='http://s.xmcp.ml/pakkujs/?src=update_banner';
+        note.href='http://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
         note.id='update-note';
         note.target='_blank';
         note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';

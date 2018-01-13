@@ -5,16 +5,15 @@ var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),
 function loadconfig() {
     // 弹幕合并
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
-    window.CROSS_MODE=localStorage['CROSS_MODE']==='on';
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
-    // 弹幕特征
+    // 例外设置
     window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
-    // 白名单
     window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
+    window.CROSS_MODE=localStorage['CROSS_MODE']==='on';
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
     window.PROC_POOL1=localStorage['PROC_POOL1']==='on';
@@ -45,16 +44,15 @@ function loadconfig() {
 function initconfig() {    
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
-    localStorage['CROSS_MODE']=localStorage['CROSS_MODE']||'on';
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
-    // 弹幕特征
+    // 例外设置
     localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\\\\s~]+$","yoo..."]]';
-    // 白名单
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
+    localStorage['CROSS_MODE']=localStorage['CROSS_MODE']||'on';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
     localStorage['PROC_TYPE4']=localStorage['PROC_TYPE4']||'on';
     localStorage['PROC_POOL1']=localStorage['PROC_POOL1']||'off';

@@ -106,7 +106,7 @@ function inject_foolbar() {
     hint_text.textContent='>>>';
     bar.appendChild(hint_text);
     var input=make_elem('input','pakku-foolbar-input');
-
+    input.placeholder='text, str, count, time, uid, color, pool, mode, size, sendtime'
     input.addEventListener('keypress',function(e) {
         if(e.keyCode==13) { // enter
             hint_text.textContent='...';

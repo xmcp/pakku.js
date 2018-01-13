@@ -8,12 +8,12 @@ var try_left=50;
 function try_inject() {
     // try to find the player element
     if(!root_elem)
-        root_elem=document.querySelector('div.bilibili-player:not(.__pakku_injected)');
+        root_elem=document.querySelector('div.bilibili-player');
     // maybe player is in an iframe
     [].slice.call(document.querySelectorAll('iframe')).forEach(function(frame) {
         try {
             if(!root_elem)
-                root_elem=frame.contentDocument.querySelector('div.bilibili-player:not(.__pakku_injected)');
+                root_elem=frame.contentDocument.querySelector('div.bilibili-player');
         } catch(e) { // maybe cross-domain
             console.error(e);
         }
@@ -26,12 +26,12 @@ function try_inject() {
             console.log('pakku injector: root_elem not found');
         return;
     }
-    if(root_elem.classList.contains('__pakku_injected')) {
+    if(root_elem.querySelector('.bilibili-player-danmaku.__pakku_injected')) {
         console.log('pakku injector: already injected');
         return;
     } else {
         console.log('pakku injector: root_elem',root_elem);
-        root_elem.classList.add('__pakku_injected');
+        root_elem.querySelector('.bilibili-player-danmaku').classList.add('__pakku_injected');
     }
 
     if(OPT['TOOLTIP']) {

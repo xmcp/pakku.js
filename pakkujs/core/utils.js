@@ -127,7 +127,7 @@ function FailingStatus(CID,typ,details) {
 }
 
 function req_breaker(details) {
-    return {cancel: GLOBAL_SWITCH};
+    return {cancel: true/*GLOBAL_SWITCH*/};
 }
 var update_filter={urls: [
     'ws://chat.bilibili.com/*','wss://chat.bilibili.com/*',
