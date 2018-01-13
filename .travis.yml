@@ -6,7 +6,7 @@ addons:
   chrome: stable
 before_install:
   - pip install selenium==3.6.0
-  - wget https://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip -d test/driver/
 before_script:
   - "export DISPLAY=:99.0"
