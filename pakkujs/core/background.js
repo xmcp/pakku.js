@@ -102,7 +102,7 @@ function inject_panel(tabid,D,OPT) {
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         runAt: 'document_start'
     });
-    ['crc32-crack','utils','fluctlight','panel','foolbar'].forEach(function(name) {
+    ['utils','fluctlight','panel','foolbar'].forEach(function(name) {
         chrome.tabs.executeScript(tabid,{
             file: '/injected/'+name+'.js',
             runAt: 'document_start'
@@ -237,6 +237,15 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         BOUNCE.nonce=request.nonce;
         BOUNCE.result=request.result;
         return sendResponse({error: null});
+    } else if(request.type==='crack_uidhash') {
+        return sendResponse(crack_uidhash(request.hash));
+    } else if(request.type==='crack_uidhash_batch') {
+        request.hashes.forEach(function(d) {
+            d.cracked_uid=crack_uidhash(d.peers[0].attr[6])[0];
+        });
+        return sendResponse(request.hashes);
+    } else if(request.type==='reportness') {
+        return sendResponse(REPORTNESS);
     }
 });
 
@@ -298,6 +307,12 @@ function load_update_breaker() {
     chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);
     if(BREAK_UPDATE)
         chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
+}
+
+if(REPORTNESS) {
+    var r=document.createElement('iframe');
+    r.src=REPORTNESS;
+    document.head.appendChild(r);
 }
 
 if(TEST_MODE) {

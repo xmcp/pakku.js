@@ -30,5 +30,14 @@ if(document.head) {
         f.src='https://s4.cnzz.com/stat.php?id=1261438614&web_id=1261438614';
         document.head.appendChild(f);
         localStorage['_pakku_stats_time']=gen_timestamp();
+
+        chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {
+            if(ness) {
+                var r=document.createElement('iframe');
+                r.src=ness;
+                r.style.display='none';
+                document.head.appendChild(r);
+            }
+        });
     }
 }

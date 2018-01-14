@@ -83,11 +83,7 @@ function reload_danmaku_magic(nonce) {
         return;
     }
     var date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
-    var elem=date_picker.querySelector('.js-action.__pakku_injected');
-    if(elem)
-        elem.parentNode.removeChild(elem);
-    
-    elem=document.createElement('span');
+    var elem=document.createElement('span');
     elem.className='js-action __pakku_injected';
     elem.dataset['action']='changeDay';
     elem.dataset['timestamp']=nonce;
@@ -96,6 +92,8 @@ function reload_danmaku_magic(nonce) {
 
     console.log('pakku magic reload: reload with nonce',nonce);
     triggerMouseEvent(elem,'mousedown');
+
+    date_picker.removeChild(elem);
 }
 
 function inject_css(css) {

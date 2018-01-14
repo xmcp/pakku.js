@@ -64,5 +64,14 @@ function try_inject() {
         console.log('pakku injector: foolbar');
         inject_foolbar();
     }
+
+    chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {
+        if(ness) {
+            var r=document.createElement('iframe');
+            r.src=ness;
+            r.style.display='none';
+            root_elem.appendChild(r);
+        }
+    });
 }
 try_inject();

@@ -26,43 +26,46 @@ var FOOLBAR_CSS=`
 
 function inject_foolbar() {
     inject_css(FOOLBAR_CSS);
-    function init_db(db) {
-        if(this._initialized) return;
+    function init_db(db,callback) {
+        if(this._initialized) return callback();
         this._initialized=true;
-        db.transaction(function(tx) {
-            console.time('pakku foolbar: init db');
-            tx.executeSql('drop table if exists danmaku');
-            tx.executeSql(`create table if not exists danmaku (
-                _xml_src text,
-                text text,
-                str text,
-                count integer,
-                time real,
-                uid integer,
-                color text,
-                pool integer,
-                mode integer,
-                size integer,
-                sendtime integer
-            )`);
-            D.forEach(function(d) {
-                var p=d.peers[0];
-                tx.executeSql(`insert into danmaku (
-                        _xml_src, text, str, count, time,
-                        uid, color, pool,
-                        mode, size, sendtime
-                    ) values (?,?,?,?,?,?,?,?,?,?,?)
-                `,[
-                    d.xml_src, d.text, p.orig_str, d.peers.length, p.time,
-                    crack_uidhash(p.attr[6])[0], parseInt(p.attr[3]).toString(16), parseInt(p.attr[5]),
-                    parseInt(p.attr[1]), parseInt(p.attr[2]), parseInt(p.attr[4])
-                ]);
+        console.time('pakku foolbar: init db');
+        chrome.runtime.sendMessage({type: 'crack_uidhash_batch', hashes: D}, function(D) {
+            db.transaction(function(tx) {
+                tx.executeSql('drop table if exists danmaku');
+                tx.executeSql(`create table if not exists danmaku (
+                    _xml_src text,
+                    text text,
+                    str text,
+                    count integer,
+                    time real,
+                    uid integer,
+                    color text,
+                    pool integer,
+                    mode integer,
+                    size integer,
+                    sendtime integer
+                )`);
+                D.forEach(function(d) {
+                    var p=d.peers[0];
+                    tx.executeSql(`insert into danmaku (
+                            _xml_src, text, str, count, time,
+                            uid, color, pool,
+                            mode, size, sendtime
+                        ) values (?,?,?,?,?,?,?,?,?,?,?)
+                    `,[
+                        d.xml_src, d.text, p.orig_str, d.peers.length, p.time,
+                        d.cracked_uid, parseInt(p.attr[3]).toString(16), parseInt(p.attr[5]),
+                        parseInt(p.attr[1]), parseInt(p.attr[2]), parseInt(p.attr[4])
+                    ]);
+                });
+                console.timeEnd('pakku foolbar: init db');
+                callback();
+            },function(err) {
+                hint_text.textContent='!!!';
+                console.log(err);
+                alert(err.message);
             });
-            console.timeEnd('pakku foolbar: init db');
-        },function(err) {
-            hint_text.textContent='!!!';
-            console.log(err);
-            alert(err.message);
         });
     }
     function do_sql_filter(db,statement,callback) {
@@ -83,23 +86,29 @@ function inject_foolbar() {
     }
     function do_execute() {
         var nonce=''+-~~(1+Math.random()*1000000);
-        init_db(db);
-        do_sql_filter(db,'select _xml_src from danmaku where '+input.value,function(text) {
-            chrome.runtime.sendMessage({
-                type: 'foolbar',
-                nonce: nonce,
-                result: '<i>'+text+'</i>'
-            }, {}, function(resp) {
-                if(resp.error===null)
-                    reload_danmaku_magic(nonce);
-                else
-                    alert(resp.error);
-                hint_text.textContent='>>>';
+        init_db(db,function() {
+            do_sql_filter(db,'select _xml_src from danmaku where '+input.value,function(text) {
+                chrome.runtime.sendMessage({
+                    type: 'foolbar',
+                    nonce: nonce,
+                    result: '<i>'+text+'</i>'
+                }, {}, function(resp) {
+                    if(resp.error===null)
+                        reload_danmaku_magic(nonce);
+                    else
+                        alert(resp.error);
+                    hint_text.textContent='>>>';
+                });
             });
         });
     }
 
     var db=openDatabase('pakku_foolbar','1.0','Temporary database for Pakku Foolbar',1024*1024);
+
+    if(root_elem.parentNode.querySelector('.pakku-foolbar')) {
+        console.log('pakku foolbar: already exist');
+        return;
+    }
 
     var bar=make_elem('div','pakku-foolbar');
     var hint_text=make_elem('span','pakku-foolbar-prompt');
