@@ -6,7 +6,8 @@ var HISTORY={};
 var BOUNCE={
     nonce: '',
     result: ''
-}
+};
+var TEMPRULES={}; // id -> {TAOLUS: [], WHITELIST: []}
 
 /*for-firefox:
 
@@ -28,7 +29,7 @@ var _key='W1siLiIseyJyb290IjoiY2hyb21lIiwidXRpbCI6InJ1bnRpbWUiLCJ0b29sIjoiZ2V0TW
 if(!Math.log10)
     Math.log10=function(x) {
         return Math.log(x)/Math.log(10);
-    }
+    };
 
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
@@ -43,15 +44,19 @@ function toholyjson(obj) {
     return JSON.stringify(item);
 }
 
+function reload_danmaku() {
+    chrome.tabs.executeScript({
+        'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
+    });
+}
 function set_global_switch(sw,_do_no_reload) {
     GLOBAL_SWITCH=sw;
     chrome.browserAction.setBadgeText({
         text: GLOBAL_SWITCH?'':'zzz'
     });
+    chrome.runtime.sendMessage({type:'browser_action_reload'});
     if(!_do_no_reload)
-        chrome.tabs.executeScript({
-            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
-        });
+        reload_danmaku();
 }
 
 var ERROR_COLOR='#ff4444';
@@ -129,6 +134,9 @@ function FailingStatus(CID,typ,details) {
         cid: CID,
         details: details
     }
+}
+function TempRules() {
+    return {'TAOLUS':[], 'WHITELIST':[]};
 }
 
 function req_breaker(details) {

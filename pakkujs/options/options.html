@@ -40,9 +40,11 @@
             font-weight: bold;
         }
         code {
-            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
             color: #007700;
             border-bottom: 1px dashed #007700;
+        }
+        code, .code {
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', monospace;
         }
         p {
             margin-top: 1em;
@@ -304,7 +306,7 @@
                         <p><b>强制合并</b>：（符合这些规则的弹幕，即使内容不相同也会被合并）</p>
                         <form id="newtaolu-form">
                             <p>
-                                <input id="newtaolu-pattern" placeholder="正则表达式" required>
+                                <input id="newtaolu-pattern" class="code" placeholder="正则表达式" required>
                                 →
                                 <input id="newtaolu-name" placeholder="合并后的文字" required>
                                 <button type="submit">添加</button>
@@ -316,7 +318,7 @@
                         <p><b>强制忽略</b>：（符合这些规则的弹幕，即使内容相同也不会被合并）</p>
                         <form id="newwhitelist-form">
                             <p>
-                                <input id="newwhitelist-pattern" placeholder="正则表达式" required>
+                                <input id="newwhitelist-pattern" class="code" placeholder="正则表达式" required>
                                 <button type="submit">添加</button>
                                 &nbsp; <small><a href="http://s.xmcp.ml/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                             </p>
@@ -422,10 +424,10 @@
                             <img src="img/fluctlight.png" height="300" width="600" data-name="FLUCTLIGHT" data-value="on">
                         </span>
                     </p>
-                    <p class="advanced" style="display: none">
+                    <p class="advanced" data-nofirefox="yes">
                         <input id="foolbar" type="checkbox">
-                        <label for="foolbar">FoolBar（暂定）</label>
-                        (Chrome only)
+                        <label for="foolbar">我是程序员，我会写SQL，给我来点厉害的功能</label>
+                        (beta)
                     </p>
                 
             </td>
@@ -440,13 +442,13 @@
                         <label for="remove-seek">屏蔽跳转脚本：</label>
                         <span>过滤包含 <code>Player.seek</code> 内容的代码弹幕</span>
                     </p>
-                    <p class="advanced">
+                    <p>
                         <input id="break-update" type="checkbox">
                         <label for="break-update">阻止弹幕动态更新：</label>
-                        <span>阻止播放器通过 WebSocket 更新在线人数和实时弹幕</span>
+                        <span>如果你发现很多刷屏弹幕没有被过滤，请选中本选项</span>
                     </p>
-                    <p class="warning advanced">
-                        * 观看视频时将不会动态更新弹幕，也不会显示在线人数。<b>仅支持部分浏览器</b>（比如 Chrome 59+）
+                    <p class="warning">
+                        * 选中后，观看视频时将<b>不会动态更新弹幕</b>，也不会显示在线人数。仅支持部分浏览器（比如 Chrome 59+）
                     </p>
                     <p class="advanced">
                         <span style="font-weight: bold">弹幕黑名单：</span>

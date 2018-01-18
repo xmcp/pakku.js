@@ -3,6 +3,7 @@
 var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
 
 function loadconfig() {
+    window._ADVANCED_USER=localStorage['_ADVANCED_USER']==='on';
     // 弹幕合并
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
@@ -42,6 +43,7 @@ function loadconfig() {
     load_update_breaker();
 }
 function initconfig() {    
+    localStorage['_ADVANCED_USER']=localStorage['_ADVANCED_USER']||'off';
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
@@ -208,10 +210,12 @@ function load_danmaku(url,id,tabid) {
         });
         
         HISTORY[tabid]=S;
+        chrome.runtime.sendMessage({type:'browser_action_reload'});
+
         return res;
     } catch(e) {
         setbadge('JS!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.stack);
+        HISTORY[tabid]=FailingStatus(id,'弹幕处理失败',e.message+'\n\n'+e.stack);
         throw e;
     }
 }

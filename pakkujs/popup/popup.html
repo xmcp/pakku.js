@@ -9,8 +9,9 @@
         body {
             width: 300px;
             background-color: #f7f7f7;
+            font-size: 75%;
         }
-        code {
+        code, kbd, .code {
             font-family: Consolas, Courier, monospace;
         }
         a {
@@ -23,34 +24,53 @@
             content: ' ⌾';
             color: #aaa;
         }
-        body, #switch {
-            font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
+        .slim p {
+            margin: .3em;
+            text-align: left;
         }
         .clearfix {
             clear: both;
         }
-        #topbar p {
-            text-align: center;
+        kbd { /* stolen from github */
+            display: inline-block;
+            padding: 3px 5px;
+            font-size: 10px;
+            color: #444d56;
+            vertical-align: baseline;
+            background-color: #fafbfc;
+            border: solid 1px #c6cbd1;
+            border-bottom-color: #959da5;
+            border-radius: 3px;
+            box-shadow: inset 0 -1px 0 #959da5;
+        }
+        kbd:empty::after {
+            content: '没有快捷键';
+            opacity: .5;
+        }
+        body, #switch {
+            font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
         }
         #pakku-logo, #pakku-logo img {
             display: block;
             width: 80px;
             height: 80px;
             float: left;
+            margin-right: 15px;
         }
         #pakku-title {
-            font-size: 35px;
-            margin: 0;
-            padding-top: .2em;
-            font-family: Consolas, Courier, monospace;
+            font-size: 30px;
+            line-height: 30px;
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', monospace;
+            margin: 0 0 .5em 0;
+        }
+        #pakku-title small {
+            font-weight: normal;
+            font-size: 15px;
+            vertical-align: middle;
         }
         #switch {
-            margin-left: 10px;
-            display: inline-block;
-            width: 80px;
             border: black 1px solid;
-            border-radius: 5px;
-            font-size: 20px;
+            border-radius: 3px;
         }
         #switch.on {
             background-color: #dfd;
@@ -59,8 +79,7 @@
             background-color: #ddd;
         }
         #hint-text {
-            padding-top: .5em;
-            margin: 0;
+            text-align: center;
         }
         #result table {
             border-spacing: 0;
@@ -95,28 +114,46 @@
             padding-left: 1em;
             margin-top: 1em;
         }
+        #temprules {
+            font-family: Consolas, Courier, monospace;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #temprules li {
+            color: white;
+            padding-left: 1em;
+            cursor: pointer;
+        }
+        .temprule-taolus {
+            background-color: #aa0000;
+        }
+        .temprule-whitelist {
+            background-color: #999999;
+        }
+        #temprule-pattern {
+            width: 100%;
+        }
+        #temprules:empty+#temprules-hint {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div id="topbar">    
-        <a id="pakku-logo" target="_blank" title="选项"><img src="../assets/icon_display.png"></a>
-        <p id="pakku-title">pakku<button id="switch">……</button></p>
-        <p id="hint-text">……</p>
-    </div>
-    <div class="clearfix"></div>
     <div id="result" class="display-none">
-        <table>
+        <p>
+            <span style="float: right">
+                <a id="link-total" target="_blank">
+                    总弹幕数 <span id="status-total">--</span>
+                </a>
+                →
+                <a id="link-display" target="_blank">
+                    过滤后 <span id="status-onscreen">--</span>
+                </a>
+            </span>
+            <button type="button" id="details-btn">详细信息</button>
+        </p>
+        <table id="details-on">
             <tbody>
-                <tr class="first-item">
-                    <td></td>
-                    <td><a id="link-total" target="_blank">总弹幕数</a></td>
-                    <td id="status-total"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><a id="link-display" target="_blank">显示的弹幕数</a></td>
-                    <td id="status-onscreen"></td>
-                </tr>
                 <tr class="first-item">
                     <td style="color: #00aa00">已合并</td>
                     <td><a data-options-link="threshold">内容完全一致</a></td>
@@ -198,12 +235,40 @@
                 </tr>
             </tbody>
         </table>
+        <div id="details-off">
+            <input id="temprule-pattern" placeholder="输入临时过滤规则（正则表达式）" class="code" autofocus>
+            <ul id="temprules"></ul>
+            <div id="temprules-hint">
+                这些规则只适用于当前页面。
+            </div>
+            <div class="slim">
+                <hr>
+                <p><kbd>Enter</kbd> 添加强制<b>合并</b>规则</p>
+                <p><kbd>Shift+Enter</kbd> 添加强制<b>忽略</b>规则</p>
+                <p><kbd>Ctrl+Enter</kbd> <b>清空</b>所有规则</p>
+    </div>
+        </div>
     </div>
     <div id="exception" class="display-none">
         <p id="status-error"></p>
         <p>CID = <span id="error-cid"></span></p>
         <p><pre><code id="status-details"></code></pre></p>
     </div>
+    
+    <p id="pakku-title">
+        <span>pakku </span>
+        <small id="hint-text">......</small>
+    </p>
+    <hr>
+    <div>
+        <a id="pakku-logo" target="_blank" title="选项"><img src="../assets/icon_display.png"></a>
+        <div class="slim" style="padding-top: .2em">
+            <p><kbd id="command-_execute_browser_action"></kbd> 显示本对话框</p>
+            <p><kbd id="command-toggle-global-switch"></kbd> 切换 <button id="switch">……</button></p>
+            <p class="code">pakku v<span id="version">...</span> by @xmcp</p>
+        </div>
+    </div>
+    <div class="clearfix"></div>
     
     <script src="popup.js"></script>
 </body>
