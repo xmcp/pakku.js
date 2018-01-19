@@ -92,6 +92,8 @@ function reload_danmaku_magic(nonce) {
 
     console.log('pakku magic reload: reload with nonce',nonce);
     triggerMouseEvent(elem,'mousedown');
+    triggerMouseEvent(elem,'mouseup');
+    triggerMouseEvent(elem,'click');
 
     date_picker.removeChild(elem);
 }
