@@ -74,7 +74,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                                 id('status-'+name).textContent=(typeof res[name]=='number') ? Math.ceil(res[name]) : res[name];
                     }
                     
-
                     temprules.textContent='';
                     if(bgpage.TEMPRULES[tabid]) {
                         bgpage.TEMPRULES[tabid].WHITELIST.forEach(function(whitelist) {

@@ -150,7 +150,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
 });
 
-function load_danmaku(url,id,tabid) {
+function down_danmaku(url,id,tabid) {
     chrome.browserAction.setTitle({
         title: '正在下载弹幕文件…',
         tabId: tabid
@@ -171,19 +171,23 @@ function load_danmaku(url,id,tabid) {
     
     try {
         if(xhr.status!==200) throw new Error('xhr.status = '+xhr.status);
-        var rxml=parse_xml_magic(xhr.response);
+        return xhr.response;
     } catch(e) {
         setbadge('SVR!',ERROR_COLOR,tabid);
         HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误',e.stack);
         throw e;
     }
-    
+}
+
+function load_danmaku(resp,id,tabid) {    
     try {
         chrome.browserAction.setTitle({
             title: '正在处理弹幕…',
             tabId: tabid
         });
         setbadge('...',LOADING_COLOR,tabid);
+        var rxml=parse_xml_magic(resp);
+
         var S=Status(id);
         var D=[];
         
@@ -231,7 +235,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
             if(nonce==BOUNCE.nonce)
                 return sendResponse({data: BOUNCE.result});
-            var data=load_danmaku(request.url,cid,tabid);
+            var data=load_danmaku(down_danmaku(request.url,cid,tabid),cid,tabid);
             sendResponse({data: data});
         } else
             sendResponse({data: null});
@@ -250,8 +254,41 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         return sendResponse(request.hashes);
     } else if(request.type==='reportness') {
         return sendResponse(REPORTNESS);
+    } else if(request.type==='need_ajax_hook') {
+        return sendResponse(!(browser && browser.webRequest.filterResponseData));
     }
 });
+
+function hook_stream_filter(filter,id,tabid) {
+    var decoder=new TextDecoder('utf-8');
+    var encoder=new TextEncoder();
+    var str='';
+
+    chrome.browserAction.setTitle({
+        title: '正在下载弹幕文件…',
+        tabId: tabid
+    });
+    setbadge('↓',LOADING_COLOR,tabid);
+
+    filter.ondata=function(event) {
+        str+=decoder.decode(event.data,{stream:true});
+    };
+    filter.onstop=function(event) {
+        if(!str) {
+            setbadge('NET!',ERROR_COLOR,tabid);
+            HISTORY[tabid]=FailingStatus(id,'网络错误','filter.status = '+filter.status+'\nstr = '+str);
+            filter.disconnect();
+        } else {
+            filter.write(encoder.encode(load_danmaku(str,id,tabid)));
+            filter.close();
+        }
+    };
+    filter.onerror=function(event) {
+        setbadge('NET!',ERROR_COLOR,tabid);
+        HISTORY[tabid]=FailingStatus(id,'网络错误',filter.error);
+        filter.disconnect();
+    };
+}
 
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
     if(!GLOBAL_SWITCH)
@@ -263,8 +300,22 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
         if(nonce==BOUNCE.nonce)
             return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
+        
+        /*for-firefox:
+
+        if(browser.webRequest.filterResponseData) {
+            var filter=browser.webRequest.filterResponseData(details.requestId);
+            hook_stream_filter(filter,cid,details.tabId);
+            return {cancel: false};
+        }
+
+        */
+
         if(debug || details.type==='xmlhttprequest')
-            return {redirectUrl: 'data:text/xml;charset=utf-8,'+load_danmaku(details.url,cid,details.tabId)};
+            return {
+                redirectUrl: 'data:text/xml;charset=utf-8,'+
+                    load_danmaku(down_danmaku(details.url,cid,details.tabId),cid,details.tabId)
+            };
         else {
             setbadge('FL!',ERROR_COLOR,details.tabId);
             HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
