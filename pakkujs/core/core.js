@@ -189,7 +189,7 @@ function parse(dom,tabid,S,D) {
 
             if(!PROC_POOL1 && attr[5]==='1') {
                 S.batch_ignore++;
-                apply_danmu(elem,['已忽略字幕弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['已忽略字幕弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             if(mode!=='8' && mode !== '9' && blacklisted(disp_str)) {
@@ -198,12 +198,12 @@ function parse(dom,tabid,S,D) {
             }
             if(!PROC_TYPE7 && mode=='7') { // special danmu
                 S.batch_ignore++;
-                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             if(!PROC_TYPE4 && mode=='4') { // bottom danmu
                 S.batch_ignore++;
-                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             if(mode=='8') { // code danmu
@@ -212,17 +212,17 @@ function parse(dom,tabid,S,D) {
                     elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
                 S.script++;
-                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             if(mode=='9') { // bas danmu
                 S.script++;
-                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             if(whitelisted(disp_str)) {
                 S.whitelist++;
-                apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')]);
+                apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
             // finaly,
