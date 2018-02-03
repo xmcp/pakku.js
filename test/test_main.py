@@ -4,6 +4,8 @@ from xml.dom.minidom import *
 import json
 import time
 
+EXAMPLE_DANMAKU='https://comment.bilibili.com/3262388.xml'
+
 def demo(fn):
     with open('demo/%s.xml'%fn,'r',encoding='utf-8') as f:
         return f.read()
@@ -60,13 +62,13 @@ runner.update_settings('TAOLUS','[]')
 print('!= test webrequest hook')
 
 runner.set_global_switch(False)
-runner.b.get('http://comment.bilibili.com/1.xml?debug')
+runner.b.get(EXAMPLE_DANMAKU+'?debug')
 assert not runner.b.current_url.startswith('data:')
 
 runner.set_global_switch(True)
-runner.b.get('http://comment.bilibili.com/1.xml?debug')
+runner.b.get(EXAMPLE_DANMAKU+'?debug')
 assert runner.b.current_url.startswith('data:')
-runner.b.get('http://comment.bilibili.com/1.xml')
+runner.b.get(EXAMPLE_DANMAKU)
 assert not runner.b.current_url.startswith('data:')
 
 print('!= test xml format')
@@ -86,13 +88,13 @@ print('!= test ajax hook')
 runner.set_global_switch(False)
 runner.b.get('http://www.bilibili.com/favicon.ico')
 time.sleep(.5) # wait for ajax hook
-assert '[x' not in runner.parse_ajax('//comment.bilibili.com/1.xml')
+assert '[x' not in runner.parse_ajax(EXAMPLE_DANMAKU)
 
 runner.set_global_switch(True)
 runner.b.get('http://www.bilibili.com/favicon.ico')
 time.sleep(.5) # wait for ajax hook
-assert '[x' in runner.parse_ajax('//comment.bilibili.com/1.xml')
-assert '[x' not in runner.parse_ajax('http://comment.bilibili.com/1.xml?pakku_test')
+assert '[x' in runner.parse_ajax(EXAMPLE_DANMAKU)
+assert '[x' not in runner.parse_ajax(EXAMPLE_DANMAKU+'?pakku_test')
 
 print('!= test working')
 
