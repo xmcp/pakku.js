@@ -134,7 +134,7 @@ function _load_info(uid,logger,callback) {
     }
     var xhr=new XMLHttpRequest();
     xhr.responseType='text';
-    xhr.open('get','https://api.bilibili.com/cardrich?type=json&mid='+uid);
+    xhr.open('get','https://api.bilibili.com/x/web-interface/card?type=json&mid='+uid);
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
@@ -166,7 +166,7 @@ function query_uid(uidhash,logger) {
                 _load_info(uid,subitem,function(res) {
                     var nickname,lv,exp,regtime;
                     
-                    if(!res.data) { // does not exist
+                    if(!res.data || !res.data.card || !res.data.card.mid) { // does not exist
                         subitem.parentNode.removeChild(subitem);
                         return;
                     }
