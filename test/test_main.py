@@ -66,10 +66,10 @@ runner.b.get(EXAMPLE_DANMAKU+'?debug')
 assert not runner.b.current_url.startswith('data:')
 
 runner.set_global_switch(True)
-runner.b.get(EXAMPLE_DANMAKU+'?debug')
-assert runner.b.current_url.startswith('data:')
 runner.b.get(EXAMPLE_DANMAKU)
 assert not runner.b.current_url.startswith('data:')
+runner.b.get(EXAMPLE_DANMAKU+'?debug')
+assert runner.b.current_url.startswith('data:')
 
 print('!= test xml format')
 
