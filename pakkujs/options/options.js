@@ -381,6 +381,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
+
+    if(bgpage.TEST_MODE) {
+        // speed up testing procedure by removing stat iframe
+        var frame_elem=document.querySelector('iframe');
+        if(frame_elem)
+            frame_elem.parentNode.removeChild(frame_elem);
+    }
 });
 
 [].slice.call(document.querySelectorAll('.donate')).forEach(function(elem) {
