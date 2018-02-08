@@ -1,6 +1,8 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
+var IS_FIREFOX=false;
+
 var GLOBAL_SWITCH=true;
 var HISTORY={};
 var BOUNCE={
@@ -11,6 +13,7 @@ var TEMPRULES={}; // id -> {TAOLUS: [], WHITELIST: []}
 
 /*for-firefox:
 
+IS_FIREFOX=true;
 chrome.notifications.create=function(txt,obj,callback) {
     delete obj['contextMessage'];
     delete obj['isClickable'];
@@ -173,4 +176,31 @@ function parse_xml_magic(k) {
 		k = k.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, "");
 	} catch (c) {}
 	return (new window.DOMParser).parseFromString(k, "text/xml");
+}
+
+// these 2 are firefox-only
+function backup_settings_if_needed() {
+    if(IS_FIREFOX) {
+        console.log('need to backup settings');
+        browser.storage.local.set({'localstorage_bkp': Object.assign({},localStorage)}).then(function() {
+            console.log('backup settings: ok')
+        });
+    }
+}
+function restore_settings_if_needed(callback) {
+    if(IS_FIREFOX && !localStorage['_restore_placeholder']) {
+        console.log('need to restore settings');
+        browser.storage.local.get({'localstorage_bkp':null}).then(function(res) {
+            console.log('restore settings',res);
+            if(res['localstorage_bkp'])
+                Object.assign(localStorage,res['localstorage_bkp']);
+            localStorage['_restore_placeholder']='not needed';
+            initconfig();
+            if(callback)
+                callback();
+        });
+        return true;
+    } else {
+        return false;
+    }
 }

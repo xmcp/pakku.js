@@ -121,10 +121,9 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     if(localStorage['BREAK_UPDATE']==='on')
                         get_ws_permission();
                 });
-
             }
         }
-    })
+    });
     
     function reload() {
         bgpage.loadconfig();
@@ -138,6 +137,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     function loadconfig() {
+        if(bgpage.restore_settings_if_needed(loadconfig)) {
+            console.log('will restore settings');
+            return;
+        }
+
         id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];

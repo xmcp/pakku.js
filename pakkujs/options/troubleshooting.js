@@ -27,6 +27,7 @@ debug.textContent+='\n\n**User Agent:** `'+navigator.userAgent+'`';
 debug.textContent+='\n\n**localStorage:** `'+JSON.stringify(localStorage)+'`';
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
+    debug.textContent+='\n\n**Background / IS_FIREFOX:** '+bgpage.IS_FIREFOX;
     debug.textContent+='\n\n**Background / GLOBAL_SWITCH:** '+bgpage.GLOBAL_SWITCH;
     debug.textContent+='\n\n**Background / HISTORY:** `'+JSON.stringify(bgpage.HISTORY)+'`';
 });

@@ -41,8 +41,11 @@ function loadconfig() {
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
     
     load_update_breaker();
+    backup_settings_if_needed();
 }
-function initconfig() {    
+function initconfig() {
+    if(restore_settings_if_needed()) return;
+
     localStorage['_ADVANCED_USER']=localStorage['_ADVANCED_USER']||'off';
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
@@ -206,6 +209,7 @@ function load_danmaku(resp,id,tabid) {
         });
         
         inject_panel(tabid,D,{
+            IS_FIREFOX: IS_FIREFOX,
             TOOLTIP: TOOLTIP,
             AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
