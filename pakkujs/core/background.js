@@ -1,5 +1,22 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
+/*
+
+[Technical Note]
+Pakku tampers the danmaku request by:
+
+- Chrome:       webRequest.onBeforeRequest listener + Data-URI  [for all requests]
+
+- Firefox <52:  AJAX Hook + runtime.onMessage listener (async)  [for xhr requests]
+                webRequest.onBeforeRequest listener + Data-URI  [for other requests]
+
+- Firefox <57:  AJAX Hook + runtime.onMessage listener (async)  [for xhr requests]
+                webRequest.onBeforeRequest listener (async) + Data-URI  [for other requests]
+
+- Firefox >=57: webRequest.onBeforeRequest listener + Stream Filter (async)  [for all requests]
+
+*/
+
 var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
 
 function loadconfig() {
@@ -168,7 +185,7 @@ function down_danmaku(url,id,tabid) {
         xhr.send();
     } catch(e) {
         setbadge('NET!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus(id,'网络错误',e.stack);
+        HISTORY[tabid]=FailingStatus(id,'网络错误',e.message+'\n\n'+e.stack);
         throw e;
     }
     
@@ -177,9 +194,39 @@ function down_danmaku(url,id,tabid) {
         return xhr.response;
     } catch(e) {
         setbadge('SVR!',ERROR_COLOR,tabid);
-        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误',e.stack);
+        HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误',e.message+'\n\n'+e.stack);
         throw e;
     }
+}
+
+function down_danmaku_async(url,id,tabid) {
+    return new Promise(function(resolve,reject) {
+        chrome.browserAction.setTitle({
+            title: '正在下载弹幕文件…',
+            tabId: tabid
+        });
+        setbadge('↓',LOADING_COLOR,tabid);
+        
+        var xhr=new XMLHttpRequest();
+        console.log('load '+url+' for CID '+id);
+        
+        try {
+            xhr.open('get',url+'?pakku_request');
+            xhr.onerror=function() {
+                setbadge('SVR!',ERROR_COLOR,tabid);
+                HISTORY[tabid]=FailingStatus(id,'B站弹幕服务器错误','xhr.status = '+xhr.status);
+                return reject(new Error('SVR!'));
+            };
+            xhr.onload=function() {
+                return resolve(xhr.response);
+            };
+            xhr.send();
+        } catch(e) {
+            setbadge('NET!',ERROR_COLOR,tabid);
+            HISTORY[tabid]=FailingStatus(id,'网络错误',e.message+'\n\n'+e.stack);
+            return reject(e);
+        }
+    });
 }
 
 function load_danmaku(resp,id,tabid) {    
@@ -239,10 +286,17 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
             if(nonce==BOUNCE.nonce)
                 return sendResponse({data: BOUNCE.result});
-            var data=load_danmaku(down_danmaku(request.url,cid,tabid),cid,tabid);
-            sendResponse({data: data});
+            
+            down_danmaku_async(request.url,cid,tabid)
+                .then(function(res) {
+                    sendResponse({data:load_danmaku(res,cid,tabid)});
+                })
+                .catch(function() {
+                    sendResponse({data:null});
+                });
+            return true;
         } else
-            sendResponse({data: null});
+            return sendResponse({data: null});
     } else if(request.type==='foolbar') {
         if(!GLOBAL_SWITCH)
             set_global_switch(true,'yes do not reload');
@@ -300,7 +354,6 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     
     var ret=DANMU_URL_RE.exec(details.url);
     if(ret) {
-        console.log('webrequest',details);
         var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
         if(nonce==BOUNCE.nonce)
             return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
@@ -308,6 +361,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         /*for-firefox:
 
         if(browser.webRequest.filterResponseData) {
+            console.log('webrequest :: stream filter',details);
             var filter=browser.webRequest.filterResponseData(details.requestId);
             hook_stream_filter(filter,cid,details.tabId);
             return {cancel: false};
@@ -315,11 +369,33 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
 
         */
 
-        if(debug || details.type==='xmlhttprequest')
+        if(debug || details.type==='xmlhttprequest') {
+            /*for-firefox:
+            
+            if(FIREFOX_VERSION>=52) {
+                console.log('webrequest :: async',details);
+                return new Promise(function(resolve,reject) {
+                    down_danmaku_async(details.url,cid,details.tabId)
+                        .then(function(res) {
+                            resolve({
+                                redirectUrl: 'data:text/xml;charset=utf-8,'+
+                                    load_danmaku(res,cid,details.tabId)
+                            });
+                        })
+                        .catch(function() {
+                            resolve({cancel: false});
+                        });
+                });
+            }
+            
+            */
+
+            console.log('webrequest :: sync',details);
             return {
                 redirectUrl: 'data:text/xml;charset=utf-8,'+
                     load_danmaku(down_danmaku(details.url,cid,details.tabId),cid,details.tabId)
             };
+        }
         else {
             setbadge('FL!',ERROR_COLOR,details.tabId);
             HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);

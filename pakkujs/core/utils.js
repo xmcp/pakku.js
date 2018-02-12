@@ -22,6 +22,15 @@ chrome.notifications.create=function(txt,obj,callback) {
     browser.notifications.create(txt,obj).then(callback);
 }
 
+var FIREFOX_VERSION=(function() {
+    var ff_version=/Firefox\/([\d]+)/.exec(navigator.userAgent);
+    if(ff_version) {
+        var ver=parseInt(ff_version[1]);
+        return isNaN(ver)?null:ver;
+    }
+    return null;
+})();
+
 */
 
 var _key='W1siLiIseyJyb290IjoiY2hyb21lIiwidXRpbCI6InJ1bnRpbWUiLCJ0b29sIjoiZ2V0TWFuaWZlc3QiLCJqIjoiSlNPTiIsImNvb'+

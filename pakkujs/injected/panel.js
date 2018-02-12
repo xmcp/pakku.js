@@ -2,43 +2,47 @@
 
 var PANEL_CSS=`
 .pakku-panel {
-    background-color: rgba(247,247,247,.8);
+    background-color: rgba(205,205,205,.8);
     color: black;
     width: 300px;
     position: absolute;
     z-index: 10000;
-    top: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    left: -305px;
+    top: 70px;
+    right: 0;
     box-shadow: 2px 2px 50px black;
+}
+.pakku-floating .pakku-panel {
+    right: -20px;
+    filter: brightness(.8);
+    pointer-events: none;
 }
 .pakku-panel-title {
     overflow-x: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
+    margin: 3px 0;
 }
 .pakku-panel-close {
     font: inherit; /* fix for bangumi page */
     line-height: 1em;
     color: black !important;
-    background-color: #f3f3f3 !important;
-    border-radius: 5px;
-    border: 1px solid black !important;
-    padding: 3px;
+    background-color: transparent !important;
+    border-radius: 0;
+    border: none !important;
+    padding: 3px 5px;
     cursor: pointer;
-    margin-right: 5px;
 }
-.pakku-panel-desc {
+.pakku-panel-desc:not(:empty) {
     line-height: 1.2em;
+    margin: 3px 5px;
 }
 .pakku-panel-peers {
-    height: 350px;
+    max-height: 300px;
     overflow-y: auto;
 }
-.pakku-panel-footer {
+.pakku-panel-footer:not(:empty) {
     overflow: hidden;
-    text-overflow: ellipsis;
+    margin: 3px 5px;
 }
 
 .pakku-panel * {
@@ -49,7 +53,7 @@ var PANEL_CSS=`
     border-bottom: 1px solid black;
 }
 .pakku-panel hr {
-    margin: .5em 0; /* fix for bangumi page */
+    margin: 0;
 }
 .pakku-panel .text-fix {
     overflow-x: hidden;
@@ -60,6 +64,9 @@ var PANEL_CSS=`
     display: inline-block;
 }
 .pakku-panel-desc:empty~hr.pakku-for-desc {
+    display: none;
+}
+.pakku-panel-footer:empty~hr.pakku-for-footer {
     display: none;
 }
 .pakku-panel * {
@@ -75,9 +82,6 @@ var PANEL_CSS=`
     display: none;
     font-weight: normal;
 }
-.pakku-panel-footer:empty::after {
-    content: '在列表中点击来查询弹幕发送者';
-}
 
 .pakku-panel-peers div {
     cursor: pointer;
@@ -91,10 +95,10 @@ var PANEL_CSS=`
     display: initial;
 }
 .pakku-panel-peers div.black {
-    background-color: rgba(32,32,32,.8);
+    background-color: rgba(24,24,24,.8);
 }
 .pakku-panel-peers div.white {
-    background-color: rgba(223,223,223,.8);
+    background-color: rgba(231,231,231,.8);
 }
 .pakku-panel-peers div.black:hover {
     background-color: rgba(0,0,0,1);
@@ -104,13 +108,22 @@ var PANEL_CSS=`
 }
 `;
 
+var PANEL_EVENT_FIX=`
+.__pakku_pointer_event .bilibili-player-video-danmaku, .__pakku_pointer_event .bilibili-danmaku {
+    pointer-events: initial !important;
+}
+.__pakku_pointer_event .bilibili-danmaku {
+    background-color: rgba(255,255,0,.6);
+}
+`
+
 function make_panel_dom() {
     var dom=make_elem('div','pakku-panel');
     var dom_title=make_elem('p','pakku-panel-title');
     var dom_close=make_elem('button','pakku-panel-close');
     
     dom_close.type='button';
-    dom_close.textContent='关闭';
+    dom_close.textContent='×';
     
     dom_title.appendChild(dom_close);
     dom_title.appendChild(make_elem('span','pakku-panel-text'));
@@ -120,7 +133,7 @@ function make_panel_dom() {
     dom.appendChild(make_elem('div','pakku-panel-desc'));
     dom.appendChild(make_elem('hr','pakku-for-desc'));
     dom.appendChild(make_elem('div','pakku-panel-peers'));
-    dom.appendChild(make_elem('hr',''));
+    dom.appendChild(make_elem('hr','pakku-for-footer'));
     dom.appendChild(make_elem('div','pakku-panel-footer text-fix'));
     
     return dom;
@@ -197,7 +210,7 @@ function query_uid(uidhash,logger) {
     });
 }
 
-function inject_panel(list_elem) {
+function inject_panel(list_elem,player_elem) {
     inject_css(PANEL_CSS);
     var panel_obj=document.createElement('div');
     panel_obj.style.display='none';
@@ -205,74 +218,127 @@ function inject_panel(list_elem) {
     panel_obj.querySelector('.pakku-panel-close').addEventListener('click',function() {
         panel_obj.style.display='none';
     });
+    panel_obj.addEventListener('mousewheel',function(e) {
+        e.stopPropagation();
+    });
     document.addEventListener('click',function(e) {
         if(!panel_obj.contains(e.target) && !list_elem.contains(e.target))
             panel_obj.style.display='none';
     });
     
-    list_elem.appendChild(panel_obj);
+    player_elem.appendChild(panel_obj);
+
+    function show_panel(dminfo,floating) {
+        console.log('pakku panel: show panel',dminfo)
+
+        var dm_ultralong=dminfo.str.length>498;
+        var dm_str=dminfo.str.replace(/([\r\n\t]|\/n)/g,'');
+        var text_container=panel_obj.querySelector('.pakku-panel-text'),
+            desc_container=panel_obj.querySelector('.pakku-panel-desc'),
+            peers_container=panel_obj.querySelector('.pakku-panel-peers'),
+            footer_container=panel_obj.querySelector('.pakku-panel-footer');
+        
+        panel_obj.style.display='block';
+        text_container.textContent='';
+        desc_container.innerHTML='';
+        peers_container.innerHTML='';
+        footer_container.textContent='';
+        
+        var info=null;
+        // the list might be sorted in a wrong way, so let's guess the index
+        if(typeof dminfo.index=='number' && D[dminfo.index] &&
+                (dm_ultralong ? D[dminfo.index].text.indexOf(dm_str)===0 : D[dminfo.index].text===dm_str))
+            info=D[dminfo.index];
+        else {
+            var cnt=0;
+            for(var i=0;i<D.length;i++)
+                if((dm_ultralong ? D[i].text.indexOf(dm_str)===0 : D[i].text===dm_str)) {
+                    info=D[i];
+                    cnt++;
+                }
+            if(cnt>1)
+                desc_container.appendChild(make_p('* 数据可能不准确'));
+        }
+        
+        if(info) {
+            text_container.textContent=info.text;
+            info.desc.forEach(function(d) {
+                desc_container.appendChild(make_p(d));
+            });
+            info.peers.forEach(function(p) {
+                var self=document.createElement('div');
+                var color=proc_rgb(parseInt(p.attr[3]));
+                self.style.color='rgb('+color[0]+','+color[1]+','+color[2]+')';
+                self.classList.add(get_L(color[0],color[1],color[2])>.5 ? 'black' : 'white');
+                
+                self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
+                self.appendChild(make_p(
+                    p.reason+' '+p.attr[6]+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
+                    +format_datetime(new Date(parseInt(p.attr[4])*1000))
+                ));
+                
+                (function(self,uidhash,container) {
+                    self.addEventListener('click',function() {
+                        query_uid(uidhash,container);
+                    });
+                })(self,p.attr[6],footer_container);
+                
+                peers_container.appendChild(self);
+            });
+        } else
+            desc_container.appendChild(make_p('找不到弹幕详情'));
+    
+        peers_container.scrollTo(0,0);
+
+        if(floating)
+            panel_obj.classList.add('pakku-floating');
+        else
+            panel_obj.classList.remove('pakku-floating');
+    }
     
     list_elem.addEventListener('click',function(e) {
         var dm_obj=e.target.parentElement;
-        if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) {
-            var dm_str=dm_obj.querySelector('.danmaku-info-danmaku').title;
-            var dm_ultralong=dm_str.length>498;
-            dm_str=dm_str.replace(/([\r\n\t]|\/n)/g,'');
-            var dmno=parseInt(dm_obj.getAttribute('dmno'));
-            var text_container=panel_obj.querySelector('.pakku-panel-text'),
-                desc_container=panel_obj.querySelector('.pakku-panel-desc'),
-                peers_container=panel_obj.querySelector('.pakku-panel-peers'),
-                footer_container=panel_obj.querySelector('.pakku-panel-footer');
-            
-            
-            panel_obj.style.display='block';
-            text_container.textContent='';
-            desc_container.innerHTML='';
-            peers_container.innerHTML='';
-            footer_container.textContent='';
-            
-            var info=null;
-            // the list might be sorted in a wrong way, so let's guess the index
-            if(D[dmno] && (dm_ultralong ? D[dmno].text.indexOf(dm_str)===0 : D[dmno].text===dm_str))
-                info=D[dmno];
-            else {
-                var cnt=0;
-                for(var i=0;i<D.length;i++)
-                    if((dm_ultralong ? D[i].text.indexOf(dm_str)===0 : D[i].text===dm_str)) {
-                        info=D[i];
-                        cnt++;
-                    }
-                if(cnt>1)
-                    desc_container.appendChild(make_p('* 数据可能不准确'));
-            }
-            
-            if(info) {
-                text_container.textContent=info.text;
-                info.desc.forEach(function(d) {
-                    desc_container.appendChild(make_p(d));
-                });
-                info.peers.forEach(function(p) {
-                    var self=document.createElement('div');
-                    var color=proc_rgb(parseInt(p.attr[3]));
-                    self.style.color='rgb('+color[0]+','+color[1]+','+color[2]+')';
-                    self.classList.add(get_L(color[0],color[1],color[2])>.5 ? 'black' : 'white');
-                    
-                    self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
-                    self.appendChild(make_p(
-                        p.reason+' '+p.attr[6]+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
-                        +format_datetime(new Date(parseInt(p.attr[4])*1000))
-                    ));
-                    
-                    (function(self,uidhash,container) {
-                        self.addEventListener('click',function() {
-                            query_uid(uidhash,container);
-                        });
-                    })(self,p.attr[6],footer_container);
-                    
-                    peers_container.appendChild(self);
-                });
-            } else
-                desc_container.appendChild(make_p('找不到弹幕详情'));
-        }
+        if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno'))
+            show_panel({
+                str: dm_obj.querySelector('.danmaku-info-danmaku').title,
+                index: parseInt(dm_obj.getAttribute('dmno')),
+            });
     });
+    
+    var danmaku_stage=player_elem.querySelector('.bilibili-player-video-danmaku');
+    if(danmaku_stage) {
+        inject_css(PANEL_EVENT_FIX);
+        var hover_counter=0;
+        danmaku_stage.addEventListener('mouseover',function(e) {
+            hover_counter++;
+            if(e.target.className=='bilibili-danmaku') {
+                show_panel({str: e.target.textContent},true);
+            }
+        });
+        danmaku_stage.addEventListener('mouseout',function(e) {
+            hover_counter--;
+            if(hover_counter==0 && panel_obj.classList.contains('pakku-floating'))
+                panel_obj.style.display='none';
+        });
+        danmaku_stage.addEventListener('click',function(e) {
+            if(e.target.className=='bilibili-danmaku') {
+                console.log('click');
+                show_panel({str: e.target.textContent});
+                e.stopPropagation();
+            }
+            player_elem.classList.remove('__pakku_pointer_event');
+        });
+        document.addEventListener('keydown',function(e) {
+            if(e.key=='Control' && !e.repeat) {
+                player_elem.classList.add('__pakku_pointer_event');
+            }
+        });
+        document.addEventListener('keyup',function(e) {
+            if(e.key=='Control') {
+                player_elem.classList.remove('__pakku_pointer_event');
+                if(panel_obj.classList.contains('pakku-floating'))
+                    panel_obj.style.display='none';
+            }
+        });
+    }
 }

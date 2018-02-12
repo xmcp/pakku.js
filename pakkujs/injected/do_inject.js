@@ -36,9 +36,10 @@ function try_inject() {
 
     if(OPT['TOOLTIP']) {
         var list_elem=root_elem.querySelector('.bilibili-player-danmaku');
-        console.log('pakku injector: list_elem',list_elem);
-        if(list_elem)
-            inject_panel(list_elem);
+        var player_elem=root_elem.querySelector('.bilibili-player-area');
+        console.log('pakku injector: list_elem',list_elem,'player_elem',player_elem);
+        if(list_elem && player_elem)
+            inject_panel(list_elem,player_elem);
     }
     if(OPT['AUTO_PREVENT_SHADE']) {
         var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
