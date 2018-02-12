@@ -109,10 +109,10 @@ var PANEL_CSS=`
 `;
 
 var PANEL_EVENT_FIX=`
-.__pakku_pointer_event .bilibili-player-video-danmaku, .__pakku_pointer_event .bilibili-danmaku {
+.__pakku_pointer_event div.bilibili-player-video-danmaku, .__pakku_pointer_event div.bilibili-danmaku {
     pointer-events: initial !important;
 }
-.__pakku_pointer_event .bilibili-danmaku {
+.__pakku_pointer_event div.bilibili-danmaku {
     background-color: rgba(255,255,0,.6);
 }
 `

@@ -212,12 +212,12 @@ function parse(dom,tabid,S,D) {
                     elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
                 S.script++;
-                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')],disp_str);
+                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
                 return;
             }
             if(mode=='9') { // bas danmu
                 S.script++;
-                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')],disp_str);
+                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
                 return;
             }
             if(whitelisted(disp_str)) {
