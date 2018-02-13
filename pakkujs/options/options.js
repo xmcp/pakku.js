@@ -79,7 +79,7 @@ highlighter();
 window.addEventListener('hashchange',highlighter);
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
-    id('restore').addEventListener('click',function() {
+    id('reset').addEventListener('click',function() {
         if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
             localStorage.clear();
             bgpage.initconfig();
@@ -105,13 +105,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         });
     }
 
-    id('version').addEventListener('click',function(event) {
-        if(event.altKey && event.ctrlKey) {
-            var inp=prompt('Input nothing to export settings; paste the settings to import them.');
-            if(inp===null) return;
-            if(!inp) { // export
-                document.body.textContent=JSON.stringify(localStorage);
-            } else { // import
+    function backup_restore_prompt() {
+        var inp=prompt('直接按回车来导出设置；将设置粘贴到此处来导入设置。');
+        if(inp===null) return;
+        if(!inp) { // export
+            document.body.textContent=JSON.stringify(localStorage);
+            alert('导出成功。\n请将屏幕上的文本妥善保存在别处。');
+        } else { // import
+            try {
                 var dat=JSON.parse(inp);
                 localStorage.clear();
                 Object.assign(localStorage,dat);
@@ -120,10 +121,20 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     loadconfig();
                     if(localStorage['BREAK_UPDATE']==='on')
                         get_ws_permission();
+                    alert('导入成功。');
                 });
+            } catch(e) {
+                alert('导入失败。\n\n'+e.message);
+                throw e;
             }
         }
+    }
+
+    id('version').addEventListener('click',function(event) {
+        if(event.altKey && event.ctrlKey)
+            backup_restore_prompt();
     });
+    id('backup-restore').addEventListener('click',backup_restore_prompt);
     
     function reload() {
         bgpage.loadconfig();

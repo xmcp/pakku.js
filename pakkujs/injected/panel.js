@@ -37,7 +37,7 @@ var PANEL_CSS=`
     margin: 3px 5px;
 }
 .pakku-panel-peers {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
 }
 .pakku-panel-footer:not(:empty) {
@@ -115,6 +115,9 @@ var PANEL_EVENT_FIX=`
 .__pakku_pointer_event div.bilibili-danmaku {
     background-color: rgba(255,255,0,.6);
 }
+.__pakku_pointer_event div.bilibili-danmaku:hover {
+    background-color: rgba(255,255,0,1);
+}
 `
 
 function make_panel_dom() {
@@ -177,7 +180,7 @@ function query_uid(uidhash,logger) {
                 subitem.textContent=uid+' 正在加载个人信息...';
                 logger.appendChild(subitem);
                 _load_info(uid,subitem,function(res) {
-                    var nickname,lv,exp,regtime;
+                    var nickname,lv,exp,fans,sex;
                     
                     if(!res.data || !res.data.card || !res.data.card.mid) { // does not exist
                         subitem.parentNode.removeChild(subitem);
@@ -187,7 +190,8 @@ function query_uid(uidhash,logger) {
                         nickname=res.data.card.name;
                         lv=res.data.card.level_info.current_level;
                         exp=res.data.card.level_info.current_exp;
-                        regtime=new Date(res.data.card.regtime*1000);
+                        fans=res.data.card.fans;
+                        sex={'男':'♂','女':'♀'}[res.data.card.sex]||'〼';
                     } catch(e) {
                         subitem.textContent='';
                         subitem.appendChild(make_a(
@@ -199,7 +203,7 @@ function query_uid(uidhash,logger) {
                     
                     subitem.textContent='';
                     subitem.appendChild(make_a(
-                        uid+' Lv'+lv+'('+exp+') @'+format_date(regtime)+' '+nickname,
+                        uid+' Lv'+lv+'('+exp+') '+sex+' '+(fans?+fans+'★ ':'')+nickname,
                         '//space.bilibili.com/'+uid
                     ));
                 });
@@ -316,7 +320,8 @@ function inject_panel(list_elem,player_elem) {
             }
         });
         danmaku_stage.addEventListener('mouseout',function(e) {
-            hover_counter--;
+            if(--hover_counter<0)
+                hover_counter=0;
             if(hover_counter==0 && panel_obj.classList.contains('pakku-floating'))
                 panel_obj.style.display='none';
         });
@@ -330,6 +335,7 @@ function inject_panel(list_elem,player_elem) {
         });
         document.addEventListener('keydown',function(e) {
             if(e.key=='Control' && !e.repeat) {
+                hover_counter=0;
                 player_elem.classList.add('__pakku_pointer_event');
             }
         });
@@ -340,5 +346,9 @@ function inject_panel(list_elem,player_elem) {
                     panel_obj.style.display='none';
             }
         });
+        // after the webpage lost focus, `keyup` event might not be dispatched
+        window.addEventListener('blur',function() {
+            player_elem.classList.remove('__pakku_pointer_event');
+        })
     }
 }
