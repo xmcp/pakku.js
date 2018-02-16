@@ -13,7 +13,7 @@ var PANEL_CSS=`
 }
 .pakku-floating .pakku-panel {
     right: -20px;
-    filter: brightness(.8);
+    filter: brightness(.9);
     pointer-events: none;
 }
 .pakku-panel-title {
@@ -83,9 +83,6 @@ var PANEL_CSS=`
     font-weight: normal;
 }
 
-.pakku-panel-peers div {
-    cursor: pointer;
-}
 .pakku-panel-peers div:hover p:nth-child(1) {
     white-space: initial;
     word-wrap: break-word;
@@ -170,7 +167,13 @@ function _load_info(uid,logger,callback) {
     xhr.send();
 }
 
-function query_uid(uidhash,logger) {
+function query_uid(uidhash,logger_container) {
+    if(logger_container.dataset['_current_hash']===uidhash) return;
+    logger_container.dataset['_current_hash']=uidhash;
+    logger_container.textContent='';
+    var logger=document.createElement('div');
+    logger_container.appendChild(logger);
+    
     logger.textContent=uidhash+' 正在获取 UID...';
     chrome.runtime.sendMessage({type: 'crack_uidhash', hash: uidhash}, function(uids) {
         if(uids.length) {
@@ -182,7 +185,7 @@ function query_uid(uidhash,logger) {
                 _load_info(uid,subitem,function(res) {
                     var nickname,lv,exp,fans,sex;
                     
-                    if(!res.data || !res.data.card || !res.data.card.mid) { // does not exist
+                    if(!res.data || !res.data.card || !res.data.card.mid || !res.data.card.level_info.current_exp) { // does not exist
                         subitem.parentNode.removeChild(subitem);
                         return;
                     }
@@ -225,7 +228,7 @@ function inject_panel(list_elem,player_elem) {
     panel_obj.addEventListener('mousewheel',function(e) {
         e.stopPropagation();
     });
-    document.addEventListener('click',function(e) {
+    root_document.addEventListener('click',function(e) {
         if(!panel_obj.contains(e.target) && !list_elem.contains(e.target))
             panel_obj.style.display='none';
     });
@@ -247,6 +250,7 @@ function inject_panel(list_elem,player_elem) {
         desc_container.innerHTML='';
         peers_container.innerHTML='';
         footer_container.textContent='';
+        footer_container.dataset['_current_hash']='';
         
         var info=null;
         // the list might be sorted in a wrong way, so let's guess the index
@@ -282,13 +286,15 @@ function inject_panel(list_elem,player_elem) {
                 ));
                 
                 (function(self,uidhash,container) {
-                    self.addEventListener('click',function() {
+                    self.addEventListener('mouseover',function() {
                         query_uid(uidhash,container);
                     });
                 })(self,p.attr[6],footer_container);
                 
                 peers_container.appendChild(self);
             });
+            if(info.peers[0])
+                query_uid(info.peers[0].attr[6],footer_container);
         } else
             desc_container.appendChild(make_p('找不到弹幕详情'));
     
@@ -333,13 +339,13 @@ function inject_panel(list_elem,player_elem) {
             }
             player_elem.classList.remove('__pakku_pointer_event');
         });
-        document.addEventListener('keydown',function(e) {
+        root_document.addEventListener('keydown',function(e) {
             if(e.key=='Control' && !e.repeat) {
                 hover_counter=0;
                 player_elem.classList.add('__pakku_pointer_event');
             }
         });
-        document.addEventListener('keyup',function(e) {
+        root_document.addEventListener('keyup',function(e) {
             if(e.key=='Control') {
                 player_elem.classList.remove('__pakku_pointer_event');
                 if(panel_obj.classList.contains('pakku-floating'))
@@ -347,7 +353,7 @@ function inject_panel(list_elem,player_elem) {
             }
         });
         // after the webpage lost focus, `keyup` event might not be dispatched
-        window.addEventListener('blur',function() {
+        root_document.defaultView.addEventListener('blur',function() {
             player_elem.classList.remove('__pakku_pointer_event');
         })
     }

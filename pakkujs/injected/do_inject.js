@@ -20,12 +20,15 @@ function try_inject() {
     });
     // maybe player is not ready yet
     if(!root_elem || !root_elem.querySelector('.bilibili-player-danmaku')) {
-        if(--try_left>0)
+        if(--try_left>0) {
+            root_elem=null;
             setTimeout(try_inject,200);
-        else
+        } else
             console.log('pakku injector: root_elem not found');
         return;
     }
+    
+    root_document=root_elem.ownerDocument;
     if(root_elem.querySelector('.bilibili-player-danmaku.__pakku_injected')) {
         console.log('pakku injector: already injected');
         return;

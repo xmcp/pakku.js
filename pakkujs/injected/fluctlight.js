@@ -199,18 +199,19 @@ function inject_fluctlight_details(bar_elem) {
                 fluct.textContent='';
                 var time=parse_time(time_str);
                 var danmus=[];
-                for(var i=0;i<D.length && danmus.length<MAX_FLUCT;i++) {
+                for(var i=0;i<D.length;i++) {
                     var d=D[i];
                     if(d.peers && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA)
                         danmus.push(d);
                 }
-                danmus.sort(function(a,b) {
+                danmus=danmus.sort(function(a,b) {
                     return 0 || // avoid auto ;
                         a.peers.length - b.peers.length ||
                         mode_prio(b.peers[0].mode) - mode_prio(a.peers[0].mode) ||
                         (time-b) - (time-a) ||
                         0;
-                }).forEach(function(danmu) {
+                }).slice(-MAX_FLUCT);
+                danmus.forEach(function(danmu) {
                     fluct.appendChild(to_dom(danmu));
                 });
                 fluct.style.height=(4+14*danmus.length)+'px';
