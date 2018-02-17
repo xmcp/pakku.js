@@ -88,6 +88,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
     
     function get_ws_permission() {
+        if(IS_FIREFOX) return;
         chrome.permissions.request({
             origins: ['ws://*.bilibili.com/*','wss://*.bilibili.com/*']
         }, function(granted) {
@@ -116,6 +117,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 var dat=JSON.parse(inp);
                 localStorage.clear();
                 Object.assign(localStorage,dat);
+                if(IS_FIREFOX)
+                    localStorage['_restore_placeholder']='not needed';
                 chrome.runtime.getBackgroundPage(function(bgpage) {
                     bgpage.initconfig();
                     loadconfig();

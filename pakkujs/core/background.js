@@ -133,7 +133,7 @@ function inject_panel(tabid,D,OPT) {
     setTimeout(function() {
         chrome.tabs.executeScript(tabid,{
             file: '/injected/do_inject.js',
-            runAt: 'document_start'
+            runAt: 'document_idle'
         });
     },200);
 }

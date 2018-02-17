@@ -6,6 +6,14 @@ for(var i=0;i<D.length;i++)
 
 var try_left=50;
 function try_inject() {
+    // firstly, f**k firefox
+    try {
+        // https://blog.mozilla.org/addons/2012/09/12/what-does-cant-access-dead-object-mean/
+        root_elem.querySelector('#_okay_i_admit_that_firefox_did_the_right_thing_to_prevent_memory_leak');
+    } catch(e) {
+        // `Error: can't access dead object`, if the root_elem is destroyed
+        root_elem=null;
+    }
     // try to find the player element
     if(!root_elem)
         root_elem=document.querySelector('div.bilibili-player');
@@ -27,7 +35,6 @@ function try_inject() {
             console.log('pakku injector: root_elem not found');
         return;
     }
-    
     root_document=root_elem.ownerDocument;
     if(root_elem.querySelector('.bilibili-player-danmaku.__pakku_injected')) {
         console.log('pakku injector: already injected');
