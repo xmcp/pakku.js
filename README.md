@@ -24,15 +24,18 @@
 
 Browser Action ↓
 
-![browser_action](https://user-images.githubusercontent.com/6646473/33228331-7634e16a-d1f3-11e7-959e-900e94c4dda2.png)
+![browser_action_advanced](https://user-images.githubusercontent.com/6646473/36491658-42022f8e-1766-11e8-9728-33d0a77f7f47.png)
+
+![browser_action_details](https://user-images.githubusercontent.com/6646473/36491671-50194710-1766-11e8-9f73-7bbe1d90efa2.png)
+
 
 弹幕信息显示（支持查询弹幕发送者） ↓
 
-![tooltip](https://user-images.githubusercontent.com/6646473/33228335-9a230cd2-d1f3-11e7-8a1f-96adc513f752.png)
+![tooltip](https://user-images.githubusercontent.com/6646473/36491701-5e8f89a8-1766-11e8-815b-e890ebaeff5e.png)
 
 弹幕密度分析图 ↓
 
-![fluctlight](https://user-images.githubusercontent.com/6646473/33803656-aaac2e66-ddcf-11e7-8d6f-be3de9f5350e.png)
+![fluctlight](https://user-images.githubusercontent.com/6646473/36491732-70320f0a-1766-11e8-80e9-11ae4842f781.png)
 
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
