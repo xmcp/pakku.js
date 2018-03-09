@@ -75,25 +75,6 @@ function try_inject() {
         console.log('pakku injector: foolbar');
         inject_foolbar();
     }
-    if(OPT['IS_FIREFOX']) {
-        console.log('pakku injector: firefox font patch');
-        if(!localStorage['_pakku_font_patched']) {
-            // https://github.com/xmcp/pakku.js/issues/51
-            localStorage['_pakku_font_patched']='yes';
-            console.log('pakku font patch: will perform');
-
-            var conf=JSON.parse(localStorage['bilibili_player_settings']);
-            var curr=conf.setting_config[(conf.setting_config.fontfamily=='custom')?'fontfamilycustom':'fontfamily'];
-
-            if(curr.indexOf('Segoe UI Symbol,')!==0) {
-                curr='Segoe UI Symbol, '+curr;
-                conf.setting_config.fontfamily='custom';
-                conf.setting_config.fontfamilycustom=curr;
-                localStorage['bilibili_player_settings']=JSON.stringify(conf);
-                location.reload(); // sorry i can't find a better way to reload settings
-            }
-        }
-    }
 
     chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {
         if(ness) {

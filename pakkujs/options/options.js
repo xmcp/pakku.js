@@ -79,6 +79,17 @@ highlighter();
 window.addEventListener('hashchange',highlighter);
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
+    if(!bgpage) {
+    var note=document.createElement('pre');
+        note.id='bgpage-null-note';
+        note.textContent='无法加载设置页面。\n\n如果你正在用“隐私浏览”功能，请回到正常模式修改 pakku 的配置。\n\n如果你认为这是 bug，请点击此处来【报告问题】。';
+        note.onclick=function() {
+            location.href='troubleshooting.html';
+        };
+        document.body.textContent='';
+        document.body.appendChild(note);
+    }
+
     id('reset').addEventListener('click',function() {
         if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
             localStorage.clear();
@@ -119,13 +130,12 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 Object.assign(localStorage,dat);
                 if(IS_FIREFOX)
                     localStorage['_restore_placeholder']='not needed';
-                chrome.runtime.getBackgroundPage(function(bgpage) {
-                    bgpage.initconfig();
-                    loadconfig();
-                    if(localStorage['BREAK_UPDATE']==='on')
-                        get_ws_permission();
-                    alert('导入成功。');
-                });
+                
+                bgpage.initconfig();
+                loadconfig();
+                if(localStorage['BREAK_UPDATE']==='on')
+                    get_ws_permission();
+                alert('导入成功。');
             } catch(e) {
                 alert('导入失败。\n\n'+e.message);
                 throw e;

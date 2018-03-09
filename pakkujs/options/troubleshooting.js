@@ -23,6 +23,7 @@ debug.textContent+='<summary>[Debug Info]</summary>';
 debug.textContent+='\n\n**Version:** '+chrome.runtime.getManifest().version;
 debug.textContent+='\n\n**Channel:** '+channel;
 debug.textContent+='\n\n**User Agent:** `'+navigator.userAgent+'`';
+debug.textContent+='\n\n**Incognito:** `'+chrome.extension.inIncognitoContext+'`';
 
 debug.textContent+='\n\n**localStorage:** `'+JSON.stringify(localStorage)+'`';
 

@@ -28,6 +28,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     var details_btn=id('details-btn');
     var temprules=id('temprules');
     var hint_text=id('hint-text');
+
+    if(!bgpage) {
+        hint_text.textContent='“隐私浏览”模式下本页面无效';
+        return;
+    }
     
     function add_filling_event(elem,id) {
         elem.addEventListener('click',function() {

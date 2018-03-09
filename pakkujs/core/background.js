@@ -256,7 +256,6 @@ function load_danmaku(resp,id,tabid) {
         });
         
         inject_panel(tabid,D,{
-            IS_FIREFOX: IS_FIREFOX,
             TOOLTIP: TOOLTIP,
             AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
