@@ -74,6 +74,7 @@ function inject_fluctlight_graph(bar_elem) {
             den_bef[w]+=den_bef[w-1];
             den_aft[w]+=den_aft[w-1];
         }
+        // make the peak 1px wider to increase visibility
         for(var w=WIDTH;w>0;w--)
             den_bef[w]=Math.max(den_bef[w],den_bef[w-1]);
         return true;

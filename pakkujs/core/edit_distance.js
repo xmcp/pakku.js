@@ -77,6 +77,8 @@ function similar(P,Q,S) {
         return '==';
     }
     var dis=edit_distance(P,Q);
+    if(dis>=P.length+Q.length) // they have nothing similar. cosine_distance test can be bypassed
+        return false;
     if((P.length+Q.length < MIN_DANMU_SIZE) ? dis<(P.length+Q.length)/MIN_DANMU_SIZE*MAX_DIST-1 : dis<=MAX_DIST) {
         S.edit_distance++;
         return '≤'+dis;

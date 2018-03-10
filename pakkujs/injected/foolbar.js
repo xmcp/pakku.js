@@ -4,6 +4,7 @@ var FOOLBAR_CSS=`
 .pakku-foolbar {
     width: 100%;
     display: flex;
+    line-height: 20px;
 }
 .pakku-foolbar * {
     font-family: 'Consolas', 'Courier', monospace !important;

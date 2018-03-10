@@ -36,6 +36,10 @@ function try_inject() {
         return;
     }
     root_document=root_elem.ownerDocument;
+
+    // 3rd-party scripts can use this for convenience
+    window.postMessage({type: 'pakku_event_danmaku_loaded'},'*');
+
     if(root_elem.querySelector('.bilibili-player-danmaku.__pakku_injected')) {
         console.log('pakku injector: already injected');
         return;
@@ -75,6 +79,17 @@ function try_inject() {
         console.log('pakku injector: foolbar');
         inject_foolbar();
     }
+
+    // 3rd-party scripts can use this for convenience
+    window.addEventListener('message',function(event) {
+        if (event.source!=window)
+            return;
+        if (event.data.type && event.data.type=='pakku_get_danmaku')
+            window.postMessage({
+                type: 'pakku_return_danmaku',
+                resp: D
+            },'*');
+    },false);
 
     chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {
         if(ness) {
