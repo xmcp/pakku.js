@@ -85,10 +85,18 @@ function try_inject() {
         if (event.source!=window)
             return;
         if (event.data.type && event.data.type=='pakku_get_danmaku')
-            window.postMessage({
+            return window.postMessage({
                 type: 'pakku_return_danmaku',
                 resp: D
             },'*');
+        if (event.data.type && event.data.type=='pakku_set_xml_bounce')
+            return chrome.runtime.sendMessage({
+                type: 'set_xml_bounce',
+                result: event.data.xml.toString()
+            }, {}, function(resp) {
+                if(resp.error===null)
+                    reload_danmaku_magic(resp.nonce);
+            });
     },false);
 
     chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {

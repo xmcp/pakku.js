@@ -35,6 +35,7 @@ var PANEL_CSS=`
 .pakku-panel-desc:not(:empty) {
     line-height: 1.2em;
     margin: 3px 5px;
+    white-space: initial;
 }
 .pakku-panel-peers {
     max-height: 350px;

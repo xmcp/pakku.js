@@ -296,12 +296,12 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             return true;
         } else
             return sendResponse({data: null});
-    } else if(request.type==='foolbar') {
+    } else if(request.type==='set_xml_bounce') {
         if(!GLOBAL_SWITCH)
             set_global_switch(true,'yes do not reload');
-        BOUNCE.nonce=request.nonce;
+        BOUNCE.nonce=''+-~~(1+Math.random()*1000000);;
         BOUNCE.result=request.result;
-        return sendResponse({error: null});
+        return sendResponse({error: null, nonce: BOUNCE.nonce});
     } else if(request.type==='crack_uidhash') {
         return sendResponse(crack_uidhash(request.hash));
     } else if(request.type==='crack_uidhash_batch') {

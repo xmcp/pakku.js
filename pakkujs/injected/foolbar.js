@@ -86,16 +86,14 @@ function inject_foolbar() {
         });
     }
     function do_execute() {
-        var nonce=''+-~~(1+Math.random()*1000000);
         init_db(db,function() {
             do_sql_filter(db,'select _xml_src from danmaku where '+input.value,function(text) {
                 chrome.runtime.sendMessage({
-                    type: 'foolbar',
-                    nonce: nonce,
+                    type: 'set_xml_bounce',
                     result: '<i>'+text+'</i>'
                 }, {}, function(resp) {
                     if(resp.error===null)
-                        reload_danmaku_magic(nonce);
+                        reload_danmaku_magic(resp.nonce);
                     else
                         alert(resp.error);
                     hint_text.textContent='>>>';
