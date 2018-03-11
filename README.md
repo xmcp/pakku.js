@@ -40,4 +40,16 @@ Browser Action ↓
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
 
+### 开放 API
+
+从 pakku v8.6.5 起，Power User 可以通过 HTML5 Messaging API 来利用 pakku 干更多的事情。
+
+- 在每个B站播放器页面，当弹幕加载完成时，会向页面自身发送一条内容为 `{type: 'pakku_event_danmaku_loaded'}` 的消息。你可以用 `window.addEventListener('message', callback)` 来接收这一消息。
+- 调用 `window.postMessage({type: 'pakku_get_danmaku'}, '*')` 可以获取当前弹幕内容，弹幕将会通过 `{type: 'pakku_return_danmaku', resp: [...]}` 形式的消息返回。
+- 调用 `window.postMessage({type: 'pakku_set_xml_bounce', xml: '<i><d p="...">...</d></i>'}, '*')` 可以更新当前弹幕内容。
+
+请注意，上述接口没有文档，不保证能够正常工作，任何 bug 都是 feature。
+
+-----
+
 #### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）
