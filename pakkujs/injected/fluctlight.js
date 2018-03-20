@@ -202,7 +202,7 @@ function inject_fluctlight_details(bar_elem) {
                 var danmus=[];
                 for(var i=0;i<D.length;i++) {
                     var d=D[i];
-                    if(d.peers && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA)
+                    if(d.peers.length && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA)
                         danmus.push(d);
                 }
                 danmus=danmus.sort(function(a,b) {
