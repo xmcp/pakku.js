@@ -9,7 +9,7 @@ print('== initializing selenium')
 opt=Options()
 opt.add_argument('load-extension=%s'%os.path.abspath('../pakkujs'))
 opt.add_argument('--no-default-browser-check')
-opt.add_argument('--user-agent=xmcp_pakku_test_runner, like Gecko and Mozilla/5.0')
+opt.add_argument('--user-agent=xmcp_pakku_test_runner, like Gecko and Mozilla/5.0, actually something like Chrome/64.0.3282.186 Safari/537.36')
 opt.add_argument('--no-first-run')
 b=webdriver.Chrome('driver/chromedriver',chrome_options=opt)
 
