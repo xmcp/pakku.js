@@ -132,6 +132,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     localStorage['_restore_placeholder']='not needed';
                 
                 bgpage.initconfig();
+                bgpage.migrate_legacy();
                 loadconfig();
                 if(localStorage['BREAK_UPDATE']==='on')
                     get_ws_permission();
@@ -207,11 +208,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         
-        // TAOLUS
-        window.cfg_taolus=bgpage.fromholyjson(localStorage['TAOLUS']);
-        var taolus=id('taolus');
-        taolus.innerHTML='';
-        for(var i in cfg_taolus) {
+        // FORCELIST
+        window.cfg_forcelist=bgpage.fromholyjson(localStorage['FORCELIST']);
+        var forcelist=id('forcelist');
+        forcelist.innerHTML='';
+        for(var i in cfg_forcelist) {
             var container=document.createElement('li'),
                 code1=document.createElement('code'),
                 spliter=document.createElement('span'),
@@ -220,10 +221,10 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 savebtn=document.createElement('button'),
                 cancelbtn=document.createElement('button');
                 
-            code1.textContent=cfg_taolus[i][0].source;
+            code1.textContent=cfg_forcelist[i][0].source;
             code1.contentEditable='true';
             spliter.textContent=' → ';
-            code2.textContent=cfg_taolus[i][1];
+            code2.textContent=cfg_forcelist[i][1];
             code2.contentEditable='true';
             
             deletebtn.textContent='删除';
@@ -235,14 +236,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             
             (function(index,deletebtn,savebtn,cancelbtn,code1,code2) {
                 deletebtn.addEventListener('click',function() {
-                    delete cfg_taolus[index];
-                    localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
+                    delete cfg_forcelist[index];
+                    localStorage['FORCELIST']=bgpage.toholyjson(cfg_forcelist);
                     reload();
                 });
                 savebtn.addEventListener('click',function() {
-                    cfg_taolus[index][0]=try_regexp(code1.textContent);
-                    cfg_taolus[index][1]=code2.textContent;
-                    localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
+                    cfg_forcelist[index][0]=try_regexp(code1.textContent);
+                    cfg_forcelist[index][1]=code2.textContent;
+                    localStorage['FORCELIST']=bgpage.toholyjson(cfg_forcelist);
                     reload();
                 });
                 cancelbtn.addEventListener('click',loadconfig);
@@ -261,7 +262,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
             container.appendChild(deletebtn);
             container.appendChild(cancelbtn);
             container.appendChild(savebtn);
-            taolus.appendChild(container);
+            forcelist.appendChild(container);
         }
         
         // WHITELIST
@@ -319,16 +320,16 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         });
     }
 
-    id('newtaolu-form').addEventListener('submit',function(e) {
+    id('newforcelist-form').addEventListener('submit',function(e) {
         e.preventDefault();
-        cfg_taolus.push([
-            try_regexp(id('newtaolu-pattern').value),
-            id('newtaolu-name').value
+        cfg_forcelist.push([
+            try_regexp(id('newforcelist-pattern').value),
+            id('newforcelist-name').value
         ]);
-        localStorage['TAOLUS']=bgpage.toholyjson(cfg_taolus);
+        localStorage['FORCELIST']=bgpage.toholyjson(cfg_forcelist);
         reload();
-        id('newtaolu-pattern').value='';
-        id('newtaolu-name').value='';
+        id('newforcelist-pattern').value='';
+        id('newforcelist-name').value='';
     });
     id('newwhitelist-form').addEventListener('submit',function(e) {
         e.preventDefault();

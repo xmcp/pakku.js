@@ -34,11 +34,12 @@ def goto_options():
 def update_settings(k,v):
     print('== update settings %r %r'%(k,v))
     goto_options()
-    b.execute_script('localStorage[%r]=%r'%(k,v))
+    b.execute_script('localStorage[%r]=%r; return null;'%(k,v))
     b.execute_script('''
         chrome.runtime.getBackgroundPage(function(page){
             page.loadconfig();
         });
+        return null;
     ''')
 
 def get_source():
@@ -61,6 +62,7 @@ def set_global_switch(val):
                 document.title='ok';
             });
         })(arguments[0]);
+        return null;
     ''',val)
     wait_title(5)
 
@@ -74,6 +76,7 @@ def parse_string(s,timeout=5):
                 document.title=page.parse_string(str);
             });
         })(arguments[0]);
+        return null;
     ''',s)
     dom=parseString(wait_title(timeout))
     return dom.getElementsByTagName('d')
@@ -90,5 +93,6 @@ def parse_ajax(url,timeout=30):
             });
             xhr.send();
         })(arguments[0]);
+        return null;
     ''',url)
     return wait_title(timeout)

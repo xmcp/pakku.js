@@ -344,6 +344,10 @@ function inject_panel(list_elem,player_elem) {
             if(e.key=='Control' && !e.repeat) {
                 hover_counter=0;
                 player_elem.classList.add('__pakku_pointer_event');
+            } else if(e.ctrlKey===false) { // fix ctrl key state
+                player_elem.classList.remove('__pakku_pointer_event');
+                if(panel_obj.classList.contains('pakku-floating'))
+                    panel_obj.style.display='none';
             }
         });
         root_document.addEventListener('keyup',function(e) {

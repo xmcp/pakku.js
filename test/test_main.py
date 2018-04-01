@@ -20,7 +20,7 @@ runner.update_settings('TRIM_ENDING','off')
 runner.update_settings('TRIM_SPACE','off')
 runner.update_settings('TRIM_WIDTH','off')
 runner.update_settings('DANMU_SUBSCRIPT','off')
-runner.update_settings('TAOLUS','[]')
+runner.update_settings('FORCELIST','[]')
 runner.update_settings('WHITELIST','[]')
 runner.update_settings('THRESHOLD','20')
 runner.update_settings('MARK_THRESHOLD','1')
@@ -30,7 +30,7 @@ runner.update_settings('SCROLL_THRESHOLD','0')
 # not tested: FLASH_NOTIF POPUP_BADGE
 
 print('!= test injected ui')
-runner.update_settings('TAOLUS','[[".*","pakku_test_str"]]')
+runner.update_settings('FORCELIST','[["^.*$","pakku_test_str"]]')
 runner.update_settings('TOOLTIP','on')
 runner.update_settings('FLUCTLIGHT','on')
 runner.update_settings('FOOLBAR','on')
@@ -51,13 +51,17 @@ assert runner.b.find_element_by_css_selector('.bilibili-player .pakku-panel')
 assert runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-video-progress canvas')
 assert runner.b.find_element_by_css_selector('.pakku-foolbar')
 
+# this test is temporarily disabled
+# http://link.acg.tv/forum.php?mod=viewthread&tid=13249
+'''
 print('!= test reload')
 runner.b.execute_script('fetch("https://_xmcp_pakku_internal_test_domain.bilibili.com/change_taolus_and_reload")')
 time.sleep(3)
 assert 'pakku_another_str' in runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row:first-child').text
 assert len(runner.b.find_elements_by_css_selector('.bilibili-player .bilibili-player-video-progress canvas'))==1
+'''
 
-runner.update_settings('TAOLUS','[]')
+runner.update_settings('FORCELIST','[]')
 
 print('!= test webrequest hook')
 
@@ -228,11 +232,11 @@ assert '[x' in danmus[0].childNodes[0].data
 
 print('!= test taolus')
 
-runner.update_settings('TAOLUS','[]')
+runner.update_settings('FORCELIST','[]')
 assert len(runner.parse_string(demo('taolu_test')))==3
-runner.update_settings('TAOLUS','[[".*","foo"]]')
+runner.update_settings('FORCELIST','[[".*","foo"]]')
 assert 'foo' not in runner.parse_string(demo('unicode'))[0].childNodes[0].data
-runner.update_settings('TAOLUS','[["taolu(\\\\d+)","bingo"]]')
+runner.update_settings('FORCELIST','[["taolu(\\\\d+)","bingo"]]')
 assert len(runner.parse_string(demo('taolu_test')))==2
 
 print('!= test whitelist')

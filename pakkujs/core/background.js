@@ -29,8 +29,8 @@ function loadconfig() {
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
     // 例外设置
-    window.TAOLUS=fromholyjson(localStorage['TAOLUS'])||[];
-    window.WHITELIST=fromholyjson(localStorage['WHITELIST'])||[];
+    window.FORCELIST=fromholyjson(localStorage['FORCELIST']||'[]');
+    window.WHITELIST=fromholyjson(localStorage['WHITELIST']||'[]');
     window.CROSS_MODE=localStorage['CROSS_MODE']==='on';
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
@@ -72,7 +72,7 @@ function initconfig() {
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     // 例外设置
-    localStorage['TAOLUS']=localStorage['TAOLUS']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\\\\s~]+$","yoo..."]]';
+    localStorage['FORCELIST']=localStorage['FORCELIST']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\\\\s~]+$","yoo..."]]';
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
     localStorage['CROSS_MODE']=localStorage['CROSS_MODE']||'on';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';
@@ -164,9 +164,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 {title: '我已经在用 HTML5 播放器了'}
             ]
         }, function(){});
-    } else {
-        migrate_legacy_taolus();
-        migrate_legacy_fuzz();
+    } else if(details.reason=='update') {
+        migrate_legacy();
     }
 });
 
@@ -455,7 +454,7 @@ if(TEST_MODE) {
     }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url']}, ['blocking']);
 
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
-        TAOLUS=[[/.*/,"pakku_another_str"]];
+        FORCELIST=[[/.*/,"pakku_another_str"]];
         chrome.tabs.executeScript({
             'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
         });

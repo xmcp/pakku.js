@@ -9,7 +9,7 @@ var BOUNCE={
     nonce: '',
     result: ''
 };
-var TEMPRULES={}; // id -> {TAOLUS: [], WHITELIST: []}
+var TEMPRULES={}; // id -> {FORCELIST: [], WHITELIST: []}
 
 /*for-firefox:
 
@@ -87,31 +87,6 @@ function setbadge(text,color,tabid) {
         });
 }
 
-function migrate_legacy_taolus() {
-    try {
-        var taolus=JSON.parse(localStorage['TAOLUS']);
-    } catch(e) { // something happened
-        localStorage['TAOLUS']='';
-        initconfig();
-        return;
-    }
-    if(taolus.length==undefined) { // should migrate
-        var right=[]; // [[expr,text], ...]
-        for(var text in taolus) // text -> expr
-            right.push([RegExp(taolus[text]),text]);
-        localStorage['TAOLUS']=toholyjson(right);
-        loadconfig();
-    }
-}
-
-function migrate_legacy_fuzz() {
-    if(localStorage['DANMU_FUZZ']) {
-        localStorage['MAX_DIST']=localStorage['DANMU_FUZZ']==='on'?5:0;
-        delete localStorage['DANMU_FUZZ'];
-        loadconfig();
-    }
-}
-
 function Status(CID) {
     return {
         identical: 0, // combined
@@ -148,7 +123,7 @@ function FailingStatus(CID,typ,details) {
     }
 }
 function TempRules() {
-    return {'TAOLUS':[], 'WHITELIST':[]};
+    return {'FORCELIST':[], 'WHITELIST':[]};
 }
 
 function req_breaker(details) {
@@ -212,4 +187,49 @@ function restore_settings_if_needed(callback) {
     } else {
         return false;
     }
+}
+
+function migrate_legacy() {
+    (function migrate_legacy_taolus() {
+        try {
+            var taolus=JSON.parse(localStorage['TAOLUS']);
+        } catch(e) { // something happened
+            localStorage['TAOLUS']='';
+            initconfig();
+            return;
+        }
+        if(taolus.length==undefined) { // should migrate
+            var right=[]; // [[expr,text], ...]
+            for(var text in taolus) // text -> expr
+                right.push([RegExp(taolus[text]),text]);
+            localStorage['TAOLUS']=toholyjson(right);
+            loadconfig();
+        }
+    })();
+    
+    (function migrate_legacy_fuzz() {
+        if(localStorage['DANMU_FUZZ']) {
+            localStorage['MAX_DIST']=localStorage['DANMU_FUZZ']==='on'?5:0;
+            delete localStorage['DANMU_FUZZ'];
+            loadconfig();
+        }
+    })();
+
+    (function migrate_legacy_taolus_2() { // v8.6.6
+        if(localStorage['TAOLUS']) {
+            var taolus=fromholyjson(localStorage['TAOLUS']);
+            var forcelist=[];
+            taolus.forEach(function(taolu) {
+                var src=taolu[0].source;
+                if(src.indexOf('^')!==0)
+                    src='^.*'+src;
+                if(src.indexOf('$')!==src.length-1)
+                    src=src+'.*$';
+                forcelist.push([new RegExp(src),taolu[1]]);
+            });
+            localStorage['FORCELIST']=toholyjson(forcelist);
+            delete localStorage['TAOLUS'];
+            loadconfig();
+        }
+    })();
 }

@@ -36,7 +36,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function add_filling_event(elem,id) {
         elem.addEventListener('click',function() {
-            localStorage['_options_autofill']=elem.textContent;
+            localStorage['_options_autofill']='^.*'+elem.textContent+'.*$';
             chrome.tabs.create({url: options_href+'#'+id});
         });
     }
@@ -88,12 +88,12 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                             temprules.appendChild(elem);
                             add_filling_event(elem,'newwhitelist-pattern');
                         });
-                        bgpage.TEMPRULES[tabid].TAOLUS.forEach(function(taolu) {
+                        bgpage.TEMPRULES[tabid].FORCELIST.forEach(function(forcelist) {
                             var elem=document.createElement('li');
-                            elem.textContent=taolu;
-                            elem.className='temprule-taolus';
+                            elem.textContent=forcelist;
+                            elem.className='temprule-forcelist';
                             temprules.appendChild(elem);
-                            add_filling_event(elem,'newtaolu-pattern');
+                            add_filling_event(elem,'newforcelist-pattern');
                         });
                     }
                 }
@@ -114,14 +114,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     bgpage.TEMPRULES[tabid]=bgpage.TEMPRULES[tabid]||bgpage.TempRules();
                     if(!event.shiftKey && !event.ctrlKey && !event.altKey) { // Enter
                         var exp=try_regexp(event.target.value);
-                        bgpage.TEMPRULES[tabid].TAOLUS.unshift(exp.source);
+                        bgpage.TEMPRULES[tabid].FORCELIST.unshift(exp.source);
                         event.target.value='';
                     } else if(event.shiftKey && !event.ctrlKey && !event.altKey) { // Shift+Enter
                         var exp=try_regexp(event.target.value);
                         bgpage.TEMPRULES[tabid].WHITELIST.unshift(exp.source);
                         event.target.value='';
                     } else if(!event.shiftKey && event.ctrlKey && !event.altKey) { // Ctrl+Enter
-                        bgpage.TEMPRULES[tabid].TAOLUS=[];
+                        bgpage.TEMPRULES[tabid].FORCELIST=[];
                         bgpage.TEMPRULES[tabid].WHITELIST=[];
                     }
                     bgpage.reload_danmaku();
