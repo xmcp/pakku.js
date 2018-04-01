@@ -186,7 +186,7 @@ function query_uid(uidhash,logger_container) {
                 _load_info(uid,subitem,function(res) {
                     var nickname,lv,exp,fans,sex;
                     
-                    if(!res.data || !res.data.card || !res.data.card.mid || !res.data.card.level_info.current_exp) { // does not exist
+                    if(!res.data || !res.data.card || !res.data.card.mid || !res.data.card.level_info.current_level) { // does not exist
                         subitem.parentNode.removeChild(subitem);
                         return;
                     }

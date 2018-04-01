@@ -41,6 +41,14 @@ function try_regexp(x) {
     }
 }
 
+function regexp_wrap(src) {
+    if(src.indexOf('^')!==0)
+        src='^.*'+src;
+    if(src.indexOf('$')!==src.length-1)
+        src=src+'.*$';
+    return src;
+}
+
 var version='v'+chrome.runtime.getManifest().version;
 var img_btns=document.querySelectorAll('[data-name]');
 var CHROME_VERSION_RE=/Chrome\/(\d+)/;
@@ -323,7 +331,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     id('newforcelist-form').addEventListener('submit',function(e) {
         e.preventDefault();
         cfg_forcelist.push([
-            try_regexp(id('newforcelist-pattern').value),
+            try_regexp(regexp_wrap(id('newforcelist-pattern').value)),
             id('newforcelist-name').value
         ]);
         localStorage['FORCELIST']=bgpage.toholyjson(cfg_forcelist);

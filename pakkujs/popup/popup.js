@@ -36,7 +36,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     function add_filling_event(elem,id) {
         elem.addEventListener('click',function() {
-            localStorage['_options_autofill']='^.*'+elem.textContent+'.*$';
+            localStorage['_options_autofill']=elem.textContent;
             chrome.tabs.create({url: options_href+'#'+id});
         });
     }

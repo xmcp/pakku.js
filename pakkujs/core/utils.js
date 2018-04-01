@@ -46,7 +46,7 @@ if(!Math.log10)
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)
-        item[i][0]=RegExp(item[i][0]);
+        item[i][0]=RegExp(item[i][0],'gu');
     return item;
 }
 function toholyjson(obj) {
