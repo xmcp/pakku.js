@@ -6,7 +6,7 @@ function try_regexp(x) {
         throw 1;
     }
     try {
-        return new RegExp(x);
+        return new RegExp(x,'gu');
     } catch(e) {
         alert('正则表达式语法有误：\n\n'+e.message)
         throw e;

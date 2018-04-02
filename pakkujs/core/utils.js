@@ -225,7 +225,7 @@ function migrate_legacy() {
                     src='^.*'+src;
                 if(src.indexOf('$')!==src.length-1)
                     src=src+'.*$';
-                forcelist.push([new RegExp(src),taolu[1]]);
+                forcelist.push([new RegExp(src,'gu'),taolu[1]]);
             });
             localStorage['FORCELIST']=toholyjson(forcelist);
             delete localStorage['TAOLUS'];

@@ -4,7 +4,7 @@ function id(x) {
 
 function try_regexp(x) {
     try {
-        return new RegExp(x);
+        return new RegExp(x,'gu');
     } catch(e) {
         alert('正则表达式语法有误：\n\n'+e.message)
         throw e;
@@ -12,13 +12,13 @@ function try_regexp(x) {
 }
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
-    var BLACKLIST=bgpage.fromholyjson(localStorage['BLACKLIST']);
-    id('count').textContent=BLACKLIST.length;
     id('clear').addEventListener('click',function() {
         localStorage['BLACKLIST']='[]';
         bgpage.loadconfig();
         location.reload();
     });
+    var BLACKLIST=bgpage.fromholyjson(localStorage['BLACKLIST']);
+    id('count').textContent=BLACKLIST.length;
     id('import').addEventListener('click',function() {
         var rules=(new DOMParser).parseFromString(id('rules').value,'text/xml');
         var imported=BLACKLIST;

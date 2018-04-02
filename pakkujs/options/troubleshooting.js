@@ -62,8 +62,8 @@ function network_test(name,url) {
 }
 
 setTimeout(function() {
-    network_test('Normal XML','https://comment.bilibili.com/2.xml');
-    network_test('XML With Param','https://comment.bilibili.com/2.xml?foo');
+    network_test('Normal XML','https://comment.bilibili.com/12664443.xml');
+    network_test('XML With Param','https://comment.bilibili.com/12664443.xml?foo');
 },300);
 
 test_error_log();
