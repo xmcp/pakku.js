@@ -27,10 +27,10 @@ function generate_ctx(tabid) {
         
         */
         TEMPRULES[tabid].FORCELIST.forEach(function(item) {
-            window.FORCELIST_ctx.push([new RegExp('^.*'+item+'.*$'),'[临时]'+item]);
+            window.FORCELIST_ctx.push([new RegExp('^.*'+item+'.*$','g'),'[临时]'+item]);
         });
         TEMPRULES[tabid].WHITELIST.forEach(function(item) {
-            window.WHITELIST_ctx.push([new RegExp(item),'']);
+            window.WHITELIST_ctx.push([new RegExp(item,'g'),'']);
         });
     }
     window.FORCELIST_ctx=window.FORCELIST_ctx.concat(FORCELIST);

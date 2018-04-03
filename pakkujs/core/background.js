@@ -19,6 +19,19 @@ Pakku tampers the danmaku request by:
 
 var DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
 
+function fromholyjson_orempry(str) {
+    try {
+        return fromholyjson(str);
+    } catch(e) {
+        setbadge('RE!',ERROR_COLOR,null);
+        chrome.browserAction.setTitle({
+            title: '规则错误，请重置pakku设置后重启浏览器：'+e.message
+        });
+        console.error(e);
+        return [];
+    }
+}
+
 function loadconfig() {
     window._ADVANCED_USER=localStorage['_ADVANCED_USER']==='on';
     // 弹幕合并
@@ -29,8 +42,8 @@ function loadconfig() {
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
     // 例外设置
-    window.FORCELIST=fromholyjson(localStorage['FORCELIST']||'[]');
-    window.WHITELIST=fromholyjson(localStorage['WHITELIST']||'[]');
+    window.FORCELIST=fromholyjson_orempry(localStorage['FORCELIST']||'[]');
+    window.WHITELIST=fromholyjson_orempry(localStorage['WHITELIST']||'[]');
     window.CROSS_MODE=localStorage['CROSS_MODE']==='on';
     window.PROC_TYPE7=localStorage['PROC_TYPE7']==='on';
     window.PROC_TYPE4=localStorage['PROC_TYPE4']==='on';
@@ -50,7 +63,7 @@ function loadconfig() {
     // 实验室
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
-    window.BLACKLIST=fromholyjson(localStorage['BLACKLIST'])||[];
+    window.BLACKLIST=fromholyjson_orempry(localStorage['BLACKLIST'])||[];
     window.HIDE_THRESHOLD=parseInt(localStorage['HIDE_THRESHOLD']||0);
     window.SCROLL_THRESHOLD=parseInt(localStorage['SCROLL_THRESHOLD']||900);
     // 其他

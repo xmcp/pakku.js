@@ -46,7 +46,7 @@ if(!Math.log10)
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)
-        item[i][0]=RegExp(item[i][0],'gu');
+        item[i][0]=RegExp(item[i][0],'g');
     return item;
 }
 function toholyjson(obj) {
@@ -225,7 +225,7 @@ function migrate_legacy() {
                     src='^.*'+src;
                 if(src.indexOf('$')!==src.length-1)
                     src=src+'.*$';
-                forcelist.push([new RegExp(src,'gu'),taolu[1]]);
+                forcelist.push([new RegExp(src,'g'),taolu[1]]);
             });
             localStorage['FORCELIST']=toholyjson(forcelist);
             delete localStorage['TAOLUS'];

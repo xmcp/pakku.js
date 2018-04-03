@@ -6,7 +6,7 @@ function try_regexp(x) {
         throw 1;
     }
     try {
-        return new RegExp(x,'gu');
+        return new RegExp(x,'g');
     } catch(e) {
         alert('正则表达式语法有误：\n\n'+e.message)
         throw e;
@@ -56,8 +56,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                     chrome.browserAction.getTitle(
                         {tabId: tabid},
                         function(res) {
-                            if(res!=='pakku' && res!=='')
-                                hint_text.textContent='';
+                            if(res!='pakku' && res!='')
+                                hint_text.textContent=res;
                             else
                                 hint_text.textContent=general;
                         }
