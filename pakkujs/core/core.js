@@ -27,10 +27,10 @@ function generate_ctx(tabid) {
         
         */
         TEMPRULES[tabid].FORCELIST.forEach(function(item) {
-            window.FORCELIST_ctx.push([new RegExp('^.*'+item+'.*$','g'),'[临时]'+item]);
+            window.FORCELIST_ctx.push([new RegExp('^.*'+item+'.*$'),'[临时]'+item]);
         });
         TEMPRULES[tabid].WHITELIST.forEach(function(item) {
-            window.WHITELIST_ctx.push([new RegExp(item,'g'),'']);
+            window.WHITELIST_ctx.push([new RegExp(item),'']);
         });
     }
     window.FORCELIST_ctx=window.FORCELIST_ctx.concat(FORCELIST);
@@ -106,7 +106,7 @@ function parse(dom,tabid,S,D) {
         for(var i=0;i<FORCELIST_len;i++)
             if(FORCELIST_ctx[i][0].test(text)) {
                 S.taolu++;
-                return text.replace(FORCELIST_ctx[i][0],FORCELIST_ctx[i][1]);
+                return text.replace(new RegExp(FORCELIST_ctx[i][0],'g'),FORCELIST_ctx[i][1]);
             }
         return text;
     }

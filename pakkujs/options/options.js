@@ -34,7 +34,7 @@ function id(x) {
 
 function try_regexp(x) {
     try {
-        return new RegExp(x,'g');
+        return new RegExp(x);
     } catch(e) {
         alert('正则表达式语法有误：\n\n'+e.message)
         throw e;
