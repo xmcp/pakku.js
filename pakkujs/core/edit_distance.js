@@ -32,23 +32,29 @@ function edit_distance (P, Q) {
     return ans;
 }
 
-function cosine_distance (P, Q) {
+function gen_2gram_array(P) {
+    var P_length_1=P.length;
+    P+=P.charAt(0);
+    var res=[];
+    for(var i=0;i<P_length_1;i++)
+        res.push(hash(P.charCodeAt(i),P.charCodeAt(i+1)));
+    return res;
+}
+
+function cosine_distance_memorized (Pgram, Qgram, Plen, Qlen) {
     'use strict';
     
     if(MAX_COSINE>100) return 0;
 
-    var P_length_1=P.length, Q_length_1=Q.length;
-    P+=P.charAt(0); Q+=Q.charAt(0);
-
-	for (var i = 0; i < P_length_1; i++)
-		ed_a[hash(P.charCodeAt(i), P.charCodeAt(i + 1))]++;
-	for (var i = 0; i < Q_length_1; i++)
-		ed_b[hash(Q.charCodeAt(i), Q.charCodeAt(i + 1))]++;
+	for (var i = 0; i < Plen; i++)
+		ed_a[Pgram[i]]++;
+	for (var i = 0; i < Qlen; i++)
+		ed_b[Qgram[i]]++;
 
 	var x = 0, y = 0, z = 0;
 
-    for (var i = 0; i < P_length_1; i ++) {
-        var h1=hash(P.charCodeAt(i), P.charCodeAt(i + 1));
+    for (var i = 0; i < Plen; i ++) {
+        var h1=Pgram[i];
         if (ed_a[h1]) {
 			y += ed_a[h1] * ed_a[h1];
 			if (ed_b[h1]) {
@@ -60,8 +66,8 @@ function cosine_distance (P, Q) {
 		}
     }
 
-    for (var i = 0; i < Q_length_1; i ++) {
-        var h1=hash(Q.charCodeAt(i), Q.charCodeAt(i + 1));
+    for (var i = 0; i < Qlen; i ++) {
+        var h1=Qgram[i];
         if (ed_b[h1]) {
             z += ed_b[h1] * ed_b[h1];
             ed_b[h1] = 0;
@@ -71,7 +77,7 @@ function cosine_distance (P, Q) {
 	return x*x/y/z;
 }
 
-function similar(P,Q,S) {
+function similar_memorized(P,Q,Pgram,Qgram,S) {
     if(P==Q) {
         S.identical++;
         return '==';
@@ -83,10 +89,14 @@ function similar(P,Q,S) {
         S.edit_distance++;
         return '≤'+dis;
     }
-    var cos=~~(cosine_distance(P,Q)*100);
+    var cos=~~(cosine_distance_memorized(Pgram,Qgram,P.length,Q.length)*100);
     if(cos>=MAX_COSINE) {
         S.cosine_distance++;
         return cos+'%';
     }
     return false;
+}
+
+function similar(P,Q,S) {
+    return similar_memorized(P,Q,gen_2gram_array(P),gen_2gram_array(Q),S);
 }

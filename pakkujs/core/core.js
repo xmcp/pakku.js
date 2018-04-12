@@ -181,16 +181,18 @@ function parse(dom,tabid,S,D) {
 
     var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
-        if(elem.tagName=='d') { // danmu
+        if(elem.tagName==='d') { // danmu
             S.total++;
 
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             var mode=attr[1];
-            var disp_str=mode=='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
+            var disp_str=mode==='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
+            var detaolued=detaolu(disp_str);
             var dm_obj={
                 attr: attr, // thus we can build it into new_dom again
-                str: detaolu(disp_str),
+                str: detaolued,
+                str_2gram: gen_2gram_array(detaolued),
                 orig_str: str,
                 disp_str: disp_str,
                 time: parseFloat(attr[0]),
@@ -209,18 +211,18 @@ function parse(dom,tabid,S,D) {
                 S.blacklist++;
                 return;
             }
-            if(!PROC_TYPE7 && mode=='7') { // special danmu
+            if(!PROC_TYPE7 && mode==='7') { // special danmu
                 S.batch_ignore++;
                 apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
-            if(!PROC_TYPE4 && mode=='4') { // bottom danmu
+            if(!PROC_TYPE4 && mode==='4') { // bottom danmu
                 S.batch_ignore++;
                 apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
                 return;
             }
-            if(mode=='8') { // code danmu
-                if(REMOVE_SEEK && str.indexOf('Player.seek(')!=-1) {
+            if(mode==='8') { // code danmu
+                if(REMOVE_SEEK && str.indexOf('Player.seek(')!==-1) {
                     S.player_seek++;
                     elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
                 }
@@ -228,7 +230,7 @@ function parse(dom,tabid,S,D) {
                 apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
                 return;
             }
-            if(mode=='9') { // bas danmu
+            if(mode==='9') { // bas danmu
                 S.script++;
                 apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
                 return;
@@ -257,8 +259,12 @@ function parse(dom,tabid,S,D) {
             console.log(dm.attr[7],dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
             if(!CROSS_MODE && dm.mode!=danmu_chunk[i].mode) continue;
-            var sim=similar(dm.str,danmu_chunk[i].str,S);
-            if(sim) {
+            var sim=similar_memorized(
+                dm.str, danmu_chunk[i].str,
+                dm.str_2gram, danmu_chunk[i].str_2gram,
+                S
+            );
+            if(sim!==false) {
                 if(LOG_VERBOSE) {
                     console.log(sim,dm.attr[7],'to',danmu_chunk[i].attr[7]);
                 }
@@ -318,11 +324,11 @@ function parse(dom,tabid,S,D) {
         }
         
         var attr=dm.attr.slice();
-        if(SCROLL_THRESHOLD && (attr[1]=='4'||attr[1]=='5')) {
+        if(SCROLL_THRESHOLD && (attr[1]==='4'||attr[1]==='5')) {
             var width=get_width(dm.disp_str,dm.size);
             if(width>SCROLL_THRESHOLD) {                
                 dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
-                tn.textContent=dm.disp_str=(attr[1]=='4'?'↓':'↑')+dm.disp_str;
+                tn.textContent=dm.disp_str=(attr[1]==='4'?'↓':'↑')+dm.disp_str;
                 attr[1]='1';
                 S.scroll+=1;
             }
@@ -330,7 +336,7 @@ function parse(dom,tabid,S,D) {
         attr[2]=Math.ceil(dm.size);
         d.setAttribute('p',attr.join(','));
         
-        if(dm.mode==7)
+        if(dm.mode===7)
             dm.disp_str=dm.disp_str.replace(/\/n/g,'');
         
         apply_danmu(d,dm.desc,dm.peers,dm.disp_str);

@@ -169,6 +169,7 @@ function _load_info(uid,logger,callback) {
 }
 
 function query_uid(uidhash,logger_container) {
+
     if(logger_container.dataset['_current_hash']===uidhash) return;
     logger_container.dataset['_current_hash']=uidhash;
     logger_container.textContent='';
@@ -207,7 +208,7 @@ function query_uid(uidhash,logger_container) {
                     
                     subitem.textContent='';
                     subitem.appendChild(make_a(
-                        uid+' Lv'+lv+'('+exp+') '+sex+' '+(fans?+fans+'★ ':'')+nickname,
+                        uid+' Lv'+lv+(exp?('('+exp+') '):' ')+sex+' '+(fans?+fans+'★ ':'')+nickname,
                         '//space.bilibili.com/'+uid
                     ));
                 });
