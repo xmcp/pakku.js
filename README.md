@@ -52,4 +52,14 @@ Browser Action ↓
 
 -----
 
+### License
+
+This is free software, and you are welcome to redistribute it under GPLv3.
+
+Also, you can redistribute the CRC32 Cracker component under MIT License.
+
+See [LICENSE.txt](LICENSE.txt) for details.
+
+-----
+
 #### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）

@@ -1,3 +1,43 @@
+Copyright (C) 2018 @xmcp
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, see <http://www.gnu.org/licenses>.
+
+
+Additional permission under GNU GPL version 3 section 7
+
+                       _CRC32 Cracker Exception_
+
+0. Definitions
+
+"CRC32 Cracker" means the software to crack the CRC32 algorithm distributed
+by the pakku.js project licensed under version 3 or any later version of
+the GNU General Public License (collectively, "GPL"), or a work based on
+such software and licensed under the GPL.
+
+1. Exception
+
+If you use the CRC32 Cracker or modify its content under MIT license, yet
+give credit to CRC32 Cracker or pakku.js, the licensors of this Program
+grant you additional permission to convey the resulting work.
+
+You may include this CRC32 Cracker Exception and its grant of permissions
+when you distribute pakku.js.  Inclusion of this notice with such a
+distribution constitutes a grant of such permission.  If you do not wish
+to grant these permissions, remove this section entitled "CRC32 Cracker
+Exception" from your distribution.
+
+=========================================================================
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

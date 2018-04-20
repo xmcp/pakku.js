@@ -1,4 +1,5 @@
 // (C) 2018 @dramforever. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// Note: This file can be distributed under the CRC32 Cracker Exception. SEE `LICENSE.txt`.
 
 function make_crc32_cracker () {
 
