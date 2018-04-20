@@ -38,11 +38,14 @@ runner.b.get('https://www.bilibili.com/video/av314')
 for _ in range(60):
     try:
         runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row')
+        show_danmaku_btn=runner.b.find_element_by_css_selector('.bilibili-player-filter-btn-list')
     except:
         time.sleep(.5)
     else:
         break
 
+time.sleep(1)
+show_danmaku_btn.click()
 time.sleep(1)
 
 assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row:first-child').text

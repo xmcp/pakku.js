@@ -28,7 +28,7 @@ print('== ok. pakku.js page:',opt_url)
 
 def goto_options():
     if b.current_url!=opt_url:
-        print(' == will redirect to options page:',b.current_url)
+        print(' == will redirect to options page:',b.current_url[:500])
         b.get(opt_url)
 
 def update_settings(k,v):
