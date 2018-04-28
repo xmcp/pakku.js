@@ -4,10 +4,6 @@ var IS_FIREFOX=false;
 
 IS_FIREFOX=true;
 
-[].slice.call(document.querySelectorAll('[data-nofirefox]')).forEach(function(elem) {
-    elem.style.display='none';
-});
-
 if(chrome.permissions)
     chrome.permissions.request=function(perm,callback) {
         browser.permissions.request(perm)

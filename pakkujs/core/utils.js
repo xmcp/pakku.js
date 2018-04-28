@@ -13,13 +13,42 @@ var TEMPRULES={}; // id -> {FORCELIST: [], WHITELIST: []}
 
 /*for-firefox:
 
+var _firefox_notif_mem={};
+
 IS_FIREFOX=true;
 chrome.notifications.create=function(txt,obj,callback) {
-    delete obj['contextMessage'];
+    if(obj['contextMessage']) {
+        obj['message']+='\n'+obj['contextMessage'];
+        delete obj['contextMessage'];
+    }
     delete obj['isClickable'];
     delete obj['requireInteraction'];
     delete obj['buttons'];
+    delete obj['progress'];
     browser.notifications.create(txt,obj).then(callback);
+    _firefox_notif_mem[txt]={
+        config: obj,
+        time: +new Date(),
+        pending: null
+    };
+}
+chrome.notifications.update=function(txt,obj) {
+    var mem=_firefox_notif_mem[txt];
+    var new_obj=Object.assign(mem.config,obj);
+    var delay=Math.max(mem.time+1000-(+new Date()),0);
+    if(mem.pending)
+        clearTimeout(mem.pending);
+    mem.pending=setTimeout(function() {
+        if(!_firefox_notif_mem[txt])
+            return;
+        browser.notifications.clear(txt);
+        chrome.notifications.create(txt,new_obj,function(){});
+    },delay);
+}
+chrome.notifications.clear=function(txt) {
+    if(txt)
+        delete _firefox_notif_mem[txt];
+    browser.notifications.clear(txt);
 }
 
 var FIREFOX_VERSION=(function() {
@@ -232,4 +261,35 @@ function migrate_legacy() {
             loadconfig();
         }
     })();
+}
+
+function fetch_alasql(tabid) {
+    function done(code) {
+        if(tabid)
+            chrome.tabs.executeScript(tabid,{
+                code: code,
+                runAt: 'document_idle'
+            });
+    }
+
+    chrome.storage.local.get({alasql_src: null},function(res) {
+        if(res.alasql_src)
+        done(res.alasql_src);
+        else {
+            console.log('downloading alasql');
+            var xhr=new XMLHttpRequest();
+            xhr.open('get','https://cdn.bootcss.com/alasql/0.4.5/alasql.min.js');
+            xhr.onload=function() {
+                if(xhr.responseText.indexOf('//! AlaSQL v0.4.5')==0) {
+                    console.log('alasql downloaded OK');
+                    done(xhr.responseText);
+                    chrome.storage.local.set({alasql_src: xhr.responseText});
+                } else {
+                    console.log('alasql downloaded FAILED');
+                    console.log(xhr.responseText);
+                }
+            }
+            xhr.send();
+        }
+    });
 }

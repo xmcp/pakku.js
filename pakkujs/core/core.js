@@ -311,7 +311,7 @@ function parse(dom,tabid,S,D) {
             S.count_hide+=1;
             return; // aka continue
         }
-        
+
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
         d.appendChild(tn);

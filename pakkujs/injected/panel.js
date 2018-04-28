@@ -141,29 +141,36 @@ function make_panel_dom() {
 };
 
 var _mem_info={};
-function _load_info(uid,logger,callback) {
-    if(_mem_info[uid]) {
-        callback(_mem_info[uid]);
-        return;
-    }
+function _load_infos(uids,logger,callback) {
+    uids=uids.filter(function(uid) {
+        if(typeof _mem_info[uid]!=='undefined') {
+            callback(uid,_mem_info[uid]);
+            return false;
+        } else
+            return true;
+    });
+    if(!uids.length) return;
+
     var xhr=new XMLHttpRequest();
     xhr.responseType='text';
-    xhr.open('get','https://api.bilibili.com/x/web-interface/card?type=json&mid='+uid);
+    xhr.open('get','https://account.bilibili.com/api/member/getInfoByMid?mid='+uids.join(','));
     xhr.onreadystatechange=function() {
         if(this.readyState!=4) return;
         var res;
         try {
             if(this.status!=200) throw 1;
-            res=JSON.parse(this.responseText);
+            res=JSON.parse(this.responseText).cards;
         } catch(e) {
             logger.innerHTML='';
             logger.appendChild(make_a(
-                uidhash+' ('+uid+') 个人信息加载失败',
-                '//space.bilibili.com/'+uid
+                uidhash+' ('+uids.join(',')+') 个人信息加载失败',
+                '//space.bilibili.com/'+uids[0]
             ));
             throw e;
         }
-        callback(_mem_info[uid]=res);
+        uids.forEach(function(uid) {
+            callback(uid,(_mem_info[uid]=res[uid]||null));
+        });
     }
     xhr.send();
 }
@@ -180,38 +187,39 @@ function query_uid(uidhash,logger_container) {
     chrome.runtime.sendMessage({type: 'crack_uidhash', hash: uidhash}, function(uids) {
         if(uids.length) {
             logger.textContent='';
+            var subitems={};
             uids.forEach(function(uid) {
-                var subitem=document.createElement('p');
-                subitem.textContent=uid+' 正在加载个人信息...';
-                logger.appendChild(subitem);
-                _load_info(uid,subitem,function(res) {
-                    var nickname,lv,exp,fans,sex;
-                    
-                    if(!res.data || !res.data.card || !res.data.card.mid || !res.data.card.level_info.current_level) { // does not exist
-                        subitem.parentNode.removeChild(subitem);
-                        return;
-                    }
-                    try {
-                        nickname=res.data.card.name;
-                        lv=res.data.card.level_info.current_level;
-                        exp=res.data.card.level_info.current_exp;
-                        fans=res.data.card.fans;
-                        sex={'男':'♂','女':'♀'}[res.data.card.sex]||'〼';
-                    } catch(e) {
-                        subitem.textContent='';
-                        subitem.appendChild(make_a(
-                            uid+' 个人信息加载失败',
-                            '//space.bilibili.com/'+uid
-                        ));
-                        throw e;
-                    }
-                    
+                subitems[uid]=document.createElement('p');
+                subitems[uid].textContent=uid+' 正在加载个人信息...';
+                logger.appendChild(subitems[uid]);
+            })
+            _load_infos(uids,logger,function(uid,res) {
+                var nickname,lv,exp,fans,sex;
+                var subitem=subitems[uid];
+
+                if(!res || !res.mid || !res.level_info.current_level) { // does not exist
+                    subitem.parentNode.removeChild(subitem);
+                    return;
+                }
+                try {
+                    nickname=res.uname;
+                    lv=res.level_info.current_level;
+                    exp=res.level_info.current_exp;
+                    sex={'男':'♂','女':'♀'}[res.sex]||'〼';
+                } catch(e) {
                     subitem.textContent='';
                     subitem.appendChild(make_a(
-                        uid+' Lv'+lv+(exp?('('+exp+') '):' ')+sex+' '+(fans?+fans+'★ ':'')+nickname,
+                        uid+' 个人信息加载失败',
                         '//space.bilibili.com/'+uid
                     ));
-                });
+                    throw e;
+                }
+                
+                subitem.textContent='';
+                subitem.appendChild(make_a(
+                    uid+' Lv'+lv+(exp?('('+exp+') '):' ')+sex+' '+nickname,
+                    '//space.bilibili.com/'+uid
+                ));
             });
         } else {
             logger.textContent=uidhash+' UID 不存在';

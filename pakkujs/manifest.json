@@ -1,7 +1,7 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "8.6.8",
+    "version": "8.7",
     "description": "瞬间过滤B站(bilibili.com)刷屏的相似弹幕，还你清爽的弹幕视频体验。",
     "icons": {
         "128": "assets/logo.png",
@@ -14,14 +14,15 @@
         "*://*.bilibili.com/*",
         "webRequest",
         "webRequestBlocking",
-        "notifications"
+        "notifications",
+        "storage"
     ],
     "optional_permissions": [
         "ws://*.bilibili.com/*",
         "wss://*.bilibili.com/*"
     ],
     "content_security_policy":
-        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://*.bilibili.com https://*.bilibili.com https://img.shields.io data:; style-src 'self' 'unsafe-inline'",
+        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://*.bilibili.com https://*.bilibili.com https://img.shields.io https://cdn.bootcss.com data:; style-src 'self' 'unsafe-inline'",
     
     "options_ui": {
         "page": "options/options.html",

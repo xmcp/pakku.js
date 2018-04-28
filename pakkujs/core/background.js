@@ -32,6 +32,97 @@ function fromholyjson_orempry(str) {
     }
 }
 
+function load_userinfo_batch(hashes,store,final_callback) {
+    var notif_id='load_userinfo_notif_'+Math.random();
+
+    var error_count=0;
+
+    function load_job_slice(joblist,callback) { // joblist: uid->hash
+        var xhr=new XMLHttpRequest();
+        xhr.open('get','https://account.bilibili.com/api/member/getInfoByMid?mid='+Object.keys(joblist).join(','));
+        xhr.onload=function() {
+            try {
+                var res=JSON.parse(xhr.responseText);
+            } catch(e) {
+                console.trace(e);
+                error_count++;
+                callback();
+                return;
+            }
+            if(res.code!==0) {
+                console.error('user info: response error',res,joblist);
+                error_count++;
+            } else {
+                for(var uid in res.cards) {
+                    if(!store[joblist[uid]] && res.cards[uid].level_info && res.cards[uid].level_info.current_exp)
+                        store[joblist[uid]]=res.cards[uid];
+                }
+            }
+            callback();
+        };
+        xhr.onerror=function() {
+            console.error('user info: load job failed',joblist);
+            error_count++;
+            callback();
+        };
+        xhr.send();
+    }
+
+    var uids={};
+    var jobs=[];
+
+    chrome.notifications.create(notif_id,{
+        iconUrl: chrome.runtime.getURL('assets/logo.png'),
+        type: 'progress',
+        title: '正在获取用户信息',
+        message: '正在获取 UID',
+        progress: 0,
+        requireInteraction: true
+    },function(){});
+
+    console.time('load userinfo: crack batch');
+    hashes.forEach(function(hash) {
+        crack_uidhash(hash).forEach(function(uid) {
+            uids[uid]=hash;
+        })
+    });
+    console.timeEnd('load userinfo: crack batch');
+
+    var uids_arr=Object.keys(uids).sort();
+
+    while(uids_arr.length) {
+        var curjob={};
+        uids_arr.splice(0,100).forEach(function(uid) {
+            curjob[uid]=uids[uid];
+        });
+        jobs.push(curjob);
+    }
+
+    chrome.notifications.update(notif_id,{
+        message: '正在下载 0/'+jobs.length
+    });
+
+    var completed_cnt=0;
+    function progress_callback() {
+        completed_cnt++;
+        if(completed_cnt==jobs.length) {
+            console.log('load userinfo finished, error_count =',error_count);
+            chrome.notifications.clear(notif_id);
+            final_callback(error_count);
+        } else {
+            chrome.notifications.update(notif_id,{
+                message: '正在下载 '+completed_cnt+'/'+jobs.length,
+                progress: Math.floor(100*completed_cnt/jobs.length),
+                contextMessage: '错误数量：'+error_count
+            });
+        }
+    }
+
+    jobs.forEach(function(job) {
+        load_job_slice(job,progress_callback);
+    });
+}
+
 function loadconfig() {
     window._ADVANCED_USER=localStorage['_ADVANCED_USER']==='on';
     // 弹幕合并
@@ -143,6 +234,8 @@ function inject_panel(tabid,D,OPT) {
             runAt: 'document_start'
         });
     });
+    if(OPT['FOOLBAR'])
+        fetch_alasql(tabid);
     setTimeout(function() {
         chrome.tabs.executeScript(tabid,{
             file: '/injected/do_inject.js',
@@ -311,16 +404,31 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     } else if(request.type==='set_xml_bounce') {
         if(!GLOBAL_SWITCH)
             set_global_switch(true,'yes do not reload');
-        BOUNCE.nonce=''+-~~(1+Math.random()*1000000);;
+        BOUNCE.nonce='99'+~~(1+Math.random()*100000);;
         BOUNCE.result=request.result;
         return sendResponse({error: null, nonce: BOUNCE.nonce});
     } else if(request.type==='crack_uidhash') {
         return sendResponse(crack_uidhash(request.hash));
     } else if(request.type==='crack_uidhash_batch') {
-        request.hashes.forEach(function(d) {
+        request.dinfo.forEach(function(d) {
             d.cracked_uid=crack_uidhash(d.peers[0].attr[6])[0];
         });
-        return sendResponse(request.hashes);
+        return sendResponse(request.dinfo);
+    } else if(request.type==='load_userinfo_batch') {
+        var toload=[];
+        request.dinfo.forEach(function(d) {
+            toload.push(d.peers[0].attr[6]);
+        });
+        var store={};
+        load_userinfo_batch(toload,store,function() {
+            request.dinfo.forEach(function(d) {
+                var info=store[d.peers[0].attr[6]];
+                d.sender_info=info;
+                d.cracked_uid=parseInt(info ? info.mid : null);
+            });
+            return sendResponse(request.dinfo);
+        });
+        return true;
     } else if(request.type==='reportness') {
         return sendResponse(REPORTNESS);
     } else if(request.type==='need_ajax_hook') {
@@ -366,12 +474,25 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     var ret=DANMU_URL_RE.exec(details.url);
     if(ret) {
         var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
-        if(nonce==BOUNCE.nonce)
-            return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
         
         /*for-firefox:
 
         if(browser.webRequest.filterResponseData) {
+            if(nonce==BOUNCE.nonce) {
+                console.log('bounce :: stream filter',nonce);
+                var filter=browser.webRequest.filterResponseData(details.requestId);
+                
+                var encoder=new TextEncoder();
+                filter.onstart=function(event) {
+                    filter.write(encoder.encode(BOUNCE.result));
+                    filter.close();
+                };
+                filter.onerror=function(event) {
+                    console.log(event.error);
+                };
+                return {cancel: false};
+            }
+
             console.log('webrequest :: stream filter',details);
             var filter=browser.webRequest.filterResponseData(details.requestId);
             hook_stream_filter(filter,cid,details.tabId);
@@ -379,6 +500,11 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         }
 
         */
+
+        if(nonce==BOUNCE.nonce) {
+            console.log('bounce :: redirect',nonce);
+            return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
+        }
 
         if(debug || details.type==='xmlhttprequest') {
             /*for-firefox:
