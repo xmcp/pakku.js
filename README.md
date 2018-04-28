@@ -37,6 +37,9 @@ Browser Action ↓
 
 ![fluctlight](https://user-images.githubusercontent.com/6646473/36491732-70320f0a-1766-11e8-80e9-11ae4842f781.png)
 
+弹幕屏蔽 Pro ↓
+
+![foolbar](https://user-images.githubusercontent.com/6646473/39392565-6fa348ee-4aea-11e8-86e4-abc30c61bbb8.png)
 
 其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
 
@@ -44,17 +47,19 @@ Browser Action ↓
 
 Power User 可以通过 HTML5 Messaging API 来利用 pakku 干更多的事情。
 
-v8.6.5：
+v8.6.5+:
 
 - 在每个B站播放器页面，当弹幕加载完成时，会向页面自身发送一条内容为 `{type: 'pakku_event_danmaku_loaded'}` 的消息。你可以用 `window.addEventListener('message', callback)` 来接收这一消息。
 - 调用 `window.postMessage({type: 'pakku_get_danmaku'}, '*')` 可以获取当前弹幕内容，弹幕将会通过 `{type: 'pakku_return_danmaku', resp: [...]}` 形式的消息返回。
 - 调用 `window.postMessage({type: 'pakku_set_xml_bounce', xml: '<i><d p="...">...</d></i>'}, '*')` 可以更新当前弹幕内容。
 
-v8.7：
+v8.7+:
 
 - 调用 `window.postMessage({type: 'pakku_get_danmaku_with_uid'}, '*')` 或 `window.postMessage({type: 'pakku_get_danmaku_with_info'}, '*')` 可以获得弹幕的发送者信息，弹幕将会通过 `{type: 'pakku_return_danmaku', flag: '...', resp: [...]}` 形式的消息返回。
 
 请注意，上述接口没有文档，不保证能够正常工作，任何 bug 都是 feature。
+
+使用该 API 的示例：[xmcp/pakku-advanced-filter](https://github.com/xmcp/pakku-advanced-filter)
 
 -----
 
