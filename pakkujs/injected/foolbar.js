@@ -25,14 +25,14 @@ var FOOLBAR_CSS=`
 }
 button.pakku-button:active {
     text-shadow: 0px 0px 4px #555;
-    background: rgba(0,0,0, 0.15);
+    background: rgba(0, 0, 0, 0.15);
 }
 button.pakku-button:hover {
     color: #001dff;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
 }
 button.pakku-button {
-    background: rgba(0,0,0, 0.3);
+    background: rgba(0, 0, 0, 0.3);
     -webkit-appearance: none !important;
     border-width: 0;
     font-weight: inherit;
