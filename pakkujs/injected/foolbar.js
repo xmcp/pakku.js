@@ -23,6 +23,30 @@ var FOOLBAR_CSS=`
     color: darkblue;
     font-style: italic;
 }
+button.pakku-button:active {
+    text-shadow: 0px 0px 4px #555;
+    background: rgba(0,0,0, 0.15);
+}
+button.pakku-button:hover {
+    color: #001dff;
+    background: rgba(0,0,0,0.1);
+}
+button.pakku-button {
+    background: rgba(0,0,0, 0.3);
+    -webkit-appearance: none !important;
+    border-width: 0;
+    font-weight: inherit;
+    transition: .1s all ease;
+    text-shadow: 2px 2px 6px #555;
+    padding: 0.3em;
+}
+button.pakku-button:not([disabled]) {
+    cursor: pointer;
+}
+button.pakku-button[disabled] {
+    color: rgb(103, 103, 103);
+    background: rgba(0, 255, 0, 0.48);
+}
 `;
 var FOOLBAR_SCHEMA=`create table danmaku (
     _xml_src text,
