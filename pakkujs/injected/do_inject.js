@@ -102,7 +102,10 @@ function try_inject() {
                     reload_danmaku_magic(resp.nonce);
             });
         else if(event.data.type && event.data.type=='pakku_get_danmaku_with_uid')
-            return chrome.runtime.sendMessage({type: 'crack_uidhash_batch', dinfo: D}, function(D) {
+            return chrome.runtime.sendMessage({
+                type: 'crack_uidhash_batch',
+                dinfo: D
+            }, function(D) {
                 return window.postMessage({
                     type: 'pakku_return_danmaku',
                     flag: 'uid',
@@ -110,7 +113,11 @@ function try_inject() {
                 },'*');
             });
         else if(event.data.type && event.data.type=='pakku_get_danmaku_with_info')
-            return chrome.runtime.sendMessage({type: 'load_userinfo_batch', dinfo: D}, function(D) {
+            return chrome.runtime.sendMessage({
+                type: 'load_userinfo_batch',
+                dinfo: D,
+                silence: !!event.data.silence
+            }, function(D) {
                 return window.postMessage({
                     type: 'pakku_return_danmaku',
                     flag: 'info',

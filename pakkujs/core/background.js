@@ -32,7 +32,7 @@ function fromholyjson_orempry(str) {
     }
 }
 
-function load_userinfo_batch(hashes,store,final_callback) {
+function load_userinfo_batch(hashes,store,final_callback,silence) {
     var notif_id='load_userinfo_notif_'+Math.random();
 
     var error_count=0;
@@ -71,14 +71,15 @@ function load_userinfo_batch(hashes,store,final_callback) {
     var uids={};
     var jobs=[];
 
-    chrome.notifications.create(notif_id,{
-        iconUrl: chrome.runtime.getURL('assets/logo.png'),
-        type: 'progress',
-        title: '正在获取用户信息',
-        message: '正在获取 UID',
-        progress: 0,
-        requireInteraction: true
-    },function(){});
+    if(!silence)
+        chrome.notifications.create(notif_id,{
+            iconUrl: chrome.runtime.getURL('assets/logo.png'),
+            type: 'progress',
+            title: '正在获取用户信息',
+            message: '正在获取 UID',
+            progress: 0,
+            requireInteraction: true
+        },function(){});
 
     console.time('load userinfo: crack batch');
     hashes.forEach(function(hash) {
@@ -98,29 +99,41 @@ function load_userinfo_batch(hashes,store,final_callback) {
         jobs.push(curjob);
     }
 
-    chrome.notifications.update(notif_id,{
-        message: '正在下载 0/'+jobs.length
-    });
+    if(!silence)
+        setTimeout(function() {
+            chrome.notifications.update(notif_id,{
+                message: '正在下载 0/'+jobs.length
+            });
+        },20);
 
     var completed_cnt=0;
     function progress_callback() {
         completed_cnt++;
         if(completed_cnt==jobs.length) {
             console.log('load userinfo finished, error_count =',error_count);
-            chrome.notifications.clear(notif_id);
+            if(!silence)
+                setTimeout(function() {
+                    chrome.notifications.clear(notif_id);
+                },50); // to make sure it is correctly cleared
             final_callback(error_count);
         } else {
-            chrome.notifications.update(notif_id,{
-                message: '正在下载 '+completed_cnt+'/'+jobs.length,
-                progress: Math.floor(100*completed_cnt/jobs.length),
-                contextMessage: '错误数量：'+error_count
-            });
+            if(!silence)
+                chrome.notifications.update(notif_id,{
+                    message: '正在下载 '+completed_cnt+'/'+jobs.length,
+                    progress: Math.floor(100*completed_cnt/jobs.length),
+                    contextMessage: '错误数量：'+error_count
+                });
         }
     }
 
     jobs.forEach(function(job) {
         load_job_slice(job,progress_callback);
     });
+
+    if(jobs.length==0) {
+        completed_cnt--;
+        progress_callback();
+    }
 }
 
 function loadconfig() {
@@ -427,7 +440,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                 d.cracked_uid=parseInt(info ? info.mid : null);
             });
             return sendResponse(request.dinfo);
-        });
+        },request.silence);
         return true;
     } else if(request.type==='reportness') {
         return sendResponse(REPORTNESS);
