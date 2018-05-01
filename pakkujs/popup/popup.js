@@ -75,8 +75,26 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                             id('link-display').href='http://comment.bilibili.com/'+res.cid+'.xml?debug';
                         }
                         for(var name in res)
-                            if(id('status-'+name))
-                                id('status-'+name).textContent=(typeof res[name]=='number') ? Math.ceil(res[name]) : res[name];
+                            if(id('status-'+name)) {
+                                var r=res[name];
+                                var elem=id('status-'+name);
+                                var row=elem.closest('tr');
+                                if(row) {
+                                    if(r==='')
+                                        row.classList.add('display-none');
+                                    else
+                                        row.classList.remove('display-none');
+                                }
+                                elem.textContent=(typeof r=='number') ? Math.ceil(r) : r;
+                            }
+                        ['combined','deleted','ignored','modified','info'].forEach(function(category) {
+                            var rows=[].slice.call(document.querySelectorAll('.status-header-'+category+':not(.display-none)'));
+                            rows.forEach(function(row) {
+                                row.classList.remove('first-item');
+                            });
+                            if(rows.length)
+                                rows[0].classList.add('first-item');
+                        });
                     }
                     
                     temprules.textContent='';

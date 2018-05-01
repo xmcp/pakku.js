@@ -19,6 +19,11 @@ def change_manifest(s):
         {'matches': ['*://*.bilibili.com/*'], 'js': ['assets/script_injector.js'], 'run_at': 'document_end', 'all_frames': True}
     ]
     obj['permissions']+=obj['optional_permissions']
+    obj['applications']={
+        'gecko': {
+            'id': '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
+        }
+    }
     return json.dumps(obj,ensure_ascii=False,indent=4)
 
 for path,dirs,fns in os.walk('pakkujs'):

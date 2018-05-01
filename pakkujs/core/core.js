@@ -344,13 +344,16 @@ function parse(dom,tabid,S,D) {
     
     console.timeEnd('parse');
     
-    if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='已禁用';
-    if(PROC_TYPE7 && PROC_TYPE4 && PROC_POOL1 && S.batch_ignore==0) S.batch_ignore='已禁用';
-    if(!ENLARGE && S.enlarge==0) S.enlarge='已禁用';
-    if(!SHRINK && S.shrink==0) S.shrink='已禁用';
-    if(!SHRINK && S.maxdispval==0) S.maxdispval='已禁用';
-    if(!HIDE_THRESHOLD && S.count_hide==0) S.count_hide='已禁用';
-    if(!SCROLL_THRESHOLD && S.scroll==0) S.scroll='已禁用';
+    if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='';
+    if(PROC_TYPE7 && PROC_TYPE4 && PROC_POOL1 && S.batch_ignore==0) S.batch_ignore='';
+    if(!ENLARGE && S.enlarge==0) S.enlarge='';
+    if(!SHRINK && S.shrink==0) S.shrink='';
+    if(!SHRINK && S.maxdispval==0) S.maxdispval='';
+    if(!HIDE_THRESHOLD && S.count_hide==0) S.count_hide='';
+    if(!SCROLL_THRESHOLD && S.scroll==0) S.scroll='';
+    if(!BLACKLIST_len && S.blacklist==0) S.blacklist='';
+    if(!WHITELIST_len && S.whitelist==0) S.whitelist='';
+    if(!FORCELIST_len && S.taolu==0) S.taolu='';
     
     var serializer=new XMLSerializer();
     return serializer.serializeToString(new_dom);

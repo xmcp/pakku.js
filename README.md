@@ -56,6 +56,11 @@ v8.6.5+:
 v8.7+:
 
 - 调用 `window.postMessage({type: 'pakku_get_danmaku_with_uid'}, '*')` 或 `window.postMessage({type: 'pakku_get_danmaku_with_info'}, '*')` 可以获得弹幕的发送者信息，弹幕将会通过 `{type: 'pakku_return_danmaku', flag: '...', resp: [...]}` 形式的消息返回。
+- `pakku_event_danmaku_loaded` 消息增加了属性 `pakku_version` 表示当前 pakku 版本号。
+
+v8.7.1+:
+
+- `pakku_get_danmaku_with_info` 方法增加了可选参数 `silence` 表示是否隐藏进度条。
 
 请注意，上述接口没有文档，不保证能够正常工作，任何 bug 都是 feature。
 

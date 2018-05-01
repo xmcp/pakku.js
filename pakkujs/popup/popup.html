@@ -95,7 +95,7 @@
         #result tr.first-item td {
             border-top: 1px solid #aaa;
         }
-        #result tr.first-item td:nth-child(1) {
+        #result tr.first-item td:first-child {
             font-weight: bold;
         }
         #result th {
@@ -136,6 +136,26 @@
         #temprules:empty+#temprules-hint {
             display: none;
         }
+        .status-header-combined.first-item td:first-child:after {
+            color: #00aa00;
+            content: "已合并";
+        }
+        .status-header-deleted.first-item td:first-child::after {
+            color: #dd0000;
+            content: "已删除";
+        }
+        .status-header-ignored.first-item td:first-child::after {
+            color: #555555;
+            content: "已忽略";
+        }
+        .status-header-modified.first-item td:first-child::after {
+            color: #0000dd;
+            content: "已修改";
+        }
+        .status-header-info.first-item td:first-child::after {
+            color: black;
+            content: "* 信息";
+        }
     </style>
 </head>
 <body>
@@ -154,81 +174,81 @@
         </p>
         <table id="details-on">
             <tbody>
-                <tr class="first-item">
-                    <td style="color: #00aa00">已合并</td>
+                <tr class="status-header-combined">
+                    <td></td>
                     <td><a data-options-link="threshold">内容完全一致</a></td>
                     <td id="status-identical"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-combined">
                     <td></td>
                     <td><a data-options-link="max-dist">根据编辑距离合并</a></td>
                     <td id="status-edit_distance"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-combined">
                     <td></td>
                     <td><a data-options-link="max-cosine">根据词频向量合并</a></td>
                     <td id="status-cosine_distance"></td>
                 </tr>
                 
-                <tr class="first-item">
-                    <td style="color: #dd0000">已删除</td>
+                <tr class="status-header-deleted">
+                    <td></td>
                     <td><a data-options-link="remove-seek">包含跳转脚本</a></td>
                     <td id="status-player_seek"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-deleted">
                     <td></td>
                     <td><a data-options-link="blacklist-link">命中黑名单</a></td>
                     <td id="status-blacklist"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-deleted">
                     <td></td>
                     <td><a data-options-link="hide-threshold">重复数量过多</a></td>
                     <td id="status-count_hide"></td>
                 </tr>
                 
-                <tr class="first-item">
-                    <td style="color: #555555">已忽略</td>
+                <tr class="status-header-ignored">
+                    <td></td>
                     <td><a data-options-link="newwhitelist-pattern">根据内容强制忽略</a></td>
                     <td id="status-whitelist"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-ignored">
                     <td></td>
                     <td>代码弹幕</td>
                     <td id="status-script"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-ignored">
                     <td></td>
                     <td><a data-options-link="batch-ignore-panel">忽略特定类型弹幕</a></td>
                     <td id="status-batch_ignore"></td>
                 </tr>
                 
-                <tr class="first-item">
-                    <td style="color: #0000dd">已修改</td>
+                <tr class="status-header-modified">
+                    <td></td>
                     <td><a data-options-link="enlarge">放大合并后的弹幕</a></td>
                     <td id="status-enlarge"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-modified">
                     <td></td>
                     <td><a data-options-link="shrink">缩小密度过高的弹幕</a></td>
                     <td id="status-shrink"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-modified">
                     <td></td>
                     <td><a data-options-link="scroll-threshold">超长弹幕转换为滚动</a></td>
                     <td id="status-scroll"></td>
                 </tr>
                 
-                <tr class="first-item">
-                    <td>* 信息</td>
+                <tr class="status-header-info">
+                    <td></td>
                     <td><a data-options-link="newforcelist-pattern">命中强制合并规则</a></td>
                     <td id="status-taolu"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-info">
                     <td></td>
                     <td>最大连击</td>
                     <td id="status-maxcombo"></td>
                 </tr>
-                <tr>
+                <tr class="status-header-info">
                     <td></td>
                     <td>最大弹幕密度</td>
                     <td id="status-maxdispval"></td>
