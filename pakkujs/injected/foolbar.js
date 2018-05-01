@@ -23,6 +23,25 @@ var FOOLBAR_CSS=`
     color: darkblue;
     font-style: italic;
 }
+button.pakku-button:hover {
+    background: #eee;
+}
+button.pakku-button:active {
+    background: darkblue;
+    color: white;
+}
+button.pakku-button {
+    background: #ddd;
+    border-width: 0;
+    font-weight: inherit;
+    padding: 0 0.3em;
+}
+button.pakku-button:not([disabled]) {
+    cursor: pointer;
+}
+button.pakku-button[disabled] {
+    background: lightgreen;
+}
 `;
 var FOOLBAR_SCHEMA=`create table danmaku (
     _xml_src text,
