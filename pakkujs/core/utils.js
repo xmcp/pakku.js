@@ -293,3 +293,7 @@ function fetch_alasql(tabid) {
         }
     });
 }
+
+function add_pakku_fingerprint(url) {
+    return url + (url.indexOf('?')===-1 ? '?' : '&') + 'pakku_request'
+}
