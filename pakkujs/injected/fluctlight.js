@@ -3,10 +3,11 @@
 var DETAILS_MAX_TIMEDELTA=10;
 var GRAPH_MAX_TIMEDELTA=5;
 var GRAPH_DENSITY_POWER=.8;
+var SEEKBAR_PADDING=6;
 
 function inject_fluctlight_graph(bar_elem) {
     var HEIGHT=600;
-    var WIDTH=parseInt(bar_elem.style.width.replace('px',''))||0;
+    var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
     
     var canvas_elem=document.createElement('canvas');
     var ctx=canvas_elem.getContext('2d');
@@ -142,20 +143,21 @@ function inject_fluctlight_graph(bar_elem) {
     canvas_elem.style.zIndex=9999;
     bar_elem.appendChild(canvas_elem);
     
-    // resize
-    new MutationObserver(function(muts) {
-        var width=parseInt(bar_elem.style.width.replace('px',''));
-        if(width) {
-            WIDTH=width;
-            redraw();
-        }
-    }).observe(bar_elem,{
-        attributes: true,
-        attributeFilter: ['style']
-    });
     // show or hide
     new MutationObserver(function(muts) {
-        canvas_elem.style.display=(details_elem.style.display=='none')?'none':'initial';
+        var bar_opened=(details_elem.style.display!='none');
+        if(bar_opened && canvas_elem.style.display=='none') {
+            canvas_elem.style.display='initial';
+            // detect resize
+            var width=bar_elem.clientWidth-SEEKBAR_PADDING;
+            if(width && width!==WIDTH) {
+                WIDTH=width;
+                redraw();
+            }
+        } else if(!bar_opened && canvas_elem.style.display!='none') {
+            canvas_elem.style.display='none';
+            canvas_elem.width=0;
+        }
     }).observe(details_elem,{
         attributes: true,
         attributeFilter: ['style']
