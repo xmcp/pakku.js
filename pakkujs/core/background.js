@@ -17,6 +17,7 @@ Pakku tampers the danmaku request by:
 
 */
 
+// note: need to change the rule in content_script.for-firefox.js too
 var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
 var NEW_DANMU_URL_RE=/(.+):\/\/api\.bilibili\.com\/(x)\/v1\/dm\/list.so\?oid=(\d+)(\&debug)?$/;
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*']
