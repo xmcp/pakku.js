@@ -67,7 +67,9 @@ function parse(dom,tabid,S,D) {
     
     // https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript
     var _get_width_cvs=document.createElement('canvas');
-    function get_width(text,size) {
+    function get_width_if_exceeds(text,size,threshold) {
+        if(text.length*size<threshold) // speedup
+            return 0;
         var ctx=_get_width_cvs.getContext('2d');
         ctx.font=parseInt(size)+'pt 黑体';
         return ctx.measureText(text.replace(/\/n/g,'')).width;
@@ -179,6 +181,7 @@ function parse(dom,tabid,S,D) {
         }
     })(new Date());
 
+    // load danmus
     var danmus=[],out_danmus=[];
     [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
         if(elem.tagName==='d') { // danmu
@@ -248,9 +251,9 @@ function parse(dom,tabid,S,D) {
     });
     danmus.sort(function(x,y) {return x.time-y.time;});
 
+    // iterate through danmus to combine similar ones
     var danmu_chunk=Array();
-    var last_time=0;
-
+    
     danmus.forEach(function(dm) {
         while(danmu_chunk.length && dm.time-danmu_chunk[0].time>THRESHOLD)
             out_danmus.push(danmu_chunk.shift());
@@ -278,7 +281,7 @@ function parse(dom,tabid,S,D) {
     for(var i=0;i<danmu_chunk.length;i++)
         out_danmus.push(danmu_chunk[i]);
 
-    var last_log_dispval_time=-100;
+    // process SHRINK
     if(SHRINK) {
         var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
         var chunkl=0,chunkr=0,chunkval=0;
@@ -304,6 +307,7 @@ function parse(dom,tabid,S,D) {
         });        
     }
     
+    // process other stuffs and apply them
     out_danmus.forEach(function(dm) {
         S.maxcombo=Math.max(S.maxcombo,dm.peers.length);
         
@@ -325,7 +329,7 @@ function parse(dom,tabid,S,D) {
         
         var attr=dm.attr.slice();
         if(SCROLL_THRESHOLD && (attr[1]==='4'||attr[1]==='5')) {
-            var width=get_width(dm.disp_str,dm.size);
+            var width=get_width_if_exceeds(dm.disp_str,dm.size,SCROLL_THRESHOLD);
             if(width>SCROLL_THRESHOLD) {                
                 dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
                 tn.textContent=dm.disp_str=(attr[1]==='4'?'↓':'↑')+dm.disp_str;

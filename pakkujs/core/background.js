@@ -158,21 +158,26 @@ function inject_panel(tabid,D,OPT) {
     chrome.tabs.executeScript(tabid,{
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         runAt: 'document_start'
-    });
-    ['utils','fluctlight','panel','foolbar'].forEach(function(name) {
-        chrome.tabs.executeScript(tabid,{
-            file: '/injected/'+name+'.js',
-            runAt: 'document_start'
+    },function() {
+        if(chrome.runtime.lastError) { // possibly not having host permission
+            console.log('cannot inject panel. skipping.',chrome.runtime.lastError);
+            return;
+        }
+        ['utils','fluctlight','panel','foolbar'].forEach(function(name) {
+            chrome.tabs.executeScript(tabid,{
+                file: '/injected/'+name+'.js',
+                runAt: 'document_start'
+            });
         });
+        if(OPT['FOOLBAR'])
+            fetch_alasql(tabid);
+        setTimeout(function() {
+            chrome.tabs.executeScript(tabid,{
+                file: '/injected/do_inject.js',
+                runAt: 'document_idle'
+            });
+        },200);
     });
-    if(OPT['FOOLBAR'])
-        fetch_alasql(tabid);
-    setTimeout(function() {
-        chrome.tabs.executeScript(tabid,{
-            file: '/injected/do_inject.js',
-            runAt: 'document_idle'
-        });
-    },200);
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {

@@ -1,8 +1,8 @@
 // (C) 2018 @dramforever, @xmcp, @fanthos. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var ed_counts = new Int16Array (0x10ffff);
-var ed_a = new Int16Array (1048576);
-var ed_b = new Int16Array (1048576);
+var ed_a = new Int16Array (0x10ffff);
+var ed_b = new Int16Array (0x10ffff);
+var ed_counts = ed_a; // to save memory
 
 var MIN_DANMU_SIZE=10;
 
@@ -10,9 +10,8 @@ function hash(a, b) {
     return ((a<<10)^b)&1048575;
 }
 
-function edit_distance (P, Q) {
+function edit_distance (P, Q) { // this is NOT the edit_distance you think
     'use strict';
-    // TODO: Make this less hacky
 
     for (var i = 0; i < P.length; i ++) ed_counts [P.charCodeAt (i)] ++;
     for (var i = 0; i < Q.length; i ++) ed_counts [Q.charCodeAt (i)] --;
