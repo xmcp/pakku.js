@@ -174,9 +174,21 @@ function parse(dom,tabid,S,D) {
             // 皮这么一下很开心
             var d=new_dom.createElement('d');
             var tn=new_dom.createTextNode('/* 英梨梨生日快乐 */');
+            var attr=['0','8','0','11135770',Math.floor((+new Date())/1000),'0','91d6b7d0','0'];
+            var peer={
+                attr: attr,
+                time: 0,
+                orig_str: '英梨梨是我的，你们都不要抢。',
+                mode: '8',
+                reason: 'PAKKU'
+            }
             d.appendChild(tn);
-            d.setAttribute('p','0,8,25,11135770,11461881600,0,SAWAMURA,0');
-            apply_danmu(d,['3月20日是知名同人画师柏木英理（澤村・スペンサー・英梨々，泽村·斯潘塞·英梨梨）的生日。','pakku在此祝有情人终成败犬（划掉）']);
+            d.setAttribute('p',attr.join(','));
+            apply_danmu(
+                d,
+                ['3月20日是知名同人画师柏木英理（澤村・スペンサー・英梨々，泽村·斯潘塞·英梨梨）的生日。'],
+                Array(20).fill(peer)
+            );
             S.onscreen--; // it should not be counted
         }
     })(new Date());

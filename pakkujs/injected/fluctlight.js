@@ -66,7 +66,7 @@ function inject_fluctlight_graph(bar_elem) {
         }
 
         D.forEach(function(d) {
-            if(!d.peers.length) return;
+            if(!d.peers.length || d.peers[0].mode=='8'/*code*/) return;
             apply_dispval(den_aft)(d.peers[0]);
             d.peers.forEach(apply_dispval(den_bef));
         });
@@ -204,7 +204,7 @@ function inject_fluctlight_details(bar_elem) {
                 var danmus=[];
                 for(var i=0;i<D.length;i++) {
                     var d=D[i];
-                    if(d.peers.length && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA)
+                    if(d.peers.length && time-d.peers[0].time>=0 && time-d.peers[0].time<=DETAILS_MAX_TIMEDELTA && d.peers[0].mode!='8'/*code*/)
                         danmus.push(d);
                 }
                 danmus=danmus.sort(function(a,b) {

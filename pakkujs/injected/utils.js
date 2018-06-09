@@ -73,7 +73,7 @@ function parse_time(time) { // MMMMMM:SS -> seconds
 }
 
 // https://stackoverflow.com/questions/24025165/simulating-a-mousedown-click-mouseup-sequence-in-tampermonkey
-function triggerMouseEvent(node, eventType) {
+function trigger_mouse_event(node, eventType) {
     var clickEvent=document.createEvent('MouseEvents');
     clickEvent.initEvent(eventType,true,true);
     node.dispatchEvent(clickEvent);
@@ -93,9 +93,9 @@ function reload_danmaku_magic(nonce) {
     date_picker.appendChild(elem);
 
     console.log('pakku magic reload: reload with nonce',nonce);
-    triggerMouseEvent(elem,'mousedown');
-    triggerMouseEvent(elem,'mouseup');
-    triggerMouseEvent(elem,'click');
+    trigger_mouse_event(elem,'mousedown');
+    trigger_mouse_event(elem,'mouseup');
+    trigger_mouse_event(elem,'click');
 
     date_picker.removeChild(elem);
 }

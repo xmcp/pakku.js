@@ -136,7 +136,17 @@ function load_userinfo_batch(hashes,store,final_callback,silence) {
     }
 }
 
+function load_update_breaker() {
+    chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);
+    if(BREAK_UPDATE)
+        chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
+}
+
 initconfig();
+
+chrome.browserAction.setBadgeText({ // badge text in the previous launch might not be cleared
+    text: GLOBAL_SWITCH?'':'zzz'
+});
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0)  // goto settings
@@ -193,19 +203,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     if(details.reason=='install') {
         chrome.tabs.create({url: chrome.runtime.getURL('options/options.html')});
-        chrome.notifications.create('//init', {
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('assets/logo.png'),
-            title: '你切换到B站 HTML5 播放器了吗？',
-            message: '我们不兼容B站的 Flash 播放器。请切换到B站的 HTML5 播放器来让 pakku 过滤弹幕。',
-            contextMessage: '如果你不确定要选什么，选第一项就对了',
-            isClickable: false,
-            requireInteraction: true,
-            buttons: [
-                {title: '→ 切换到 HTML5 播放器'},
-                {title: '我已经在用 HTML5 播放器了'}
-            ]
-        }, function(){});
     } else if(details.reason=='update') {
         migrate_legacy();
     }
@@ -300,6 +297,7 @@ function load_danmaku(resp,id,tabid) {
             TOOLTIP: TOOLTIP,
             AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
+            AUTO_DANMU_LIST: AUTO_DANMU_LIST,
             FLUCTLIGHT: FLUCTLIGHT,
             FOOLBAR: FOOLBAR
         });
@@ -510,12 +508,6 @@ chrome.commands.onCommand.addListener(function(name) {
         },700);
     }
 });
-
-function load_update_breaker() {
-    chrome.webRequest.onBeforeRequest.removeListener(req_breaker,update_filter,['blocking']);
-    if(BREAK_UPDATE)
-        chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
-}
 
 if(REPORTNESS) {
     var r=document.createElement('iframe');

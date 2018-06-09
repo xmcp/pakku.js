@@ -46,7 +46,7 @@ var PANEL_CSS=`
     margin: 3px 5px;
 }
 .pakku-panel * {
-    user-select: initial !important;
+    user-select: text !important; /* to override ".bilibili-player *" */
 }
 .pakku-panel a {
     color: black;

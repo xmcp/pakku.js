@@ -59,16 +59,30 @@ function try_inject() {
             inject_panel(list_elem,player_elem);
     }
     if(OPT['AUTO_PREVENT_SHADE']) {
-        var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
-        console.log('pakku injector: shade_elem',shade_elem);
-        if(shade_elem && !shade_elem.checked)
-            shade_elem.click();
+        var pre_shade_elem=root_elem.querySelector('.bilibili-player-video-btn.bilibili-player-video-btn-danmaku');
+        if(pre_shade_elem) {
+            trigger_mouse_event(pre_shade_elem,'mouseover');
+            trigger_mouse_event(pre_shade_elem,'mouseout');
+            var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
+            console.log('pakku injector: pre_shade_elem',pre_shade_elem,'shade_elem',shade_elem);
+            if(shade_elem && !shade_elem.checked)
+                shade_elem.click();
+        } else {
+            console.log('pakku injector: pre_shade_elem not found');
+        }
     }
     if(OPT['AUTO_DISABLE_DANMU']) {
         var disable_elem=root_elem.querySelector('.bilibili-player-video-btn-danmaku');
         console.log('pakku injector: disable_elem',disable_elem);
         if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
             disable_elem.click();
+    }
+    if(OPT['AUTO_DANMU_LIST']) {
+        var list_switch_elem=root_elem.querySelector('.bilibili-player-filter-btn-list');
+        console.log('pakku injector: list_switch_elem',list_switch_elem);
+        if(list_switch_elem) {
+            list_switch_elem.click();
+        }
     }
     if(OPT['FLUCTLIGHT']) {
         var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');

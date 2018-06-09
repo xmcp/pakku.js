@@ -39,6 +39,7 @@ function loadconfig() {
     window.TOOLTIP=localStorage['TOOLTIP']==='on';
     window.AUTO_PREVENT_SHADE=localStorage['AUTO_PREVENT_SHADE']==='on';
     window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
+    window.AUTO_DANMU_LIST=localStorage['AUTO_DANMU_LIST']==='on';
     window.FLUCTLIGHT=localStorage['FLUCTLIGHT']==='on';
     window.FOOLBAR=localStorage['FOOLBAR']==='on';
     // 实验室
@@ -83,6 +84,7 @@ function initconfig() {
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
     localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
+    localStorage['AUTO_DANMU_LIST']=localStorage['AUTO_DANMU_LIST']||'off';
     localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';
     localStorage['FOOLBAR']=localStorage['FOOLBAR']||'off';
     // 实验室
