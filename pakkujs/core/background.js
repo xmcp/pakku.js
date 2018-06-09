@@ -18,16 +18,20 @@ Pakku tampers the danmaku request by:
 */
 
 // note: need to change the rule in content_script.for-firefox.js too
-var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,([\d\-]+),)?(\d+)(?:\.xml)?(\?debug)?$/;
-var NEW_DANMU_URL_RE=/(.+):\/\/api\.bilibili\.com\/(x)\/v1\/dm\/list.so\?oid=(\d+)(\&debug)?$/;
-var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*']
+var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?(\?debug)?$/;
+var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list.so\?oid=(\d+)(\&debug)?$/;
+var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+(\&debug)?$/;
+var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
 
 function parse_danmu_url(url) {
-    // var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
+    // var protocol=ret[1], cid=ret[2], debug=ret[3];
     if(url.indexOf('//comment.bilibili.com/')!==-1)
         return TRAD_DANMU_URL_RE.exec(url);
-    else if(url.indexOf('//api.bilibili.com/')!==-1)
-        return NEW_DANMU_URL_RE.exec(url);
+    else if(url.indexOf('/list.so?')!==-1)
+        return NEW_DANMU_NORMAL_URL_RE.exec(url);
+    else if(url.indexOf('/history?')!==-1) {
+        return NEW_DANMU_HISTORY_URL_RE.exec(url);
+    }
     else
         return null;
 }
@@ -294,6 +298,7 @@ function load_danmaku(resp,id,tabid) {
         });
         
         inject_panel(tabid,D,{
+            CID: id,
             TOOLTIP: TOOLTIP,
             AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
@@ -321,8 +326,8 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         console.log('message',request);
         var ret=parse_danmu_url(request.url);
         if(ret) {
-            var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
-            if(nonce==BOUNCE.nonce)
+            var protocol=ret[1], cid=ret[2], debug=ret[3];
+            if(check_xml_bounce(cid))
                 return sendResponse({data: BOUNCE.result});
             
             down_danmaku_async(request.url,cid,tabid)
@@ -338,9 +343,11 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     } else if(request.type==='set_xml_bounce') {
         if(!GLOBAL_SWITCH)
             set_global_switch(true,'yes do not reload');
-        BOUNCE.nonce='99'+~~(1+Math.random()*100000);;
+        BOUNCE.cid=request.cid;
+        BOUNCE.set_time=(+new Date());
         BOUNCE.result=request.result;
-        return sendResponse({error: null, nonce: BOUNCE.nonce});
+        console.log('set xml bounce for cid',request.cid);
+        return sendResponse({error: null});
     } else if(request.type==='crack_uidhash') {
         return sendResponse(crack_uidhash(request.hash));
     } else if(request.type==='crack_uidhash_batch') {
@@ -407,13 +414,13 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     
     var ret=parse_danmu_url(details.url);
     if(ret) {
-        var protocol=ret[1], nonce=ret[2], cid=ret[3], debug=ret[4];
+        var protocol=ret[1], cid=ret[2], debug=ret[3];
         
         /*for-firefox:
 
         if(browser.webRequest.filterResponseData) {
-            if(nonce==BOUNCE.nonce) {
-                console.log('bounce :: stream filter',nonce);
+            if(check_xml_bounce(cid)) {
+                console.log('bounce :: stream filter',cid);
                 var filter=browser.webRequest.filterResponseData(details.requestId);
                 
                 var encoder=new TextEncoder();
@@ -435,8 +442,8 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
 
         */
 
-        if(nonce==BOUNCE.nonce) {
-            console.log('bounce :: redirect',nonce);
+        if(check_xml_bounce(cid)) {
+            console.log('bounce :: redirect',cid);
             return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
         }
 

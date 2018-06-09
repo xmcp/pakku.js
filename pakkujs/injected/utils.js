@@ -79,7 +79,7 @@ function trigger_mouse_event(node, eventType) {
     node.dispatchEvent(clickEvent);
 }
 
-function reload_danmaku_magic(nonce) {
+function reload_danmaku_magic() {
     if(!root_elem) {
         console.log('pakku magic reload: root_elem not found');
         return;
@@ -97,11 +97,11 @@ function reload_danmaku_magic(nonce) {
     var elem=document.createElement('span');
     elem.className='js-action __pakku_injected';
     elem.dataset['action']='changeDay';
-    elem.dataset['timestamp']=nonce;
+    elem.dataset['timestamp']=0;
     elem.style.display='none';
     date_picker.appendChild(elem);
 
-    console.log('pakku magic reload: reload with nonce',nonce);
+    console.log('pakku magic reload: proceed');
     trigger_mouse_event(elem,'mousedown');
     trigger_mouse_event(elem,'mouseup');
     trigger_mouse_event(elem,'click');

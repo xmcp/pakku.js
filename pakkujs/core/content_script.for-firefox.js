@@ -38,7 +38,7 @@
     
     XMLHttpRequest.prototype.pakku_send=XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send=function(arg) {
-        if(this.pakku_url.indexOf('.xml')==-1 && this.pakku_url.indexOf('list.so')==-1)
+        if(this.pakku_url.indexOf('.xml')==-1 && this.pakku_url.indexOf('/dm/')==-1)
             return this.pakku_send(arg);
         else {
             var link=document.createElement('a');

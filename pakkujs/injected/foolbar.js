@@ -134,10 +134,11 @@ function inject_foolbar() {
         do_sql_filter('select _xml_src from danmaku where '+input.value,function(text) {
             chrome.runtime.sendMessage({
                 type: 'set_xml_bounce',
-                result: '<i>'+text+'</i>'
+                result: '<i>'+text+'</i>',
+                cid: OPT['CID']
             }, {}, function(resp) {
                 if(resp.error===null)
-                    reload_danmaku_magic(resp.nonce);
+                    reload_danmaku_magic();
                 else
                     alert(resp.error);
                 hint_text.textContent='>>>';

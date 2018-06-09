@@ -113,7 +113,7 @@ function try_inject() {
                 result: event.data.xml.toString()
             }, {}, function(resp) {
                 if(resp.error===null)
-                    reload_danmaku_magic(resp.nonce);
+                    reload_danmaku_magic();
             });
         else if(event.data.type && event.data.type=='pakku_get_danmaku_with_uid')
             return chrome.runtime.sendMessage({

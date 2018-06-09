@@ -6,10 +6,20 @@ var IS_FIREFOX=false;
 var GLOBAL_SWITCH=true;
 var HISTORY={};
 var BOUNCE={
-    nonce: '',
+    cid: -1,
+    set_time: -1,
     result: ''
 };
 var TEMPRULES={}; // id -> {FORCELIST: [], WHITELIST: []}
+
+function check_xml_bounce(cid) {
+    var res=cid==BOUNCE.cid && (+new Date())-BOUNCE.set_time<5000;
+    if(res) {
+        BOUNCE.set_time=-1;
+        BOUNCE.result='';
+    }
+    return res;
+}
 
 /*for-firefox:
 
