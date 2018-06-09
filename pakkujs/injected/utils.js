@@ -85,6 +85,15 @@ function reload_danmaku_magic(nonce) {
         return;
     }
     var date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
+
+    if(!date_picker) {
+        var history_btn=root_elem.querySelector('.bilibili-player-danmaku-btn-history');
+        console.log('pakku magic reload: activating date picker with',history_btn);
+        history_btn.click();
+        history_btn.click();
+        date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
+    }
+
     var elem=document.createElement('span');
     elem.className='js-action __pakku_injected';
     elem.dataset['action']='changeDay';
