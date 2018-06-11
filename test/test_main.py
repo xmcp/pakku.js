@@ -88,6 +88,7 @@ assert len(danmu.getAttribute('p').split(','))>3
 assert len(danmu.childNodes)==1
 assert isinstance(danmu.childNodes[0],Text)
 
+'''
 print('!= test ajax hook')
 
 runner.set_global_switch(False)
@@ -100,6 +101,7 @@ runner.b.get('http://www.bilibili.com/favicon.ico')
 time.sleep(.5) # wait for ajax hook
 assert '[x' in runner.parse_ajax(EXAMPLE_DANMAKU)
 assert '[x' not in runner.parse_ajax(EXAMPLE_DANMAKU+'?pakku_test')
+'''
 
 print('!= test working')
 
