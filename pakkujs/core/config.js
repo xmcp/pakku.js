@@ -45,7 +45,7 @@ function loadconfig() {
     // 实验室
     window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
-    window.BLACKLIST=fromholyjson_orempry(localStorage['BLACKLIST'])||[];
+    window.BLACKLIST=fromholyjson_orempry(localStorage['BLACKLIST']||'[]');
     window.HIDE_THRESHOLD=parseInt(localStorage['HIDE_THRESHOLD']||0);
     window.SCROLL_THRESHOLD=parseInt(localStorage['SCROLL_THRESHOLD']||900);
     // 其他
@@ -54,12 +54,10 @@ function loadconfig() {
     window.CLOUD_SYNC=localStorage['CLOUD_SYNC']==='on';
     
     load_update_breaker();
-    backup_settings_if_needed();
+    sync_cloud_config();
 }
 
 function initconfig() {
-    if(restore_settings_if_needed()) return;
-
     localStorage['_ADVANCED_USER']=localStorage['_ADVANCED_USER']||'off';
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
@@ -97,74 +95,65 @@ function initconfig() {
     // 其他
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
-    localStorage['CLOUD_SYNC']=localStorage['CLOUD_SYNC']||'off';
+    localStorage['CLOUD_SYNC']=localStorage['CLOUD_SYNC']||'on';
     loadconfig();
 }
 
-function syncconfig(callback) {
-    if (localStorage.CLOUD_SYNC !== 'on') {
-        return; // 未开启同步
+function sync_cloud_config() {
+    if (!CLOUD_SYNC) {
+        console.log('sync config: skipped');
+        return;
     }
 
-    var downloadConfig, uploadConfig;
-    if (chrome && chrome.storage && chrome.storage.sync) {
-        downloadConfig = function () {
-            return new Promise(function (resolve) { chrome.storage.sync.get(resolve); });
-        };
-        uploadConfig = function (config) {
-            return new Promise(function (resolve) { chrome.storage.sync.set(config, resolve); });
-        };
-    } else if (browser.storage && browser.storage.sync) {
-        downloadConfig = browser.storage.sync.get;
-        uploadConfig = browser.storage.sync.set;
-    } else {
-        return console.log('sync is not available.');
-    }
+    chrome.storage.sync.get(null, function(cloudConfig) {
+        if(chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+            return;
+        }
 
-    console.log('prepare to sync settings');
-    downloadConfig().then(function (cloudConfig) {
-        var cloudUpdateTime = parseInt(cloudConfig._LAST_UPDATE_TIME, 10) || 0;
-        var lastUpdateTime = parseInt(localStorage._LAST_UPDATE_TIME, 10) || 0;
-        // 比较配置更新时间
-        if (cloudUpdateTime > lastUpdateTime) {
-            // 使用云端配置
-            Object.keys(cloudConfig).forEach(function (key) {
-                localStorage[key] = cloudConfig[key];
+        var cloudUpdateTime=parseInt(cloudConfig['_LAST_UPDATE_TIME']||-1);
+        var lastUpdateTime=parseInt(localStorage['_LAST_UPDATE_TIME']||0);
+        localStorage['_LAST_UPDATE_TIME']=lastUpdateTime;
+
+        console.log('sync config: local '+lastUpdateTime+' cloud '+cloudUpdateTime);
+        if (cloudUpdateTime>lastUpdateTime) { // restore
+            console.log('sync config: override LOCAL config');
+            
+            // backup local config
+            (function(timestamp,str) {
+                chrome.storage.local.get(['dropped_config'], function(res) {
+                    var dropped=res['dropped_config'];
+                    if(!dropped || !dropped.length) dropped=[];
+                    else if(dropped.length>20) dropped.splice(0,1);
+                    dropped.push([timestamp,str]);
+                    chrome.storage.local.set({dropped_config: dropped});
+                });
+            })(+new Date(),JSON.stringify(localStorage));
+            
+            NOT_OVERRIDABLE_CONFIGS.forEach(function(x) {
+                delete cloudConfig[x];
             });
-            console.log('sync finished, override local settings');
+
+            Object.assign(localStorage,cloudConfig);
             loadconfig();
-            if (callback) callback();
-        } else if (cloudUpdateTime < lastUpdateTime) {
-            // 关闭同步不上传
-            if (localStorage.CLOUD_SYNC !== 'on') return;
-            // 上传配置
-            var localConfig = {};
-            Object.keys(localStorage).forEach(function (key) {
-                localConfig[key] = localStorage[key];
+            chrome.runtime.sendMessage({type:'options_page_reload'});
+            chrome.notifications.create('//storage.onChanged', {
+                type: 'basic',
+                iconUrl: chrome.runtime.getURL('assets/logo.png'),
+                title: '已导入云端设置',
+                message: '您开启了“设置云同步”，已用云端的设置更新当前设置。',
+                contextMessage: '（在选项页面可以选择“抢救本地设置”）'
             });
-            uploadConfig(localConfig).then(function () {
-                console.log('sync finished, override cloud settings');
-            });
-        } else {
-            console.log('sync finished, nothing changed');
+        } else if(cloudUpdateTime<lastUpdateTime) { // save
+            console.log('sync config: override CLOUD config');
+            chrome.storage.sync.set(Object.assign({},localStorage));
         }
     });
 }
 
-function getCloudUpdateTime(callback) {
-    var getCloudConfig;
-    if (chrome && chrome.storage && chrome.storage.sync) {
-        getCloudConfig = function () {
-            return new Promise(function (resolve) { chrome.storage.sync.get(resolve); });
-        };
-    } else if (browser.storage && browser.storage.sync) {
-        getCloudConfig = browser.storage.sync.get;
-    } else {
-        return console.log('sync is not available.');
+chrome.storage.onChanged.addListener(function(_changes,area) {
+    if(area=='sync') {
+        console.log('sync config: storage onChanged');
+        sync_cloud_config();
     }
-    getCloudConfig().then(function (cloudConfig) {
-        var cloudUpdateTime = parseInt(cloudConfig._LAST_UPDATE_TIME, 10) || 0;
-        if (!cloudUpdateTime) return;
-        callback(new Date(cloudUpdateTime).toLocaleString());
-    });
-}
+})

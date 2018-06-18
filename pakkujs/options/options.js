@@ -97,11 +97,20 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     id('reset').addEventListener('click',function() {
         if(confirm('确定要重置所有设置吗？\n此操作不可恢复。')) {
             localStorage.clear();
-            bgpage.initconfig();
-            location.reload();
+            chrome.storage.sync.clear(function() {
+                if(chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
+                    alert('云端设置清空失败');
+                }
+                bgpage.initconfig();
+                alert('重置完成');
+                location.reload();
+            });
         }
     });
     
+    bgpage.initconfig();
+
     function get_ws_permission() {
         if(IS_FIREFOX) return;
         chrome.permissions.request({
@@ -132,8 +141,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 var dat=JSON.parse(inp);
                 localStorage.clear();
                 Object.assign(localStorage,dat);
-                if(IS_FIREFOX)
-                    localStorage['_restore_placeholder']='not needed';
+                localStorage['_LAST_UPDATE_TIME']=+(new Date());
                 
                 bgpage.initconfig();
                 bgpage.migrate_legacy();
@@ -166,11 +174,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     function loadconfig() {
-        if(bgpage.restore_settings_if_needed(loadconfig)) {
-            console.log('will restore settings');
-            return;
-        }
-
         id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
@@ -389,13 +392,23 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 其他
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
-        localStorage['_LAST_UPDATE_TIME'] = new Date().getTime();
+        localStorage['CLOUD_SYNC']=id('cloud-sync').checked?'on':'off';
         
+        // fix last update time
+        if(parseInt(localStorage['_LAST_UPDATE_TIME'])>(+new Date())) {
+            console.log('invalid last update time');
+            localStorage['_LAST_UPDATE_TIME']=(+new Date());
+            chrome.storage.sync.set({'_LAST_UPDATE_TIME':-1},update);
+            return;
+        }
+        localStorage['_LAST_UPDATE_TIME']=(+new Date());
+
         reload();
+
         if(this.id==='break-update' && this.checked)
             get_ws_permission();
-
-        bgpage.syncconfig();
+        if(IS_FIREFOX && this.id==='cloud-sync' && !this.checked)
+            alert('Firefox 用户注意：\n关闭“设置云同步”功能后，清除浏览器缓存可能会导致设置丢失。');
     }
     
     loadconfig();
@@ -412,33 +425,17 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 实验室
         'remove-seek','break-update','hide-threshold','scroll-threshold',
         // 其他
-        'popup-badge','flash-notif',
+        'popup-badge','flash-notif','cloud-sync'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
 
-    id('cloud-sync').addEventListener('change', function () {
-        localStorage['CLOUD_SYNC'] = this.checked ? 'on' : 'off';
-        bgpage.syncconfig(function () { location.reload(); });
+    chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
+        if(request.type==='options_page_reload') {
+            console.log('reload request received');
+            loadconfig();
+        }
     });
-
-    if (bgpage.IS_NEW_USER) {
-        bgpage.getCloudUpdateTime(function (updateTime) {
-            bgpage.IS_NEW_USER = false;
-            var cloud_sync_prompt = function () {
-                if (confirm('是否需要同步云端配置？\n更新时间：' + updateTime)) {
-                    localStorage['CLOUD_SYNC'] = 'on';
-                    bgpage.syncconfig(function () { location.reload(); });
-                }
-            };
-            // fix for iframe
-            if (document.readyState !== 'complete') {
-                document.addEventListener('readystatechange', cloud_sync_prompt);
-            } else {
-                cloud_sync_prompt();
-            }
-        });
-    }
 
     if(bgpage.TEST_MODE) {
         // speed up testing procedure by removing stat iframe
@@ -455,7 +452,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     elem.addEventListener('mouseout',function() {
         document.body.classList.remove('donate-show');
     });
-})
+});
 
 // version check
 var xhr=new XMLHttpRequest();

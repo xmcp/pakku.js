@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>pakku :: 抢救本地设置</title>
+        <style>
+        #config-list:empty::before {
+            content: "（没有设置被覆盖）";
+        }
+
+        #config-list p {
+            font-weight: bold;
+        }
+
+        #config-list textarea {
+            margin-left: 1em;
+            width: calc(100% - 1em);
+            height: 5em;
+        }
+        </style>
+    </head>
+    <body>
+        <br>
+        <p>
+            pakku 的设置云同步功能仍处于测试阶段。
+            一些 bug 可能导致你的设置被意外覆盖。
+        </p>
+        <p>
+            下面是最近设置被覆盖的记录，以及原来的设置。
+            通过选项页面的 “导入 / 导出设置” 按钮恢复它们。
+        </p>
+        <br>
+        <div id="config-list">Loading...</div>
+        <br>
+        <p>
+            <button id="force-clear">重置云端设置</button>
+            <button id="clear-list">清空此列表</button>
+        </p>
+        <p>
+            * 提示：导致同步出现问题的常见原因是电脑时间设置不对或版本不一致。
+            云端设置更新时间：<span id="cloud-timestamp">...</span>
+        </p>
+        <script src="fuck_my_settings_are_gone.js"></script>
+    </body>
