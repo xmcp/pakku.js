@@ -22,6 +22,7 @@ var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-
 var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list.so\?oid=(\d+)(\&debug)?$/;
 var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+(\&debug)?$/;
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
+var IS_NEW_USER = false;
 
 function parse_danmu_url(url) {
     // var protocol=ret[1], cid=ret[2], debug=ret[3];
@@ -206,7 +207,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }, function(){});
         return;
     }
-    if(details.reason=='install') {
+    if (details.reason == 'install') {
+        IS_NEW_USER = true;
         chrome.tabs.create({url: chrome.runtime.getURL('options/options.html')});
     } else if(details.reason=='update') {
         migrate_legacy();

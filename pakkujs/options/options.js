@@ -422,6 +422,24 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         bgpage.syncconfig(function () { location.reload(); });
     });
 
+    if (bgpage.IS_NEW_USER) {
+        bgpage.getCloudUpdateTime(function (updateTime) {
+            bgpage.IS_NEW_USER = false;
+            var cloud_sync_prompt = function () {
+                if (confirm('是否需要同步云端配置？\n更新时间：' + updateTime)) {
+                    localStorage['CLOUD_SYNC'] = 'on';
+                    bgpage.syncconfig(function () { location.reload(); });
+                }
+            };
+            // fix for iframe
+            if (document.readyState !== 'complete') {
+                document.addEventListener('readystatechange', cloud_sync_prompt);
+            } else {
+                cloud_sync_prompt();
+            }
+        });
+    }
+
     if(bgpage.TEST_MODE) {
         // speed up testing procedure by removing stat iframe
         var frame_elem=document.querySelector('iframe');

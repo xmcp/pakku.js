@@ -150,3 +150,21 @@ function syncconfig(callback) {
         }
     });
 }
+
+function getCloudUpdateTime(callback) {
+    var getCloudConfig;
+    if (chrome && chrome.storage && chrome.storage.sync) {
+        getCloudConfig = function () {
+            return new Promise(function (resolve) { chrome.storage.sync.get(resolve); });
+        };
+    } else if (browser.storage && browser.storage.sync) {
+        getCloudConfig = browser.storage.sync.get;
+    } else {
+        return console.log('sync is not available.');
+    }
+    getCloudConfig().then(function (cloudConfig) {
+        var cloudUpdateTime = parseInt(cloudConfig._LAST_UPDATE_TIME, 10) || 0;
+        if (!cloudUpdateTime) return;
+        callback(new Date(cloudUpdateTime).toLocaleString());
+    });
+}
