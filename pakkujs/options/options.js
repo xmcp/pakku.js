@@ -202,6 +202,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('hide-threshold').value=localStorage['HIDE_THRESHOLD'];
         id('scroll-threshold').value=localStorage['SCROLL_THRESHOLD'];
+        id('cloud-sync').checked=localStorage['CLOUD_SYNC']==='on';
         // 其他
         id('popup-badge').value=localStorage['POPUP_BADGE'];
         id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
@@ -388,10 +389,13 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 其他
         localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
+        localStorage['_LAST_UPDATE_TIME'] = new Date().getTime();
         
         reload();
         if(this.id==='break-update' && this.checked)
             get_ws_permission();
+
+        bgpage.syncconfig();
     }
     
     loadconfig();
@@ -411,6 +415,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         'popup-badge','flash-notif',
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
+    });
+
+    id('cloud-sync').addEventListener('change', function () {
+        localStorage['CLOUD_SYNC'] = this.checked ? 'on' : 'off';
+        bgpage.syncconfig(function () { location.reload(); });
     });
 
     if(bgpage.TEST_MODE) {

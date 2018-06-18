@@ -51,6 +51,7 @@ function loadconfig() {
     // 其他
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
+    window.CLOUD_SYNC=localStorage['CLOUD_SYNC']==='on';
     
     load_update_breaker();
     backup_settings_if_needed();
@@ -96,5 +97,56 @@ function initconfig() {
     // 其他
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
+    localStorage['CLOUD_SYNC']=localStorage['CLOUD_SYNC']||'off';
     loadconfig();
+}
+
+function syncconfig(callback) {
+    if (localStorage.CLOUD_SYNC !== 'on') {
+        return; // 未开启同步
+    }
+
+    var downloadConfig, uploadConfig;
+    if (chrome && chrome.storage && chrome.storage.sync) {
+        downloadConfig = function () {
+            return new Promise(function (resolve) { chrome.storage.sync.get(resolve); });
+        };
+        uploadConfig = function (config) {
+            return new Promise(function (resolve) { chrome.storage.sync.set(config, resolve); });
+        };
+    } else if (browser.storage && browser.storage.sync) {
+        downloadConfig = browser.storage.sync.get;
+        uploadConfig = browser.storage.sync.set;
+    } else {
+        return console.log('sync is not available.');
+    }
+
+    console.log('prepare to sync settings');
+    downloadConfig().then(function (cloudConfig) {
+        var cloudUpdateTime = parseInt(cloudConfig._LAST_UPDATE_TIME, 10) || 0;
+        var lastUpdateTime = parseInt(localStorage._LAST_UPDATE_TIME, 10) || 0;
+        // 比较配置更新时间
+        if (cloudUpdateTime > lastUpdateTime) {
+            // 使用云端配置
+            Object.keys(cloudConfig).forEach(function (key) {
+                localStorage[key] = cloudConfig[key];
+            });
+            console.log('sync finished, override local settings');
+            loadconfig();
+            if (callback) callback();
+        } else if (cloudUpdateTime < lastUpdateTime) {
+            // 关闭同步不上传
+            if (localStorage.CLOUD_SYNC !== 'on') return;
+            // 上传配置
+            var localConfig = {};
+            Object.keys(localStorage).forEach(function (key) {
+                localConfig[key] = localStorage[key];
+            });
+            uploadConfig(localConfig).then(function () {
+                console.log('sync finished, override cloud settings');
+            });
+        } else {
+            console.log('sync finished, nothing changed');
+        }
+    });
 }

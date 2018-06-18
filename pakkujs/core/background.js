@@ -147,6 +147,7 @@ function load_update_breaker() {
 }
 
 initconfig();
+syncconfig();
 
 chrome.browserAction.setBadgeText({ // badge text in the previous launch might not be cleared
     text: GLOBAL_SWITCH?'':'zzz'
