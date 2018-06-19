@@ -407,8 +407,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
         if(this.id==='break-update' && this.checked)
             get_ws_permission();
-        if(IS_FIREFOX && this.id==='cloud-sync' && !this.checked)
-            alert('Firefox 用户注意：\n关闭“设置云同步”功能后，清除浏览器缓存可能会导致设置丢失。');
     }
     
     loadconfig();

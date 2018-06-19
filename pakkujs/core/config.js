@@ -95,16 +95,11 @@ function initconfig() {
     // 其他
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';
-    localStorage['CLOUD_SYNC']=localStorage['CLOUD_SYNC']||'on';
+    localStorage['CLOUD_SYNC']=localStorage['CLOUD_SYNC']||'off';
     loadconfig();
 }
 
 function sync_cloud_config() {
-    if (!CLOUD_SYNC) {
-        console.log('sync config: skipped');
-        return;
-    }
-
     chrome.storage.sync.get(null, function(cloudConfig) {
         if(chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError);
@@ -117,6 +112,11 @@ function sync_cloud_config() {
 
         console.log('sync config: local '+lastUpdateTime+' cloud '+cloudUpdateTime);
         if (cloudUpdateTime>lastUpdateTime) { // restore
+            if (!CLOUD_SYNC && lastUpdateTime>0) {
+                console.log('sync config: skipped');
+                return;
+            }
+
             console.log('sync config: override LOCAL config');
             
             // backup local config
@@ -137,13 +137,14 @@ function sync_cloud_config() {
             Object.assign(localStorage,cloudConfig);
             loadconfig();
             chrome.runtime.sendMessage({type:'options_page_reload'});
-            chrome.notifications.create('//storage.onChanged', {
-                type: 'basic',
-                iconUrl: chrome.runtime.getURL('assets/logo.png'),
-                title: '已导入云端设置',
-                message: '您开启了“设置云同步”，已用云端的设置更新当前设置。',
-                contextMessage: '（在选项页面可以选择“抢救本地设置”）'
-            });
+            if(lastUpdateTime>0)
+                chrome.notifications.create('//storage.onChanged', {
+                    type: 'basic',
+                    iconUrl: chrome.runtime.getURL('assets/logo.png'),
+                    title: '设置已更新',
+                    message: '您开启了“设置云同步”，已用云端的最新设置更新本地设置。',
+                    contextMessage: '（在选项页面可以选择“抢救本地设置”）'
+                });
         } else if(cloudUpdateTime<lastUpdateTime) { // save
             console.log('sync config: override CLOUD config');
             chrome.storage.sync.set(Object.assign({},localStorage));
