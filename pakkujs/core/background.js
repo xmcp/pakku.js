@@ -171,6 +171,7 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
 function inject_panel(tabid,D,OPT) {
     chrome.tabs.executeScript(tabid,{
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
+        allFrames: true,
         runAt: 'document_start'
     },function() {
         if(chrome.runtime.lastError) { // possibly not having host permission
@@ -180,6 +181,7 @@ function inject_panel(tabid,D,OPT) {
         ['utils','fluctlight','panel','foolbar'].forEach(function(name) {
             chrome.tabs.executeScript(tabid,{
                 file: '/injected/'+name+'.js',
+                allFrames: true,
                 runAt: 'document_start'
             });
         });
@@ -188,6 +190,7 @@ function inject_panel(tabid,D,OPT) {
         setTimeout(function() {
             chrome.tabs.executeScript(tabid,{
                 file: '/injected/do_inject.js',
+                allFrames: true,
                 runAt: 'document_idle'
             });
         },200);

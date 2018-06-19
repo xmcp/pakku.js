@@ -17,7 +17,9 @@ function try_inject() {
     // try to find the player element
     if(!root_elem)
         root_elem=document.querySelector('div.bilibili-player');
-    // maybe player is in an iframe
+    /*
+    // <del>maybe player is in an iframe</del>
+    // already set `allFrames: true` in `inject_panel` so don't need to care about iframes here anymore
     [].slice.call(document.querySelectorAll('iframe')).forEach(function(frame) {
         try {
             if(!root_elem)
@@ -26,6 +28,7 @@ function try_inject() {
             console.error(e);
         }
     });
+    */
     // maybe player is not ready yet
     if(!root_elem || !root_elem.querySelector('.bilibili-player-danmaku')) {
         if(--try_left>0) {
