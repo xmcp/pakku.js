@@ -246,6 +246,11 @@ function migrate_legacy() {
             loadconfig();
         }
     })();
+
+    (function migrate_last_update() {
+        if(!localStorage['_LAST_UPDATE_TIME'])
+            localStorage['_LAST_UPDATE_TIME']=(+new Date());
+    })();
 }
 
 function fetch_alasql(tabid) {

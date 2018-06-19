@@ -138,12 +138,12 @@ function sync_cloud_config() {
             loadconfig();
             chrome.runtime.sendMessage({type:'options_page_reload'});
             if(lastUpdateTime>0)
-                chrome.notifications.create('//storage.onChanged', {
+                chrome.notifications.create('//cloud-sync', {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
                     title: '设置已更新',
                     message: '您开启了“设置云同步”，已用云端的最新设置更新本地设置。',
-                    contextMessage: '（在选项页面可以选择“抢救本地设置”）'
+                    contextMessage: '（在选项页面可以“抢救本地设置”）'
                 });
         } else if(cloudUpdateTime<lastUpdateTime) { // save
             console.log('sync config: override CLOUD config');
