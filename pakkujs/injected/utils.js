@@ -4,6 +4,7 @@
 if(typeof root_elem=='undefined' || !root_elem.closest('html')) {
     var root_elem=null;
     var root_document=null;
+    var isstardust=false;
 }
 
 function make_p(s) {

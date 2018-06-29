@@ -29,6 +29,12 @@ function try_inject() {
         }
     });
     */
+    // detect new player style
+    if(root_elem.closest('.stardust-player')) {
+        root_elem=root_elem.closest('body');
+        isstardust=true;
+        console.log('pakku injector: stardust detected');
+    }
     // maybe player is not ready yet
     if(!root_elem || !root_elem.querySelector('.bilibili-player-danmaku')) {
         if(--try_left>0) {
@@ -66,7 +72,9 @@ function try_inject() {
         if(pre_shade_elem) {
             trigger_mouse_event(pre_shade_elem,'mouseover');
             trigger_mouse_event(pre_shade_elem,'mouseout');
-            var shade_elem=root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
+            var shade_elem=isstardust ?
+                root_elem.querySelector('.bilibili-player-video-danmaku-setting-left-preventshade-box input') :
+                root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
             console.log('pakku injector: pre_shade_elem',pre_shade_elem,'shade_elem',shade_elem);
             if(shade_elem && !shade_elem.checked)
                 shade_elem.click();
@@ -81,7 +89,9 @@ function try_inject() {
             disable_elem.click();
     }
     if(OPT['AUTO_DANMU_LIST']) {
-        var list_switch_elem=root_elem.querySelector('.bilibili-player-filter-btn-list');
+        var list_switch_elem=isstardust ?
+            root_elem.querySelector('.danmaku-wrap .bui-collapse-header') :
+            root_elem.querySelector('.bilibili-player-filter-btn-list');
         console.log('pakku injector: list_switch_elem',list_switch_elem);
         if(list_switch_elem) {
             list_switch_elem.click();

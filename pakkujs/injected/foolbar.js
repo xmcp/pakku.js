@@ -200,5 +200,8 @@ function inject_foolbar() {
         alert(foolbar_help_text);
     }))
 
-    root_elem.parentNode.appendChild(bar);
+    if(isstardust)
+        root_elem.querySelector('.bilibili-player').parentNode.appendChild(bar);
+    else
+        root_elem.parentNode.appendChild(bar);
 }
