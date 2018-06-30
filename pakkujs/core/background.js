@@ -447,7 +447,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
 
         if(check_xml_bounce(cid)) {
             console.log('bounce :: redirect',cid);
-            return {redirectUrl: 'data:text/xml;charset=utf-8,'+BOUNCE.result};
+            return {redirectUrl: make_xml_datauri(BOUNCE.result)};
         }
 
         if(debug || details.type==='xmlhttprequest') {
@@ -459,8 +459,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
                     down_danmaku_async(details.url,cid,details.tabId)
                         .then(function(res) {
                             resolve({
-                                redirectUrl: 'data:text/xml;charset=utf-8,'+
-                                    load_danmaku(res,cid,details.tabId)
+                                redirectUrl: make_xml_datauri(load_danmaku(res,cid,details.tabId))
                             });
                         })
                         .catch(function() {
@@ -473,8 +472,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
 
             console.log('webrequest :: sync',details);
             return {
-                redirectUrl: 'data:text/xml;charset=utf-8,'+
-                    load_danmaku(down_danmaku(details.url,cid,details.tabId),cid,details.tabId)
+                redirectUrl: make_xml_datauri(load_danmaku(down_danmaku(details.url,cid,details.tabId),cid,details.tabId))
             };
         }
         else {

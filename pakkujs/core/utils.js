@@ -287,3 +287,7 @@ function fetch_alasql(tabid) {
 function add_pakku_fingerprint(url) {
     return url + (url.indexOf('?')===-1 ? '?' : '&') + 'pakku_request'
 }
+
+function make_xml_datauri(txt) {
+    return 'data:text/xml;charset=utf-8,'+encodeURIComponent(txt);
+}
