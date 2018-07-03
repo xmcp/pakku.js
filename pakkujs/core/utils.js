@@ -79,11 +79,6 @@ var _key='W1siLiIseyJyb290IjoiY2hyb21lIiwidXRpbCI6InJ1bnRpbWUiLCJ0b29sIjoiZ2V0TW
 'iOiJicm93c2VyX2FjdGlvbiIsImR0IjoiZGVmYXVsdF90aXRsZSIsImJhc2UiOiJodHRwczovL3MueG1jcC5tbC9wYWtrdWpzL3N0YXQvcmVwb'+
 '3J0Lmh0bWw/ZD0iLCJyZXMiOiJSRVBPUlRORVNTIn1dXQ==';
 
-if(!Math.log10)
-    Math.log10=function(x) {
-        return Math.log(x)/Math.log(10);
-    };
-
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)

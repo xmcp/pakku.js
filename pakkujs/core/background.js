@@ -6,6 +6,7 @@
 Pakku tampers the danmaku request by:
 
 - Chrome:       webRequest.onBeforeRequest listener + Data-URI  [for all requests]
+                chrome.runtime.onMessageExternal listener (async) [if 9alpha is enabled]
 
 - Firefox <52:  AJAX Hook + runtime.onMessage listener (async)  [for xhr requests]
                 webRequest.onBeforeRequest listener + Data-URI  [for other requests]
@@ -24,13 +25,17 @@ var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?t
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
 
 function parse_danmu_url(url) {
-    // var protocol=ret[1], cid=ret[2], debug=ret[3];
+    // var protocol=ret[1], cid=ret[2], debug=ret[3], type=ret[4];
+    function addtype(type,res) {
+        return res ? res.concat(type) : res;
+    }
+
     if(url.indexOf('//comment.bilibili.com/')!==-1)
-        return TRAD_DANMU_URL_RE.exec(url);
+        return addtype('trad',TRAD_DANMU_URL_RE.exec(url));
     else if(url.indexOf('/list.so?')!==-1)
-        return NEW_DANMU_NORMAL_URL_RE.exec(url);
+        return addtype('list',NEW_DANMU_NORMAL_URL_RE.exec(url));
     else if(url.indexOf('/history?')!==-1) {
-        return NEW_DANMU_HISTORY_URL_RE.exec(url);
+        return addtype('history',NEW_DANMU_HISTORY_URL_RE.exec(url));
     }
     else
         return null;
@@ -145,12 +150,6 @@ function load_update_breaker() {
     if(BREAK_UPDATE)
         chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
 }
-
-initconfig();
-
-chrome.browserAction.setBadgeText({ // badge text in the previous launch might not be cleared
-    text: GLOBAL_SWITCH?'':'zzz'
-});
 
 chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
     if(btnindex==0)  // goto settings
@@ -411,13 +410,13 @@ function hook_stream_filter(filter,id,tabid) {
     };
 }
 
-chrome.webRequest.onBeforeRequest.addListener(function(details) {
+chrome.webRequest.onBeforeRequest.addListener(onbeforerequest=function(details) {
     if(!GLOBAL_SWITCH)
         return {cancel: false};
     
     var ret=parse_danmu_url(details.url);
     if(ret) {
-        var protocol=ret[1], cid=ret[2], debug=ret[3];
+        var protocol=ret[1], cid=ret[2], debug=ret[3], type=ret[4];
         
         /*for-firefox:
 
@@ -451,6 +450,11 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
         }
 
         if(debug || details.type==='xmlhttprequest') {
+            if(type=='history') { // temporary bugfix
+                console.log('webrequest :: SKIPPING history request');
+                return {cancel: false};
+            }
+
             /*for-firefox:
             
             if(FIREFOX_VERSION>=52) {
@@ -516,29 +520,3 @@ chrome.commands.onCommand.addListener(function(name) {
         },700);
     }
 });
-
-if(REPORTNESS) {
-    var r=document.createElement('iframe');
-    r.src=REPORTNESS;
-    document.head.appendChild(r);
-}
-
-if(TEST_MODE) {
-    chrome.webRequest.onBeforeRequest.addListener(function(details) {
-        return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
-    }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url']}, ['blocking']);
-
-    chrome.webRequest.onBeforeRequest.addListener(function(details) {
-        FORCELIST=[[/.*/,"pakku_another_str"]];
-        chrome.tabs.executeScript({
-            'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
-        });
-        return {cancel: true};
-    }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/change_taolus_and_reload']}, ['blocking']);
-    
-    function parse_string(str) {
-        var parser=new DOMParser();
-        var dom=parser.parseFromString(str,'text/xml');
-        return parse(dom,0,Status(0),[]);
-    }
-}
