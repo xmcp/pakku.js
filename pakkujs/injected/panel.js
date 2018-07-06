@@ -239,7 +239,7 @@ function inject_panel(list_elem,player_elem) {
         console.log('pakku panel: show panel',dminfo)
 
         var dm_ultralong=dminfo.str.length>498;
-        var dm_str=dminfo.str.replace(/([\r\n\t]|\/n)/g,'');
+        var dm_str=dminfo.str.replace(/([\r\n\t]|\/n)/g,'').trim();
         var text_container=panel_obj.querySelector('.pakku-panel-text'),
             desc_container=panel_obj.querySelector('.pakku-panel-desc'),
             peers_container=panel_obj.querySelector('.pakku-panel-peers'),
@@ -255,12 +255,12 @@ function inject_panel(list_elem,player_elem) {
         var info=null;
         // the list might be sorted in a wrong way, so let's guess the index
         if(typeof dminfo.index=='number' && D[dminfo.index] &&
-                (dm_ultralong ? D[dminfo.index].text.indexOf(dm_str)===0 : D[dminfo.index].text===dm_str))
+                (dm_ultralong ? D[dminfo.index].trimmed_text.indexOf(dm_str)===0 : D[dminfo.index].trimmed_text===dm_str))
             info=D[dminfo.index];
         else {
             var cnt=0;
             for(var i=0;i<D.length;i++)
-                if((dm_ultralong ? D[i].text.indexOf(dm_str)===0 : D[i].text===dm_str)) {
+                if((dm_ultralong ? D[i].trimmed_text.indexOf(dm_str)===0 : D[i].trimmed_text===dm_str)) {
                     info=D[i];
                     cnt++;
                 }

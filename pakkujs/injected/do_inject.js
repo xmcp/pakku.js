@@ -1,8 +1,10 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 console.log('pakku panel: script injected, D.length = '+D.length);
-for(var i=0;i<D.length;i++)
+for(var i=0;i<D.length;i++) {
     D[i].text=D[i].text.replace(/([\r\n\t]|\/n)/g,'');
+    D[i].trimmed_text=D[i].text.trim();
+}
 
 var try_left=50;
 function try_inject() {
