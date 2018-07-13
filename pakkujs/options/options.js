@@ -174,11 +174,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     function loadconfig() {
+        // NEW_OPTION_INSERTION_POINT
+
         id('show-advanced').checked=localStorage['_ADVANCED_USER']==='on';
         // 弹幕合并
         id('threshold').value=localStorage['THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
+        id('mode-elevation').checked=localStorage['MODE_ELEVATION']==='on';
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
@@ -358,11 +361,14 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
     
     function update() {
+        // NEW_OPTION_INSERTION_POINT
+
         localStorage['_ADVANCED_USER']=id('show-advanced').checked?'on':'off';
         // 弹幕合并
         localStorage['THRESHOLD']=parseInt(id('threshold').value)>-2?parseInt(id('threshold').value):20;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
+        localStorage['MODE_ELEVATION']=id('mode-elevation').checked?'on':'off';
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
@@ -411,9 +417,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     
     loadconfig();
     [
+        // NEW_OPTION_INSERTION_POINT
+
         'show-advanced',
         // 弹幕合并
-        'threshold','max-dist','max-cosine','trim-ending','trim-space','trim-width',
+        'threshold','max-dist','max-cosine','mode-elevation','trim-ending','trim-space','trim-width',
         // 例外设置
         'cross-mode','ignore-type7','ignore-type4','ignore-pool1',
         // 显示设置

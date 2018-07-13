@@ -175,7 +175,7 @@ function query_uid(uidhash,logger_container) {
     logger_container.appendChild(logger);
     
     logger.textContent=uidhash+' 正在获取 UID...';
-    chrome.runtime.sendMessage({type: 'crack_uidhash', hash: uidhash}, function(uids) {
+    chrome.runtime.sendMessage(null,{type: 'crack_uidhash', hash: uidhash}, function(uids) {
         if(uids.length) {
             logger.textContent='';
             uids.forEach(function(uid) {

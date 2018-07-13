@@ -57,11 +57,11 @@ function parse(dom,tabid,S,D) {
     }
     
     function enlarge(count) {
-        if(count<=10)
+        if(count<=5)
             return 1;
         else {
             S.enlarge++;
-            return Math.log10(count);
+            return Math.log(count)/MATH_LOG5;
         }
     }
     
@@ -273,17 +273,24 @@ function parse(dom,tabid,S,D) {
         if(LOG_VERBOSE)
             console.log(dm.attr[7],dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
-            if(!CROSS_MODE && dm.mode!=danmu_chunk[i].mode) continue;
+            var another=danmu_chunk[i];
+            if(!CROSS_MODE && dm.mode!=another.mode) continue;
             var sim=similar_memorized(
-                dm.str, danmu_chunk[i].str,
-                dm.str_2gram, danmu_chunk[i].str_2gram,
+                dm.str, another.str,
+                dm.str_2gram, another.str_2gram,
                 S
             );
             if(sim!==false) {
                 if(LOG_VERBOSE) {
-                    console.log(sim,dm.attr[7],'to',danmu_chunk[i].attr[7]);
+                    console.log(sim,dm.attr[7],'to',another.attr[7]);
                 }
-                danmu_chunk[i].peers.push(make_peers_node(dm,sim));
+                another.peers.push(make_peers_node(dm,sim));
+                if(MODE_ELEVATION && (
+                    (dm.mode=='4' && (another.mode=='5' || another.mode=='1')) ||
+                    (dm.mode=='5' && another.mode=='1')
+                )) {
+                    another.mode=dm.mode;
+                }
                 return; // aka continue
             }
         }
@@ -340,6 +347,7 @@ function parse(dom,tabid,S,D) {
         }
         
         var attr=dm.attr.slice();
+        attr[1]=dm.mode;
         if(SCROLL_THRESHOLD && (attr[1]==='4'||attr[1]==='5')) {
             var width=get_width_if_exceeds(dm.disp_str,dm.size,SCROLL_THRESHOLD);
             if(width>SCROLL_THRESHOLD) {                

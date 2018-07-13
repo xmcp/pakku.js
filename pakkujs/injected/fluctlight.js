@@ -22,9 +22,10 @@ function inject_fluctlight_graph(bar_elem) {
         if(!DURATION) {
             var video_elem=root_elem.querySelector('video');
             var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total');
-            DURATION = 0 || // avoid auto ;
+            DURATION=(
                 (total_time_elem ? parse_time(total_time_elem.textContent) : 0) ||
-                (video_elem ? video_elem.duration : 0) ;
+                (video_elem ? video_elem.duration : 0)
+            );
         }
     }
     getduration();

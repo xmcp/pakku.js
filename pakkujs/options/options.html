@@ -249,8 +249,8 @@
                     <p class="warning">
                         * 在低配电脑中，超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢
                     </p>
-                    <p>
-                        <label for="max-dist">按编辑距离合并</label>
+                    <p class="advanced">
+                        <label for="max-dist">编辑距离合并强度</label>
                         <select id="max-dist">
                             <option value="0">禁用 (≤0)</option>
                             <option value="3">轻微 (≤3)</option>
@@ -262,12 +262,12 @@
                             根据编辑距离判断不完全一致但内容相近（例如有错别字）的弹幕
                         </span>
                     </p>
-                    <p class="warning">
+                    <p class="advanced warning">
                         * 能有效击杀 "<code>你指尖跃动的电光</code>" 和 "<code>你<b>之间</b>跃动的电光</code>" 等。
                         感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
                     </p>
-                    <p>
-                        <label for="max-cosine">按词频向量合并</label>
+                    <p class="advanced">
+                        <label for="max-cosine">词频向量合并强度</label>
                         <select id="max-cosine">
                             <option value="1000">禁用 (+∞%)</option>
                             <option value="85">轻微 (85%)</option>
@@ -279,9 +279,17 @@
                             根据 2-Gram 频率向量的夹角判断不完全一致但内容类似的弹幕
                         </span>
                     </p>
-                    <p class="warning">
+                    <p class="advanced warning">
                         * 能有效击杀 "<code>yeah!~</code>" 和 "<code>yeah!~yeah!~yeah!~yeah!~</code>" 等。
                         感谢 <a href="https://github.com/fanthos" target="_blank">@fanthos</a>
+                    </p>
+                    <p>
+                        <input id="mode-elevation" type="checkbox">
+                        <label for="mode-elevation">尽量显示为固定弹幕：</label>
+                        <span>滚动弹幕和顶部 / 底部弹幕合并后显示在顶部 / 底部</span>
+                    </p>
+                    <p class="warning">
+                        * 否则将遵循第一个出现的弹幕的模式
                     </p>
                     <p class="advanced">
                         <input id="trim-ending" type="checkbox">
@@ -409,7 +417,7 @@
                         </span>
                     </p>
                     <p class="warning">
-                        * 渲染类型选择“CSS3”后，也可以按住 Ctrl 键点击画面上的弹幕。
+                        * 弹幕渲染类型选择“CSS3”后，也可以按住 Ctrl 键点击画面上的弹幕。
                     </p>
                     <p class="warning">
                         * 还可以查询弹幕发送者。

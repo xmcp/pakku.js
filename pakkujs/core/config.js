@@ -14,11 +14,14 @@ function fromholyjson_orempry(str) {
 }
 
 function loadconfig() {
+    // NEW_OPTION_INSERTION_POINT
+
     window._ADVANCED_USER=localStorage['_ADVANCED_USER']==='on';
     // 弹幕合并
     window.THRESHOLD=parseInt(localStorage['THRESHOLD']||20);
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
+    window.MODE_ELEVATION=localStorage['MODE_ELEVATION']==='on';
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
@@ -47,7 +50,7 @@ function loadconfig() {
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
     window.BLACKLIST=fromholyjson_orempry(localStorage['BLACKLIST']||'[]');
     window.HIDE_THRESHOLD=parseInt(localStorage['HIDE_THRESHOLD']||0);
-    window.SCROLL_THRESHOLD=parseInt(localStorage['SCROLL_THRESHOLD']||900);
+    window.SCROLL_THRESHOLD=parseInt(localStorage['SCROLL_THRESHOLD']||1200);
     // 其他
     window.POPUP_BADGE=localStorage['POPUP_BADGE'];
     window.FLASH_NOTIF=localStorage['FLASH_NOTIF']==='on';
@@ -58,11 +61,14 @@ function loadconfig() {
 }
 
 function initconfig() {
+    // NEW_OPTION_INSERTION_POINT
+    
     localStorage['_ADVANCED_USER']=localStorage['_ADVANCED_USER']||'off';
     // 弹幕合并
     localStorage['THRESHOLD']=localStorage['THRESHOLD']||20;
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
+    localStorage['MODE_ELEVATION']=localStorage['MODE_ELEVATION']||'on';
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
@@ -91,7 +97,7 @@ function initconfig() {
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
     localStorage['HIDE_THRESHOLD']=localStorage['HIDE_THRESHOLD']||0;
-    localStorage['SCROLL_THRESHOLD']=localStorage['SCROLL_THRESHOLD']||900;
+    localStorage['SCROLL_THRESHOLD']=localStorage['SCROLL_THRESHOLD']||1200;
     // 其他
     localStorage['POPUP_BADGE']=localStorage['POPUP_BADGE']||'percent';
     localStorage['FLASH_NOTIF']=localStorage['FLASH_NOTIF']||'on';

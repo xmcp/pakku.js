@@ -5,6 +5,7 @@ var IS_FIREFOX=false;
 var NOT_OVERRIDABLE_CONFIGS=[
     'CLOUD_SYNC'
 ];
+var MATH_LOG5=Math.log(5);
 
 var GLOBAL_SWITCH=true;
 var HISTORY={};
