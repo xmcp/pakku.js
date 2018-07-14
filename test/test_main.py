@@ -123,10 +123,10 @@ print('!= test enlarge')
 
 runner.update_settings('ENLARGE','on')
 assert runner.parse_string(demo('unicode_2'))[0].getAttribute('p').split(',')[2]=='25'
-assert runner.parse_string(demo('unicode_100'))[0].getAttribute('p').split(',')[2]=='50'
+assert runner.parse_string(demo('unicode_25'))[0].getAttribute('p').split(',')[2]=='50'
 runner.update_settings('ENLARGE','off')
 assert runner.parse_string(demo('unicode_2'))[0].getAttribute('p').split(',')[2]=='25'
-assert runner.parse_string(demo('unicode_100'))[0].getAttribute('p').split(',')[2]=='25'
+assert runner.parse_string(demo('unicode_25'))[0].getAttribute('p').split(',')[2]=='25'
 
 print('!= test shrink')
 
@@ -221,11 +221,11 @@ runner.update_settings('MARK_THRESHOLD','2')
 danmus=runner.parse_string(demo('unicode_2'))
 assert len(danmus)==1
 assert '[x' not in danmus[0].childNodes[0].data
-danmus=runner.parse_string(demo('unicode_100'))
+danmus=runner.parse_string(demo('unicode_25'))
 assert len(danmus)==1
 assert '[x' in danmus[0].childNodes[0].data
-runner.update_settings('MARK_THRESHOLD','100')
-danmus=runner.parse_string(demo('unicode_100'))
+runner.update_settings('MARK_THRESHOLD','25')
+danmus=runner.parse_string(demo('unicode_25'))
 assert len(danmus)==1
 assert '[x' not in danmus[0].childNodes[0].data
 runner.update_settings('MARK_THRESHOLD','1')
