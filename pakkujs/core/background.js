@@ -168,6 +168,10 @@ chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
 });
 
 function inject_panel(tabid,D,OPT) {
+    if(tabid<=0) {
+        console.log('inject panel: tabid',tabid,'IGNORED');
+        return;
+    }
     chrome.tabs.executeScript(tabid,{
         code: 'var D='+JSON.stringify(D)+'; var OPT='+JSON.stringify(OPT),
         allFrames: true,
