@@ -62,6 +62,10 @@ v8.7.1+:
 
 - `pakku_get_danmaku_with_info` 方法增加了可选参数 `silence` 表示是否隐藏进度条。
 
+v8.10.1:
+
+- 修复了 `pakku_set_xml_bounce` 中的恶性 bug。
+
 请注意，上述接口没有文档，不保证能够正常工作，任何 bug 都是 feature。
 
 使用该 API 的示例：[xmcp/pakku-advanced-filter](https://github.com/xmcp/pakku-advanced-filter)
