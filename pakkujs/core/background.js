@@ -306,7 +306,6 @@ function load_danmaku(resp,id,tabid) {
         inject_panel(tabid,D,{
             CID: id,
             TOOLTIP: TOOLTIP,
-            AUTO_PREVENT_SHADE: AUTO_PREVENT_SHADE,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
             AUTO_DANMU_LIST: AUTO_DANMU_LIST,
             FLUCTLIGHT: FLUCTLIGHT,

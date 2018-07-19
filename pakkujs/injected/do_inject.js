@@ -69,26 +69,17 @@ function try_inject() {
         if(list_elem && player_elem)
             inject_panel(list_elem,player_elem);
     }
-    if(OPT['AUTO_PREVENT_SHADE']) {
-        var pre_shade_elem=root_elem.querySelector('.bilibili-player-video-btn.bilibili-player-video-btn-danmaku');
-        if(pre_shade_elem) {
-            trigger_mouse_event(pre_shade_elem,'mouseover');
-            trigger_mouse_event(pre_shade_elem,'mouseout');
-            var shade_elem=isstardust ?
-                root_elem.querySelector('.bilibili-player-video-danmaku-setting-left-preventshade-box input') :
-                root_elem.querySelector('.bilibili-player-panel-setting input.bilibili-player-setting-preventshade');
-            console.log('pakku injector: pre_shade_elem',pre_shade_elem,'shade_elem',shade_elem);
-            if(shade_elem && !shade_elem.checked)
-                shade_elem.click();
-        } else {
-            console.log('pakku injector: pre_shade_elem not found');
-        }
-    }
     if(OPT['AUTO_DISABLE_DANMU']) {
-        var disable_elem=root_elem.querySelector('.bilibili-player-video-btn-danmaku');
-        console.log('pakku injector: disable_elem',disable_elem);
-        if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
-            disable_elem.click();
+        var danmu_switch=root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox]');
+        if(danmu_switch) {
+            console.log('pakku injector: danmu_switch',danmu_switch);
+            danmu_switch.checked=false;
+        } else { // legacy
+            var disable_elem=root_elem.querySelector('.bilibili-player-video-btn-danmaku');
+            console.log('pakku injector: disable_elem LEGACY',disable_elem);
+            if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
+                disable_elem.click();
+        }
     }
     if(OPT['AUTO_DANMU_LIST']) {
         var list_switch_elem=isstardust ?
@@ -100,11 +91,20 @@ function try_inject() {
         }
     }
     if(OPT['FLUCTLIGHT']) {
+        var seekbar_mask_elem=root_elem.querySelector('.bilibili-player-video-control-mask');
         var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
-        console.log('pakku injector: seekbar_elem',seekbar_elem);
-        if(seekbar_elem) {
-            inject_fluctlight_graph(seekbar_elem);
-            inject_fluctlight_details(seekbar_elem);
+        if(seekbar_mask_elem) {
+            console.log('pakku injector: seekbar_mask_elem',seekbar_mask_elem,'seekbar_elem',seekbar_elem);
+            if(seekbar_elem) {
+                inject_fluctlight_graph(seekbar_elem,2,seekbar_mask_elem);
+                inject_fluctlight_details(seekbar_elem,2);
+            }
+        } else {
+            console.log('pakku injector: seekbar_elem LEGACY',seekbar_elem);
+            if(seekbar_elem) {
+                inject_fluctlight_graph(seekbar_elem,1);
+                inject_fluctlight_details(seekbar_elem,1);
+            }
         }
     }
     if(OPT['FOOLBAR']) {

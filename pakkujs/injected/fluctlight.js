@@ -3,10 +3,10 @@
 var DETAILS_MAX_TIMEDELTA=10;
 var GRAPH_MAX_TIMEDELTA=5;
 var GRAPH_DENSITY_POWER=.8;
-var SEEKBAR_PADDING=6;
 
-function inject_fluctlight_graph(bar_elem) {
+function inject_fluctlight_graph(bar_elem,_version,mask_elem) {
     var HEIGHT=600;
+    var SEEKBAR_PADDING=_version==1 ? 6 : 0;
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
     
     var canvas_elem=document.createElement('canvas');
@@ -117,16 +117,18 @@ function inject_fluctlight_graph(bar_elem) {
         var hlblock=(hltime===undefined)?undefined:block(hltime);
         if(hlblock!==undefined) {
             // add gradient
-            var GRALENGTH=100;
-            var gra=ctx.createLinearGradient(hlblock-GRALENGTH,0,hlblock+GRALENGTH,0);
-            gra.addColorStop(0,'rgba(255,255,255,0)')
-            gra.addColorStop(.1,'rgba(255,255,255,1)')
-            gra.addColorStop(.9,'rgba(255,255,255,1)')
-            gra.addColorStop(1,'rgba(255,255,255,0)')
-            ctx.globalCompositeOperation='destination-out';
-            ctx.globalAlpha=.4;
-            ctx.fillStyle=gra;
-            ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
+            if(_version==1) {
+                var GRALENGTH=100;
+                var gra=ctx.createLinearGradient(hlblock-GRALENGTH,0,hlblock+GRALENGTH,0);
+                gra.addColorStop(0,'rgba(255,255,255,0)')
+                gra.addColorStop(.1,'rgba(255,255,255,1)')
+                gra.addColorStop(.9,'rgba(255,255,255,1)')
+                gra.addColorStop(1,'rgba(255,255,255,0)')
+                ctx.globalCompositeOperation='destination-out';
+                ctx.globalAlpha=.4;
+                ctx.fillStyle=gra;
+                ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
+            }
             // highlight current time
             ctx.globalCompositeOperation='source-over';
             drawline(hlblock,Math.pow(den_bef[hlblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
@@ -137,12 +139,21 @@ function inject_fluctlight_graph(bar_elem) {
     window._pakku_fluctlight_highlight=redraw;
     
     canvas_elem.height=HEIGHT;
-    canvas_elem.style.bottom=(HEIGHT+120)+'px';
     canvas_elem.style.position='relative';
     canvas_elem.style.display='none';
     canvas_elem.style.pointerEvents='none';
     canvas_elem.style.zIndex=9999;
-    bar_elem.appendChild(canvas_elem);
+
+    if(_version==1) {
+        canvas_elem.style.bottom=(HEIGHT+120)+'px';
+
+        bar_elem.appendChild(canvas_elem);
+    } else {
+        canvas_elem.style.bottom=(HEIGHT+61)+'px';
+        canvas_elem.style.left='12px';
+
+        mask_elem.appendChild(canvas_elem);
+    }
     
     // show or hide
     new MutationObserver(function(muts) {
@@ -165,7 +176,7 @@ function inject_fluctlight_graph(bar_elem) {
     });
 }
 
-function inject_fluctlight_details(bar_elem) {
+function inject_fluctlight_details(bar_elem,_version) {
     var MAX_FLUCT=15;
     
     var fluct=document.createElement('div');
@@ -209,17 +220,23 @@ function inject_fluctlight_details(bar_elem) {
                         danmus.push(d);
                 }
                 danmus=danmus.sort(function(a,b) {
-                    return 0 || // avoid auto ;
+                    return (
                         a.peers.length - b.peers.length ||
                         mode_prio(b.peers[0].mode) - mode_prio(a.peers[0].mode) ||
                         (time-b) - (time-a) ||
-                        0;
+                        0
+                    );
                 }).slice(-MAX_FLUCT);
                 danmus.forEach(function(danmu) {
                     fluct.appendChild(to_dom(danmu));
                 });
                 fluct.style.height=(4+14*danmus.length)+'px';
-                fluct.style.bottom=(4+100+14*danmus.length)+'px';
+
+                if(_version==1) {
+                    fluct.style.bottom=(4+100+14*danmus.length)+'px';
+                } else {
+                    fluct.style.bottom=(4+72+14*danmus.length)+'px';
+                }
 
                 if(window._pakku_fluctlight_highlight)
                     window._pakku_fluctlight_highlight(time);
@@ -233,7 +250,6 @@ function inject_fluctlight_details(bar_elem) {
     fluct.setAttribute('style',`
         position: relative;
         width: 160px;
-        background-color: white;
         opacity: .8;
         overflow-x: hidden;
         text-align: left;
@@ -242,6 +258,14 @@ function inject_fluctlight_details(bar_elem) {
         padding: 2px;
         box-sizing: border-box;
     `);
+
+    if(_version==1) {
+        fluct.style.backgroundColor='white';
+    } else {
+        fluct.style.backgroundColor='rgba(255,255,255,.5)';
+        fluct.style.textShadow='0 0 5px white';
+    }
+
     fluct.dataset['current_time']='';
     time_elem.parentNode.appendChild(fluct);
 }

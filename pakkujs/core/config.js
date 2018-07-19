@@ -40,7 +40,6 @@ function loadconfig() {
     window.SHRINK=localStorage['SHRINK']==='on';
     // 播放器增强
     window.TOOLTIP=localStorage['TOOLTIP']==='on';
-    window.AUTO_PREVENT_SHADE=localStorage['AUTO_PREVENT_SHADE']==='on';
     window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
     window.AUTO_DANMU_LIST=localStorage['AUTO_DANMU_LIST']==='on';
     window.FLUCTLIGHT=localStorage['FLUCTLIGHT']==='on';
@@ -87,7 +86,6 @@ function initconfig() {
     localStorage['SHRINK']=localStorage['SHRINK']||'off';
     // 播放器增强
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
-    localStorage['AUTO_PREVENT_SHADE']=localStorage['AUTO_PREVENT_SHADE']||'off';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
     localStorage['AUTO_DANMU_LIST']=localStorage['AUTO_DANMU_LIST']||'off';
     localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';
