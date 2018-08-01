@@ -73,7 +73,8 @@ function try_inject() {
         var danmu_switch=root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox]');
         if(danmu_switch) {
             console.log('pakku injector: danmu_switch',danmu_switch);
-            danmu_switch.checked=false;
+            if(danmu_switch.checked)
+                danmu_switch.click();
         } else { // legacy
             var disable_elem=root_elem.querySelector('.bilibili-player-video-btn-danmaku');
             console.log('pakku injector: disable_elem LEGACY',disable_elem);
