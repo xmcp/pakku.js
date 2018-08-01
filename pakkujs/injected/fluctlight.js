@@ -4,7 +4,7 @@ var DETAILS_MAX_TIMEDELTA=10;
 var GRAPH_MAX_TIMEDELTA=5;
 var GRAPH_DENSITY_POWER=.8;
 
-function inject_fluctlight_graph(bar_elem,_version,mask_elem) {
+function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     var HEIGHT=600;
     var SEEKBAR_PADDING=_version==1 ? 6 : 0;
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
@@ -117,18 +117,16 @@ function inject_fluctlight_graph(bar_elem,_version,mask_elem) {
         var hlblock=(hltime===undefined)?undefined:block(hltime);
         if(hlblock!==undefined) {
             // add gradient
-            if(_version==1) {
-                var GRALENGTH=100;
-                var gra=ctx.createLinearGradient(hlblock-GRALENGTH,0,hlblock+GRALENGTH,0);
-                gra.addColorStop(0,'rgba(255,255,255,0)')
-                gra.addColorStop(.1,'rgba(255,255,255,1)')
-                gra.addColorStop(.9,'rgba(255,255,255,1)')
-                gra.addColorStop(1,'rgba(255,255,255,0)')
-                ctx.globalCompositeOperation='destination-out';
-                ctx.globalAlpha=.4;
-                ctx.fillStyle=gra;
-                ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
-            }
+            var GRALENGTH=100;
+            var gra=ctx.createLinearGradient(hlblock-GRALENGTH,0,hlblock+GRALENGTH,0);
+            gra.addColorStop(0,'rgba(255,255,255,0)')
+            gra.addColorStop(.1,'rgba(255,255,255,1)')
+            gra.addColorStop(.9,'rgba(255,255,255,1)')
+            gra.addColorStop(1,'rgba(255,255,255,0)')
+            ctx.globalCompositeOperation='destination-out';
+            ctx.globalAlpha=.4;
+            ctx.fillStyle=gra;
+            ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
             ctx.globalCompositeOperation='source-over';
             drawline(hlblock,Math.pow(den_bef[hlblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
@@ -139,20 +137,22 @@ function inject_fluctlight_graph(bar_elem,_version,mask_elem) {
     window._pakku_fluctlight_highlight=redraw;
     
     canvas_elem.height=HEIGHT;
-    canvas_elem.style.position='relative';
     canvas_elem.style.display='none';
     canvas_elem.style.pointerEvents='none';
     canvas_elem.style.zIndex=9999;
 
+    
     if(_version==1) {
+        canvas_elem.style.position='relative';
         canvas_elem.style.bottom=(HEIGHT+120)+'px';
 
         bar_elem.appendChild(canvas_elem);
     } else {
-        canvas_elem.style.bottom=(HEIGHT+61)+'px';
-        canvas_elem.style.left='12px';
+        canvas_elem.style.position='absolute';
+        canvas_elem.style.bottom=(HEIGHT+114)+'px';
+        canvas_elem.style.marginBottom=-HEIGHT+'px';
 
-        mask_elem.appendChild(canvas_elem);
+        new_elem.insertBefore(canvas_elem,new_elem.firstChild);
     }
     
     // show or hide
@@ -250,21 +250,14 @@ function inject_fluctlight_details(bar_elem,_version) {
     fluct.setAttribute('style',`
         position: relative;
         width: 160px;
-        opacity: .8;
         overflow-x: hidden;
         text-align: left;
         font-size: 12px;
         line-height: 14px;
         padding: 2px;
         box-sizing: border-box;
+        background-color: rgba(205,205,205,.8);
     `);
-
-    if(_version==1) {
-        fluct.style.backgroundColor='white';
-    } else {
-        fluct.style.backgroundColor='rgba(255,255,255,.5)';
-        fluct.style.textShadow='0 0 5px white';
-    }
 
     fluct.dataset['current_time']='';
     time_elem.parentNode.appendChild(fluct);

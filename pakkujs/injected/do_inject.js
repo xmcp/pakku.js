@@ -92,12 +92,12 @@ function try_inject() {
         }
     }
     if(OPT['FLUCTLIGHT']) {
-        var seekbar_mask_elem=root_elem.querySelector('.bilibili-player-video-control-mask');
+        var seekbar_new_elem=root_elem.querySelector('.bilibili-player-video-control-top');
         var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
-        if(seekbar_mask_elem) {
-            console.log('pakku injector: seekbar_mask_elem',seekbar_mask_elem,'seekbar_elem',seekbar_elem);
+        if(seekbar_new_elem) {
+            console.log('pakku injector: seekbar_new_elem',seekbar_new_elem,'seekbar_elem',seekbar_elem);
             if(seekbar_elem) {
-                inject_fluctlight_graph(seekbar_elem,2,seekbar_mask_elem);
+                inject_fluctlight_graph(seekbar_elem,2,seekbar_new_elem);
                 inject_fluctlight_details(seekbar_elem,2);
             }
         } else {
