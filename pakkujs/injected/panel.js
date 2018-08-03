@@ -105,7 +105,8 @@ var PANEL_CSS=`
 `;
 
 var PANEL_EVENT_FIX=`
-.__pakku_pointer_event div.bilibili-player-video-danmaku, .__pakku_pointer_event div.bilibili-danmaku {
+.__pakku_pointer_event div.bilibili-player-video-danmaku,
+.__pakku_pointer_event div.bilibili-danmaku {
     pointer-events: initial !important;
 }
 .__pakku_pointer_event div.bilibili-danmaku {
@@ -113,6 +114,12 @@ var PANEL_EVENT_FIX=`
 }
 .__pakku_pointer_event div.bilibili-danmaku:hover {
     background-color: rgba(255,255,0,1);
+}
+.__pakku_pointer_event .bilibili-player-video-top,
+.__pakku_pointer_event .bilibili-player-video-control-mask,
+.__pakku_pointer_event .bilibili-player-video-control,
+.__pakku_pointer_event .bilibili-player-video-state {
+    visibility: hidden !important;
 }
 `
 

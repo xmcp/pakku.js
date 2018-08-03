@@ -230,12 +230,12 @@ function inject_fluctlight_details(bar_elem,_version) {
                 danmus.forEach(function(danmu) {
                     fluct.appendChild(to_dom(danmu));
                 });
-                fluct.style.height=(4+14*danmus.length)+'px';
+                fluct.style.height=(14*danmus.length)+'px';
 
                 if(_version==1) {
-                    fluct.style.bottom=(4+100+14*danmus.length)+'px';
+                    fluct.style.bottom=(100+14*danmus.length)+'px';
                 } else {
-                    fluct.style.bottom=(4+72+14*danmus.length)+'px';
+                    fluct.style.bottom=(72+14*danmus.length)+'px';
                 }
 
                 if(window._pakku_fluctlight_highlight)
@@ -254,7 +254,7 @@ function inject_fluctlight_details(bar_elem,_version) {
         text-align: left;
         font-size: 12px;
         line-height: 14px;
-        padding: 2px;
+        padding: 0 2px;
         box-sizing: border-box;
         background-color: rgba(205,205,205,.8);
     `);
