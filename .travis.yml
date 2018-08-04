@@ -1,5 +1,5 @@
 language: node_js
-sudo: required
+#sudo: required
 python:
   - "3.6"
 node_js:
