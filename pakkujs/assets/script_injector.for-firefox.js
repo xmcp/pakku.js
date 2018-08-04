@@ -32,8 +32,9 @@ if(document.head) {
     // statistics
     if(localStorage['_pakku_stats_time']!==gen_timestamp()) {
         console.log('pakku stat: inject statistics script for firefox');
-        var f=document.createElement('script');
-        f.src='https://s4.cnzz.com/stat.php?id=1261438614&web_id=1261438614';
+        var f=document.createElement('iframe');
+        f.src='//s.xmcp.ml/pakkujs/stat/bilibili.html';
+        f.style.visibility='hidden';
         document.head.appendChild(f);
         localStorage['_pakku_stats_time']=gen_timestamp();
 

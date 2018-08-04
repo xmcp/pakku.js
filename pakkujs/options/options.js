@@ -182,6 +182,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
         id('mode-elevation').checked=localStorage['MODE_ELEVATION']==='on';
+        id('trim-pinyin').checked=localStorage['TRIM_PINYIN']==='on';
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
         id('trim-width').checked=localStorage['TRIM_WIDTH']==='on';
@@ -368,6 +369,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['MODE_ELEVATION']=id('mode-elevation').checked?'on':'off';
+        localStorage['TRIM_PINYIN']=id('trim-pinyin').checked?'on':'off';
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
         localStorage['TRIM_WIDTH']=id('trim-width').checked?'on':'off';
@@ -419,7 +421,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
         'show-advanced',
         // 弹幕合并
-        'threshold','max-dist','max-cosine','mode-elevation','trim-ending','trim-space','trim-width',
+        'threshold','max-dist','max-cosine','mode-elevation','trim-pinyin','trim-ending','trim-space','trim-width',
         // 例外设置
         'cross-mode','ignore-type7','ignore-type4','ignore-pool1',
         // 显示设置

@@ -6,14 +6,35 @@ var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
 var ENDING_CHARS=gen_set('.。,，/?？!！…~～@^、+=-_♂♀ ');
 var trim_space_re=/[ 　]+/g;
-var WIDTH_TABLE={};
 
+var WIDTH_TABLE={}; // '１': '1'
 (function() {
     var before='　１２３４５６７８９０!＠＃＄％＾＆＊（）－＝＿＋［］｛｝;＇:＂,．／＜＞?＼｜｀～ｑｗｅｒｔｙｕｉｏｐａｓｄｆｇｈｊｋｌｚｘｃｖｂｎｍＱＷＥＲＴＹＵＩＯＰＡＳＤＦＧＨＪＫＬＺＸＣＶＢＮＭ';
     var after=' 1234567890！@#$%^&*()-=_+[]{}；\'："，./<>？\\|`~qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
     if(before.length !== after.length) throw 1;
     for(var i=0;i<before.length;i++)
         WIDTH_TABLE[before[i]]=after[i];
+})();
+
+var PINYIN_TABLE={}; // '周': [symbols['zh'], symbols['ou']], '啊': [symbols['a']]
+(function() {
+    var symbols={}; // 'a': '\ue000'
+    var symbol_idx=0xe000; // U+E000 ~ U+F8FF: Private Use Area
+
+    for(var phonetic_raw in PINYIN_DICT_RAW) {
+        var phonetics=phonetic_raw.split('-').map(function(phonetic) {
+            if(!symbols[phonetic])
+                return (symbols[phonetic]=String.fromCharCode(symbol_idx++));
+            else
+                return symbols[phonetic];
+        });
+
+        var str=PINYIN_DICT_RAW[phonetic_raw];
+        for(var i=str.length-1;i>=0;i--)
+            PINYIN_TABLE[str[i]]=phonetics;
+    }
+
+    delete PINYIN_DICT_RAW;
 })();
 
 function generate_ctx(tabid) {
@@ -153,6 +174,12 @@ function parse(dom,tabid,S,D) {
         return Math.sqrt(str.length);
     }
 
+    function trim_pinyin(s) {
+        return Array.from(s).map(function(c) {
+            return PINYIN_TABLE[c] || c;
+        }).join('');
+    }
+
     var parser=new DOMParser();
     var new_dom=parser.parseFromString('<i></i>','text/xml');
     var i_elem=new_dom.childNodes[0];
@@ -204,12 +231,17 @@ function parse(dom,tabid,S,D) {
             var mode=attr[1];
             var disp_str=mode==='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
             var detaolued=detaolu(disp_str);
+            var str_pinyin=TRIM_PINYIN ? trim_pinyin(detaolued) : null;
+
             var dm_obj={
                 attr: attr, // thus we can build it into new_dom again
-                str: detaolued,
-                str_2gram: gen_2gram_array(detaolued),
-                orig_str: str,
-                disp_str: disp_str,
+                str: detaolued, // used when count>1
+                orig_str: str, // used when count==1 and for special danmus
+                disp_str: disp_str, // will be overrode by build_text
+
+                str_pinyin: str_pinyin, // used to compare similarity
+                str_2gram: gen_2gram_array(str),
+                
                 time: parseFloat(attr[0]),
                 mode: mode,
                 size: parseFloat(attr[2]),
@@ -278,6 +310,7 @@ function parse(dom,tabid,S,D) {
             var sim=similar_memorized(
                 dm.str, another.str,
                 dm.str_2gram, another.str_2gram,
+                dm.str_pinyin, another.str_pinyin,
                 S
             );
             if(sim!==false) {

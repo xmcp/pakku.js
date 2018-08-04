@@ -76,18 +76,28 @@ function cosine_distance_memorized (Pgram, Qgram, Plen, Qlen) {
 	return x*x/y/z;
 }
 
-function similar_memorized(P,Q,Pgram,Qgram,S) {
+function similar_memorized(P,Q,Pgram,Qgram,Ppinyin,Qpinyin,S) {
     if(P==Q) {
         S.identical++;
         return '==';
     }
+
     var dis=edit_distance(P,Q);
-    if(dis>=P.length+Q.length) // they have nothing similar. cosine_distance test can be bypassed
-        return false;
     if((P.length+Q.length < MIN_DANMU_SIZE) ? dis<(P.length+Q.length)/MIN_DANMU_SIZE*MAX_DIST-1 : dis<=MAX_DIST) {
         S.edit_distance++;
         return '≤'+dis;
     }
+
+    if(Ppinyin) {
+        var py_dis=edit_distance(Ppinyin,Qpinyin);
+        if((P.length+Q.length < MIN_DANMU_SIZE) ? py_dis<(P.length+Q.length)/MIN_DANMU_SIZE*MAX_DIST-1 : py_dis<=MAX_DIST) {
+            S.pinyin_distance++;
+            return 'P≤'+py_dis;
+        }
+    }
+
+    if(dis>=P.length+Q.length) // they have nothing similar. cosine_distance test can be bypassed
+        return false;
     var cos=~~(cosine_distance_memorized(Pgram,Qgram,P.length,Q.length)*100);
     if(cos>=MAX_COSINE) {
         S.cosine_distance++;

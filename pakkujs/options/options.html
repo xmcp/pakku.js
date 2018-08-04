@@ -201,8 +201,8 @@
             border: 5px solid #22AB39;
             pointer-events: none;
         }
-        label[for=show-advanced], .advanced {
-            background-color: rgba(0,0,255,.15);
+        label[for=show-advanced], .advanced:not(.warning) {
+            background-color: rgba(0,0,255,.12);
         }
         body:not(.i-am-advanced) .advanced:not(.js-show-this) {
             display: none;
@@ -292,20 +292,23 @@
                         * 否则将遵循第一个出现的弹幕的模式
                     </p>
                     <p class="advanced">
+                        <input id="trim-pinyin" type="checkbox">
+                        <label for="trim-pinyin">识别谐音弹幕：</label>
+                        <span>将汉字转换为拼音再进行比较</span>
+                    </p>
+                    <p class="advanced warning">
+                        * 能有效击杀 "<code>布拉迪巴特福来</code>" 和 "<code>布拉迪·八德福莱</code>" 等。
+                        感谢 <a href="https://github.com/sxei/pinyinjs" target="_blank">@sxei</a>
+                    </p>
+                    <p class="advanced">
                         <input id="trim-ending" type="checkbox">
-                        <label for="trim-ending">忽略末尾标点：</label>
-                        <span>"<code>LL大法好~</code>" 和 "<code>LL大法好！！</code>" 将合并为 "<code>LL大法好 [x2]</code>"</span>
-                    </p>
-                    <p class="advanced">
+                        <label for="trim-ending">忽略末尾标点</label>
+                        /
                         <input id="trim-space" type="checkbox">
-                        <label for="trim-space">忽略多余空格：</label>
-                        <span>对 "<code>立 &nbsp; 体 &nbsp; 弹 &nbsp; 幕</code>" 和
-                            "<code> &nbsp; &nbsp; &nbsp; &nbsp; 漂移~</code>" 有奇效</span>
-                    </p>
-                    <p class="advanced">
+                        <label for="trim-space">忽略多余空格</label>
+                        /
                         <input id="trim-width" type="checkbox">
-                        <label for="trim-width">忽略全半角差异：</label>
-                        <span>"<code>-1s</code>" 和 "<code>－１s</code>" 将合并为 "<code>-1s [x2]</code>"</span>
+                        <label for="trim-width">忽略全半角差异</label>
                     </p>
                 </td>
                 <td></td>
@@ -545,9 +548,9 @@
                         在 <a href="https://github.com/xmcp/pakku.js/" target="_blank"><span class="icon-github"></span>GitHub</a> 开放源代码。
                         使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>。
                     </p>
-                    <p class="donate">
+                    <p>
                         <strong>我，开发者，打钱 <span class="icon-coin darkblue"></span></strong>
-                        →使用微信投喂开发者← (｀・ω・´)
+                        <a class="donate">→使用微信投喂开发者← (｀・ω・´)</a>
                     </p>
                     <hr>
                     <p>
@@ -555,7 +558,7 @@
                         请把 pakku ( <code>http://s.xmcp.ml/pakku</code> ) 安利给更多的小伙伴们 _(:3」∠)_
                     </p>
                     <p>
-                        <strong>或者给个五星好评吧！</strong>
+                        <strong>给个五星好评吧！</strong>
                         <a href="https://chrome.google.com/webstore/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh/reviews" target="_blank">
                             <span class="icon-chrome"></span>
                             Chrome 用户点我评分

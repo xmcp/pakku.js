@@ -128,6 +128,7 @@ function Status(CID) {
     return {
         identical: 0, // combined
         edit_distance: 0,
+        pinyin_distance: 0,
         cosine_distance: 0,
         
         player_seek: 0, // deleted

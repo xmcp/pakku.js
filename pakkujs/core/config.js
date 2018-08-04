@@ -22,6 +22,7 @@ function loadconfig() {
     window.MAX_DIST=parseInt(localStorage['MAX_DIST']||5);
     window.MAX_COSINE=parseInt(localStorage['MAX_COSINE'])||60;
     window.MODE_ELEVATION=localStorage['MODE_ELEVATION']==='on';
+    window.TRIM_PINYIN=localStorage['TRIM_PINYIN']==='on';
     window.TRIM_ENDING=localStorage['TRIM_ENDING']==='on';
     window.TRIM_SPACE=localStorage['TRIM_SPACE']==='on';
     window.TRIM_WIDTH=localStorage['TRIM_WIDTH']==='on';
@@ -68,6 +69,7 @@ function initconfig() {
     localStorage['MAX_DIST']=localStorage['MAX_DIST']||5;
     localStorage['MAX_COSINE']=localStorage['MAX_COSINE']||60;
     localStorage['MODE_ELEVATION']=localStorage['MODE_ELEVATION']||'on';
+    localStorage['TRIM_PINYIN']=localStorage['TRIM_PINYIN']||'on';
     localStorage['TRIM_ENDING']=localStorage['TRIM_ENDING']||'on';
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
