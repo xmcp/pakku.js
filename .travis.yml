@@ -12,7 +12,7 @@ before_install:
   - unzip chromedriver_linux64.zip -d test/driver/
   - sudo apt-get -y install python3-pip
 install:
-  - pip3 install selenium
+  - sudo pip3 install selenium
   - npm install
   - npm install -g grunt-cli
   - grunt chrome
