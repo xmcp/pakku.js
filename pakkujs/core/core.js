@@ -27,7 +27,7 @@ var PINYIN_TABLE={}; // '周': [symbols['zh'], symbols['ou']], '啊': [symbols['
                 return (symbols[phonetic]=String.fromCharCode(symbol_idx++));
             else
                 return symbols[phonetic];
-        });
+        }).join('');
 
         var str=PINYIN_DICT_RAW[phonetic_raw];
         for(var i=str.length-1;i>=0;i--)
