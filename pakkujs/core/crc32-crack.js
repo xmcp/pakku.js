@@ -29,9 +29,9 @@ function make_crc32_cracker () {
         return ((crc >>> 8) ^ crc32_table[(crc & 0xff) ^ by]) >>> 0;
     }
     
-    function compute(arr, init = 0) {
+    function compute(arr, init) {
 
-        var crc = init;
+        var crc = init||0;
     
         for (var i = 0; i < arr.length; i ++) {
             crc = update_crc(arr[i], crc);

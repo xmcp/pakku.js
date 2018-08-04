@@ -25,7 +25,7 @@ if(document.head) {
         },false);
 
         var sc=document.createElement('script');
-        sc.src=chrome.runtime.getURL('core/content_script.js');
+        sc.src=chrome.runtime.getURL('assets/xhr_hook.js');
         document.head.appendChild(sc);
     });
     

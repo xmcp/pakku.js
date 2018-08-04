@@ -53,6 +53,6 @@
     },
     
     "web_accessible_resources": [
-        "core/content_script.js"
+        "assets/xhr_hook.js"
     ]
 }

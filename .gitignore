@@ -1,7 +1,7 @@
-.idea/
 .vscode/
 /test/driver/
 *.pyc
 __pycache__/
-pakkujs.zip
-/moz-build/pakkujs/
+node_modules/
+package-lock.json
+/dist/

@@ -18,7 +18,7 @@ Pakku tampers the danmaku request by:
 
 */
 
-// note: need to change the rule in content_script.for-firefox.js too
+// note: need to change the rule in xhr_hook.js too
 var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?(\?debug)?$/;
 var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list.so\?oid=(\d+)(\&debug)?$/;
 var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+(\&debug)?$/;
@@ -181,18 +181,11 @@ function inject_panel(tabid,D,OPT) {
             console.log('cannot inject panel. skipping.',chrome.runtime.lastError);
             return;
         }
-        ['utils','fluctlight','panel','foolbar'].forEach(function(name) {
-            chrome.tabs.executeScript(tabid,{
-                file: '/injected/'+name+'.js',
-                allFrames: true,
-                runAt: 'document_start'
-            });
-        });
         if(OPT['FOOLBAR'])
             fetch_alasql(tabid);
         setTimeout(function() {
             chrome.tabs.executeScript(tabid,{
-                file: '/injected/do_inject.js',
+                file: '/injected/all_injected.js',
                 allFrames: true,
                 runAt: 'document_idle'
             });
