@@ -4,7 +4,7 @@ from xml.dom.minidom import *
 import json
 import time
 
-EXAMPLE_DANMAKU='https://comment.bilibili.com/3262388.xml'
+EXAMPLE_DANMAKU='https://api.bilibili.com/x/v1/dm/list.so?oid=3262388'
 
 def demo(fn):
     with open('demo/%s.xml'%fn,'r',encoding='utf-8') as f:
@@ -27,6 +27,7 @@ runner.update_settings('MARK_THRESHOLD','1')
 runner.update_settings('HIDE_THRESHOLD','0')
 runner.update_settings('SCROLL_THRESHOLD','0')
 runner.update_settings('AUTO_DANMU_LIST','on')
+runner.update_settings('TRIM_PINYIN','off')
 
 # not tested: FLASH_NOTIF POPUP_BADGE
 
@@ -67,13 +68,13 @@ runner.update_settings('FORCELIST','[]')
 print('!= test webrequest hook')
 
 runner.set_global_switch(False)
-runner.b.get(EXAMPLE_DANMAKU+'?debug')
+runner.b.get(EXAMPLE_DANMAKU+'&debug')
 assert not runner.b.current_url.startswith('data:')
 
 runner.set_global_switch(True)
 runner.b.get(EXAMPLE_DANMAKU)
 assert not runner.b.current_url.startswith('data:')
-runner.b.get(EXAMPLE_DANMAKU+'?debug')
+runner.b.get(EXAMPLE_DANMAKU+'&debug')
 assert runner.b.current_url.startswith('data:')
 
 print('!= test xml format')
@@ -303,9 +304,22 @@ assert len(runner.parse_string(demo('unicode_10_and_1')))==1
 runner.update_settings('HIDE_THRESHOLD',0)
 assert len(runner.parse_string(demo('unicode_10_and_1')))==2
 
+print('!= test trim pinyin')
+runner.update_settings('MAX_DIST','5')
+runner.update_settings('TRIM_PINYIN','on')
+assert len(runner.parse_string(demo('pinyin_2')))==1
+runner.update_settings('MAX_DIST','4')
+assert len(runner.parse_string(demo('pinyin_2')))==2
+runner.update_settings('TRIM_PINYIN','off')
+runner.update_settings('MAX_DIST','5')
+assert len(runner.parse_string(demo('pinyin_2')))==2
+runner.update_settings('TRIM_PINYIN','on')
+
 print('!= test exception')
 
-assert len(runner.parse_string(demo('production')))<=800
+runner.update_settings('MAX_DIST','5')
+runner.update_settings('MAX_COSINE','60')
+assert len(runner.parse_string(demo('production')))<=300
 
 print('== well done! exitting...')
 runner.b.quit()
