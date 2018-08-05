@@ -37,15 +37,6 @@ if(document.head) {
         f.style.visibility='hidden';
         document.head.appendChild(f);
         localStorage['_pakku_stats_time']=gen_timestamp();
-
-        chrome.runtime.sendMessage({type: 'reportness'}, function(ness) {
-            if(ness) {
-                var r=document.createElement('iframe');
-                r.src=ness;
-                r.style.display='none';
-                document.head.appendChild(r);
-            }
-        });
     }
 
     // font patch

@@ -39,8 +39,7 @@ module.exports = function(grunt) {
 
   var NORMAL_DIR=[
     'assets',
-    'options',
-    'popup',
+    'page'
   ];
 
   function make_filelist(list,src_type,src_dir='pakkujs',dest_dir='dist/_') {
@@ -187,6 +186,7 @@ module.exports = function(grunt) {
         banner: '// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.',
         sourceMapIn: function(path) { return path+'.map'; },
         'sourceMap.includeSources': true,
+        mangle: false,
       },
 
       dev: {

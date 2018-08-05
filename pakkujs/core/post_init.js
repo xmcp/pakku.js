@@ -6,12 +6,6 @@ chrome.browserAction.setBadgeText({ // badge text in the previous launch might n
     text: GLOBAL_SWITCH?'':'zzz'
 });
 
-if(REPORTNESS) {
-    var r=document.createElement('iframe');
-    r.src=REPORTNESS;
-    document.head.appendChild(r);
-}
-
 // https://github.com/xmcp/9alpha integration
 if(localStorage['_9ALPHA']) {
     var ID_9ALPHA=localStorage['_9ALPHA'];
@@ -89,7 +83,7 @@ if(localStorage['_9ALPHA']) {
 
 if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
-        return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('options/options.html'))+'</title>'};
+        return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('page/options.html'))+'</title>'};
     }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url']}, ['blocking']);
 
     chrome.webRequest.onBeforeRequest.addListener(function(details) {

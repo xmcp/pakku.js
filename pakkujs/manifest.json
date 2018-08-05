@@ -25,12 +25,12 @@
         "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml; img-src data: http://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml http://*.bilibili.com https://*.bilibili.com https://img.shields.io https://cdn.bootcss.com data:; style-src 'self' 'unsafe-inline'",
     
     "options_ui": {
-        "page": "options/options.html",
+        "page": "page/options.html",
         "open_in_tab": true
     },
     "browser_action": {
         "default_icon": "assets/icon_display.png",
-        "default_popup": "popup/popup.html",
+        "default_popup": "page/popup.html",
         "default_title": "pakku"
     },
     "commands": {
@@ -39,6 +39,9 @@
                 "default": "Alt+R"
             },
             "description": "切换工作状态"
+        },
+        "show-local": {
+            "description": "处理本地弹幕"
         },
         "_execute_browser_action": {
             "suggested_key": {

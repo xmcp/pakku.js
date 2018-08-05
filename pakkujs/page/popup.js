@@ -13,7 +13,7 @@ function try_regexp(x) {
     }
 }
 
-var options_href=chrome.runtime.getURL('options/options.html');
+var options_href=chrome.runtime.getURL('page/options.html');
 id('pakku-logo').href=options_href;
 id('version').textContent=chrome.runtime.getManifest().version;
 
@@ -47,7 +47,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         btn.classList.remove(enabled?'off':'on');
         btn.textContent=enabled?'工作中':'休息中';
         chrome.tabs.query(
-            {active:true,currentWindow: true},
+            {active: true, currentWindow: true},
             function(d) {
                 var general = enabled ? '本页面没有发现B站播放器' : 'zzzzzzzzzz'
                 if(d[0] && d[0].id) {
@@ -122,7 +122,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     }
     
     chrome.tabs.query(
-        {active:true, currentWindow: true},
+        {active: true, currentWindow: true},
         function(d) {
             if(!d || !d[0].id || !bgpage.HISTORY[d[0].id]) return;
             var tabid=d[0].id;

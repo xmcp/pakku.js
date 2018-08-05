@@ -151,22 +151,6 @@ function load_update_breaker() {
         chrome.webRequest.onBeforeRequest.addListener(req_breaker,update_filter,['blocking']);
 }
 
-chrome.notifications.onButtonClicked.addListener(function(notifid,btnindex) {
-    if(btnindex==0)  // goto settings
-        chrome.tabs.create({url: (notifid==='http'?'http':'https') + '://www.bilibili.com/blackboard/help.html#p'},function(tab) {
-            console.log(tab.id);
-            chrome.tabs.executeScript(tab.id,{
-                file: '/assets/enable_h5_player.js',
-                runAt: 'document_end'
-            });
-        });
-    else if(btnindex==1) // ignore
-        ;
-    else
-        throw 'bad index';
-    chrome.notifications.clear(notifid);
-});
-
 function inject_panel(tabid,D,OPT) {
     if(tabid<=0) {
         console.log('inject panel: tabid',tabid,'IGNORED');
@@ -205,7 +189,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         return;
     }
     if(details.reason=='install') {
-        chrome.tabs.create({url: chrome.runtime.getURL('options/options.html')});
+        chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
     } else if(details.reason=='update') {
         migrate_legacy();
     }
@@ -368,8 +352,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             return sendResponse(request.dinfo);
         },request.silence);
         return true;
-    } else if(request.type==='reportness') {
-        return sendResponse(REPORTNESS);
     } else if(request.type==='need_ajax_hook') {
         return sendResponse(!(browser && browser.webRequest.filterResponseData));
     }
@@ -479,18 +461,13 @@ chrome.webRequest.onBeforeRequest.addListener(onbeforerequest=function(details) 
             setbadge('FL!',ERROR_COLOR,details.tabId);
             HISTORY[details.tabId]=FailingStatus(cid,'已忽略非 HTML5 播放器的请求','details.type = '+details.type);
             if(details.type!=='main_frame' && FLASH_NOTIF)
-                chrome.notifications.create(protocol||'https', {
+                chrome.notifications.create('//flash_notif', {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/logo.png'),
                     title: 'pakku 没有在正常工作',
                     message: '切换到B站 HTML5 播放器来让 pakku 过滤视频中的弹幕。',
                     contextMessage: '（在 pakku 的选项中可以关闭此提醒）',
-                    isClickable: false,
-                    requireInteraction: true,
-                    buttons: [
-                        {title: '→ 点我一键切换'},
-                        {title: '忽略'}
-                    ]
+                    isClickable: false
                 }, function(){});
             return {cancel: false};
         }
@@ -514,5 +491,7 @@ chrome.commands.onCommand.addListener(function(name) {
         this._clearer=setTimeout(function() {
             chrome.notifications.clear('//switch');
         },700);
+    } else if(name==='show-local') {
+        chrome.tabs.create({url: chrome.runtime.getURL('page/local.html')});
     }
 });

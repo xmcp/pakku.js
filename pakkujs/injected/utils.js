@@ -46,10 +46,13 @@ function proc_rgb(x) {
         x%256
     ];
 }
+// http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 function get_L(r,g,b) {
-    // var ma=Math.max(r,g,b), mi=Math.min(r,g,b);
-    // return (ma+mi)/2/256;
-    return (r+g+b)/3/256;
+    return Math.sqrt(
+        r*r*.241 +
+        g*g*.691 +
+        b*b*.068
+    )/256;
 }
 
 function _fix2(a) {

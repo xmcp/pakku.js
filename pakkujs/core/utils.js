@@ -75,11 +75,6 @@ var FIREFOX_VERSION=(function() {
 
 */
 
-var _key='W1siLiIseyJyb290IjoiY2hyb21lIiwidXRpbCI6InJ1bnRpbWUiLCJ0b29sIjoiZ2V0TWFuaWZlc3QiLCJqIjoiSlNPTiIsImNvb'+
-'WUiOiJzdHJpbmdpZnkiLCJlbmNvZGUiOiJlbmNvZGVVUklDb21wb25lbnQiLCJtYWdpYyI6ImluZGV4T2YiLCJ0aXRsZSI6InBha2t1IiwiYmE'+
-'iOiJicm93c2VyX2FjdGlvbiIsImR0IjoiZGVmYXVsdF90aXRsZSIsImJhc2UiOiJodHRwczovL3MueG1jcC5tbC9wYWtrdWpzL3N0YXQvcmVwb'+
-'3J0Lmh0bWw/ZD0iLCJyZXMiOiJSRVBPUlRORVNTIn1dXQ==';
-
 function fromholyjson(txt) {
     var item=JSON.parse(txt);
     for(var i in item)
@@ -113,6 +108,7 @@ var LOADING_COLOR='#4444ff';
 var SUCCESS_COLOR='#33aa33';
 
 function setbadge(text,color,tabid) {
+    if(tabid<=0 && text=='FL!') return;
     chrome.browserAction.setBadgeText({
         text: text,
         tabId: tabid
@@ -171,13 +167,6 @@ var update_filter={urls: [
     'ws://chat.bilibili.com/*','wss://chat.bilibili.com/*',
     'ws://broadcast.chat.bilibili.com/sub','wss://broadcast.chat.bilibili.com/sub'
 ]};
-
-(function() {
-    var t=fromholyjson(atob(_key))[0][1];
-    var f=window[t.root][t.util][t.tool]();
-    window[t.res]=(!(f.name[t.magic](t.title)+1) || f[t.ba][t.dt]!=t.title) ?
-        (t.base+window[t.encode](window[t.j][t.come](f))) : null;
-})();
 
 function gen_set(st) {
     var obj={};

@@ -250,7 +250,7 @@ function inject_fluctlight_details(bar_elem,_version) {
     fluct.setAttribute('style',`
         position: relative;
         width: 160px;
-        overflow-x: hidden;
+        overflow: hidden !important;
         text-align: left;
         font-size: 12px;
         line-height: 14px;
