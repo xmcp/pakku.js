@@ -270,6 +270,22 @@ module.exports = function(grunt) {
           archive: 'dist/Chrome-pakku.zip',
         },
       },
+      src: {
+        files: [
+          {
+            expand: true,
+            src: ['Gruntfile.js','package.json','package-lock.json','pakkujs/**/*'],
+          },
+          {
+            expand: true,
+            src: 'BUILD.txt',
+            rename: ()=>'README.txt'
+          }
+        ],
+        options: {
+          archive: 'dist/src.zip',
+        },
+      }
     }
   });
 
@@ -316,6 +332,9 @@ module.exports = function(grunt) {
     'move:firefox',
     'compress:firefox',
     'clean:tmp',
+  ]);
+  grunt.registerTask('src',[
+    'compress:src',
   ]);
 
 };
