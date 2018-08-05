@@ -4,7 +4,7 @@
     width: 300px;
     position: absolute;
     z-index: 10000;
-    top: 70px;
+    top: 50px;
     right: 0;
     box-shadow: 2px 2px 50px black;
 }
@@ -59,6 +59,7 @@
 }
 .pakku-panel-footer a {
     display: inline-block;
+    color: initial !important;
 }
 .pakku-panel-desc:empty~hr.pakku-for-desc {
     display: none;
@@ -68,6 +69,9 @@
 }
 .pakku-panel * {
     font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace !important;
+}
+.pakku-panel-peers div {
+    overflow: hidden;
 }
 .pakku-panel-peers p:nth-child(1) {
     font-weight: bold;
@@ -114,7 +118,8 @@
 }
 .__pakku_pointer_event .bilibili-player-video-top,
 .__pakku_pointer_event .bilibili-player-video-control-mask,
+.__pakku_pointer_event .bilibili-player-video-control-wrap,
 .__pakku_pointer_event .bilibili-player-video-control,
 .__pakku_pointer_event .bilibili-player-video-state {
-    visibility: hidden !important;
+    display: none !important;
 }

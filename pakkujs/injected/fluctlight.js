@@ -139,6 +139,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     
     canvas_elem.height=HEIGHT;
     
+    canvas_elem.style.display='none';
     if(_version==1) {
         canvas_elem.style.position='relative';
         canvas_elem.style.bottom=(HEIGHT+120)+'px';

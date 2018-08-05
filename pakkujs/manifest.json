@@ -1,7 +1,7 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "9.0",
+    "version": "9.0.1",
     "description": "瞬间过滤B站(bilibili.com)的刷屏弹幕，还你清爽的弹幕视频体验。",
     "icons": {
         "128": "assets/logo.png",

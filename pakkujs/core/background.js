@@ -102,7 +102,7 @@ function load_userinfo_batch(hashes,store,final_callback,silence) {
 
     while(uids_arr.length) {
         var curjob={};
-        uids_arr.splice(0,100).forEach(function(uid) {
+        uids_arr.splice(0,33).forEach(function(uid) {
             curjob[uid]=uids[uid];
         });
         jobs.push(curjob);

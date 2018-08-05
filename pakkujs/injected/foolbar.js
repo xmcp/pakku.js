@@ -128,9 +128,6 @@ function inject_foolbar() {
         }
     });
     bar.appendChild(input);
-    var btn_init_db=make_button('init',function() {
-        init_db();
-    });
     var btn_init_with_uid=make_button('+uid',function(e) {
         btn_init_with_uid.disabled=true;
         chrome.runtime.sendMessage({type: 'crack_uidhash_batch', dinfo: D}, function(newD) {
@@ -149,7 +146,6 @@ function inject_foolbar() {
             btn_init_with_exp.textContent='✓exp';
         });
     });
-    bar.appendChild(btn_init_db);
     bar.appendChild(btn_init_with_uid);
     bar.appendChild(btn_init_with_exp);
     bar.appendChild(make_button('[?]',function() {

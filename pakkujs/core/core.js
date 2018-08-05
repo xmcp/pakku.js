@@ -1,6 +1,7 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var LOG_VERBOSE=false;
+var LOG_DISPVAL=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
@@ -170,8 +171,8 @@ function parse(dom,tabid,S,D) {
             return elem.disp_str= count<=MARK_THRESHOLD ? elem.orig_str : make_mark(elem.str,count);
     }
     
-    function dispval(str) {
-        return Math.sqrt(str.length);
+    function dispval(dm) {
+        return Math.sqrt(dm.disp_str.length)*Math.pow(Math.min(dm.size/25,2.5),1.5);
     }
 
     function trim_pinyin(s) {
@@ -246,7 +247,9 @@ function parse(dom,tabid,S,D) {
                 mode: mode,
                 size: parseFloat(attr[2]),
                 desc: [], // for D
-                peers: []
+                peers: [],
+
+                self_dispval: null
             };
 
             if(!PROC_POOL1 && attr[5]==='1') {
@@ -333,20 +336,33 @@ function parse(dom,tabid,S,D) {
     for(var i=0;i<danmu_chunk.length;i++)
         out_danmus.push(danmu_chunk[i]);
 
-    // process SHRINK
-    if(SHRINK) {
-        var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
-        var chunkl=0,chunkr=0,chunkval=0;
-        out_danmus.forEach(function(dm) {
-            while(dm.time-out_danmus[chunkl].time>SHRINK_TIME_THRESHOLD) {
-                chunkval-=dispval(danmus[chunkl].str);
-                chunkl++;
+    // process SHRINK and ENLARGE
+    var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);
+    var chunkl=0,chunkr=0,chunkval=0;
+    out_danmus.forEach(function(dm) {
+        while(chunkr<out_danmus_len && out_danmus[chunkr].time-dm.time<SHRINK_TIME_THRESHOLD) {
+            var dmr=out_danmus[chunkr];
+            if(ENLARGE) {
+                var enlarge_rate=enlarge(dmr.peers.length);
+                if(enlarge_rate>1.0001)
+                    dmr.desc.push('已放大 '+enlarge_rate.toFixed(2)+' 倍：合并数量为 '+(dmr.peers.length));
+                dmr.size*=enlarge_rate;
             }
-            while(chunkr<out_danmus_len && out_danmus[chunkr].time-dm.time<SHRINK_TIME_THRESHOLD) {
-                chunkval+=dispval(danmus[chunkr].str);
-                chunkr++;
+            chunkval+=(dmr.self_dispval=dispval(dmr));
+            chunkr++;
+        }
+        while(dm.time-out_danmus[chunkl].time>SHRINK_TIME_THRESHOLD) {
+            chunkval-=out_danmus[chunkl].self_dispval;
+            chunkl++;
+        }
+        S.maxdispval=Math.max(S.maxdispval,chunkval);
+        
+        if(SHRINK) {
+            if(LOG_DISPVAL) {
+                var prefix=chunkval.toFixed(0)+' ['+dm.self_dispval.toFixed(0)+'] ';
+                dm.str=prefix+dm.str;
+                dm.orig_str=prefix+dm.orig_str;
             }
-            S.maxdispval=Math.max(S.maxdispval,chunkval);
             
             if(chunkval>DISPVAL_THRESHOLD) {
                 if(LOG_VERBOSE)
@@ -356,8 +372,8 @@ function parse(dom,tabid,S,D) {
                 dm.size/=shrink_rate;
                 dm.desc.push('已缩小 '+shrink_rate.toFixed(2)+' 倍：弹幕密度为 '+chunkval.toFixed(1));
             }
-        });        
-    }
+        }
+    });
     
     // process other stuffs and apply them
     out_danmus.forEach(function(dm) {
@@ -371,13 +387,6 @@ function parse(dom,tabid,S,D) {
         var d=new_dom.createElement('d');
         var tn=new_dom.createTextNode(build_text(dm));
         d.appendChild(tn);
-        
-        if(ENLARGE) {
-            var enlarge_rate=enlarge(dm.peers.length);
-            if(enlarge_rate>1.0001)
-                dm.desc.push('已放大 '+enlarge_rate.toFixed(2)+' 倍：合并数量为 '+(dm.peers.length));
-            dm.size*=enlarge_rate;
-        }
         
         var attr=dm.attr.slice();
         attr[1]=dm.mode;
