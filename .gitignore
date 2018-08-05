@@ -5,3 +5,4 @@ __pycache__/
 node_modules/
 package-lock.json
 /dist/
+debug.log

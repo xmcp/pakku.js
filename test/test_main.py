@@ -47,7 +47,7 @@ for _ in range(60):
 
 time.sleep(1)
 
-assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.bilibili-player-danmaku-list .danmaku-info-row:first-child').text
+assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.bilibili-player-danmaku-list .danmaku-info-row:nth-child(2)').text
 assert runner.b.find_element_by_css_selector('.__pakku_injected')
 assert runner.b.find_element_by_css_selector('.bilibili-player .pakku-panel')
 assert runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-video-control canvas')
