@@ -217,6 +217,30 @@ module.exports = function(grunt) {
       },
     },
 
+    cssmin: {
+      options: {
+        level: 2,
+
+      },
+
+      dev: {
+        files: {
+          'dist/_/injected/all_injected.css': ['pakkujs/injected/*.css'],
+        },
+        options: {
+          sourceMap: true,
+        },
+      },
+      production: {
+        files: {
+          'dist/_/injected/all_injected.css': ['pakkujs/injected/*.css'],
+        },
+        options: {
+          sourceMap: false,
+        },
+      },
+    },
+
     compress: {
       options: {
         level: 9,
@@ -256,6 +280,7 @@ module.exports = function(grunt) {
     'copy:chrome',
     'concat:chrome',
     'uglify:dev',
+    'cssmin:dev',
     'copy:chrome_manifest',
 
     'clean:tmp',
@@ -269,6 +294,7 @@ module.exports = function(grunt) {
     'concat:chrome',
     'uglify:production',
     'htmlmin:main',
+    'cssmin:production',
     'copy:chrome_manifest',
 
     'move:chrome',
@@ -284,6 +310,7 @@ module.exports = function(grunt) {
     'concat:firefox',
     'uglify:production',
     'htmlmin:main',
+    'cssmin:production',
     'copy:firefox_manifest',
 
     'move:firefox',

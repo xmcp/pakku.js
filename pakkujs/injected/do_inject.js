@@ -32,7 +32,7 @@ function try_inject() {
     });
     */
     // detect new player style
-    if(root_elem.closest('.stardust-player')) {
+    if(root_elem && root_elem.closest('.stardust-player')) {
         root_elem=root_elem.closest('body');
         isstardust=true;
         console.log('pakku injector: stardust detected');
@@ -46,7 +46,6 @@ function try_inject() {
             console.log('pakku injector: root_elem not found');
         return;
     }
-    root_document=root_elem.ownerDocument;
 
     // 3rd-party scripts can use this for convenience
     window.postMessage({

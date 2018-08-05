@@ -1,48 +1,5 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var FOOLBAR_CSS=`
-.pakku-foolbar {
-    width: 100%;
-    display: flex;
-    line-height: 20px;
-}
-.pakku-foolbar * {
-    font-family: 'Consolas', 'Courier', monospace !important;
-}
-.pakku-foolbar>.pakku-foolbar-prompt {
-    flex: 0 0 250px;
-    text-align: right;
-}
-.pakku-foolbar>input {
-    flex: 1 1 0;
-    -webkit-appearance: textfield; /* fix for bangumi page */
-}
-.pakku-foolbar>.pakku-foolbar-prompt::after {
-    margin-right: 1em;
-    content: ' select * from danmaku where';
-    color: darkblue;
-    font-style: italic;
-}
-button.pakku-button:hover {
-    background: #eee;
-}
-button.pakku-button:active {
-    background: darkblue;
-    color: white;
-}
-button.pakku-button {
-    background: #ddd;
-    border-width: 0;
-    font-weight: inherit;
-    padding: 0 0.3em;
-}
-button.pakku-button:not([disabled]) {
-    cursor: pointer;
-}
-button.pakku-button[disabled] {
-    background: lightgreen;
-}
-`;
 var FOOLBAR_SCHEMA=`create table danmaku (
     _xml_src text,
     text text, /* 显示的弹幕内容 */
@@ -72,7 +29,6 @@ Proudly using AlaSQL.
 
 function inject_foolbar() {
     var _initialized=false;
-    inject_css(FOOLBAR_CSS);
     function init_db() {
         console.time('pakku foolbar: init db');
         function extract_exp(d) {

@@ -168,12 +168,17 @@ function inject_panel(tabid,D,OPT) {
         if(OPT['FOOLBAR'])
             fetch_alasql(tabid);
         setTimeout(function() {
-            chrome.tabs.executeScript(tabid,{
+            chrome.tabs.insertCSS(tabid, {
+                file: '/injected/all_injected.css',
+                allFrames: true,
+                runAt: 'document_end'
+            });
+            chrome.tabs.executeScript(tabid, {
                 file: '/injected/all_injected.js',
                 allFrames: true,
-                runAt: 'document_idle'
+                runAt: 'document_end'
             });
-        },200);
+        },100);
     });
 }
 

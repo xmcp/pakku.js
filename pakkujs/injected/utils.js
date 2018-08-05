@@ -1,9 +1,8 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 // https://stackoverflow.com/questions/3086068/how-do-i-check-whether-a-jquery-element-is-in-the-dom
-if(typeof root_elem=='undefined' || !root_elem.closest('html')) {
+if(typeof root_elem=='undefined' || !root_elem || !root_elem.closest('html')) {
     var root_elem=null;
-    var root_document=null;
     var isstardust=false;
 }
 
@@ -111,10 +110,4 @@ function reload_danmaku_magic() {
     trigger_mouse_event(elem,'click');
 
     date_picker.removeChild(elem);
-}
-
-function inject_css(css) {
-    var elem=document.createElement('style');
-    elem.textContent=css;
-    root_elem.appendChild(elem);
 }

@@ -1,0 +1,16 @@
+.pakku-fluctlight-graph {
+    display: none;
+    pointer-events: none;
+    z-index: 9999;
+}
+.pakku-flictlight-fluct {
+    position: relative;
+    width: 160px;
+    overflow: hidden !important;
+    text-align: left;
+    font-size: 12px;
+    line-height: 14px;
+    padding: 0 2px;
+    box-sizing: border-box;
+    background-color: rgba(205,205,205,.8);
+}

@@ -1,128 +1,5 @@
 // (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-var PANEL_CSS=`
-.pakku-panel {
-    background-color: rgba(205,205,205,.8);
-    color: black;
-    width: 300px;
-    position: absolute;
-    z-index: 10000;
-    top: 70px;
-    right: 0;
-    box-shadow: 2px 2px 50px black;
-}
-.pakku-floating .pakku-panel {
-    right: -20px;
-    filter: brightness(.9);
-    pointer-events: none;
-}
-.pakku-panel-title {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    margin: 3px 0;
-}
-.pakku-panel-close {
-    font: inherit; /* fix for bangumi page */
-    line-height: 1em;
-    color: black !important;
-    background-color: transparent !important;
-    border-radius: 0;
-    border: none !important;
-    padding: 3px 5px;
-    cursor: pointer;
-}
-.pakku-panel-desc:not(:empty) {
-    line-height: 1.2em;
-    margin: 3px 5px;
-    white-space: initial;
-}
-.pakku-panel-peers {
-    max-height: 350px;
-    overflow-y: auto;
-}
-.pakku-panel-footer:not(:empty) {
-    overflow: hidden;
-    margin: 3px 5px;
-}
-.pakku-panel * {
-    user-select: text !important; /* to override ".bilibili-player *" */
-}
-.pakku-panel a {
-    color: black;
-    border-bottom: 1px solid black;
-}
-.pakku-panel hr {
-    margin: 0;
-}
-.pakku-panel .text-fix {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-}
-.pakku-panel-footer a {
-    display: inline-block;
-}
-.pakku-panel-desc:empty~hr.pakku-for-desc {
-    display: none;
-}
-.pakku-panel-footer:empty~hr.pakku-for-footer {
-    display: none;
-}
-.pakku-panel * {
-    font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
-}
-.pakku-panel-peers p:nth-child(1) {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.pakku-panel-peers p:nth-child(2) {
-    display: none;
-    font-weight: normal;
-}
-.pakku-panel-peers div:hover p:nth-child(1) {
-    white-space: initial;
-    word-wrap: break-word;
-    word-break: break-all;
-}
-.pakku-panel-peers div:hover p:nth-child(2) {
-    display: initial;
-}
-.pakku-panel-peers div.black {
-    background-color: rgba(24,24,24,.8);
-}
-.pakku-panel-peers div.white {
-    background-color: rgba(231,231,231,.8);
-}
-.pakku-panel-peers div.black:hover {
-    background-color: rgba(0,0,0,1);
-}
-.pakku-panel-peers div.white:hover {
-    background-color: rgba(255,255,255,1);
-}
-`;
-
-var PANEL_EVENT_FIX=`
-.__pakku_pointer_event div.bilibili-player-video-danmaku,
-.__pakku_pointer_event div.bilibili-danmaku {
-    pointer-events: initial !important;
-}
-.__pakku_pointer_event div.bilibili-danmaku {
-    background-color: rgba(255,255,0,.6);
-}
-.__pakku_pointer_event div.bilibili-danmaku:hover {
-    background-color: rgba(255,255,0,1);
-}
-.__pakku_pointer_event .bilibili-player-video-top,
-.__pakku_pointer_event .bilibili-player-video-control-mask,
-.__pakku_pointer_event .bilibili-player-video-control,
-.__pakku_pointer_event .bilibili-player-video-state {
-    visibility: hidden !important;
-}
-`
-
 function make_panel_dom() {
     var dom=make_elem('div','pakku-panel');
     var dom_title=make_elem('p','pakku-panel-title');
@@ -225,7 +102,6 @@ function query_uid(uidhash,logger_container) {
 }
 
 function inject_panel(list_elem,player_elem) {
-    inject_css(PANEL_CSS);
     var panel_obj=document.createElement('div');
     panel_obj.style.display='none';
     panel_obj.appendChild(make_panel_dom());
@@ -235,7 +111,7 @@ function inject_panel(list_elem,player_elem) {
     panel_obj.addEventListener('mousewheel',function(e) {
         e.stopPropagation();
     });
-    root_document.addEventListener('click',function(e) {
+    document.addEventListener('click',function(e) {
         if(!panel_obj.contains(e.target) && !list_elem.contains(e.target))
             panel_obj.style.display='none';
     });
@@ -324,7 +200,6 @@ function inject_panel(list_elem,player_elem) {
     
     var danmaku_stage=player_elem.querySelector('.bilibili-player-video-danmaku');
     if(danmaku_stage) {
-        inject_css(PANEL_EVENT_FIX);
         var hover_counter=0;
         danmaku_stage.addEventListener('mouseover',function(e) {
             hover_counter++;
@@ -346,7 +221,7 @@ function inject_panel(list_elem,player_elem) {
             }
             player_elem.classList.remove('__pakku_pointer_event');
         });
-        root_document.addEventListener('keydown',function(e) {
+        document.addEventListener('keydown',function(e) {
             if(e.key=='Control' && !e.repeat) {
                 hover_counter=0;
                 player_elem.classList.add('__pakku_pointer_event');
@@ -356,7 +231,7 @@ function inject_panel(list_elem,player_elem) {
                     panel_obj.style.display='none';
             }
         });
-        root_document.addEventListener('keyup',function(e) {
+        document.addEventListener('keyup',function(e) {
             if(e.key=='Control') {
                 player_elem.classList.remove('__pakku_pointer_event');
                 if(panel_obj.classList.contains('pakku-floating'))
@@ -364,7 +239,7 @@ function inject_panel(list_elem,player_elem) {
             }
         });
         // after the webpage lost focus, `keyup` event might not be dispatched
-        root_document.defaultView.addEventListener('blur',function() {
+        document.defaultView.addEventListener('blur',function() {
             player_elem.classList.remove('__pakku_pointer_event');
         })
     }

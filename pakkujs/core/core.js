@@ -175,7 +175,7 @@ function parse(dom,tabid,S,D) {
     }
 
     function trim_pinyin(s) {
-        return Array.from(s).map(function(c) {
+        return Array.from(s.toLowerCase()).map(function(c) {
             return PINYIN_TABLE[c] || c;
         }).join('');
     }

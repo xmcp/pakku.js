@@ -90,7 +90,8 @@ function toholyjson(obj) {
 
 function reload_danmaku() {
     chrome.tabs.executeScript({
-        'code': 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();'
+        code: 'if(typeof reload_danmaku_magic!="undefined") reload_danmaku_magic();',
+        allFrames: true
     });
 }
 function set_global_switch(sw,_do_no_reload) {
@@ -244,7 +245,7 @@ function fetch_alasql(tabid) {
         if(tabid)
             chrome.tabs.executeScript(tabid,{
                 code: code,
-                runAt: 'document_idle'
+                runAt: 'document_end'
             });
     }
 

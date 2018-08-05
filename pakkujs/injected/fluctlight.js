@@ -10,6 +10,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
     
     var canvas_elem=document.createElement('canvas');
+    canvas_elem.className='pakku-fluctlight-graph';
     var ctx=canvas_elem.getContext('2d');
     var details_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail');
     if(!details_elem) {
@@ -137,10 +138,6 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     window._pakku_fluctlight_highlight=redraw;
     
     canvas_elem.height=HEIGHT;
-    canvas_elem.style.display='none';
-    canvas_elem.style.pointerEvents='none';
-    canvas_elem.style.zIndex=9999;
-
     
     if(_version==1) {
         canvas_elem.style.position='relative';
@@ -180,6 +177,7 @@ function inject_fluctlight_details(bar_elem,_version) {
     var MAX_FLUCT=15;
     
     var fluct=document.createElement('div');
+    fluct.className='pakku-flictlight-fluct';
     var time_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail-time');
     if(!time_elem) {
         console.log('! fluctlight cannot find time_elem');
@@ -246,19 +244,6 @@ function inject_fluctlight_details(bar_elem,_version) {
         childList: true
     });
     
-    // inject fluctlight
-    fluct.setAttribute('style',`
-        position: relative;
-        width: 160px;
-        overflow: hidden !important;
-        text-align: left;
-        font-size: 12px;
-        line-height: 14px;
-        padding: 0 2px;
-        box-sizing: border-box;
-        background-color: rgba(205,205,205,.8);
-    `);
-
     fluct.dataset['current_time']='';
     time_elem.parentNode.appendChild(fluct);
 }
