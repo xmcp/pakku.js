@@ -6,3 +6,6 @@ node_modules/
 package-lock.json
 /dist/
 debug.log
+mobile-proxy/_emilia_generated.js
+mobile-proxy/all_core.js
+mobile-proxy/cert/*.pem
