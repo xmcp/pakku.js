@@ -365,7 +365,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
         localStorage['_ADVANCED_USER']=id('show-advanced').checked?'on':'off';
         // 弹幕合并
-        localStorage['THRESHOLD']=parseInt(id('threshold').value)>-2?parseInt(id('threshold').value):20;
+        localStorage['THRESHOLD']=parseInt(id('threshold').value,10)>-2?parseInt(id('threshold').value,10):20;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
         localStorage['MODE_ELEVATION']=id('mode-elevation').checked?'on':'off';

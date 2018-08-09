@@ -193,6 +193,7 @@ module.exports = function(grunt) {
         files: CONCAT_OUT_FILES.concat(make_filelist(NORMAL_DIR,ALL_JS,'dist/tmp')),
         options: {
           sourceMap: true,
+          compress: false,
         },
       },
       production: {
@@ -220,7 +221,6 @@ module.exports = function(grunt) {
     cssmin: {
       options: {
         level: 2,
-
       },
 
       dev: {

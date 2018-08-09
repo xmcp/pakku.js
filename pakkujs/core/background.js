@@ -274,16 +274,21 @@ function load_danmaku(resp,id,tabid) {
         var res=parse(rxml,tabid,S,D);
         var counter=S.total-S.onscreen;
         
-        setbadge((
-                POPUP_BADGE=='count' ? ''+counter :
-                POPUP_BADGE=='percent' ? (S.total ? (counter*100/S.total).toFixed(0)+'%' : '0%') :
-                ''
-            ),SUCCESS_COLOR,tabid
-        );
-        chrome.browserAction.setTitle({
-            title: '已过滤 '+counter+'/'+S.total+' 弹幕',
-            tabId: tabid
-        });
+        if(tabid>0) {
+            setbadge((
+                    POPUP_BADGE=='count' ? ''+counter :
+                    POPUP_BADGE=='percent' ? (S.total ? (counter*100/S.total).toFixed(0)+'%' : '0%') :
+                    ''
+                ),SUCCESS_COLOR,tabid
+            );
+            chrome.browserAction.setTitle({
+                title: '已过滤 '+counter+'/'+S.total+' 弹幕',
+                tabId: tabid
+            });
+        } else { // bug
+            chrome.browserAction.setBadgeText({text: ''});
+            chrome.browserAction.setTitle({title: 'pakku'});
+        }
         
         inject_panel(tabid,D,{
             CID: id,

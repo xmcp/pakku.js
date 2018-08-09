@@ -6,6 +6,7 @@ chrome.browserAction.setBadgeText({ // badge text in the previous launch might n
     text: GLOBAL_SWITCH?'':'zzz'
 });
 
+/*
 // https://github.com/xmcp/9alpha integration
 if(localStorage['_9ALPHA']) {
     var ID_9ALPHA=localStorage['_9ALPHA'];
@@ -80,6 +81,7 @@ if(localStorage['_9ALPHA']) {
         });
     },500);
 }
+*/
 
 if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {

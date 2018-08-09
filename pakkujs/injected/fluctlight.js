@@ -125,7 +125,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
             gra.addColorStop(.9,'rgba(255,255,255,1)')
             gra.addColorStop(1,'rgba(255,255,255,0)')
             ctx.globalCompositeOperation='destination-out';
-            ctx.globalAlpha=.4;
+            ctx.globalAlpha=.5;
             ctx.fillStyle=gra;
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
@@ -186,7 +186,7 @@ function inject_fluctlight_details(bar_elem,_version) {
     }
     
     function to_dom(danmu) {
-        var p=make_p(proc_mode(danmu.peers[0].mode)+' '+danmu.text);
+        var p=make_p(danmu.text);
         if(danmu.peers.length>1)
             p.style.fontWeight='bold';
         return p;

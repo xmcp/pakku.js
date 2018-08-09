@@ -4,14 +4,20 @@ function make_panel_dom() {
     var dom=make_elem('div','pakku-panel');
     var dom_title=make_elem('p','pakku-panel-title');
     var dom_close=make_elem('button','pakku-panel-close');
+    var dom_selectbar=make_elem('div','pakku-panel-selectbar');
     
     dom_close.type='button';
     dom_close.textContent='×';
     
     dom_title.appendChild(dom_close);
     dom_title.appendChild(make_elem('span','pakku-panel-text'));
+
+    dom_selectbar.appendChild(make_elem('span','pakku-panel-selectbar-left'));
+    dom_selectbar.appendChild(make_elem('span','pakku-panel-selectbar-right'));
+    dom_selectbar.appendChild(make_elem('span','pakku-panel-selectbar-content'));
     
     dom.appendChild(dom_title);
+    dom.appendChild(dom_selectbar);
     dom.appendChild(make_elem('hr',''));
     dom.appendChild(make_elem('div','pakku-panel-desc'));
     dom.appendChild(make_elem('hr','pakku-for-desc'));
@@ -119,11 +125,15 @@ function inject_panel(list_elem,player_elem) {
     player_elem.appendChild(panel_obj);
 
     function show_panel(dminfo,floating) {
-        console.log('pakku panel: show panel',dminfo)
-
         var dm_ultralong=dminfo.str.length>498;
         var dm_str=dminfo.str.replace(/([\r\n\t]|\/n)/g,'').trim();
         var text_container=panel_obj.querySelector('.pakku-panel-text'),
+            selectbar={
+                bar: panel_obj.querySelector('.pakku-panel-selectbar'),
+                content: panel_obj.querySelector('.pakku-panel-selectbar-content'),
+                left: panel_obj.querySelector('.pakku-panel-selectbar-left'),
+                right: panel_obj.querySelector('.pakku-panel-selectbar-right'),
+            },
             desc_container=panel_obj.querySelector('.pakku-panel-desc'),
             peers_container=panel_obj.querySelector('.pakku-panel-peers'),
             footer_container=panel_obj.querySelector('.pakku-panel-footer');
@@ -135,27 +145,37 @@ function inject_panel(list_elem,player_elem) {
         footer_container.textContent='';
         footer_container.dataset['_current_hash']='';
         
-        var info=null;
+        var infos=[];
         // the list might be sorted in a wrong way, so let's guess the index
         if(typeof dminfo.index=='number' && D[dminfo.index] &&
-                (dm_ultralong ? D[dminfo.index].trimmed_text.indexOf(dm_str)===0 : D[dminfo.index].trimmed_text===dm_str))
-            info=D[dminfo.index];
-        else {
-            var cnt=0;
+                (dm_ultralong ? D[dminfo.index].trimmed_text.indexOf(dm_str)===0 : D[dminfo.index].trimmed_text===dm_str)) {
+            infos=[D[dminfo.index]];
+        } else {
             for(var i=0;i<D.length;i++)
-                if((dm_ultralong ? D[i].trimmed_text.indexOf(dm_str)===0 : D[i].trimmed_text===dm_str)) {
-                    info=D[i];
-                    cnt++;
-                }
-            if(cnt>1)
-                desc_container.appendChild(make_p('* 数据可能不准确'));
+                if((dm_ultralong ? D[i].trimmed_text.indexOf(dm_str)===0 : D[i].trimmed_text===dm_str))
+                    infos.push(D[i]);
         }
+
+        console.log('pakku panel: show panel',infos);
         
-        if(info) {
+        function redraw_ui(idx) {
+            if(idx<0) idx+=infos.length;
+            else if(idx>=infos.length) idx-=infos.length;
+            var info=infos[idx];
+
             text_container.textContent=info.text;
+
+            selectbar.bar.style.display=infos.length>1 ? 'block' : 'none';
+            selectbar.content.textContent=(idx+1)+'/'+infos.length+' ['+format_duration((info.peers[0]||{time: 0}).time)+']';
+            selectbar.left.onclick=function() {redraw_ui(idx-1);};
+            selectbar.right.onclick=function() {redraw_ui(idx+1);};
+
+            desc_container.textContent='';
             info.desc.forEach(function(d) {
                 desc_container.appendChild(make_p(d));
             });
+
+            peers_container.textContent='';
             info.peers.forEach(function(p) {
                 var self=document.createElement('div');
                 var color=proc_rgb(parseInt(p.attr[3]));
@@ -178,8 +198,13 @@ function inject_panel(list_elem,player_elem) {
             });
             if(info.peers[0])
                 query_uid(info.peers[0].attr[6],footer_container);
-        } else
+        }
+
+        if(infos.length) {
+            redraw_ui(0);
+        } else {
             desc_container.appendChild(make_p('找不到弹幕详情'));
+        }
     
         peers_container.scrollTo(0,0);
 
@@ -215,7 +240,6 @@ function inject_panel(list_elem,player_elem) {
         });
         danmaku_stage.addEventListener('click',function(e) {
             if(e.target.className=='bilibili-danmaku') {
-                console.log('click');
                 show_panel({str: e.target.textContent});
                 e.stopPropagation();
             }

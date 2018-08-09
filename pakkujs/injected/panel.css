@@ -29,6 +29,26 @@
     padding: 3px 5px;
     cursor: pointer;
 }
+.pakku-panel-selectbar {
+    text-align: center;
+    margin: 3px 0;
+}
+.pakku-panel-selectbar-left, .pakku-panel-selectbar-right {
+    padding: 0 25px;
+    cursor: pointer;
+}
+.pakku-panel-selectbar-left {
+    float: left;
+}
+.pakku-panel-selectbar-left::after {
+    content: '<<';
+}
+.pakku-panel-selectbar-right {
+    float: right;
+}
+.pakku-panel-selectbar-right::after {
+    content: '>>';
+}
 .pakku-panel-desc:not(:empty) {
     line-height: 1.2em;
     margin: 3px 5px;

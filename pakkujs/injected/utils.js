@@ -63,6 +63,12 @@ function format_date(x) {
 function format_datetime(x) {
     return format_date(x)+' '+x.getHours()+':'+_fix2(x.getMinutes());
 }
+function format_duration(d) {
+    d=d|0;
+    return d<3600 ?
+        (Math.floor(d/60)+':'+_fix2(d%60)) :
+        (Math.floor(d/3600)+':'+_fix2(Math.floor((d%3600)/60))+':'+_fix2(d%60));
+}
 
 function zero_array(len) {
     var x=new Array(len);
