@@ -1,51 +1,42 @@
-[![Build Status](https://travis-ci.org/xmcp/pakku.js.svg?branch=master)](https://travis-ci.org/xmcp/pakku.js)
+[![Build Status](https://img.shields.io/travis/xmcp/pakku.js.svg?style=flat-square)](https://travis-ci.org/xmcp/pakku.js)
 /
-[![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
 /
-[![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
-[![Mozilla Add-on - Downloads](https://img.shields.io/amo/users/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
-[![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Downloads](https://img.shields.io/amo/users/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
+[![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 
-## [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_1) （支持 Chrome 和 Firefox）
+#### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_1) （支持 Chrome 和 Firefox）
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
-自动合并B站视频中刷屏弹幕的 Chrome 扩展程序，让您免受各种带节奏弹幕的刷屏之苦
+自动合并B站视频中刷屏弹幕的 WebExtension，让您免受各种带节奏弹幕的刷屏之苦
 
-使用之前 ↓
+↓ 《千绪的通学路》第5话
 
-![screenshot_before](https://user-images.githubusercontent.com/6646473/27000977-c4d32444-4df0-11e7-8049-2a611f174471.png)
+![](http://s.xmcp.ml/pakkujs/comm/1.png)
 
-使用之后 ↓
+↓  哔哩哔哩拜年祭 2018，可见“弹幕密度分析图”功能
 
-![screenshot_after](https://user-images.githubusercontent.com/6646473/27000990-3ff7deee-4df1-11e7-90ba-32647c1defea.png)
+![](http://s.xmcp.ml/pakkujs/comm/2.png)
 
-Browser Action ↓
+↓  【炮姐/AMV】我永远都会守护在你的身边！(av810872)，可见“自动调整弹幕大小”功能
 
-![browser_action_advanced](https://user-images.githubusercontent.com/6646473/36491658-42022f8e-1766-11e8-9728-33d0a77f7f47.png)
+![](http://s.xmcp.ml/pakkujs/comm/3.png)
 
-![browser_action_details](https://user-images.githubusercontent.com/6646473/36491671-50194710-1766-11e8-9f73-7bbe1d90efa2.png)
+↓  《NEW GAME!》第8话，可见“弹幕信息显示框”功能
 
+![](http://s.xmcp.ml/pakkujs/comm/4.png)
 
-弹幕信息显示（支持查询弹幕发送者） ↓
+↓  电磁炮真是太可爱了(av314)，可见统计信息显示
 
-![tooltip](https://user-images.githubusercontent.com/6646473/36491701-5e8f89a8-1766-11e8-815b-e890ebaeff5e.png)
-
-弹幕密度分析图 ↓
-
-![fluctlight](https://user-images.githubusercontent.com/6646473/36491732-70320f0a-1766-11e8-80e9-11ae4842f781.png)
-
-弹幕屏蔽 Pro ↓
-
-![foolbar](https://user-images.githubusercontent.com/6646473/39392565-6fa348ee-4aea-11e8-86e4-abc30c61bbb8.png)
-
-其前身是基于Python的[pakku.py](https://github.com/xmcp/pakku.py)，现在移植为了 Chrome 扩展程序和 Firefox 扩展以方便使用。
+![](http://s.xmcp.ml/pakkujs/comm/5.png)
 
 ### 开放 API
 
-Power User 可以通过 HTML5 Messaging API 来利用 pakku 干更多的事情。
+可以通过 HTML5 Messaging API 来利用 pakku 干更多的事情。
 
 v8.6.5+:
 
@@ -68,8 +59,6 @@ v8.10.1:
 
 请注意，上述接口没有文档，不保证能够正常工作，任何 bug 都是 feature。
 
-使用该 API 的示例：[xmcp/pakku-advanced-filter](https://github.com/xmcp/pakku-advanced-filter)
-
 -----
 
 ### License
@@ -83,3 +72,12 @@ See [LICENSE.txt](LICENSE.txt) for details.
 -----
 
 #### [→ 点我安装 ←](http://s.xmcp.ml/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）
+
+-----
+
+同时了解一下：
+
+- [在手机客户端上使用pakku](https://github.com/xmcp/pakku-mobile-proxy)
+- [按UID或用户等级屏蔽弹幕](https://github.com/xmcp/pakku-advanced-filter)
+- [好用的分P列表](https://github.com/xmcp/bilipager)
+
