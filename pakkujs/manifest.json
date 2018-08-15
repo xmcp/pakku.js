@@ -3,6 +3,7 @@
     "short_name": "pakku",
     "version": "9.1",
     "description": "瞬间过滤B站(bilibili.com)的刷屏弹幕，还你清爽的弹幕视频体验。",
+    "homepage_url": "http://s.xmcp.ml/pakkujs/?src=wext_homepage",
     "icons": {
         "128": "assets/logo.png",
         "48": "assets/logo_48.png"
