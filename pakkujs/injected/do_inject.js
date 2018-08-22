@@ -32,7 +32,7 @@ function try_inject() {
     });
     */
     // detect new player style
-    if(root_elem && root_elem.closest('.stardust-player')) {
+    if(root_elem && !root_elem.querySelector('.bilibili-player-auxiliary-area')) {
         root_elem=root_elem.closest('body');
         isstardust=true;
         console.log('pakku injector: stardust detected');
