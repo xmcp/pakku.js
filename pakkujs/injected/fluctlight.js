@@ -178,7 +178,7 @@ function inject_fluctlight_details(bar_elem,_version) {
     var MAX_FLUCT=15;
     
     var fluct=document.createElement('div');
-    fluct.className='pakku-flictlight-fluct';
+    fluct.className='pakku-fluctlight-fluct';
     var time_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail-time');
     if(!time_elem) {
         console.log('! fluctlight cannot find time_elem');
@@ -246,5 +246,10 @@ function inject_fluctlight_details(bar_elem,_version) {
     });
     
     fluct.dataset['current_time']='';
+
+    if(_version==1) {
+        fluct.style.left='0';
+    }
+
     time_elem.parentNode.appendChild(fluct);
 }

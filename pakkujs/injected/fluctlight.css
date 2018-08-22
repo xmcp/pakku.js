@@ -2,8 +2,9 @@
     pointer-events: none;
     z-index: 9999;
 }
-.pakku-flictlight-fluct {
+.pakku-fluctlight-fluct {
     position: relative;
+    left: -70px;
     width: 160px;
     overflow: hidden !important;
     text-align: left;
