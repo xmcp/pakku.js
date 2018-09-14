@@ -56,6 +56,14 @@
     "background": {
         "page": "core/background.html"
     },
+    "content_scripts": [
+        {
+            "matches": ["*://*.bilibili.com/*"],
+            "js": ["assets/script_injector.js"],
+            "run_at": "document_end",
+            "all_frames": true
+        }
+    ],
     
     "web_accessible_resources": [
         "assets/xhr_hook.js"

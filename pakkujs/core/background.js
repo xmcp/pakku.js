@@ -363,7 +363,10 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         },request.silence);
         return true;
     } else if(request.type==='need_ajax_hook') {
-        return sendResponse(!(browser && browser.webRequest.filterResponseData));
+        return sendResponse(
+            // chrome   or qipa     or firefox <57
+            !IS_FIREFOX || !browser || !browser.webRequest.filterResponseData
+        );
     }
 });
 

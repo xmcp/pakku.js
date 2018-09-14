@@ -5,9 +5,6 @@ function firefox_manifest(src,path) {
     var obj=JSON.parse(src);
     
     delete obj['content_security_policy'];
-    obj['content_scripts']=[
-        {'matches': ['*://*.bilibili.com/*'], 'js': ['assets/script_injector.js'], 'run_at': 'document_end', 'all_frames': true}
-    ];
     obj['permissions']=obj['permissions'].concat(obj['optional_permissions']);
     obj['applications']={
         'gecko': {

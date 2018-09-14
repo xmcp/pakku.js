@@ -18,8 +18,12 @@
         }, '*');
     }
     
+    /*for-firefox:
+
     window.Worker=null;
     console.warn('pakku: [to developers] Web Worker is disabled for compatibility on Firefox <=56');
+
+    */
     
     XMLHttpRequest.prototype.pakku_open=XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open=function(method,url,async,user,password) {
