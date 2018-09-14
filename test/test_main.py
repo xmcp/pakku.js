@@ -39,7 +39,7 @@ runner.update_settings('FOOLBAR','on')
 runner.b.get('https://www.bilibili.com/video/av314')
 for _ in range(60):
     try:
-        runner.b.find_element_by_css_selector('.bilibili-player-danmaku-list .danmaku-info-row')
+        runner.b.find_element_by_css_selector('.danmaku-info-row')
     except:
         time.sleep(.5)
     else:
@@ -47,7 +47,7 @@ for _ in range(60):
 
 time.sleep(1)
 
-assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.bilibili-player-danmaku-list .danmaku-info-row:nth-child(2)').text
+assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.danmaku-info-row:nth-child(2)').text
 assert runner.b.find_element_by_css_selector('.__pakku_injected')
 assert runner.b.find_element_by_css_selector('.bilibili-player .pakku-panel')
 assert runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-video-control canvas')
@@ -59,7 +59,7 @@ assert runner.b.find_element_by_css_selector('.pakku-foolbar')
 print('!= test reload')
 runner.b.execute_script('fetch("https://_xmcp_pakku_internal_test_domain.bilibili.com/change_taolus_and_reload")')
 time.sleep(3)
-assert 'pakku_another_str' in runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-danmaku-list .danmaku-info-row:first-child').text
+assert 'pakku_another_str' in runner.b.find_element_by_css_selector('.bilibili-player .danmaku-info-row:first-child').text
 assert len(runner.b.find_elements_by_css_selector('.bilibili-player .bilibili-player-video-progress canvas'))==1
 '''
 

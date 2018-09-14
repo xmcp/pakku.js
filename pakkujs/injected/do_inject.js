@@ -38,7 +38,9 @@ function try_inject() {
         console.log('pakku injector: stardust detected');
     }
     // maybe player is not ready yet
-    if(!root_elem || !root_elem.querySelector('.bilibili-player-danmaku')) {
+    if(root_elem)
+        var list_elem=root_elem.querySelector('.bilibili-player-danmaku, .player-auxiliary-danmaku-wrap');
+    if(!root_elem || !list_elem) {
         if(--try_left>0) {
             root_elem=null;
             setTimeout(try_inject,200);
@@ -53,19 +55,18 @@ function try_inject() {
         pakku_version: chrome.runtime.getManifest().version
     },'*');
 
-    if(root_elem.querySelector('.bilibili-player-danmaku.__pakku_injected')) {
+    if(root_elem.querySelector('.__pakku_injected')) {
         console.log('pakku injector: already injected');
         return;
     } else {
         console.log('pakku injector: root_elem',root_elem);
-        root_elem.querySelector('.bilibili-player-danmaku').classList.add('__pakku_injected');
+        list_elem.classList.add('__pakku_injected');
     }
 
     if(OPT['TOOLTIP']) {
-        var list_elem=root_elem.querySelector('.bilibili-player-danmaku');
         var player_elem=root_elem.querySelector('.bilibili-player-area');
         console.log('pakku injector: list_elem',list_elem,'player_elem',player_elem);
-        if(list_elem && player_elem)
+        if(player_elem)
             inject_panel(list_elem,player_elem);
     }
     if(OPT['AUTO_DISABLE_DANMU']) {

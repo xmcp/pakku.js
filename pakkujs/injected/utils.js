@@ -93,14 +93,14 @@ function reload_danmaku_magic() {
         console.log('pakku magic reload: root_elem not found');
         return;
     }
-    var date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
+    var date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
 
     if(!date_picker) {
-        var history_btn=root_elem.querySelector('.bilibili-player-danmaku-btn-history');
+        var history_btn=root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bilibili-player-danmaku-btn-history');
         console.log('pakku magic reload: activating date picker with',history_btn);
         history_btn.click();
         history_btn.click();
-        date_picker=root_elem.querySelector('.bilibili-player-danmaku-date-picker-day-content');
+        date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
     }
 
     var elem=document.createElement('span');
