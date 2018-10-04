@@ -18,6 +18,7 @@ var FOOLBAR_SCHEMA=`create table danmaku (
 var foolbar_help_text=`Hello World!
 通过左侧的输入框，你可以用 SQL 语句进行弹幕屏蔽。
 输入 SQL 查询后，当前的弹幕列表将即时更新。
+另外，必须登录B站账号才能使用此功能。
 
 弹幕信息的格式如下：
 ${FOOLBAR_SCHEMA}

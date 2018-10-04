@@ -214,7 +214,11 @@ function inject_panel(list_elem,player_elem) {
             panel_obj.classList.remove('pakku-floating');
     }
     
-    list_elem.addEventListener('click',function(e) {
+    if(window._panel_listener) {
+        list_elem.removeEventListener('click',window._panel_listener);
+        console.log('pakku panel: removing previous hook listener');
+    }
+    list_elem.addEventListener('click',window._panel_listener=function(e) {
         var dm_obj=e.target.parentElement;
         if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno'))
             show_panel({

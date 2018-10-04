@@ -31,6 +31,7 @@ function try_inject() {
         }
     });
     */
+    var pakku_tag_elem=root_elem;
     // detect new player style
     if(root_elem && !root_elem.querySelector('.bilibili-player-auxiliary-area')) {
         root_elem=root_elem.closest('body');
@@ -55,12 +56,12 @@ function try_inject() {
         pakku_version: chrome.runtime.getManifest().version
     },'*');
 
-    if(root_elem.querySelector('.__pakku_injected')) {
+    if(pakku_tag_elem.classList.contains('.__pakku_injected')) {
         console.log('pakku injector: already injected');
         return;
     } else {
         console.log('pakku injector: root_elem',root_elem);
-        list_elem.classList.add('__pakku_injected');
+        pakku_tag_elem.classList.add('__pakku_injected');
     }
 
     if(OPT['TOOLTIP']) {
@@ -84,7 +85,7 @@ function try_inject() {
     }
     if(OPT['AUTO_DANMU_LIST']) {
         var list_switch_elem=isstardust ?
-            root_elem.querySelector('.danmaku-wrap .bui-collapse-header') :
+            root_elem.querySelector('.danmaku-wrap .bui-collapse-wrap-folded .bui-collapse-header') :
             root_elem.querySelector('.bilibili-player-filter-btn-list');
         console.log('pakku injector: list_switch_elem',list_switch_elem);
         if(list_switch_elem) {

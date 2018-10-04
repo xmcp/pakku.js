@@ -255,7 +255,7 @@ function fetch_alasql(tabid) {
         else {
             console.log('downloading alasql');
             var xhr=new XMLHttpRequest();
-            xhr.open('get','https://cdn.bootcss.com/alasql/0.4.5/alasql.min.js');
+            xhr.open('get','https://cdnjs.cloudflare.com/ajax/libs/alasql/0.4.5/alasql.min.js');
             xhr.onload=function() {
                 if(xhr.responseText.indexOf('//! AlaSQL v0.4.5')==0) {
                     console.log('alasql downloaded OK');
