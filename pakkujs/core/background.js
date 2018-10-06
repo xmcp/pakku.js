@@ -5,11 +5,8 @@
 [Technical Note]
 Pakku tampers the danmaku request by:
 
-- Chrome:       webRequest.onBeforeRequest listener + Data-URI  [for all requests]
-                chrome.runtime.onMessageExternal listener (async) [if 9alpha is enabled]
-
 - Firefox <52:  AJAX Hook + runtime.onMessage listener (async)  [for xhr requests]
-                webRequest.onBeforeRequest listener + Data-URI  [for other requests]
+  and Chrome    webRequest.onBeforeRequest listener + Data-URI  [for other requests]
 
 - Firefox <57:  AJAX Hook + runtime.onMessage listener (async)  [for xhr requests]
                 webRequest.onBeforeRequest listener (async) + Data-URI  [for other requests]
