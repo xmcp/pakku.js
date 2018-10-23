@@ -181,7 +181,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('threshold').value=localStorage['THRESHOLD'];
         id('max-dist').value=localStorage['MAX_DIST'];
         id('max-cosine').value=localStorage['MAX_COSINE'];
-        id('mode-elevation').checked=localStorage['MODE_ELEVATION']==='on';
         id('trim-pinyin').checked=localStorage['TRIM_PINYIN']==='on';
         id('trim-ending').checked=localStorage['TRIM_ENDING']==='on';
         id('trim-space').checked=localStorage['TRIM_SPACE']==='on';
@@ -197,6 +196,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('danmu-subscript').checked=localStorage['DANMU_SUBSCRIPT']==='on';
         id('enlarge').checked=localStorage['ENLARGE']==='on';
         id('shrink').checked=localStorage['SHRINK']==='on';
+        id('mode-elevation').checked=localStorage['MODE_ELEVATION']==='on';
+        id('representative-percent').value=localStorage['REPRESENTATIVE_PERCENT'];
         // 播放器增强
         id('tooltip').checked=localStorage['TOOLTIP']==='on';
         id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
@@ -368,7 +369,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['THRESHOLD']=parseInt(id('threshold').value,10)>-2?parseInt(id('threshold').value,10):20;
         localStorage['MAX_DIST']=parseInt(id('max-dist').value);
         localStorage['MAX_COSINE']=parseInt(id('max-cosine').value);
-        localStorage['MODE_ELEVATION']=id('mode-elevation').checked?'on':'off';
         localStorage['TRIM_PINYIN']=id('trim-pinyin').checked?'on':'off';
         localStorage['TRIM_ENDING']=id('trim-ending').checked?'on':'off';
         localStorage['TRIM_SPACE']=id('trim-space').checked?'on':'off';
@@ -384,6 +384,8 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['DANMU_SUBSCRIPT']=id('danmu-subscript').checked?'on':'off';
         localStorage['ENLARGE']=id('enlarge').checked?'on':'off';
         localStorage['SHRINK']=id('shrink').checked?'on':'off';
+        localStorage['MODE_ELEVATION']=id('mode-elevation').checked?'on':'off';
+        localStorage['REPRESENTATIVE_PERCENT']=id('representative-percent').value;
         // 播放器增强
         localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
         localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
@@ -421,11 +423,11 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
 
         'show-advanced',
         // 弹幕合并
-        'threshold','max-dist','max-cosine','mode-elevation','trim-pinyin','trim-ending','trim-space','trim-width',
+        'threshold','max-dist','max-cosine','trim-pinyin','trim-ending','trim-space','trim-width',
         // 例外设置
         'cross-mode','ignore-type7','ignore-type4','ignore-pool1',
         // 显示设置
-        'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink',
+        'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink','mode-elevation','representative-percent',
         // 播放器增强
         'tooltip','auto-disable-danmu','auto-danmu-list','fluctlight','foolbar',
         // 实验室

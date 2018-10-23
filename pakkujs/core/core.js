@@ -316,7 +316,7 @@ function parse(dom,tabid,S,D) {
                 dm.str_pinyin, another.str_pinyin,
                 S
             );
-            if(sim!==false) {
+            if(sim!==false) { // do combine
                 if(LOG_VERBOSE) {
                     console.log(sim,dm.attr[7],'to',another.attr[7]);
                 }
@@ -335,6 +335,19 @@ function parse(dom,tabid,S,D) {
     });
     for(var i=0;i<danmu_chunk.length;i++)
         out_danmus.push(danmu_chunk[i]);
+
+    // apply representative if is not the first one
+    if(REPRESENTATIVE_PERCENT!=0)
+        out_danmus.forEach(function(dm) {
+            if(dm.peers.length) {
+                var representative=dm.peers[
+                    Math.min(Math.floor(dm.peers.length*REPRESENTATIVE_PERCENT/100),dm.peers.length-1)
+                ];
+                dm.time=representative.time;
+                dm.attr=representative.attr;
+                dm.mode=representative.mode;
+            }
+        });
 
     // process SHRINK and ENLARGE
     var out_danmus_len=out_danmus.length,dispval_base=Math.sqrt(DISPVAL_THRESHOLD);

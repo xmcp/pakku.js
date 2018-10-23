@@ -9,7 +9,8 @@ function firefox_manifest(src,path) {
     obj['applications']={
         'gecko': {
             'id': '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
-        }
+            'strict_min_version': '56.0',
+        },
     };
 
     return JSON.stringify(obj);
