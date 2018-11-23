@@ -155,7 +155,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     
     // show or hide
     new MutationObserver(function(muts) {
-        var bar_opened=(details_elem.style.display!='none');
+        var bar_opened=_version==1?(details_elem.style.display!='none'):(details_elem.classList.contains('show'));
         if(bar_opened && canvas_elem.style.display=='none') {
             canvas_elem.style.display='initial';
             // detect resize
@@ -170,7 +170,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
         }
     }).observe(details_elem,{
         attributes: true,
-        attributeFilter: ['style']
+        attributeFilter: _version==1?['style']:['class']
     });
 }
 
