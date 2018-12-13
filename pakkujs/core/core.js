@@ -98,15 +98,18 @@ function parse(dom,tabid,S,D) {
     }
 
     function make_mark(txt,cnt) {
-        function make_cnt(cnt) {
-            if(DANMU_SUBSCRIPT)
-                return '₍'+to_subscript(cnt)+'₎';
-            else
-                return '[x'+cnt+']';
-        }
-        return DANMU_MARK=='suffix' ? txt+make_cnt(cnt) :
-               DANMU_MARK=='prefix' ? make_cnt(cnt)+txt :
-               txt;
+		if(DANMU_SUBSCRIPT)
+		{
+			return DANMU_MARK=='suffix'?txt+'ₓ'+to_subscript(cnt):
+			DANMU_MARK=='prefix'?to_subscript(cnt)+'ₓ'+txt:
+			txt;
+		}
+		else
+		{
+			return DANMU_MARK=='suffix'?txt+'x'+cnt:
+			DANMU_MARK=='prefix'?cnt+'x'+txt:
+			txt;
+		}
     }
     
     function detaolu(inp) {
@@ -246,6 +249,7 @@ function parse(dom,tabid,S,D) {
                 time: parseFloat(attr[0]),
                 mode: mode,
                 size: parseFloat(attr[2]),
+				color: parseInt(attr[3]),
                 desc: [], // for D
                 peers: [],
 
@@ -360,6 +364,23 @@ function parse(dom,tabid,S,D) {
                 if(enlarge_rate>1.0001)
                     dmr.desc.push('已放大 '+enlarge_rate.toFixed(2)+' 倍：合并数量为 '+(dmr.peers.length));
                 dmr.size*=enlarge_rate;
+				//change color by count
+				if(dmr.peers.length>20)
+				{
+					dmr.color='16711680';//FF0000 red
+				}
+				else if(dmr.peers.length>15)
+				{
+					dmr.color='255';//0000FF blue
+				}
+				else if(dmr.peers.length>10)
+				{
+					dmr.color='65280';//00FF00 green
+				}
+				else if(dmr.peers.length>5)
+				{
+					dmr.color='65535';//00FFFF light blue
+				}
             }
             chunkval+=(dmr.self_dispval=dispval(dmr));
             chunkr++;
@@ -413,6 +434,7 @@ function parse(dom,tabid,S,D) {
             }
         }
         attr[2]=Math.ceil(dm.size);
+		attr[3]=dm.color;
         d.setAttribute('p',attr.join(','));
         
         if(dm.mode===7)
