@@ -1,4 +1,4 @@
-// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var TEST_MODE=navigator.userAgent.indexOf('xmcp_pakku_test_runner')!==-1;
 var IS_FIREFOX=false;
@@ -147,7 +147,8 @@ function Status(CID) {
         maxdispval: 0,
         
         error: null,
-        cid: CID
+        cid: CID,
+        parse_time_ms: -1,
     };
 }
 function FailingStatus(CID,typ,details) {

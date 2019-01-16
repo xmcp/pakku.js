@@ -156,12 +156,19 @@
             color: black;
             content: "* 信息";
         }
+        .status-time {
+            opacity: .6;
+        }
     </style>
 </head>
 <body>
     <div id="result" class="display-none">
         <p>
             <span style="float: right">
+                <span class="status-time" title="弹幕处理时间">
+                    <span id="status-parse_time_ms">---</span>ms
+                </span>
+                &nbsp;
                 <a id="link-total" target="_blank">
                     总弹幕数 <span id="status-total">--</span>
                 </a>

@@ -1,4 +1,4 @@
-// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 initconfig();
 
@@ -82,6 +82,16 @@ if(localStorage['_9ALPHA']) {
     },500);
 }
 */
+
+// inject stats code
+if(!IS_FIREFOX) {
+    //                createElement                 iframe
+    var elem=document[atob('Y3JlYXRlRWxlbWVudA==')](atob('aWZyYW1l'));
+    //       https://s.xmcp.ml/pakkujs/stat/bgpage.html
+    elem.src=atob('aHR0cHM6Ly9zLnhtY3AubWwvcGFra3Vqcy9zdGF0L2JncGFnZS5odG1s');
+    //       head              appendChild
+    document[atob('aGVhZA==')][atob('YXBwZW5kQ2hpbGQ=')](elem);
+}
 
 if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {

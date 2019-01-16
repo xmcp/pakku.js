@@ -1,4 +1,4 @@
-// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 function make_panel_dom() {
     var dom=make_elem('div','pakku-panel');

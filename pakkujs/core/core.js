@@ -1,4 +1,4 @@
-// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var LOG_VERBOSE=false;
 var LOG_DISPVAL=false;
@@ -66,7 +66,7 @@ function parse(dom,tabid,S,D) {
     WHITELIST_len=WHITELIST_ctx.length;
     BLACKLIST_len=BLACKLIST.length;
     
-    console.time('parse');
+    var start_time=+new Date();
     
     function make_peers_node(obj,reason) {
         return { // clone the obj without some attributes
@@ -421,7 +421,7 @@ function parse(dom,tabid,S,D) {
         apply_danmu(d,dm.desc,dm.peers,dm.disp_str);
     });
     
-    console.timeEnd('parse');
+    S.parse_time_ms=(+new Date())-start_time;
     
     if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='';
     if(PROC_TYPE7 && PROC_TYPE4 && PROC_POOL1 && S.batch_ignore==0) S.batch_ignore='';

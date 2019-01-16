@@ -17,8 +17,19 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         bgpage.loadconfig();
         location.reload();
     });
+
     var BLACKLIST=bgpage.fromholyjson(localStorage['BLACKLIST']);
     id('count').textContent=BLACKLIST.length;
+    
+    id('current-blacklist').value=BLACKLIST.map((item)=>item[0].source).join('\n');
+    id('save').addEventListener('click',function() {
+        var rules=id('current-blacklist').value.split('\n').filter((x)=>x);
+        var changed=rules.map((x)=>[try_regexp(x),'']);
+        localStorage['BLACKLIST']=bgpage.toholyjson(changed);
+        bgpage.loadconfig();
+        location.reload();
+    });
+
     id('import').addEventListener('click',function() {
         var rules=(new DOMParser).parseFromString(id('rules').value,'text/xml');
         var imported=BLACKLIST;

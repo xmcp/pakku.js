@@ -33,6 +33,10 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     debug.textContent+='\n\n**Background / HISTORY:** `'+JSON.stringify(bgpage.HISTORY)+'`';
 });
 
+chrome.storage.sync.get(function(result) {
+    debug.textContent+='\n\n**Storage / Sync:** '+JSON.stringify(result);
+})
+
 chrome.permissions.getAll(function(perms) {
     debug.textContent+='\n\n**Permissions:** `'+JSON.stringify(perms)+'`';
 });

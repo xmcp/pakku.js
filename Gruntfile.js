@@ -141,15 +141,7 @@ module.exports = function(grunt) {
         noProcess: '**/*.{png,woff}',
       },
 
-      firefox: {
-        files: COPY_FILES.concat([
-          {
-            src: ['pakkujs/core/background.for-firefox.html'],
-            dest: 'dist/_/core/background.html',
-          },
-        ]),
-      },
-      chrome: {
+      background: {
         files: COPY_FILES.concat([
           {
             src: ['pakkujs/core/background.html'],
@@ -181,7 +173,7 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '// (C) 2018 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.',
+        banner: '// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.',
         sourceMapIn: function(path) { return path+'.map'; },
         'sourceMap.includeSources': true,
         mangle: false,
@@ -291,7 +283,7 @@ module.exports = function(grunt) {
     'clean:dist',
     'clean:tmp',
 
-    'copy:chrome',
+    'copy:background',
     'concat:chrome',
     'uglify:dev',
     'cssmin:dev',
@@ -304,7 +296,7 @@ module.exports = function(grunt) {
     'clean:tmp',
     'clean:chrome',
 
-    'copy:chrome',
+    'copy:background',
     'concat:chrome',
     'uglify:production',
     'htmlmin:main',
@@ -320,7 +312,7 @@ module.exports = function(grunt) {
     'clean:tmp',
     'clean:firefox',
 
-    'copy:firefox',
+    'copy:background',
     'concat:firefox',
     'uglify:production',
     'htmlmin:main',
