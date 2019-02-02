@@ -93,6 +93,7 @@ function try_inject() {
         }
     }
     if(OPT['FLUCTLIGHT']) {
+        fluctlight_cleanup(root_elem);
         var seekbar_new_elem=root_elem.querySelector('.bilibili-player-video-control-top');
         var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
         if(seekbar_new_elem) {
