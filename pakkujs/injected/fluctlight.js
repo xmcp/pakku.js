@@ -12,8 +12,8 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     var canvas_elem=document.createElement('canvas');
     canvas_elem.className='pakku-fluctlight-graph';
     var ctx=canvas_elem.getContext('2d');
-    var details_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail');
-    if(!details_elem) {
+    var progress_elem=_version==1?bar_elem.querySelector('.bilibili-player-video-progress-detail'):bar_elem;
+    if(!progress_elem) {
         console.log('! fluctlight cannot find details_elem');
         return;
     }
@@ -155,7 +155,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
     
     // show or hide
     new MutationObserver(function(muts) {
-        var bar_opened=_version==1?(details_elem.style.display!='none'):(details_elem.classList.contains('show'));
+        var bar_opened=_version==1?(progress_elem.style.display!='none'):(progress_elem.classList.contains('bilibili-player-show'));
         if(bar_opened && canvas_elem.style.display=='none') {
             canvas_elem.style.display='initial';
             // detect resize
@@ -168,7 +168,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
             canvas_elem.style.display='none';
             canvas_elem.width=0;
         }
-    }).observe(details_elem,{
+    }).observe(progress_elem,{
         attributes: true,
         attributeFilter: _version==1?['style']:['class']
     });
@@ -180,9 +180,13 @@ function inject_fluctlight_details(bar_elem,_version) {
     var fluct=document.createElement('div');
     fluct.className='pakku-fluctlight-fluct';
     var time_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail-time');
+    var detail_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail')
     if(!time_elem) {
         console.log('! fluctlight cannot find time_elem');
         return;
+    }
+    if (!detail_elem) {
+        console.log('! fluctlight cannot find detail_elem')
     }
     
     function to_dom(danmu) {
@@ -251,5 +255,5 @@ function inject_fluctlight_details(bar_elem,_version) {
         fluct.style.left='0';
     }
 
-    time_elem.parentNode.appendChild(fluct);
+    detail_elem.appendChild(fluct);
 }
