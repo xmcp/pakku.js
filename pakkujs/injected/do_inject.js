@@ -39,15 +39,21 @@ function try_inject() {
         console.log('pakku injector: stardust detected');
     }
     // maybe player is not ready yet
-    if(root_elem)
+    if(root_elem) {
+        try_left=Math.min(try_left,15); // don't wait too long for list_elem
         var list_elem=root_elem.querySelector('.bilibili-player-danmaku, .player-auxiliary-danmaku-wrap');
+    }
     if(!root_elem || !list_elem) {
         if(--try_left>0) {
             root_elem=null;
             setTimeout(try_inject,200);
-        } else
+            return;
+        } else if(!root_elem) {
             console.log('pakku injector: root_elem not found');
-        return;
+            return;
+        }
+        // else root_elem && !list_elem
+        //   maybe an embedded player, just continue
     }
 
     // 3rd-party scripts can use this for convenience
@@ -68,7 +74,7 @@ function try_inject() {
         var player_elem=root_elem.querySelector('.bilibili-player-area');
         console.log('pakku injector: list_elem',list_elem,'player_elem',player_elem);
         if(player_elem)
-            inject_panel(list_elem,player_elem);
+            inject_panel(list_elem||document.createElement('div'),player_elem);
     }
     if(OPT['AUTO_DISABLE_DANMU']) {
         var danmu_switch=root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox]');
