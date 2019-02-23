@@ -78,6 +78,4 @@ See [LICENSE.txt](LICENSE.txt) for details.
 同时了解一下：
 
 - [在手机客户端上使用pakku](https://github.com/xmcp/pakku-mobile-proxy)
-- [按UID或用户等级屏蔽弹幕](https://github.com/xmcp/pakku-advanced-filter)
-- [好用的分P列表](https://github.com/xmcp/bilipager)
-
+- [按发送者UID屏蔽弹幕](https://github.com/xmcp/pakku-advanced-filter)
