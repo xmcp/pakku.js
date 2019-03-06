@@ -34,26 +34,24 @@ function _load_info(uid,logger,callback) {
         callback(_mem_info[uid]);
         return;
     }
-    var xhr=new XMLHttpRequest();
-    xhr.responseType='text';
-    xhr.open('get','https://api.bilibili.com/x/web-interface/card?type=json&mid='+uid);
-    xhr.onreadystatechange=function() {
-        if(this.readyState!=4) return;
-        var res;
+    chrome.runtime.sendMessage(null,{
+        type: 'xhr_proxy',
+        method: 'get',
+        url: 'https://api.bilibili.com/x/web-interface/card?type=json&mid='+uid,
+    },function(res) {
         try {
-            if(this.status!=200) throw 1;
-            res=JSON.parse(this.responseText);
+            if(res.status!=200) throw 1;
+            res=JSON.parse(res.responseText);
         } catch(e) {
             logger.innerHTML='';
             logger.appendChild(make_a(
-                uidhash+' ('+uid+') 个人信息加载失败',
+                uid+' 个人信息加载失败',
                 '//space.bilibili.com/'+uid
             ));
             throw e;
         }
         callback(_mem_info[uid]=res);
-    }
-    xhr.send();
+    });
 }
 
 function query_uid(uidhash,logger_container) {

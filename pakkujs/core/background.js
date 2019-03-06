@@ -364,6 +364,18 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             // chrome   or qipa     or firefox <57
             !IS_FIREFOX || !browser || !browser.webRequest.filterResponseData
         );
+    } else if(request.type==='xhr_proxy') { //to bypass CORB in content-script
+        var xhr=new XMLHttpRequest();
+        xhr.open(request.method,request.url);
+        xhr.onreadystatechange=function() {
+            if(this.readyState!==4) return;
+            sendResponse({
+                status: xhr.status,
+                responseText: xhr.responseText
+            });
+        };
+        xhr.send();
+        return true;
     }
 });
 
