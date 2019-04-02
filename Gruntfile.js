@@ -192,6 +192,16 @@ module.exports = function(grunt) {
           sourceMap: false,
         },
       },
+      chrome: {
+        files: CONCAT_OUT_FILES.concat(make_filelist(NORMAL_DIR,ALL_JS,'dist/tmp')),
+        options: {
+          sourceMap: false,
+          compress: false,
+          output: {
+            beautify: true,
+          },
+        },
+      },
     },
 
     htmlmin: {
@@ -298,7 +308,7 @@ module.exports = function(grunt) {
 
     'copy:background',
     'concat:chrome',
-    'uglify:production',
+    'uglify:chrome',
     'htmlmin:main',
     'cssmin:production',
     'copy:chrome_manifest',

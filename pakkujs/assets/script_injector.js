@@ -31,14 +31,11 @@ if(document.head) {
     
     // statistics
     if(localStorage['_pakku_stats_time']!==gen_timestamp()) {
-        console.log('pakku stat: inject statistics script for firefox');
-        //                createElement                 iframe
-        var elem=document[atob('Y3JlYXRlRWxlbWVudA==')](atob('aWZyYW1l'));
-        //       https://s.xmcp.ml/pakkujs/stat/bilibili.html
-        elem.src=atob('aHR0cHM6Ly9zLnhtY3AubWwvcGFra3Vqcy9zdGF0L2JpbGliaWxpLmh0bWw=');
+        console.log('pakku stat: inject statistics script');
+        var elem=document.createElement('iframe');
+        elem.src='https://s.xmcp.ml/pakkujs/stat/bilibili.html';
         elem.style.visibility='hidden';
-        //       head              appendChild
-        document[atob('aGVhZA==')][atob('YXBwZW5kQ2hpbGQ=')](elem);
+        document.head.appendChild(elem);
         
         localStorage['_pakku_stats_time']=gen_timestamp();
     }

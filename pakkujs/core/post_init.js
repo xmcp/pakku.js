@@ -85,12 +85,9 @@ if(localStorage['_9ALPHA']) {
 
 // inject stats code
 if(!IS_FIREFOX) {
-    //                createElement                 iframe
-    var elem=document[atob('Y3JlYXRlRWxlbWVudA==')](atob('aWZyYW1l'));
-    //       https://s.xmcp.ml/pakkujs/stat/bgpage.html
-    elem.src=atob('aHR0cHM6Ly9zLnhtY3AubWwvcGFra3Vqcy9zdGF0L2JncGFnZS5odG1s');
-    //       head              appendChild
-    document[atob('aGVhZA==')][atob('YXBwZW5kQ2hpbGQ=')](elem);
+    var elem=document.createElement('iframe');
+    elem.src='https://s.xmcp.ml/pakkujs/stat/bgpage.html';
+    document.head.appendChild(elem);
 }
 
 if(TEST_MODE) {
