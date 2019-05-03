@@ -162,8 +162,6 @@ function inject_panel(tabid,D,OPT) {
             console.log('cannot inject panel. skipping.',chrome.runtime.lastError);
             return;
         }
-        if(OPT['FOOLBAR'])
-            fetch_alasql(tabid);
         setTimeout(function() {
             chrome.tabs.insertCSS(tabid, {
                 file: '/injected/all_injected.css',
@@ -292,8 +290,7 @@ function load_danmaku(resp,id,tabid) {
             TOOLTIP: TOOLTIP,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
             AUTO_DANMU_LIST: AUTO_DANMU_LIST,
-            FLUCTLIGHT: FLUCTLIGHT,
-            FOOLBAR: FOOLBAR
+            FLUCTLIGHT: FLUCTLIGHT
         });
         
         HISTORY[tabid]=S;

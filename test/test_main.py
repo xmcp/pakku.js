@@ -35,7 +35,6 @@ print('!= test injected ui')
 runner.update_settings('FORCELIST','[["^.*$","pakku_test_str"]]')
 runner.update_settings('TOOLTIP','on')
 runner.update_settings('FLUCTLIGHT','on')
-runner.update_settings('FOOLBAR','on')
 runner.b.get('https://www.bilibili.com/video/av314')
 for _ in range(60):
     try:
@@ -51,7 +50,6 @@ assert 'pakku_test_str' in runner.b.find_element_by_css_selector('.danmaku-info-
 assert runner.b.find_element_by_css_selector('.__pakku_injected')
 assert runner.b.find_element_by_css_selector('.bilibili-player .pakku-panel')
 assert runner.b.find_element_by_css_selector('.bilibili-player .bilibili-player-video-control canvas')
-assert runner.b.find_element_by_css_selector('.pakku-foolbar')
 
 # this test is temporarily disabled
 # http://link.acg.tv/forum.php?mod=viewthread&tid=13249

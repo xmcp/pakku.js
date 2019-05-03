@@ -1,16 +1,13 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import os
 import time
 from xml.dom.minidom import parseString
 
 print('== initializing selenium')
 
-opt=Options()
-opt.add_argument('load-extension=%s'%os.path.abspath('../dist/C'))
-opt.add_argument('--no-default-browser-check')
+opt=webdriver.ChromeOptions()
+opt.add_argument('--load-extension=%s'%os.path.abspath('../dist/C'))
 opt.add_argument('--user-agent=xmcp_pakku_test_runner Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36')
-opt.add_argument('--no-first-run')
 b=webdriver.Chrome('driver/chromedriver',chrome_options=opt)
 
 print('== chrome launched. waiting for pakku.js to be installed')
@@ -19,7 +16,7 @@ time.sleep(5)
 
 print('== finding pakkujs')
 
-b.get('http://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url')
+b.switch_to.window(b.window_handles[1])
 opt_url=b.title
 if not opt_url.startswith('chrome-extension://'):
     raise RuntimeError('! bad opt_url: '+opt_url)

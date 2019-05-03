@@ -241,37 +241,6 @@ function migrate_legacy() {
     })();
 }
 
-function fetch_alasql(tabid) {
-    function done(code) {
-        if(tabid)
-            chrome.tabs.executeScript(tabid,{
-                code: code,
-                runAt: 'document_end'
-            });
-    }
-
-    chrome.storage.local.get({alasql_src: null},function(res) {
-        if(res.alasql_src)
-        done(res.alasql_src);
-        else {
-            console.log('downloading alasql');
-            var xhr=new XMLHttpRequest();
-            xhr.open('get','https://cdnjs.cloudflare.com/ajax/libs/alasql/0.4.5/alasql.min.js');
-            xhr.onload=function() {
-                if(xhr.responseText.indexOf('//! AlaSQL v0.4.5')==0) {
-                    console.log('alasql downloaded OK');
-                    done(xhr.responseText);
-                    chrome.storage.local.set({alasql_src: xhr.responseText});
-                } else {
-                    console.log('alasql downloaded FAILED');
-                    console.log(xhr.responseText);
-                }
-            }
-            xhr.send();
-        }
-    });
-}
-
 function add_pakku_fingerprint(url) {
     return url + (url.indexOf('?')===-1 ? '?' : '&') + 'pakku_request'
 }

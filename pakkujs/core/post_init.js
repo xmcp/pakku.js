@@ -5,6 +5,9 @@ initconfig();
 chrome.browserAction.setBadgeText({ // badge text in the previous launch might not be cleared
     text: GLOBAL_SWITCH?'':'zzz'
 });
+if(IS_FIREFOX && browser && browser.browserAction.setBadgeTextColor)
+    browser.browserAction.setBadgeTextColor({color: 'white'});
+    
 
 /*
 // https://github.com/xmcp/9alpha integration
@@ -94,6 +97,8 @@ if(TEST_MODE) {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
         return {redirectUrl: 'data:text/html,<title>'+encodeURIComponent(chrome.runtime.getURL('page/options.html'))+'</title>'};
     }, {urls: ['*://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url']}, ['blocking']);
+
+    chrome.tabs.create({url: 'http://_xmcp_pakku_internal_test_domain.bilibili.com/get_options_url'});
 
     chrome.webRequest.onBeforeRequest.addListener(function(details) {
         FORCELIST=[[/.*/,"pakku_another_str"]];

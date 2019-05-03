@@ -116,10 +116,6 @@ function try_inject() {
             }
         }
     }
-    if(OPT['FOOLBAR']) {
-        console.log('pakku injector: foolbar');
-        inject_foolbar();
-    }
 
     // 3rd-party scripts can use this for convenience
     window.addEventListener('message',function(event) {
