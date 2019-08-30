@@ -4,7 +4,7 @@
 }
 .pakku-fluctlight-fluct {
     position: relative;
-    left: -70px;
+    left: 0;
     width: 160px;
     overflow: hidden !important;
     text-align: left;

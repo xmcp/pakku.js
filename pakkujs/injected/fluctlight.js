@@ -204,6 +204,10 @@ function inject_fluctlight_details(bar_elem,_version) {
     if (!detail_elem) {
         console.log('! fluctlight cannot find detail_elem')
     }
+
+    if(_version==2) {
+        detail_elem=detail_elem.querySelector('.bilibili-player-video-progress-detail-container')||detail_elem;
+    }
     
     function to_dom(danmu) {
         var p=make_p(danmu.text);
@@ -252,9 +256,9 @@ function inject_fluctlight_details(bar_elem,_version) {
                 fluct.style.height=(14*danmus.length)+'px';
 
                 if(_version==1) {
-                    fluct.style.bottom=(100+14*danmus.length)+'px';
-                } else {
                     fluct.style.bottom=(72+14*danmus.length)+'px';
+                } else {
+                    fluct.style.bottom=0;
                 }
 
                 if(window._pakku_fluctlight_highlight)
@@ -268,9 +272,5 @@ function inject_fluctlight_details(bar_elem,_version) {
     
     fluct.dataset['current_time']='';
 
-    if(_version==1) {
-        fluct.style.left='0';
-    }
-
-    detail_elem.appendChild(fluct);
+    detail_elem.insertBefore(fluct,detail_elem.firstChild);
 }
