@@ -13,57 +13,58 @@
     filter: brightness(.9);
     pointer-events: none;
 }
-.pakku-panel-title {
+.pakku-panel .pakku-panel-title {
     overflow-x: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
     margin: 3px 0;
 }
-.pakku-panel-close {
-    font: inherit; /* fix for bangumi page */
-    line-height: 1em;
+.pakku-panel .pakku-panel-close {
+    font: inherit !important; /* fix for bangumi page */
+    line-height: 1em !important;
     color: black !important;
     background-color: transparent !important;
-    border-radius: 0;
+    border-radius: 0 !important;
     border: none !important;
-    padding: 3px 5px;
-    cursor: pointer;
+    padding: 3px 5px !important;
+    cursor: pointer !important;
 }
-.pakku-panel-selectbar {
+.pakku-panel .pakku-panel-selectbar {
     text-align: center;
     margin: 3px 0;
 }
-.pakku-panel-selectbar-left, .pakku-panel-selectbar-right {
+.pakku-panel .pakku-panel-selectbar-left, .pakku-panel-selectbar-right {
     padding: 0 25px;
     cursor: pointer;
 }
-.pakku-panel-selectbar-left {
+.pakku-panel .pakku-panel-selectbar-left {
     float: left;
 }
-.pakku-panel-selectbar-left::after {
+.pakku-panel .pakku-panel-selectbar-left::after {
     content: '<<';
 }
-.pakku-panel-selectbar-right {
+.pakku-panel .pakku-panel-selectbar-right {
     float: right;
 }
-.pakku-panel-selectbar-right::after {
+.pakku-panel .pakku-panel-selectbar-right::after {
     content: '>>';
 }
-.pakku-panel-desc:not(:empty) {
+.pakku-panel .pakku-panel-desc:not(:empty) {
     line-height: 1.2em;
     margin: 3px 5px;
     white-space: initial;
 }
-.pakku-panel-peers {
+.pakku-panel .pakku-panel-peers {
     max-height: 350px;
     overflow-y: auto;
 }
-.pakku-panel-footer:not(:empty) {
+.pakku-panel .pakku-panel-footer:not(:empty) {
     overflow: hidden;
     margin: 3px 5px;
 }
 .pakku-panel * {
     user-select: text !important; /* to override ".bilibili-player *" */
+    font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace !important;
 }
 .pakku-panel a {
     color: black;
@@ -72,55 +73,64 @@
 .pakku-panel hr {
     margin: 0;
 }
+.bilibili-player .pakku-panel button {
+    background: unset;
+    border: unset;
+    cursor: unset;
+    padding: unset;
+    outline: unset;
+    color: unset;
+    text-align: unset;
+    font: unset;
+    line-height: unset;
+    width: unset;
+}
 .pakku-panel .text-fix {
     overflow-x: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
 }
-.pakku-panel-footer a {
+.pakku-panel .pakku-panel-footer a {
     display: inline-block;
     color: initial !important;
 }
-.pakku-panel-desc:empty~hr.pakku-for-desc {
+.pakku-panel .pakku-panel-desc:empty~hr.pakku-for-desc {
     display: none;
 }
-.pakku-panel-footer:empty~hr.pakku-for-footer {
+.pakku-panel .pakku-panel-footer:empty~hr.pakku-for-footer {
     display: none;
 }
-.pakku-panel * {
-    font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace !important;
-}
-.pakku-panel-peers div {
+.pakku-panel .pakku-panel-peers div {
     overflow: hidden;
 }
-.pakku-panel-peers p:nth-child(1) {
+.pakku-panel .pakku-panel-peers p:nth-child(1) {
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.pakku-panel-peers p:nth-child(2) {
+.pakku-panel .pakku-panel-peers p:nth-child(2) {
     display: none;
     font-weight: normal;
 }
-.pakku-panel-peers div:hover p:nth-child(1) {
+.pakku-panel .pakku-panel-peers div:hover p:nth-child(1) {
     white-space: initial;
     word-wrap: break-word;
     word-break: break-all;
 }
-.pakku-panel-peers div:hover p:nth-child(2) {
+.pakku-panel .pakku-panel-peers div:hover p:nth-child(2) {
     display: initial;
 }
-.pakku-panel-peers div.black {
+.pakku-panel .pakku-panel-peers div.black {
     background-color: rgba(24,24,24,.8);
 }
-.pakku-panel-peers div.white {
+.pakku-panel .pakku-panel-peers div.white {
     background-color: rgba(231,231,231,.8);
 }
-.pakku-panel-peers div.black:hover {
+.pakku-panel .pakku-panel-peers div.black:hover {
     background-color: rgba(0,0,0,1);
 }
-.pakku-panel-peers div.white:hover {
+.pakku-panel .pakku-panel-peers div.white:hover {
     background-color: rgba(255,255,255,1);
 }
 

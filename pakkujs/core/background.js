@@ -60,7 +60,7 @@ function load_userinfo_batch(hashes,store,final_callback,silence) {
                 error_count++;
             } else {
                 for(var uid in res.cards) {
-                    if(!store[joblist[uid]] && res.cards[uid].level_info && res.cards[uid].level_info.current_exp)
+                    if(!store[joblist[uid]] && res.cards[uid].level_info)
                         store[joblist[uid]]=res.cards[uid];
                 }
             }
