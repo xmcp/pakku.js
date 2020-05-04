@@ -248,17 +248,17 @@ function inject_panel(list_elem,player_elem) {
             player_elem.classList.remove('__pakku_pointer_event');
         });
         document.addEventListener('keydown',function(e) {
-            if(e.key=='Control' && !e.repeat) {
+            if((e.key=='Control' || e.key=='Meta') && !e.repeat) {
                 hover_counter=0;
                 player_elem.classList.add('__pakku_pointer_event');
-            } else if(e.ctrlKey===false) { // fix ctrl key state
+            } else if(!e.ctrlKey && !e.metaKey) { // fix ctrl key state
                 player_elem.classList.remove('__pakku_pointer_event');
                 if(panel_obj.classList.contains('pakku-floating'))
                     panel_obj.style.display='none';
             }
         });
         document.addEventListener('keyup',function(e) {
-            if(e.key=='Control') {
+            if(e.key=='Control' || e.key=='Meta') {
                 player_elem.classList.remove('__pakku_pointer_event');
                 if(panel_obj.classList.contains('pakku-floating'))
                     panel_obj.style.display='none';

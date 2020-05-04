@@ -216,7 +216,7 @@ function parse(dom,tabid,S,D) {
                 disp_str: disp_str, // will be overrode by build_text
 
                 str_pinyin: str_pinyin, // used to compare similarity
-                str_2gram: gen_2gram_array(str),
+                str_2gram: gen_2gram_array(detaolued),
                 
                 time: parseFloat(attr[0]),
                 mode: mode,
