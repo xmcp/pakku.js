@@ -1,5 +1,7 @@
 var IS_FIREFOX=false;
 
+var IS_EDG=navigator.userAgent.indexOf('Edg/')!==-1
+
 /*for-firefox:
 
 IS_FIREFOX=true;
@@ -460,24 +462,36 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
     });
 });
 
+if(IS_EDG)
+    id('ask-review-line').style.display='none';
+
 // version check
-var xhr=new XMLHttpRequest();
-xhr.open('get', IS_FIREFOX ?
-    'https://img.shields.io/amo/v/pakkujs.json' :
-    'https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json'
-);
-xhr.onload=function() {
-    var latest_ver=JSON.parse(this.responseText);
-    console.log('latest version ',latest_ver);
-    if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
-        var note=document.createElement('a');
-        note.href='http://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
-        note.id='update-note';
-        note.target='_blank';
-        note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';
-        document.body.appendChild(note);
-    } else {
-        id('version-checker').textContent='✓ 是最新版本';
+function ver_check() {
+    if(IS_EDGE) {
+        console.log('version checking disabled for chromium edge');
+        id('version-checker').textContent='(Edge)';
+        return;
     }
-};
-xhr.send();
+
+    var xhr=new XMLHttpRequest();
+    xhr.open('get', IS_FIREFOX ?
+        'https://img.shields.io/amo/v/pakkujs.json' :
+        'https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.json'
+    );
+    xhr.onload=function() {
+        var latest_ver=JSON.parse(this.responseText);
+        console.log('latest version ',latest_ver);
+        if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
+            var note=document.createElement('a');
+            note.href='http://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
+            note.id='update-note';
+            note.target='_blank';
+            note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';
+            document.body.appendChild(note);
+        } else {
+            id('version-checker').textContent='✓ 是最新版本';
+        }
+    };
+    xhr.send();
+}
+ver_check();
