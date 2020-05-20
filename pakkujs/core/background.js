@@ -37,9 +37,13 @@ function parse_danmu_url(url) {
         return addtype('list',NEW_DANMU_NORMAL_URL_RE.exec(url));
     else if(url.indexOf('/history?')!==-1)
         return addtype('history',NEW_DANMU_HISTORY_URL_RE.exec(url));
-    else if(url.indexOf('/seg.so'))
-        return addtype('proto_seg',PROTO_DANMU_SEG_URL_RE.exec(url));
-    else
+    else if(url.indexOf('/seg.so')!==-1) {
+        var res=PROTO_DANMU_SEG_URL_RE.exec(url);
+        if(/segment_index=1(?!\d)/.test(url))
+            return addtype('proto_seg',res);
+        else
+            return addtype('proto_segtrail',res);
+    } else
         return null;
 }
 
@@ -329,6 +333,13 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                 if(ret_type!='protobuf') // potential bug if historical danmaku becomes protobuf, gracefully degrade in this case
                     return sendResponse({data: BOUNCE.result});
             }
+
+            if(url_type=='proto_segtrail') {
+                console.log('trailing');
+                return sendResponse({
+                    data: empty_danmaku_proto_seg(),
+                });
+            }
             
             down_danmaku_async(ret_type=='protobuf'?gen_danmaku_url(cid):request.url,cid,tabid)
                 .then(function(res) {
@@ -451,12 +462,29 @@ chrome.webRequest.onBeforeRequest.addListener(onbeforerequest=function(details) 
         /*for-firefox:
 
         if(browser.webRequest.filterResponseData) {
+            // trailing
+            if(type=='proto_segtrail') {
+                console.log('webrequest :: stream filter :: trailing',details);
+
+                var filter=browser.webRequest.filterResponseData(details.requestId);
+                
+                filter.onstop=function(event) {
+                    filter.write(empty_danmaku_proto_seg());
+                    filter.close();
+                };
+                filter.onerror=function(event) {
+                    console.log(event.error);
+                };
+                return {cancel: false};
+            }
+
+            // bounce
             if(check_xml_bounce(cid) && ret_type!='protobuf') {
                 console.log('bounce :: stream filter',cid);
                 var filter=browser.webRequest.filterResponseData(details.requestId);
                 
                 var encoder=new TextEncoder();
-                filter.onstart=function(event) {
+                filter.onstop=function(event) {
                     filter.write(encoder.encode(BOUNCE.result));
                     filter.close();
                 };

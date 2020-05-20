@@ -1,0 +1,24 @@
+<script src=protobuf.min.js ></script>
+<script src=proto-bili-gen.js ></script>
+<script>
+var proto_seg=protobuf.roots.default.bilibili.community.service.dm.v1.DmSegMobileReply;
+var proto_view=protobuf.roots.default.bilibili.community.service.dm.v1.DmWebViewReply;
+
+x=new XMLHttpRequest;
+x.open('get','seg.so',true);
+x.responseType='arraybuffer';
+x.addEventListener('load',()=>{
+    let d=proto_seg.decode(new Uint8Array(x.response));
+    console.log('seg',d);
+});
+x.send();
+
+x=new XMLHttpRequest;
+x.open('get','view',true);
+x.responseType='arraybuffer';
+x.addEventListener('load',()=>{
+    let d=proto_view.decode(new Uint8Array(x.response));
+    console.log('view',d);
+});
+x.send();
+</script>

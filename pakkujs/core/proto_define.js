@@ -1,5 +1,7 @@
 var proto_seg=protobuf.roots.default.bilibili.community.service.dm.v1.DmSegMobileReply;
 
+var LOG_PROTO=false;
+
 function xml_to_proto_seg(dom) {
     console.log('protobuf: converting xml to seg');
     var res=[];
@@ -22,5 +24,12 @@ function xml_to_proto_seg(dom) {
         }
     });
     var res_uint8arr=proto_seg.encode(proto_seg.create({elems: res})).finish();
+    if(LOG_PROTO)
+        console.log('verbose proto:',dom,res,res_uint8arr);
     return res_uint8arr;
+}
+
+// used for #segment>1 requests
+function empty_danmaku_proto_seg() {
+    return proto_seg.encode(proto_seg.create({elems: []})).finish();
 }
