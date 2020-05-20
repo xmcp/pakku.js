@@ -59,7 +59,8 @@ function generate_ctx(tabid) {
     window.WHITELIST_ctx=window.WHITELIST_ctx.concat(WHITELIST);
 }
 
-function parse(dom,tabid,S,D) {
+function parse(dom,tabid,S,D,ret_type) {
+    ret_type=ret_type||'xml';
     generate_ctx(tabid);
 
     FORCELIST_len=FORCELIST_ctx.length;
@@ -409,6 +410,10 @@ function parse(dom,tabid,S,D) {
     if(!WHITELIST_len && S.whitelist==0) S.whitelist='';
     if(!FORCELIST_len && S.taolu==0) S.taolu='';
     
-    var serializer=new XMLSerializer();
-    return serializer.serializeToString(new_dom);
+    if(ret_type=='protobuf') {
+        return xml_to_proto_seg(new_dom);
+    } else { // xml
+        var serializer=new XMLSerializer();
+        return serializer.serializeToString(new_dom);
+    }
 }

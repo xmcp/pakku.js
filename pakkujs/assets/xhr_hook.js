@@ -3,6 +3,29 @@
 (function() {
     var callbacks={};
     if(XMLHttpRequest.prototype.pakku_open) return;
+
+    function uint8array_to_arraybuffer(array) {
+        // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
+        return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
+    }
+    function str_to_arraybuffer(str) {
+        // https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+        var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+        var bufView = new Uint16Array(buf);
+        for (var i=0, strLen=str.length; i < strLen; i++) {
+          bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+    }
+    function byte_object_to_arraybuffer(obj) {
+        var ks=Object.keys(obj);
+        var buf=new ArrayBuffer(ks.length);
+        var bufView = new Uint8Array(buf);
+        ks.forEach(function (i) {
+            bufView[i] = obj[i];
+        });
+        return buf;
+    }
     
     window.addEventListener('message',function(event) {
         if (event.source!=window)
@@ -57,12 +80,21 @@
                     Object.defineProperty(that,'status', {writable: true});
                     Object.defineProperty(that,'statusText', {writable: true});
                 
-                    that.response=that.responseText=resp.data;
+                    if(that.responseType=='arraybuffer') {
+                        if(resp.data instanceof Uint8Array)
+                            that.response=uint8array_to_arraybuffer(resp.data);
+                        else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
+                            that.response=byte_object_to_arraybuffer(resp.data);
+                        else // maybe str
+                            that.response=str_to_arraybuffer(resp.data);
+                    } else {
+                        that.response=that.responseText=resp.data;
+                    }
                     that.readyState=4;
                     that.status=200;
                     that.statusText='Pakku OK';
                     
-                    console.log('pakku ajax: got tampered response for',that.pakku_url);
+                    console.log('pakku ajax: got tampered response for',that.pakku_url,that.responseType);
                     that.abort();
                     for(var i=0;i<that.pakku_load_callback.length;i++)
                         that.pakku_load_callback[i].bind(that)();

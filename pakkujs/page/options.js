@@ -467,7 +467,7 @@ if(IS_EDG)
 
 // version check
 function ver_check() {
-    if(IS_EDGE) {
+    if(IS_EDG) {
         console.log('version checking disabled for chromium edge');
         id('version-checker').textContent='(Edge)';
         return;

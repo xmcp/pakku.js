@@ -61,11 +61,14 @@ module.exports = function(grunt) {
   var CONCAT_FILES=[
     {
       src: [
+        'pakkujs/core/protobuf.min.js',
         'pakkujs/core/pinyin_dict.min.js',
         'pakkujs/core/crc32-crack.js',
         'pakkujs/core/utils.js',
         'pakkujs/core/config.js',
         'pakkujs/core/edit_distance.js',
+        'pakkujs/core/proto-bili-gen.js',
+        'pakkujs/core/proto_define.js',
         'pakkujs/core/core.js',
         'pakkujs/core/background.js',
         'pakkujs/core/post_init.js',
@@ -173,7 +176,7 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.',
+        banner: '// (C) 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.',
         sourceMapIn: function(path) { return path+'.map'; },
         'sourceMap.includeSources': true,
         mangle: false,
@@ -190,16 +193,7 @@ module.exports = function(grunt) {
         files: CONCAT_OUT_FILES.concat(make_filelist(NORMAL_DIR,ALL_JS,'dist/tmp')),
         options: {
           sourceMap: false,
-        },
-      },
-      chrome: {
-        files: CONCAT_OUT_FILES.concat(make_filelist(NORMAL_DIR,ALL_JS,'dist/tmp')),
-        options: {
-          sourceMap: false,
           compress: false,
-          output: {
-            beautify: true,
-          },
         },
       },
     },
@@ -308,7 +302,7 @@ module.exports = function(grunt) {
 
     'copy:background',
     'concat:chrome',
-    'uglify:chrome',
+    'uglify:production',
     'htmlmin:main',
     'cssmin:production',
     'copy:chrome_manifest',
