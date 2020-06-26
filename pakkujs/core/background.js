@@ -382,9 +382,16 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         },request.silence);
         return true;
     } else if(request.type==='need_ajax_hook') {
+        //console.log('request ajax hook',request.url);
+
+        //                  chrome     or qipa     or firefox <57
+        let browser_needed=!IS_FIREFOX || !browser || !browser.webRequest.filterResponseData
+        
+        // skip injecting because window.Worker is necessary on that page
+        let should_skip_inject=request.url.indexOf('member.bilibili.com/studio')!==-1;
+
         return sendResponse(
-            // chrome   or qipa     or firefox <57
-            !IS_FIREFOX || !browser || !browser.webRequest.filterResponseData
+            browser_needed && !should_skip_inject
         );
     } else if(request.type==='xhr_proxy') { //to bypass CORB in content-script
         var xhr=new XMLHttpRequest();

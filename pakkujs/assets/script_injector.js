@@ -5,7 +5,7 @@ function gen_timestamp() {
 
 if(document.head) {
     // ajax hook
-    chrome.runtime.sendMessage({type: 'need_ajax_hook'},function(resp) {
+    chrome.runtime.sendMessage({type: 'need_ajax_hook', url: location.href},function(resp) {
         if(!resp) return;
         
         console.log('pakku ajax: injecting hook');
