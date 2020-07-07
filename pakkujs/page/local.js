@@ -53,7 +53,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                 if(d[0] && d[0].id) {
                     var tabid=d[0].id;
 
-                    var res=bgpage.load_danmaku(txt,0,tabid);
+                    var res=bgpage.load_danmaku(bgpage.xml_to_ir(txt),0,tabid);
                     if(res) {
                         download('pakku_processed.xml',res);
                     }

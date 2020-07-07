@@ -213,7 +213,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('cloud-sync').checked=localStorage['CLOUD_SYNC']==='on';
         // 其他
         id('popup-badge').value=localStorage['POPUP_BADGE'];
-        id('flash-notif').checked=localStorage['FLASH_NOTIF']==='on';
         
         // advanced options
         if(id('show-advanced').checked) document.body.classList.add('i-am-advanced');
@@ -398,7 +397,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['HIDE_THRESHOLD']=parseInt(id('hide-threshold').value)>=0?parseInt(id('hide-threshold').value):0;
         localStorage['SCROLL_THRESHOLD']=parseInt(id('scroll-threshold').value)>=0?parseInt(id('scroll-threshold').value):0;
         // 其他
-        localStorage['FLASH_NOTIF']=id('flash-notif').checked?'on':'off';
         localStorage['POPUP_BADGE']=id('popup-badge').value;
         localStorage['CLOUD_SYNC']=id('cloud-sync').checked?'on':'off';
         
@@ -433,7 +431,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 实验室
         'remove-seek','break-update','hide-threshold','scroll-threshold',
         // 其他
-        'popup-badge','flash-notif','cloud-sync'
+        'popup-badge','cloud-sync'
     ].forEach(function(elem) {
         id(elem).addEventListener('change',update);
     });
@@ -483,7 +481,7 @@ function ver_check() {
         console.log('latest version ',latest_ver);
         if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
             var note=document.createElement('a');
-            note.href='http://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
+            note.href='https://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
             note.id='update-note';
             note.target='_blank';
             note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';

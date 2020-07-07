@@ -68,7 +68,7 @@ module.exports = function(grunt) {
         'pakkujs/core/config.js',
         'pakkujs/core/edit_distance.js',
         'pakkujs/core/proto-bili-gen.js',
-        'pakkujs/core/proto_define.js',
+        'pakkujs/core/protocol.js',
         'pakkujs/core/core.js',
         'pakkujs/core/background.js',
         'pakkujs/core/post_init.js',

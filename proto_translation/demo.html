@@ -4,17 +4,17 @@
 var proto_seg=protobuf.roots.default.bilibili.community.service.dm.v1.DmSegMobileReply;
 var proto_view=protobuf.roots.default.bilibili.community.service.dm.v1.DmWebViewReply;
 
-x=new XMLHttpRequest;
-x.open('get','seg.so',true);
-x.responseType='arraybuffer';
-x.addEventListener('load',()=>{
-    let d=proto_seg.decode(new Uint8Array(x.response));
+y=new XMLHttpRequest;
+y.open('get','seg.so',true);
+y.responseType='arraybuffer';
+y.addEventListener('load',()=>{
+    let d=proto_seg.decode(new Uint8Array(y.response));
     console.log('seg',d);
 });
-x.send();
+y.send();
 
 x=new XMLHttpRequest;
-x.open('get','view',true);
+x.open('get','view4',true);
 x.responseType='arraybuffer';
 x.addEventListener('load',()=>{
     let d=proto_view.decode(new Uint8Array(x.response));

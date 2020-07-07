@@ -59,8 +59,7 @@ function generate_ctx(tabid) {
     window.WHITELIST_ctx=window.WHITELIST_ctx.concat(WHITELIST);
 }
 
-function parse(dom,tabid,S,D,ret_type) {
-    ret_type=ret_type||'xml';
+function parse(ir,tabid,S,D) {
     generate_ctx(tabid);
 
     FORCELIST_len=FORCELIST_ctx.length;
@@ -70,12 +69,9 @@ function parse(dom,tabid,S,D,ret_type) {
     var start_time=+new Date();
     
     function make_peers_node(obj,reason) {
-        return { // clone the obj without some attributes
-            attr: obj.attr,
-            time: obj.time,
-            orig_str: obj.orig_str,
-            mode: obj.mode,
-            reason: reason
+        return {
+            reason: reason,
+            ir_obj: obj.ir_obj,
         };
     }
     
@@ -159,7 +155,7 @@ function parse(dom,tabid,S,D,ret_type) {
     function build_text(elem) {
         var count=elem.peers.length;
         var dumped=null;
-        if(elem.mode=='7') // special danmu, need more parsing
+        if(elem.mode===7) // special danmu, need more parsing
             try {
                 dumped=JSON.parse(elem.orig_str);
             } catch(e) {}
@@ -182,95 +178,92 @@ function parse(dom,tabid,S,D,ret_type) {
         }).join('');
     }
 
-    var parser=new DOMParser();
-    var new_dom=parser.parseFromString('<i></i>','text/xml');
-    var i_elem=new_dom.childNodes[0];
+    var out_ir={
+        danmakus: [],
+        cid: ir.cid,
+        maxlimit: ir.maxlimit,
+    };
     
     function apply_danmu(elem,desc,peers,dispstr) {
         S.onscreen++;
-        i_elem.appendChild(elem);
+        out_ir.danmakus.push(elem);
         D.push({
             text: dispstr || elem.textContent,
             desc: desc,
-            xml_src: elem.outerHTML,
-            peers: peers || []
+            peers: peers || [],
         });
     }
 
     // load danmus
     var danmus=[],out_danmus=[];
-    [].slice.call(dom.childNodes[0].children).forEach(function(elem) {
-        if(elem.tagName==='d') { // danmu
-            S.total++;
+    ir.danmakus.forEach(function(elem) {
+        S.total++;
 
-            var attr=elem.attributes['p'].value.split(',');
-            var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
-            var mode=attr[1];
-            var disp_str=mode==='7' ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
-            var detaolued=detaolu(disp_str);
-            var str_pinyin=TRIM_PINYIN ? trim_pinyin(detaolued) : null;
+        var str=elem.content;
+        var mode=elem.mode;
+        var disp_str=mode===7 ? ext_special_danmu(str) : str.replace(/\/n/g,'');   
+        var detaolued=detaolu(disp_str);
+        var str_pinyin=TRIM_PINYIN ? trim_pinyin(detaolued) : null;
 
-            var dm_obj={
-                attr: attr, // thus we can build it into new_dom again
-                str: detaolued, // used when count>1
-                orig_str: str, // used when count==1 and for special danmus
-                disp_str: disp_str, // will be overrode by build_text
+        var dm_obj={
+            str: detaolued, // used when count>1
+            orig_str: str, // used when count==1 and for special danmus
+            disp_str: disp_str, // will be overrode by build_text
 
-                str_pinyin: str_pinyin, // used to compare similarity
-                str_2gram: gen_2gram_array(detaolued),
-                
-                time: parseFloat(attr[0]),
-                mode: mode,
-                size: parseFloat(attr[2]),
-                desc: [], // for D
-                peers: [],
+            str_pinyin: str_pinyin, // used to compare similarity
+            str_2gram: gen_2gram_array(detaolued),
+            
+            time: elem.time_ms/1000,
+            mode: mode,
+            size: elem.fontsize,
+            desc: [], // for D
+            peers: [],
 
-                self_dispval: null
-            };
+            self_dispval: null,
 
-            if(!PROC_POOL1 && attr[5]==='1') {
-                S.batch_ignore++;
-                apply_danmu(elem,['已忽略字幕弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
-                return;
-            }
-            if(mode!=='8' && mode !== '9' && blacklisted(disp_str)) {
-                S.blacklist++;
-                return;
-            }
-            if(!PROC_TYPE7 && mode==='7') { // special danmu
-                S.batch_ignore++;
-                apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
-                return;
-            }
-            if(!PROC_TYPE4 && mode==='4') { // bottom danmu
-                S.batch_ignore++;
-                apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
-                return;
-            }
-            if(mode==='8') { // code danmu
-                if(REMOVE_SEEK && str.indexOf('Player.seek(')!==-1) {
-                    S.player_seek++;
-                    elem.childNodes[0].data='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
-                }
-                S.script++;
-                apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
-                return;
-            }
-            if(mode==='9') { // bas danmu
-                S.script++;
-                apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
-                return;
-            }
-            if(whitelisted(disp_str)) {
-                S.whitelist++;
-                apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')],disp_str);
-                return;
-            }
-            // finaly,
-            danmus.push(dm_obj);
+            ir_obj: elem,
+        };
+
+        if(!PROC_POOL1 && elem.pool===1) {
+            S.batch_ignore++;
+            apply_danmu(elem,['已忽略字幕弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
             return;
-        } else // not danmu
-            i_elem.appendChild(elem);
+        }
+        if(mode!==8 && mode!==9 && blacklisted(disp_str)) {
+            S.blacklist++;
+            return;
+        }
+        if(!PROC_TYPE7 && mode===7) { // special danmu
+            S.batch_ignore++;
+            apply_danmu(elem,['已忽略特殊弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
+            return;
+        }
+        if(!PROC_TYPE4 && mode===4) { // bottom danmu
+            S.batch_ignore++;
+            apply_danmu(elem,['已忽略底部弹幕，可以在选项中修改'],[make_peers_node(dm_obj,'IGN')],disp_str);
+            return;
+        }
+        if(mode===8) { // code danmu
+            if(REMOVE_SEEK && str.indexOf('Player.seek(')!==-1) {
+                S.player_seek++;
+                elem.content='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
+            }
+            S.script++;
+            apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
+            return;
+        }
+        if(mode===9) { // bas danmu
+            S.script++;
+            apply_danmu(elem,['BAS弹幕'],[make_peers_node(dm_obj,'IGN')]);
+            return;
+        }
+        if(whitelisted(disp_str)) {
+            S.whitelist++;
+            apply_danmu(elem,['命中白名单'],[make_peers_node(dm_obj,'IGN')],disp_str);
+            return;
+        }
+        // finaly,
+        danmus.push(dm_obj);
     });
     danmus.sort(function(x,y) {return x.time-y.time;});
 
@@ -282,7 +275,7 @@ function parse(dom,tabid,S,D,ret_type) {
             out_danmus.push(danmu_chunk.shift());
         
         if(LOG_VERBOSE)
-            console.log(dm.attr[7],dm.str);
+            console.log(dm.ir_obj.id,dm.str);
         for(var i=0;i<danmu_chunk.length;i++) {
             var another=danmu_chunk[i];
             if(!CROSS_MODE && dm.mode!=another.mode) continue;
@@ -294,12 +287,12 @@ function parse(dom,tabid,S,D,ret_type) {
             );
             if(sim!==false) { // do combine
                 if(LOG_VERBOSE) {
-                    console.log(sim,dm.attr[7],'to',another.attr[7]);
+                    console.log(sim,dm.ir_obj.id,'to',another.ir_obj.id);
                 }
                 another.peers.push(make_peers_node(dm,sim));
                 if(MODE_ELEVATION && (
-                    (dm.mode=='4' && (another.mode=='5' || another.mode=='1')) ||
-                    (dm.mode=='5' && another.mode=='1')
+                    (dm.mode===4 && (another.mode===5 || another.mode===1)) ||
+                    (dm.mode===5 && another.mode===1)
                 )) {
                     another.mode=dm.mode;
                 }
@@ -320,8 +313,9 @@ function parse(dom,tabid,S,D,ret_type) {
                     Math.min(Math.floor(dm.peers.length*REPRESENTATIVE_PERCENT/100),dm.peers.length-1)
                 ];
                 dm.time=representative.time;
-                dm.attr=representative.attr;
                 dm.mode=representative.mode;
+                dm.size=representative.size;
+                dm.ir_obj=representative.ir_obj;
             }
         });
 
@@ -370,31 +364,38 @@ function parse(dom,tabid,S,D,ret_type) {
         
         if(HIDE_THRESHOLD && HIDE_THRESHOLD<dm.peers.length) {
             S.count_hide+=1;
-            return; // aka continue
+            return; // continue
         }
-
-        var d=new_dom.createElement('d');
-        var tn=new_dom.createTextNode(build_text(dm));
-        d.appendChild(tn);
         
-        var attr=dm.attr.slice();
-        attr[1]=dm.mode;
-        if(SCROLL_THRESHOLD && (attr[1]==='4'||attr[1]==='5')) {
+        var outmode=dm.mode;
+        var outtext=build_text(dm);
+
+        if(SCROLL_THRESHOLD && (outmode===4||outmode===5)) {
             var width=get_width_if_exceeds(dm.disp_str,dm.size,SCROLL_THRESHOLD);
             if(width>SCROLL_THRESHOLD) {                
                 dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
-                tn.textContent=dm.disp_str=(attr[1]==='4'?'↓':'↑')+dm.disp_str;
-                attr[1]='1';
+                ourtext=dm.disp_str=(outmode===4?'↓':'↑')+dm.disp_str;
+                outmode=1; // scroll
                 S.scroll+=1;
             }
         }
-        attr[2]=Math.ceil(dm.size);
-        d.setAttribute('p',attr.join(','));
         
         if(dm.mode===7)
             dm.disp_str=dm.disp_str.replace(/\/n/g,'');
         
-        apply_danmu(d,dm.desc,dm.peers,dm.disp_str);
+        apply_danmu({
+            "id_protobuf_int": dm.ir_obj.id_protobuf_int,
+            "time_ms": Math.floor(dm.time*1000),
+            "mode": outmode,
+            "fontsize": Math.ceil(dm.size),
+            "color": dm.ir_obj.color,
+            "sender_hash": dm.ir_obj.sender_hash,
+            "content": outtext,
+            "sendtime": dm.ir_obj.sendtime,
+            "weight": dm.ir_obj.weight,
+            "id": dm.ir_obj.id,
+            "pool": dm.ir_obj.pool,
+        },dm.desc,dm.peers,dm.disp_str);
     });
     
     S.parse_time_ms=(+new Date())-start_time;
@@ -410,10 +411,5 @@ function parse(dom,tabid,S,D,ret_type) {
     if(!WHITELIST_len && S.whitelist==0) S.whitelist='';
     if(!FORCELIST_len && S.taolu==0) S.taolu='';
     
-    if(ret_type=='protobuf') {
-        return xml_to_proto_seg(new_dom);
-    } else { // xml
-        var serializer=new XMLSerializer();
-        return serializer.serializeToString(new_dom);
-    }
+    return out_ir;
 }

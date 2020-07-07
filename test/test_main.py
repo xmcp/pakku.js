@@ -29,7 +29,7 @@ runner.update_settings('SCROLL_THRESHOLD','0')
 runner.update_settings('AUTO_DANMU_LIST','on')
 runner.update_settings('TRIM_PINYIN','off')
 
-# not tested: FLASH_NOTIF POPUP_BADGE
+# not tested: POPUP_BADGE
 
 print('!= test injected ui')
 runner.update_settings('FORCELIST','[["^.*$","pakku_test_str"]]')
