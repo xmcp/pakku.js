@@ -17,7 +17,7 @@ var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/seg\.so
 var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+$/;
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
 
-function parse_danmu_url(url) { // returns {type, cid, pid?}
+function parse_danmu_url(url) { // returns {url, type, cid, pid?}
     // ret_type=(type.indexOf('proto_')==0)?'protobuf':'xml' in other code
     // so protobuf results should starts with `proto_`
 
@@ -26,18 +26,21 @@ function parse_danmu_url(url) { // returns {type, cid, pid?}
     if(url.indexOf('//comment.bilibili.com/')!==-1) {
         res=TRAD_DANMU_URL_RE.exec(url);
         return {
+            url: url,
             type: 'trad',
             cid: res[2],
         };
     } else if(url.indexOf('/list.so?')!==-1) {
         res=NEW_DANMU_NORMAL_URL_RE.exec(url);
         return {
+            url: url,
             type: 'list',
             cid: res[2],
         };
     } else if(url.indexOf('/history?')!==-1) {
         res=NEW_DANMU_HISTORY_URL_RE.exec(url);
         return {
+            url: url,
             type: 'history',
             cid: res[2],
         };
@@ -45,127 +48,20 @@ function parse_danmu_url(url) { // returns {type, cid, pid?}
         res=PROTO_DANMU_SEG_URL_RE.exec(url);
         if(/segment_index=1(?!\d)/.test(url))
             return {
+                url: url,
                 type: 'proto_seg',
                 cid: res[2],
                 pid: res[3],
             };
         else
             return {
+                url: url,
                 type: 'proto_segtrail',
                 cid: res[2],
                 pid: res[3],
             };
     } else
         return null;
-}
-
-// this url is used for protobuf requests
-function gen_danmaku_url(cid) {
-    return 'https://api.bilibili.com/x/v1/dm/list.so?oid='+cid;
-}
-
-function load_userinfo_batch(hashes,store,final_callback,silence) {
-    var notif_id='load_userinfo_notif_'+Math.random();
-
-    var error_count=0;
-
-    function load_job_slice(joblist,callback) { // joblist: uid->hash
-        var xhr=new XMLHttpRequest();
-        xhr.open('get','https://account.bilibili.com/api/member/getInfoByMid?mid='+Object.keys(joblist).join(','));
-        xhr.onload=function() {
-            try {
-                var res=JSON.parse(xhr.responseText);
-            } catch(e) {
-                console.trace(e);
-                error_count++;
-                callback();
-                return;
-            }
-            if(res.code!==0) {
-                console.error('user info: response error',res,joblist);
-                error_count++;
-            } else {
-                for(var uid in res.cards) {
-                    if(!store[joblist[uid]] && res.cards[uid].level_info)
-                        store[joblist[uid]]=res.cards[uid];
-                }
-            }
-            callback();
-        };
-        xhr.onerror=function() {
-            console.error('user info: load job failed',joblist);
-            error_count++;
-            callback();
-        };
-        xhr.send();
-    }
-
-    var uids={};
-    var jobs=[];
-
-    if(!silence)
-        chrome.notifications.create(notif_id,{
-            iconUrl: chrome.runtime.getURL('assets/logo.png'),
-            type: 'progress',
-            title: '正在获取用户信息',
-            message: '正在获取 UID',
-            progress: 0,
-            requireInteraction: true
-        },function(){});
-
-    console.time('load userinfo: crack batch');
-    hashes.forEach(function(hash) {
-        crack_uidhash(hash).forEach(function(uid) {
-            uids[uid]=hash;
-        })
-    });
-    console.timeEnd('load userinfo: crack batch');
-
-    var uids_arr=Object.keys(uids).sort();
-
-    while(uids_arr.length) {
-        var curjob={};
-        uids_arr.splice(0,33).forEach(function(uid) {
-            curjob[uid]=uids[uid];
-        });
-        jobs.push(curjob);
-    }
-
-    if(!silence)
-        setTimeout(function() {
-            chrome.notifications.update(notif_id,{
-                message: '正在下载 0/'+jobs.length
-            });
-        },20);
-
-    var completed_cnt=0;
-    function progress_callback() {
-        completed_cnt++;
-        if(completed_cnt==jobs.length) {
-            console.log('load userinfo finished, error_count =',error_count);
-            if(!silence)
-                setTimeout(function() {
-                    chrome.notifications.clear(notif_id);
-                },50); // to make sure it is correctly cleared
-            final_callback(error_count);
-        } else {
-            if(!silence)
-                chrome.notifications.update(notif_id,{
-                    message: '正在下载 '+completed_cnt+'/'+jobs.length,
-                    progress: Math.floor(100*completed_cnt/jobs.length),
-                    contextMessage: '错误数量：'+error_count
-                });
-        }
-    }
-
-    jobs.forEach(function(job) {
-        load_job_slice(job,progress_callback);
-    });
-
-    if(jobs.length==0) {
-        completed_cnt--;
-        progress_callback();
-    }
 }
 
 function load_update_breaker() {
@@ -348,17 +244,23 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             var url_type=ret.type;
 
             var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
-            if(check_xml_bounce(cid)) {
-                if(ret_type!='protobuf') // potential bug if historical danmaku becomes protobuf, gracefully degrade in this case
-                    return sendResponse({data: BOUNCE.result});
-            }
 
             if(url_type=='proto_segtrail') {
-                console.log('trailing');
+                console.log('skip trailing');
                 return sendResponse({
                     data: empty_danmaku_proto_seg(),
                 });
             }
+
+            if(check_ir_bounce(cid)) {
+                console.log('bounce :: message to',ret_type,BOUNCE.result);
+
+                if(ret_type=='protobuf')
+                    return sendResponse({data: ir_to_protobuf(BOUNCE.result)});
+                else
+                    return sendResponse({data: ir_to_xml(BOUNCE.result)});
+            }
+
             
             var got_ir_promise;
             if(ret_type==='protobuf')
@@ -376,36 +278,21 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             return true;
         } else
             return sendResponse({data: null});
-    } else if(request.type==='set_xml_bounce') {
+    } else if(request.type==='set_ir_bounce') {
         if(!GLOBAL_SWITCH)
             set_global_switch(true,'yes do not reload');
         BOUNCE.cid=request.cid;
         BOUNCE.set_time=(+new Date());
         BOUNCE.result=request.result;
-        console.log('set xml bounce for cid',request.cid);
+        console.log('set ir bounce for cid',request.cid);
         return sendResponse({error: null});
     } else if(request.type==='crack_uidhash') {
         return sendResponse(crack_uidhash(request.hash));
     } else if(request.type==='crack_uidhash_batch') {
         request.dinfo.forEach(function(d) {
-            d.cracked_uid=crack_uidhash(d.peers[0].attr[6])[0];
+            d.cracked_uid=crack_uidhash(d.peers[0].ir_obj.sender_hash)[0];
         });
         return sendResponse(request.dinfo);
-    } else if(request.type==='load_userinfo_batch') {
-        var toload=[];
-        request.dinfo.forEach(function(d) {
-            toload.push(d.peers[0].attr[6]);
-        });
-        var store={};
-        load_userinfo_batch(toload,store,function() {
-            request.dinfo.forEach(function(d) {
-                var info=store[d.peers[0].attr[6]];
-                d.sender_info=info;
-                d.cracked_uid=parseInt(info ? info.mid : null);
-            });
-            return sendResponse(request.dinfo);
-        },request.silence);
-        return true;
     } else if(request.type==='need_ajax_hook') {
         //console.log('request ajax hook',request.url);
 
@@ -433,7 +320,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     }
 });
 
-function hook_stream_filter(filter,id,tabid,ret_type) {
+function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
     ret_type=ret_type||'xml';
     var encoder=new TextEncoder();
 
@@ -452,7 +339,13 @@ function hook_stream_filter(filter,id,tabid,ret_type) {
         }
     }
 
-    down_danmaku_xml_async(gen_danmaku_url(id),id,tabid)
+    var got_ir_promise;
+    if(ret_type==='protobuf')
+        got_ir_promise=down_danmaku_protobuf_async(url_parse_ret.cid,url_parse_ret.pid,tabid);
+    else
+        got_ir_promise=down_danmaku_xml_async(url_parse_ret.url,url_parse_ret.cid,tabid);
+
+    got_ir_promise
         .then(function(str) {
             var res=load_danmaku(str,id,tabid,ret_type);
             if(onstart_first) {
@@ -512,13 +405,16 @@ function firefox_onbeforerequest(details) {
         }
 
         // bounce
-        if(check_xml_bounce(cid) && ret_type!='protobuf') {
+        if(check_ir_bounce(cid)) {
             console.log('bounce :: stream filter',cid);
             var filter=browser.webRequest.filterResponseData(details.requestId);
             
             var encoder=new TextEncoder();
             filter.onstop=function(event) {
-                filter.write(encoder.encode(BOUNCE.result));
+                if(ret_type=='protobuf')
+                    filter.write(encoder.encode(ir_to_prorotobuf(BOUNCE.result)));
+                else
+                    filter.write(encoder.encode(ir_to_xml(BOUNCE.result)));
                 filter.close();
             };
             filter.onerror=function(event) {
@@ -529,7 +425,7 @@ function firefox_onbeforerequest(details) {
 
         console.log('webrequest :: stream filter',details);
         var filter=browser.webRequest.filterResponseData(details.requestId);
-        hook_stream_filter(filter,cid,details.tabId,ret_type);
+        hook_stream_filter(filter,ret,details.tabId,ret_type);
         return {cancel: false};
     }
     else
@@ -559,6 +455,6 @@ chrome.commands.onCommand.addListener(function(name) {
             chrome.notifications.clear('//switch');
         },700);
     } else if(name==='show-local') {
-        chrome.tabs.create({url: chrome.runtime.getURL('page/local.html')});
+        chrome.tabs.create({url: chrome.runtime.getURL('page/parse_local.html')});
     }
 });

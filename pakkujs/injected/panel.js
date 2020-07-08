@@ -164,7 +164,7 @@ function inject_panel(list_elem,player_elem) {
             text_container.textContent=info.text;
 
             selectbar.bar.style.display=infos.length>1 ? 'block' : 'none';
-            selectbar.content.textContent=(idx+1)+'/'+infos.length+' ['+format_duration((info.peers[0]||{time: 0}).time)+']';
+            selectbar.content.textContent=(idx+1)+'/'+infos.length+' ['+format_duration((info.peers[0]||{ir_obj: {time: 0}}).ir_obj.time)+']';
             selectbar.left.onclick=function() {redraw_ui(idx-1);};
             selectbar.right.onclick=function() {redraw_ui(idx+1);};
 
@@ -176,26 +176,26 @@ function inject_panel(list_elem,player_elem) {
             peers_container.textContent='';
             info.peers.forEach(function(p) {
                 var self=document.createElement('div');
-                var color=proc_rgb(parseInt(p.attr[3]));
+                var color=proc_rgb(p.ir_obj.color);
                 self.style.color='rgb('+color[0]+','+color[1]+','+color[2]+')';
                 self.classList.add(get_L(color[0],color[1],color[2])>.5 ? 'black' : 'white');
-                
-                self.appendChild(make_p(proc_mode(p.mode)+' '+p.orig_str));
+
+                self.appendChild(make_p(proc_mode(p.ir_obj.mode)+' '+p.ir_obj.content));
                 self.appendChild(make_p(
-                    p.reason+' '+p.attr[6]+' '+p.time.toFixed(2)+'s '+parseInt(p.attr[2])+'px '
-                    +format_datetime(new Date(parseInt(p.attr[4])*1000))
+                    p.reason+' '+p.ir_obj.sender_hash+' '+(p.ir_obj.time_ms/1000).toFixed(1)+'s '+p.ir_obj.fontsize+'px '
+                    +'W'+p.ir_obj.weight+' '+format_datetime(new Date(p.ir_obj.sendtime*1000))
                 ));
                 
                 (function(self,uidhash,container) {
                     self.addEventListener('mouseover',function() {
                         query_uid(uidhash,container);
                     });
-                })(self,p.attr[6],footer_container);
+                })(self,p.ir_obj.sender_hash,footer_container);
                 
                 peers_container.appendChild(self);
             });
             if(info.peers[0])
-                query_uid(info.peers[0].attr[6],footer_container);
+                query_uid(info.peers[0].ir_obj.sender_hash,footer_container);
         }
 
         if(infos.length) {

@@ -45,7 +45,7 @@ document.body.addEventListener('drop',function(e) {
 
 chrome.runtime.getBackgroundPage(function(bgpage) {
     id('process').addEventListener('click',function() {
-        var txt=id('content').value;
+        var txt=id('content').value.trim();
 
         chrome.tabs.query(
             {active: true, currentWindow: true},

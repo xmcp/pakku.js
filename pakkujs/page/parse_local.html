@@ -11,11 +11,8 @@
             width: 100%;
             line-height: 30px;
         }
-        #action {
-            float: right;
-        }
-        #action button {
-            width: 60px;
+        #process {
+            width: 100px;
             height: 30px;
         }
         #content {
@@ -34,12 +31,10 @@
 </head>
 <body>
     <div id="topbar">
-        <span id="action">
-            <button id="process">处理</button>
-        </span>
-        <p>拖拽 XML 弹幕到本页面，或者粘贴到下面的文本框中。</p>
+        <button id="process">处理弹幕</button>
+        &nbsp; 请拖拽 XML 弹幕到本页面，或者粘贴到下面的文本框中。
     </div>
     <textarea id="content"><i></i></textarea>
-    <script src="local.js"></script>
+    <script src="parse_local.js"></script>
 </body>
 </html>

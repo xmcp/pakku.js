@@ -16,7 +16,7 @@ var BOUNCE={
 };
 var TEMPRULES={}; // id -> {FORCELIST: [], WHITELIST: []}
 
-function check_xml_bounce(cid) {
+function check_ir_bounce(cid) {
     var res=cid==BOUNCE.cid && (+new Date())-BOUNCE.set_time<5000;
     if(res) {
         BOUNCE.set_time=-1;

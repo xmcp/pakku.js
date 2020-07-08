@@ -72,7 +72,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                         } else {
                             id('result').classList.remove('display-none');
                             id('link-total').href='http://comment.bilibili.com/'+res.cid+'.xml';
-                            id('link-display').href='http://comment.bilibili.com/'+res.cid+'.xml?debug';
+                            id('link-display').href=chrome.runtime.getURL('/page/parse_url.html')+'?url='+encodeURIComponent('http://comment.bilibili.com/'+res.cid+'.xml');
                         }
                         for(var name in res)
                             if(id('status-'+name)) {

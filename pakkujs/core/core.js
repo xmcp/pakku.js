@@ -2,6 +2,7 @@
 
 var LOG_VERBOSE=false;
 var LOG_DISPVAL=false;
+var LOG_WEIGHT=false;
 
 var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
 
@@ -191,6 +192,7 @@ function parse(ir,tabid,S,D) {
             text: dispstr || elem.textContent,
             desc: desc,
             peers: peers || [],
+            ir_obj: elem,
         });
     }
 
@@ -382,6 +384,14 @@ function parse(ir,tabid,S,D) {
         
         if(dm.mode===7)
             dm.disp_str=dm.disp_str.replace(/\/n/g,'');
+
+        var outweight=dm.ir_obj.weight;
+        dm.peers.forEach(function(peer) {
+            outweight=Math.max(outweight,peer.ir_obj.weight);
+        });
+
+        if(LOG_WEIGHT)
+            outtext='[W'+outweight+'] '+outtext;
         
         apply_danmu({
             "id_protobuf_int": dm.ir_obj.id_protobuf_int,
@@ -392,7 +402,7 @@ function parse(ir,tabid,S,D) {
             "sender_hash": dm.ir_obj.sender_hash,
             "content": outtext,
             "sendtime": dm.ir_obj.sendtime,
-            "weight": dm.ir_obj.weight,
+            "weight": outweight,
             "id": dm.ir_obj.id,
             "pool": dm.ir_obj.pool,
         },dm.desc,dm.peers,dm.disp_str);

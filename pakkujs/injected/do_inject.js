@@ -59,7 +59,8 @@ function try_inject() {
     // 3rd-party scripts can use this for convenience
     window.postMessage({
         type: 'pakku_event_danmaku_loaded',
-        pakku_version: chrome.runtime.getManifest().version
+        pakku_version: chrome.runtime.getManifest().version,
+        cid: OPT.CID,
     },'*');
 
     if(pakku_tag_elem.classList.contains('.__pakku_injected')) {
@@ -90,13 +91,7 @@ function try_inject() {
         }
     }
     if(OPT['AUTO_DANMU_LIST']) {
-        var list_switch_elem=isstardust ?
-            root_elem.querySelector('.danmaku-wrap .bui-collapse-wrap-folded .bui-collapse-header') :
-            root_elem.querySelector('.bilibili-player-filter-btn-list');
-        console.log('pakku injector: list_switch_elem',list_switch_elem);
-        if(list_switch_elem) {
-            list_switch_elem.click();
-        }
+        show_danmu_list();
     }
     if(OPT['FLUCTLIGHT']) {
         fluctlight_cleanup(root_elem);
@@ -123,14 +118,18 @@ function try_inject() {
             return;
         if (event.data.type && event.data.type=='pakku_get_danmaku')
             return window.postMessage({
-                type: 'pakku_return_danmaku',
+                type: 'pakku_got_danmaku',
                 flag: null,
                 resp: D
             },'*');
-        else if (event.data.type && event.data.type=='pakku_set_xml_bounce')
+        else if (event.data.type && event.data.type=='pakku_set_danmaku_bounce')
             return chrome.runtime.sendMessage({
-                type: 'set_xml_bounce',
-                result: event.data.xml.toString(),
+                type: 'set_ir_bounce',
+                result: {
+                    danmakus: event.data.danmakus,
+                    cid: OPT.CID,
+                    maxlimit: event.data.danmakus.length,
+                },
                 cid: OPT.CID
             }, {}, function(resp) {
                 if(resp.error===null)
@@ -142,20 +141,8 @@ function try_inject() {
                 dinfo: D
             }, function(D) {
                 return window.postMessage({
-                    type: 'pakku_return_danmaku',
+                    type: 'pakku_got_danmaku',
                     flag: 'uid',
-                    resp: D
-                },'*');
-            });
-        else if(event.data.type && event.data.type=='pakku_get_danmaku_with_info')
-            return chrome.runtime.sendMessage({
-                type: 'load_userinfo_batch',
-                dinfo: D,
-                silence: !!event.data.silence
-            }, function(D) {
-                return window.postMessage({
-                    type: 'pakku_return_danmaku',
-                    flag: 'info',
                     resp: D
                 },'*');
             });

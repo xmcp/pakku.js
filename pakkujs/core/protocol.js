@@ -68,14 +68,14 @@ function ir_to_xml(ir) {
         var elem=dom.createElement('d');
         var tn=dom.createTextNode(d.content);
         var attr=[
-            d.time_ms/1000,
-            d.mode,
-            d.fontsize,
-            d.color,
-            d.sendtime,
-            d.pool,
-            d.sender_hash,
-            d.id,
+            d.time_ms/1000, // 0
+            d.mode, // 1
+            d.fontsize, // 2
+            d.color, // 3
+            d.sendtime, // 4
+            d.pool, // 5
+            d.sender_hash, // 6
+            d.id, // 7
         ];
         elem.appendChild(tn);
         elem.setAttribute('p',attr.join(','));
@@ -113,12 +113,6 @@ function empty_danmaku_proto_seg() {
         cid: -1,
         maxlimit: 0,
     });
-}
-
-function xml_to_proto_seg(dom) {
-    // todo: delete me
-    console.log('!! xml to proto seg');
-    return ir_to_protobuf(xml_to_ir(dom));
 }
 
 function protoapi_get_view(cid,pid) { // return page count
