@@ -23,6 +23,9 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
 
     var res;
 
+    if(url.indexOf('pakku_request')!==-1)
+        return null;
+
     if(url.indexOf('//comment.bilibili.com/')!==-1) {
         res=TRAD_DANMU_URL_RE.exec(url);
         return {
@@ -346,8 +349,8 @@ function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
         got_ir_promise=down_danmaku_xml_async(url_parse_ret.url,url_parse_ret.cid,tabid);
 
     got_ir_promise
-        .then(function(str) {
-            var res=load_danmaku(str,id,tabid,ret_type);
+        .then(function(ir) {
+            var res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type);
             if(onstart_first) {
                 //console.log('!! onstop -> [load]');
                 finish(res);

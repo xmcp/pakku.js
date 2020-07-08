@@ -63,31 +63,6 @@ assert len(runner.b.find_elements_by_css_selector('.bilibili-player .bilibili-pl
 
 runner.update_settings('FORCELIST','[]')
 
-print('!= test webrequest hook')
-
-runner.set_global_switch(False)
-runner.b.get(EXAMPLE_DANMAKU+'&debug')
-assert not runner.b.current_url.startswith('data:')
-
-runner.set_global_switch(True)
-runner.b.get(EXAMPLE_DANMAKU)
-assert not runner.b.current_url.startswith('data:')
-runner.b.get(EXAMPLE_DANMAKU+'&debug')
-assert runner.b.current_url.startswith('data:')
-
-print('!= test xml format')
-
-src=runner.get_source()
-dom=parseString(src)
-
-assert len(dom.childNodes)==1
-assert dom.childNodes[0].tagName=='i'
-danmu=dom.getElementsByTagName('d')[0]
-assert len(danmu.getAttribute('p').split(','))>3
-assert len(danmu.childNodes)==1
-assert isinstance(danmu.childNodes[0],Text)
-
-'''
 print('!= test ajax hook')
 
 runner.set_global_switch(False)
@@ -100,7 +75,6 @@ runner.b.get('http://www.bilibili.com/favicon.ico')
 time.sleep(.5) # wait for ajax hook
 assert '[x' in runner.parse_ajax(EXAMPLE_DANMAKU)
 assert '[x' not in runner.parse_ajax(EXAMPLE_DANMAKU+'?pakku_test')
-'''
 
 print('!= test working')
 

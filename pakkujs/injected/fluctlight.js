@@ -130,10 +130,16 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
         ctx.globalAlpha=.8;
         ctx.fill();
 
-        var hlblock=(hltime===undefined)?undefined:block(hltime*1000);
+        var hlblock=(hltime===undefined)?undefined:block(hltime*1000+1000);
         if(hlblock!==undefined) {
             // add gradient
-            var GRALENGTH=100;
+            var GRALENGTH=90;
+            var EDGESIZE=GRALENGTH*.9;
+            
+            var curblock=hlblock;
+            if(hlblock<EDGESIZE) hlblock=EDGESIZE;
+            else if(hlblock>WIDTH-EDGESIZE) hlblock=WIDTH-EDGESIZE;
+
             var gra=ctx.createLinearGradient(hlblock-GRALENGTH,0,hlblock+GRALENGTH,0);
             gra.addColorStop(0,'rgba(255,255,255,0)')
             gra.addColorStop(.1,'rgba(255,255,255,1)')
@@ -145,8 +151,8 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
             ctx.globalCompositeOperation='source-over';
-            drawline(hlblock,Math.pow(den_bef[hlblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
-            drawline(hlblock,Math.pow(den_aft[hlblock],GRAPH_DENSITY_POWER)/2,2,'#0000cc',1);
+            drawline(curblock,Math.pow(den_bef[curblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
+            drawline(curblock,Math.pow(den_aft[curblock],GRAPH_DENSITY_POWER)/2,2,'#0000cc',1);
         }
     }
     redraw();
@@ -236,7 +242,7 @@ function inject_fluctlight_details(bar_elem,_version) {
                 fluct.style.height=0;
                 fluct.textContent='';
                 var time=parse_time(time_str);
-                var time_ms=time*1000;
+                var time_ms=time*1000+1000;
                 var danmus=[];
                 for(var i=0;i<D.length;i++) {
                     var d=D[i];

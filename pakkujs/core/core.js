@@ -189,10 +189,10 @@ function parse(ir,tabid,S,D) {
         S.onscreen++;
         out_ir.danmakus.push(elem);
         D.push({
-            text: dispstr || elem.textContent,
+            text: dispstr || elem.content,
             desc: desc,
             peers: peers || [],
-            ir_obj: elem,
+            ir_obj: elem, 
         });
     }
 
@@ -376,7 +376,7 @@ function parse(ir,tabid,S,D) {
             var width=get_width_if_exceeds(dm.disp_str,dm.size,SCROLL_THRESHOLD);
             if(width>SCROLL_THRESHOLD) {                
                 dm.desc.push('转换为滚动弹幕：宽度为 '+Math.floor(width)+' px');
-                ourtext=dm.disp_str=(outmode===4?'↓':'↑')+dm.disp_str;
+                outtext=dm.disp_str=(outmode===4?'↓':'↑')+dm.disp_str;
                 outmode=1; // scroll
                 S.scroll+=1;
             }
