@@ -1,4 +1,4 @@
-// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 /*
 
@@ -159,20 +159,16 @@ function down_danmaku_protobuf_async(cid,pid,tabid) {
     
     console.log('load (protobuf) for CID '+cid);
 
+    // preload first chunk to save time for short videos
+    var first_chunk_req=protoapi_get_seg(cid,pid,1);
+
     return (
         protoapi_get_view(cid,pid)
             .then(function(pages) {
-                var req=[];
-                for(var i=1;i<=pages;i++)
-                    req.push(protoapi_get_seg(cid,pid,i));
-                return Promise.all(req);
+                return protoapi_get_segs(cid,pid,pages,first_chunk_req);
             })
             .then(function(dms) {
-                var tot=[];
-                dms.forEach(function(dmchunk) {
-                    tot=tot.concat(dmchunk);
-                });
-                return protobuf_to_ir(tot);
+                return protobuf_to_ir(dms,cid);
             })
             .catch(function(e) {
                 setbadge('NET!',ERROR_COLOR,tabid);
@@ -273,7 +269,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
 
             got_ir_promise
                 .then(function(ir) {
-                    sendResponse({data:load_danmaku(ir,cid,tabid,ret_type)});
+                    sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type)});
                 })
                 .catch(function() {
                     sendResponse({data:null});

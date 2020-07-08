@@ -1,3 +1,5 @@
+// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+
 var proto_seg=protobuf.roots.default.bilibili.community.service.dm.v1.DmSegMobileReply;
 var proto_view=protobuf.roots.default.bilibili.community.service.dm.v1.DmWebViewReply;
 
@@ -11,7 +13,7 @@ function xml_to_ir(xmlstr) {
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             res.push({
                 "id_protobuf_int": parseInt(attr[7]), // not present in xml so fake same as id
-                "time_ms": Math.floor(parseInt(attr[0])*1000),
+                "time_ms": Math.floor(parseFloat(attr[0])*1000),
                 "mode": parseInt(attr[1]),
                 "fontsize": parseFloat(attr[2]),
                 "color": parseInt(attr[3]),
@@ -122,7 +124,10 @@ function protoapi_get_view(cid,pid) { // return page count
         xhr.responseType='arraybuffer';
         xhr.addEventListener('load',function() {
             let d=proto_view.decode(new Uint8Array(xhr.response));
-            resolve(d.dmSge.total||1);
+            if(d.dmSge.total)
+                resolve(d.dmSge.total);
+            else
+                resolve(null);
         });
         xhr.addEventListener('error',reject);
         xhr.send();
@@ -141,4 +146,55 @@ function protoapi_get_seg(cid,pid,segidx) { // return dm list
         xhr.addEventListener('error',reject);
         xhr.send();
     });
+}
+
+function protoapi_get_segs(cid,pid,pages,first_chunk_req) {
+    if(pages) {
+        console.log('protobuf api: total',pages,'pages');
+        var req=[first_chunk_req];
+        for(var i=2;i<=pages;i++)
+            req.push(protoapi_get_seg(cid,pid,i));
+        return (
+            Promise.all(req)
+                .then(function(dms) {
+                    var tot=[];
+                    dms.forEach(function(dmchunk) {
+                        tot=tot.concat(dmchunk);
+                    });
+                    return tot;
+                })
+        );
+    } else { // guess page numbers
+        console.log('protobuf api: guessing page');
+        return new Promise(function(resolve,reject) {
+            var req=[first_chunk_req, protoapi_get_seg(cid,pid,2), protoapi_get_seg(cid,pid,3)];
+            var res=[];
+            function work(idx) {
+                req.shift()
+                    .then(function(chunk) {
+                        if(chunk.length) {
+                            res=res.concat(chunk);
+                            req.push(protoapi_get_seg(cid,pid,idx+3));
+                            work(idx+1);
+                        } else {
+                            req.shift()
+                                .then(function(chunk) {
+                                    if(chunk.length) {
+                                        res=res.concat(chunk);
+                                        req.push(protoapi_get_seg(cid,pid,idx+3));
+                                        req.push(protoapi_get_seg(cid,pid,idx+4));
+                                        work(idx+2);
+                                    } else { // completed
+                                        console.log('protobuf api: ASSUMING total',idx-1,'pages');
+                                        resolve(res);
+                                    }
+                                })
+                                .catch(reject);
+                        }
+                    })
+                    .catch(reject);
+            }
+            work(1);
+        });
+    }
 }

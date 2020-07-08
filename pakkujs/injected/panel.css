@@ -1,12 +1,12 @@
 .pakku-panel {
-    background-color: rgba(205,205,205,.8);
+    background-color: rgba(221,221,221,.8);
     color: black;
     width: 300px;
     position: absolute;
     z-index: 10000;
     top: 50px;
     right: 0;
-    box-shadow: 2px 2px 50px black;
+    box-shadow: 0 0 20px black;
 }
 .pakku-floating .pakku-panel {
     right: -20px;
@@ -122,7 +122,7 @@
     display: initial;
 }
 .pakku-panel .pakku-panel-peers div.black {
-    background-color: rgba(24,24,24,.8);
+    background-color: rgba(42,42,42,.8);
 }
 .pakku-panel .pakku-panel-peers div.white {
     background-color: rgba(231,231,231,.8);
@@ -132,6 +132,12 @@
 }
 .pakku-panel .pakku-panel-peers div.white:hover {
     background-color: rgba(255,255,255,1);
+}
+.pakku-panel .pakku-panel-peers div {
+    padding: .1em 0;
+}
+.pakku-panel .pakku-panel-peers div:hover {
+    padding: .3em 0;
 }
 
 /* event fix */

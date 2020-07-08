@@ -1,4 +1,4 @@
-// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var DETAILS_MAX_TIMEDELTA_MS=10*1000;
 var GRAPH_MAX_TIMEDELTA_MS=5*1000;
@@ -105,7 +105,7 @@ function inject_fluctlight_graph(bar_elem,_version,new_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-        ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)/2);
+            ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)/2);
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // before

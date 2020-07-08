@@ -1,4 +1,4 @@
-// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 console.log('pakku panel: script injected, D.length = '+D.length);
 for(var i=0;i<D.length;i++) {

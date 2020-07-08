@@ -1,4 +1,4 @@
-// (C) 2017-2019 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var LOG_VERBOSE=false;
 var LOG_DISPVAL=false;
@@ -72,6 +72,7 @@ function parse(ir,tabid,S,D) {
     function make_peers_node(obj,reason) {
         return {
             reason: reason,
+            str: obj.str,
             ir_obj: obj.ir_obj,
         };
     }
@@ -370,8 +371,27 @@ function parse(ir,tabid,S,D) {
         }
         
         var outmode=dm.mode;
+
+        // pick most frequent text
+        if(outmode!=7 && dm.peers.length>=3) {
+            var text_cnts={}, most_idx=0, most_cnt=-1;
+            dm.peers.forEach(function(p,idx) {
+                if(!text_cnts[p.str])
+                    text_cnts[p.str]=0;
+                
+                if(++text_cnts[p.str]>most_cnt) {
+                    most_cnt=text_cnts[p.str];
+                    most_idx=idx;
+                }
+            });
+            if(dm.peers[most_idx].str!=dm.str)
+                dm.desc.push('采用第 '+(most_idx+1)+' 条文本：出现了 '+most_cnt+' 次');
+            dm.str=dm.peers[most_idx].str;
+        }
+
         var outtext=build_text(dm);
 
+        // convert mode to scroll if too long
         if(SCROLL_THRESHOLD && (outmode===4||outmode===5)) {
             var width=get_width_if_exceeds(dm.disp_str,dm.size,SCROLL_THRESHOLD);
             if(width>SCROLL_THRESHOLD) {                
@@ -382,9 +402,11 @@ function parse(ir,tabid,S,D) {
             }
         }
         
+        // `/n` text fix for special danmu
         if(dm.mode===7)
             dm.disp_str=dm.disp_str.replace(/\/n/g,'');
 
+        // adjust weight
         var outweight=dm.ir_obj.weight;
         dm.peers.forEach(function(peer) {
             outweight=Math.max(outweight,peer.ir_obj.weight);

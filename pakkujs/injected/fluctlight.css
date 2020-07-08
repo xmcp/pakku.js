@@ -13,4 +13,5 @@
     padding: 0 2px;
     box-sizing: border-box;
     background-color: rgba(205,205,205,.8);
+    color: black !important;
 }
