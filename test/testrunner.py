@@ -19,7 +19,11 @@ print('== finding pakkujs')
 #b.switch_to.window(b.window_handles[1])
 opt_url=b.title
 if not opt_url.startswith('chrome-extension://'):
-    raise RuntimeError('! bad opt_url: '+opt_url)
+    b.switch_to.window(b.window_handles[1])
+    time.sleep(.25)
+    opt_url=b.title
+    if not opt_url.startswith('chrome-extension://'):
+        raise RuntimeError('! bad opt_url: '+opt_url)
 
 print('== ok. pakku.js page:',opt_url)
 
