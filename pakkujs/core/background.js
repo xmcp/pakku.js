@@ -17,6 +17,48 @@ var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/seg\.so
 var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+$/;
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
 
+// https://github.com/xmcp/pakku.js/issues/145
+
+chrome.notifications.onButtonClicked.addListener(function(notif_id,btn_idx) {
+    if(notif_id=='//perm_hotfix') {
+        chrome.permissions.request({
+            origins: ['*://*.bilibili.com/*'],
+            permissions: ['webRequest','webRequestBlocking'],
+        }, function(granted) {
+            if(granted) {
+                chrome.notifications.update('//perm_hotfix',{
+                    title: '权限修复成功',
+                    message: '您可能需要刷新已经打开的B站页面',
+                    requireInteraction: false,
+                    buttons: [],
+                })
+            }
+        });
+    }
+});
+
+function check_chrome_permission_hotfix(tabid,cid) {
+    console.log('checking chrome permission hotfix');
+    chrome.permissions.getAll(function(perms) {
+        if(perms.origins.indexOf('*://*.bilibili.com/*')==-1) {
+            if(cid) {
+                HISTORY[tabid]=FailingStatus(cid,'权限不足','当前权限：\n'+JSON.stringify(perms));
+            }
+
+            chrome.notifications.create('//perm_hotfix', {
+                type: 'basic',
+                iconUrl: chrome.runtime.getURL('assets/logo.png'),
+                title: '请授予pakku权限',
+                message: '您可能修改了权限设置，导致pakku没有修改弹幕所需的权限，无法正常工作。',
+                requireInteraction: true,
+                buttons: [
+                    {title: '立即修复'},
+                ]
+            });
+        }
+    })
+}
+
 function parse_danmu_url(url) { // returns {url, type, cid, pid?}
     // ret_type=(type.indexOf('proto_')==0)?'protobuf':'xml' in other code
     // so protobuf results should starts with `proto_`
@@ -136,6 +178,7 @@ function down_danmaku_xml_async(url,cid,tabid) {
             xhr.onerror=function() {
                 setbadge('SVR!',ERROR_COLOR,tabid);
                 HISTORY[tabid]=FailingStatus(cid,'B站弹幕服务器错误','xhr.status = '+xhr.status);
+                check_chrome_permission_hotfix(tabid,cid);
                 return reject(new Error('SVR!'));
             };
             xhr.onload=function() {
@@ -145,6 +188,7 @@ function down_danmaku_xml_async(url,cid,tabid) {
         } catch(e) {
             setbadge('NET!',ERROR_COLOR,tabid);
             HISTORY[tabid]=FailingStatus(cid,'网络错误',e.message+'\n\n'+e.stack);
+            check_chrome_permission_hotfix(tabid,cid);
             return reject(e);
         }
     });
@@ -173,6 +217,7 @@ function down_danmaku_protobuf_async(cid,pid,tabid) {
             .catch(function(e) {
                 setbadge('NET!',ERROR_COLOR,tabid);
                 HISTORY[tabid]=FailingStatus(cid,'网络错误',e.message+'\n\n'+e.stack);
+                check_chrome_permission_hotfix(tabid,cid);
                 throw e;
             })
     );

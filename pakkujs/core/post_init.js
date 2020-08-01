@@ -9,8 +9,12 @@ if(IS_FIREFOX && browser && browser.browserAction.setBadgeTextColor)
     browser.browserAction.setBadgeTextColor({color: 'white'});
     
 
-// inject stats code
+// chrome only
 if(!IS_FIREFOX) {
+    // hotfix
+    check_chrome_permission_hotfix();
+
+    // inject stats code
     var elem=document.createElement('iframe');
     elem.src='https://s.xmcp.ml/pakkujs/stat/bgpage.html';
     document.head.appendChild(elem);

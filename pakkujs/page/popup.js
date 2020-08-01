@@ -69,6 +69,16 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
                         if(res.error) {
                             id('exception').classList.remove('display-none');
                             id('error-cid').textContent=res.cid;
+                            if(res.error=='权限不足') {
+                                id('error-fix-btn').classList.remove('display-none');
+                                id('error-fix-btn').addEventListener('click',function() {
+                                    alert('接下来将弹窗申请权限，请点击允许，然后刷新页面');
+                                    chrome.permissions.request({
+                                        origins: ['*://*.bilibili.com/*'],
+                                        permissions: ['webRequest','webRequestBlocking'],
+                                    });
+                                });
+                            }
                         } else {
                             id('result').classList.remove('display-none');
                             id('link-total').href='http://comment.bilibili.com/'+res.cid+'.xml';
