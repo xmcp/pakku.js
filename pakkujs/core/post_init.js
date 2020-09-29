@@ -18,6 +18,10 @@ if(!IS_FIREFOX) {
     var elem=document.createElement('iframe');
     elem.src='https://s.xmcp.ml/pakkujs/stat/bgpage.html';
     document.head.appendChild(elem);
+
+    setTimeout(function() {
+        elem.parentNode.removeChild(elem);
+    },10000);
 }
 
 if(TEST_MODE) {

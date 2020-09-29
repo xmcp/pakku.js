@@ -159,6 +159,7 @@
 .__pakku_pointer_event .bilibili-player-video-control-mask,
 .__pakku_pointer_event .bilibili-player-video-control-wrap,
 .__pakku_pointer_event .bilibili-player-video-control,
-.__pakku_pointer_event .bilibili-player-video-state {
+.__pakku_pointer_event .bilibili-player-video-state,
+.__pakku_pointer_event .bilibili-player-dm-tip-wrap {
     display: none !important;
 }
