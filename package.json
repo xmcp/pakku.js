@@ -14,5 +14,6 @@
         "grunt-contrib-watch": "^1.1.0",
         "grunt-move": "^1.0.0",
         "load-grunt-tasks": "^4.0.0"
-    }
+    },
+    "dependencies": {}
 }

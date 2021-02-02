@@ -14,7 +14,7 @@ y.addEventListener('load',()=>{
 y.send();
 
 x=new XMLHttpRequest;
-x.open('get','view4',true);
+x.open('get','view',true);
 x.responseType='arraybuffer';
 x.addEventListener('load',()=>{
     let d=proto_view.decode(new Uint8Array(x.response));

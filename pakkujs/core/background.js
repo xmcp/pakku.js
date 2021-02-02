@@ -14,8 +14,11 @@ Pakku tampers the danmaku request by:
 var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?$/;
 var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list\.so\?oid=(\d+)$/;
 var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/seg\.so\?.*?oid=(\d+)&pid=(\d+).*?$/;
-var NEW_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/history\?type=\d+&oid=(\d+)&date=[\d\-]+$/;
+var PROTO_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/history\/seg\.so\?type=\d+&oid=(\d+)&date=([\d\-]+)$/;
 var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
+
+var UID_MAX_DIGIT=10;
+var UID_MAX_DIGIT_BATCH=9; // because 10 digit is too slow
 
 // https://github.com/xmcp/pakku.js/issues/145
 
@@ -59,6 +62,8 @@ function check_chrome_permission_hotfix(tabid,cid) {
     })
 }
 
+var _CID_TO_PID={};
+
 function parse_danmu_url(url) { // returns {url, type, cid, pid?}
     // ret_type=(type.indexOf('proto_')==0)?'protobuf':'xml' in other code
     // so protobuf results should starts with `proto_`
@@ -82,15 +87,26 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
             type: 'list',
             cid: res[2],
         };
-    } else if(url.indexOf('/history?')!==-1) {
-        res=NEW_DANMU_HISTORY_URL_RE.exec(url);
-        return {
-            url: url,
-            type: 'history',
-            cid: res[2],
-        };
+    } else if(url.indexOf('/history/seg.so?')!==-1) {
+        res=PROTO_DANMU_HISTORY_URL_RE.exec(url);
+        var date=res[3];
+        if(date.indexOf('197')===0) // magic reload use timestamp near 0
+            return {
+                url: url,
+                type: 'proto_magicreload',
+                cid: res[2],
+                pid: _CID_TO_PID[res[2]]||0,
+            };
+        else // real history
+            return {
+                url: url,
+                type: 'proto_history',
+                cid: res[2],
+                pid: _CID_TO_PID[res[2]]||0,
+            };
     } else if(url.indexOf('/seg.so')!==-1) {
         res=PROTO_DANMU_SEG_URL_RE.exec(url);
+        _CID_TO_PID[res[2]]=res[3];
         if(/segment_index=1(?!\d)/.test(url))
             return {
                 url: url,
@@ -223,6 +239,29 @@ function down_danmaku_protobuf_async(cid,pid,tabid) {
     );
 }
 
+function down_danmaku_protobuf_url_async(cid,url,tabid) {
+    chrome.browserAction.setTitle({
+        title: '正在下载弹幕文件…',
+        tabId: tabid
+    });
+    setbadge('↓',LOADING_COLOR,tabid);
+    
+    console.log('load (protobuf) URL '+url+' for CID '+cid);
+
+    return (
+        protobuf_get_url(url)
+            .then(function(dms) {
+                return protobuf_to_ir(dms,cid);
+            })
+            .catch(function(e) {
+                setbadge('NET!',ERROR_COLOR,tabid);
+                HISTORY[tabid]=FailingStatus(cid,'网络错误',e.message+'\n\n'+e.stack);
+                check_chrome_permission_hotfix(tabid,cid);
+                throw e;
+            })
+    );
+}
+
 function load_danmaku(ir,id,tabid,ret_type) {
     ret_type=ret_type||'xml';
     try {
@@ -278,14 +317,14 @@ function load_danmaku(ir,id,tabid,ret_type) {
 
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     if (request.type==='ajax_hook') {
-        if(!GLOBAL_SWITCH)
-            return sendResponse({data: null});
         var tabid=sender.tab.id;
         console.log('message',request);
         var ret=parse_danmu_url(request.url);
         if(ret) {
             var cid=ret.cid;
             var url_type=ret.type;
+            if(!GLOBAL_SWITCH && url_type!='proto_magicreload') // tamper magic reload even if switch is off: avoid HTTP 400
+                return sendResponse({data: null});
 
             var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
 
@@ -307,14 +346,20 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
 
             
             var got_ir_promise;
-            if(ret_type==='protobuf')
+            if(url_type=='proto_history')
+                got_ir_promise=down_danmaku_protobuf_url_async(cid,request.url,tabid);
+            else if(ret_type==='protobuf')
                 got_ir_promise=down_danmaku_protobuf_async(cid,ret.pid,tabid);
             else
                 got_ir_promise=down_danmaku_xml_async(request.url,cid,tabid);
 
             got_ir_promise
                 .then(function(ir) {
-                    sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type)});
+                    if(!GLOBAL_SWITCH && url_type=='proto_magicreload') { // return unmodified ir obj if switch is off
+                        setbadge('',SUCCESS_COLOR,tabid);
+                        sendResponse({data:ir_to_protobuf(ir)});
+                    } else
+                        sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type)});
                 })
                 .catch(function() {
                     sendResponse({data:null});
@@ -331,10 +376,11 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         console.log('set ir bounce for cid',request.cid);
         return sendResponse({error: null});
     } else if(request.type==='crack_uidhash') {
-        return sendResponse(crack_uidhash(request.hash));
+        return sendResponse(crack_uidhash(request.hash,UID_MAX_DIGIT));
     } else if(request.type==='crack_uidhash_batch') {
         request.dinfo.forEach(function(d) {
-            d.cracked_uid=crack_uidhash(d.peers[0].ir_obj.sender_hash)[0];
+            var res=crack_uidhash(d.peers[0].ir_obj.sender_hash,UID_MAX_DIGIT_BATCH);
+            d.cracked_uid=res[0]||null;
         });
         return sendResponse(request.dinfo);
     } else if(request.type==='need_ajax_hook') {
@@ -384,14 +430,22 @@ function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
     }
 
     var got_ir_promise;
-    if(ret_type==='protobuf')
+    if(url_parse_ret.type=='proto_history')
+        got_ir_promise=down_danmaku_protobuf_url_async(url_parse_ret.cid,url_parse_ret.url,tabid);
+    else if(ret_type==='protobuf')
         got_ir_promise=down_danmaku_protobuf_async(url_parse_ret.cid,url_parse_ret.pid,tabid);
     else
         got_ir_promise=down_danmaku_xml_async(url_parse_ret.url,url_parse_ret.cid,tabid);
 
     got_ir_promise
         .then(function(ir) {
-            var res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type);
+            var res;
+            if(!GLOBAL_SWITCH && url_parse_ret.type=='proto_magicreload') { // return unmodified ir obj if switch is off
+                setbadge('',SUCCESS_COLOR,tabid);
+                res=ir_to_protobuf(ir);
+            } else
+                res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type);
+            
             if(onstart_first) {
                 //console.log('!! onstop -> [load]');
                 finish(res);
@@ -421,14 +475,13 @@ function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
 
 function firefox_onbeforerequest(details) {
     // for firefox>=57
-
-    if(!GLOBAL_SWITCH)
-        return {cancel: false};
     
     var ret=parse_danmu_url(details.url);
     if(ret) {
         var cid=ret.cid;
         var url_type=ret.type;
+        if(!GLOBAL_SWITCH && url_type!='proto_magicreload') // tamper magic reload even if switch is off: avoid HTTP 400
+            return {cancel: false};
 
         var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
 
@@ -497,7 +550,7 @@ chrome.commands.onCommand.addListener(function(name) {
             clearTimeout(this._clearer);
         this._clearer=setTimeout(function() {
             chrome.notifications.clear('//switch');
-        },700);
+        },1000);
     } else if(name==='show-local') {
         chrome.tabs.create({url: chrome.runtime.getURL('page/parse_local.html')});
     }

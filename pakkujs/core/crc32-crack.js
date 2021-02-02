@@ -91,14 +91,14 @@ function make_crc32_cracker () {
     
     console.timeEnd('rainbow');
     
-    function crack(maincrc) {
+    function crack(maincrc,max_digit) {
         var results = [];
         
         maincrc = (~ maincrc) >>> 0;
 
         var basecrc = 0xffffffff;
         
-        for (var ndigits = 1; ndigits < 10; ndigits ++) {
+        for (var ndigits = 1; ndigits <= max_digit; ndigits ++) {
             basecrc = update_crc(0x30, basecrc);
 
             if (ndigits < 6) {
@@ -131,7 +131,7 @@ function make_crc32_cracker () {
 }
 
 var _crc32_cracker=null;
-function crack_uidhash(uidhash) {
+function crack_uidhash(uidhash,max_digit) {
     _crc32_cracker=_crc32_cracker||make_crc32_cracker();
-    return _crc32_cracker.crack(parseInt(uidhash,16));
+    return _crc32_cracker.crack(parseInt(uidhash,16),max_digit);
 }

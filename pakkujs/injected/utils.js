@@ -98,6 +98,8 @@ function show_danmu_list() {
     }
 }
 
+if(!window._reload_danmaku_id)
+    window._reload_danmaku_id=1;
 function reload_danmaku_magic() {
     if(!root_elem) {
         console.log('pakku magic reload: root_elem not found');
@@ -108,7 +110,7 @@ function reload_danmaku_magic() {
         var elem=document.createElement('span');
         elem.className='js-action __pakku_injected';
         elem.dataset['action']='changeDay';
-        elem.dataset['timestamp']=0;
+        elem.dataset['timestamp']=86400+_reload_danmaku_id*86400;
         elem.style.display='none';
         date_picker.appendChild(elem);
     
@@ -118,6 +120,7 @@ function reload_danmaku_magic() {
         trigger_mouse_event(elem,'click');
     
         date_picker.removeChild(elem);
+        _reload_danmaku_id=(_reload_danmaku_id+1)%3650;
     }
 
     var date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');

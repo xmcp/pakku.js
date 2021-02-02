@@ -23,6 +23,7 @@ function xml_to_ir(xmlstr) {
                 "weight": 10, // not present in xml so fake max weight
                 "id": attr[7],
                 "pool": parseInt(attr[5]),
+                "proto_attr": null,
             });
         } else { // conf
             conf[elem.tagName]=elem.childNodes[0].data;
@@ -50,6 +51,7 @@ function protobuf_to_ir(pb_elems,cid) {
             "weight": item.weight,
             "id": item.idStr,
             "pool": 0, // not resent in protobuf so fake normal pool
+            "proto_attr": item.attr===undefined ? null : item.attr,
         });
     });
     return {
@@ -102,6 +104,7 @@ function ir_to_protobuf(ir) {
             "ctime": item.sendtime,
             "weight": item.weight,
             "idStr": item.id,
+            "attr": item.proto_attr===null ? undefined : item.proto_attr,
         });
     });
     var res_uint8arr=proto_seg.encode(proto_seg.create({elems: res})).finish();
@@ -124,7 +127,7 @@ function protoapi_get_view(cid,pid) { // return page count
         xhr.responseType='arraybuffer';
         xhr.addEventListener('load',function() {
             let d=proto_view.decode(new Uint8Array(xhr.response));
-            if(d.dmSge.total)
+            if(d.dmSge.total && d.dmSge.total<100)
                 resolve(d.dmSge.total);
             else
                 resolve(null);
@@ -134,10 +137,10 @@ function protoapi_get_view(cid,pid) { // return page count
     });
 }
 
-function protoapi_get_seg(cid,pid,segidx) { // return dm list
+function protobuf_get_url(url) {
     return new Promise(function(resolve,reject) {
         var xhr=new XMLHttpRequest();
-        xhr.open('get',add_pakku_fingerprint('https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)),true);
+        xhr.open('get',add_pakku_fingerprint(url),true);
         xhr.responseType='arraybuffer';
         xhr.addEventListener('load',function() {
             let d=proto_seg.decode(new Uint8Array(xhr.response));
@@ -146,6 +149,12 @@ function protoapi_get_seg(cid,pid,segidx) { // return dm list
         xhr.addEventListener('error',reject);
         xhr.send();
     });
+}
+
+function protoapi_get_seg(cid,pid,segidx) { // return dm list
+    return protobuf_get_url(
+        'https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
+    );
 }
 
 function protoapi_get_segs(cid,pid,pages,first_chunk_req) {
