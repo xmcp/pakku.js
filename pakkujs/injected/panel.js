@@ -230,7 +230,7 @@ function inject_panel(list_elem,player_elem) {
         var hover_counter=0;
         danmaku_stage.addEventListener('mouseover',function(e) {
             hover_counter++;
-            if(e.target.className=='bilibili-danmaku' || e.target.className=='b-danmaku') {
+            if(e.target.classList.contains('bilibili-danmaku') || e.target.classList.contains('b-danmaku')) {
                 show_panel({str: e.target.textContent},true);
             }
         });
@@ -241,7 +241,7 @@ function inject_panel(list_elem,player_elem) {
                 panel_obj.style.display='none';
         });
         danmaku_stage.addEventListener('click',function(e) {
-            if(e.target.className=='bilibili-danmaku' || e.target.className=='b-danmaku') {
+            if(e.target.classList.contains('bilibili-danmaku') || e.target.classList.contains('b-danmaku')) {
                 show_panel({str: e.target.textContent});
                 e.stopPropagation();
             }
@@ -249,8 +249,10 @@ function inject_panel(list_elem,player_elem) {
         });
         document.addEventListener('keydown',function(e) {
             if((e.key=='Control' || e.key=='Meta') && !e.repeat) {
-                hover_counter=0;
-                player_elem.classList.add('__pakku_pointer_event');
+                if(!e.target.closest('input,textarea')) { // only enter selection mode if not in input box
+                    hover_counter=0;
+                    player_elem.classList.add('__pakku_pointer_event');
+                }
             } else if(!e.ctrlKey && !e.metaKey) { // fix ctrl key state
                 player_elem.classList.remove('__pakku_pointer_event');
                 if(panel_obj.classList.contains('pakku-floating'))

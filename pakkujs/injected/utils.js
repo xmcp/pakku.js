@@ -76,9 +76,12 @@ function zero_array(len) {
     return x;
 }
 
-function parse_time(time) { // MMMMMM:SS -> seconds
-    var res=/(\d+)\:(\d{2})/.exec(time);
-    return parseInt(res[1])*60+parseInt(res[2]);
+function parse_time(time) { // HH:MM:SS or MMMMMM:SS -> seconds
+    var res=/^(?:(\d+)\:)?(\d+)\:(\d{2})$/.exec(time);
+    if(res[1])
+        return parseInt(res[1])*3600 + parseInt(res[2])*60 + parseInt(res[3]);
+    else
+        return parseInt(res[2])*60 + parseInt(res[3]);
 }
 
 // https://stackoverflow.com/questions/24025165/simulating-a-mousedown-click-mouseup-sequence-in-tampermonkey
