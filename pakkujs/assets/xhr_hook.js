@@ -41,8 +41,11 @@
         }, '*');
     }
 
+    // bilibili no longer uses web worker to decode danmaku, good
+    /*
     window.Worker=null;
     console.warn('pakku: [to developers] Web Worker is disabled for compatibility reasons');
+    */
     
     XMLHttpRequest.prototype.pakku_open=XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open=function(method,url,async,user,password) {
