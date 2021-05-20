@@ -16,7 +16,7 @@ if(!IS_FIREFOX) {
 
     // inject stats code
     var elem=document.createElement('iframe');
-    elem.src='https://s.xmcp.ml/pakkujs/stat/bgpage.html';
+    elem.src='https://s.xmcp.ltd/pakkujs/stat/bgpage.html';
     document.head.appendChild(elem);
 
     setTimeout(function() {

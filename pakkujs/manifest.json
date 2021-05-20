@@ -1,9 +1,9 @@
 {
     "name": "pakku：哔哩哔哩弹幕过滤器",
     "short_name": "pakku",
-    "version": "10.0.7",
+    "version": "10.0.8",
     "description": "瞬间过滤B站(bilibili.com)的刷屏弹幕，还你清爽的弹幕视频体验。",
-    "homepage_url": "https://s.xmcp.ml/pakkujs/?src=wext_homepage",
+    "homepage_url": "https://s.xmcp.ltd/pakkujs/?src=wext_homepage",
     "icons": {
         "128": "assets/logo.png",
         "48": "assets/logo_48.png"
@@ -24,7 +24,7 @@
         "wss://*.bilibili.com/*"
     ],
     "content_security_policy":
-        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ml https://s.xmcp.ml; img-src data: http://s.xmcp.ml https://s.xmcp.ml https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ml https://s.xmcp.ml http://*.bilibili.com https://*.bilibili.com https://img.shields.io https://cdnjs.cloudflare.com data:; style-src 'self' 'unsafe-inline'",
+        "default-src 'self' https://*.cnzz.com; frame-src http://s.xmcp.ltd https://s.xmcp.ltd; img-src data: http://s.xmcp.ltd https://s.xmcp.ltd https://*.cnzz.com; object-src 'self'; connect-src http://s.xmcp.ltd https://s.xmcp.ltd http://*.bilibili.com https://*.bilibili.com https://img.shields.io https://cdnjs.cloudflare.com data:; style-src 'self' 'unsafe-inline'",
     
     "options_ui": {
         "page": "page/options.html",

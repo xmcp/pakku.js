@@ -33,7 +33,7 @@ if(document.head) {
     if(localStorage['_pakku_stats_time']!==gen_timestamp()) {
         console.log('pakku stat: inject statistics script');
         var elem=document.createElement('iframe');
-        elem.src='https://s.xmcp.ml/pakkujs/stat/bilibili.html';
+        elem.src='https://s.xmcp.ltd/pakkujs/stat/bilibili.html';
         elem.style.visibility='hidden';
         document.head.appendChild(elem);
         

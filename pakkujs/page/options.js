@@ -481,7 +481,7 @@ function ver_check() {
         console.log('latest version ',latest_ver);
         if(latest_ver.value!=version && latest_ver.value.charAt(0)==='v') {
             var note=document.createElement('a');
-            note.href='https://s.xmcp.ml/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
+            note.href='https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version='+encodeURIComponent(version);
             note.id='update-note';
             note.target='_blank';
             note.textContent='你正在使用 pakku '+version+'，'+latest_ver.name+' 中的最新版是 '+latest_ver.value+'。点击此处下载新版本。';
