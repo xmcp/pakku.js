@@ -3,7 +3,6 @@
 // https://stackoverflow.com/questions/3086068/how-do-i-check-whether-a-jquery-element-is-in-the-dom
 if(typeof root_elem=='undefined' || !root_elem || !root_elem.closest('html')) {
     var root_elem=null;
-    var isstardust=false;
 }
 
 function make_p(s) {
@@ -92,9 +91,7 @@ function trigger_mouse_event(node, eventType) {
 }
 
 function show_danmu_list() {
-    var list_switch_elem=isstardust ?
-        root_elem.querySelector('.danmaku-wrap .bui-collapse-wrap-folded .bui-collapse-header') :
-        root_elem.querySelector('.bilibili-player-filter-btn-list');
+    var list_switch_elem=root_elem.querySelector('.danmaku-box .bui-collapse-wrap-folded .bui-collapse-header');
     console.log('pakku injector: list_switch_elem',list_switch_elem);
     if(list_switch_elem) {
         list_switch_elem.click();
@@ -131,11 +128,11 @@ function reload_danmaku_magic() {
     if(date_picker)
         proceed(date_picker);
     else {
-        var history_btn=root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bilibili-player-danmaku-btn-history');
+        var history_btn=root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bpx-player-dm-btn-history, .bilibili-player-danmaku-btn-history');
         console.log('pakku magic reload: activating date picker with',history_btn);
         history_btn.click();
         history_btn.click();
-        date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
+        date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bpx-player-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
 
         if(date_picker)
             proceed(date_picker);
@@ -146,7 +143,7 @@ function reload_danmaku_magic() {
             function try_find() {
                 history_btn.click();
                 history_btn.click();
-                date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
+                date_picker=root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bpx-player-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content');
 
                 if(date_picker)
                     proceed(date_picker);

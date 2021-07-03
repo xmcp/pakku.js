@@ -376,7 +376,7 @@
                     <p id="danmu-subscript-panel" class="advanced">
                         <input id="danmu-subscript" type="checkbox">
                         <label for="danmu-subscript">数量标记显示成下标：</label>
-                        <span><code class="font-bili-danmu">就像这样₍₂₎</code>，<code class="font-bili-danmu">而不是这样[x2]</code></span>
+                        <span><code class="font-bili-danmu">₍₂₎就像这样</code>，<code class="font-bili-danmu">[x2]而不是这样</code></span>
                     </p>
                     <p>
                         <input id="enlarge" type="checkbox">
@@ -419,17 +419,22 @@
                     <p>
                         <input id="tooltip" type="checkbox">
                         <label for="tooltip">弹幕信息显示框 <span class="icon-image"></span>：</label>
-                        <span>在弹幕列表中点击即可显示这条弹幕的详细信息</span>
+                        <span>在弹幕列表中点击弹幕来显示详细信息</span>
                         <span class="img-panel">
                             <img src="img/tooltip.png" height="300" width="600" data-name="TOOLTIP" data-value="on">
                         </span>
                     </p>
                     <p class="warning">
-                        * 弹幕渲染类型选择“CSS3”后，也可以按住 Ctrl 键点击画面上的弹幕。
-                    </p>
-                    <p class="warning">
                         * 还可以查询弹幕发送者。
                         感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
+                    </p>
+                    <p id="tooltip-keybinding-panel">
+                        <input id="tooltip-keybinding" type="checkbox">
+                        <label for="tooltip-keybinding">点击展开弹幕信息：</label>
+                        <span>按住 Ctrl / Command 键点击屏幕上的弹幕显示详细信息</span>
+                    </p>
+                    <p class="warning">
+                        * 需要将弹幕渲染类型设为“CSS3”。
                     </p>
                     <p id="auto-panel">
                         <b>播放器自动化：</b>弹幕载入后，自动

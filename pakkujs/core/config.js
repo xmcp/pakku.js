@@ -42,6 +42,7 @@ function loadconfig() {
     window.REPRESENTATIVE_PERCENT=parseInt(localStorage['REPRESENTATIVE_PERCENT']||0);
     // 播放器增强
     window.TOOLTIP=localStorage['TOOLTIP']==='on';
+    window.TOOLTIP_KEYBINDING=localStorage['TOOLTIP_KEYBINDING']==='on';
     window.AUTO_DISABLE_DANMU=localStorage['AUTO_DISABLE_DANMU']==='on';
     window.AUTO_DANMU_LIST=localStorage['AUTO_DANMU_LIST']==='on';
     window.FLUCTLIGHT=localStorage['FLUCTLIGHT']==='on';
@@ -88,6 +89,7 @@ function initconfig() {
     localStorage['REPRESENTATIVE_PERCENT']=localStorage['REPRESENTATIVE_PERCENT']||0;
     // 播放器增强
     localStorage['TOOLTIP']=localStorage['TOOLTIP']||'on';
+    localStorage['TOOLTIP_KEYBINDING']=localStorage['TOOLTIP_KEYBINDING']||'on';
     localStorage['AUTO_DISABLE_DANMU']=localStorage['AUTO_DISABLE_DANMU']||'off';
     localStorage['AUTO_DANMU_LIST']=localStorage['AUTO_DANMU_LIST']||'off';
     localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';

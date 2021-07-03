@@ -6,6 +6,16 @@ for(var i=0;i<D.length;i++) {
     D[i].trimmed_text=D[i].text.trim();
 }
 
+function wait_until_success(fn, interval_ms, tries) {
+    if(fn())
+        return;
+    else if(tries>0) {
+        setTimeout(function() {
+            wait_until_success(fn, interval_ms, tries-1);
+        }, interval_ms);
+    }
+}
+
 var try_left=50;
 function try_inject() {
     // firstly, f**k firefox
@@ -18,7 +28,7 @@ function try_inject() {
     }
     // try to find the player element
     if(!root_elem)
-        root_elem=document.querySelector('div.bilibili-player');
+        root_elem=document.querySelector('div.bilibili-player, #bilibili-player');
     /*
     // <del>maybe player is in an iframe</del>
     // already set `allFrames: true` in `inject_panel` so don't need to care about iframes here anymore
@@ -32,16 +42,13 @@ function try_inject() {
     });
     */
     var pakku_tag_elem=root_elem;
-    // detect new player style
-    if(root_elem && !root_elem.querySelector('.bilibili-player-auxiliary-area')) {
-        root_elem=root_elem.closest('body');
-        isstardust=true;
-        console.log('pakku injector: stardust detected');
-    }
+    var list_elem=null;
+    
     // maybe player is not ready yet
     if(root_elem) {
+        root_elem=root_elem.closest('body');
         try_left=Math.min(try_left,15); // don't wait too long for list_elem
-        var list_elem=root_elem.querySelector('.bilibili-player-danmaku, .player-auxiliary-danmaku-wrap');
+        list_elem=root_elem.querySelector('.bilibili-player-danmaku, .player-auxiliary-danmaku-wrap, .bpx-player-dm');
     }
     if(!root_elem || !list_elem) {
         if(--try_left>0) {
@@ -67,18 +74,18 @@ function try_inject() {
         console.log('pakku injector: already injected');
         return;
     } else {
-        console.log('pakku injector: root_elem',root_elem);
+        console.log('pakku injector: root_elem',root_elem,'tag_elem',pakku_tag_elem);
         pakku_tag_elem.classList.add('__pakku_injected');
     }
 
     if(OPT['TOOLTIP']) {
-        var player_elem=root_elem.querySelector('.bilibili-player-area');
+        var player_elem=root_elem.querySelector('.bilibili-player-area, .bpx-player-primary-area');
         console.log('pakku injector: list_elem',list_elem,'player_elem',player_elem);
         if(player_elem)
             inject_panel(list_elem||document.createElement('div'),player_elem);
     }
     if(OPT['AUTO_DISABLE_DANMU']) {
-        var danmu_switch=root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox]');
+        var danmu_switch=root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox], .bpx-player-dm-switch input[type=checkbox]');
         if(danmu_switch) {
             console.log('pakku injector: danmu_switch',danmu_switch);
             if(danmu_switch.checked)
@@ -95,21 +102,23 @@ function try_inject() {
     }
     if(OPT['FLUCTLIGHT']) {
         fluctlight_cleanup(root_elem);
-        var seekbar_new_elem=root_elem.querySelector('.bilibili-player-video-control-top');
-        var seekbar_elem=root_elem.querySelector('.bilibili-player-video-progress');
-        if(seekbar_new_elem) {
-            console.log('pakku injector: seekbar_new_elem',seekbar_new_elem,'seekbar_elem',seekbar_elem);
-            if(seekbar_elem) {
-                inject_fluctlight_graph(seekbar_elem,2,seekbar_new_elem);
-                inject_fluctlight_details(seekbar_elem,2);
+        wait_until_success(function() {
+            var seekbar_cvs_elem=root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller');
+            var seekbar_v3_elem=root_elem.querySelector('.squirtle-progress-wrap');
+            var seekbar_v2_elem=root_elem.querySelector('.bilibili-player-video-progress');
+            if(seekbar_v3_elem) {
+                console.log('pakku injector: seekbar v3_elem',seekbar_v3_elem,'cvs_elem',seekbar_cvs_elem);
+                inject_fluctlight_graph(seekbar_v3_elem,3);
+                inject_fluctlight_details(seekbar_v3_elem,3);
+                return true;
+            } else if(seekbar_v2_elem) {
+                console.log('pakku injector: seekbar v2_elem',seekbar_v2_elem,'cvs_elem',seekbar_cvs_elem);
+                inject_fluctlight_graph(seekbar_v2_elem,2,seekbar_cvs_elem);
+                inject_fluctlight_details(seekbar_v2_elem,2);
+                return true;
             }
-        } else {
-            console.log('pakku injector: seekbar_elem LEGACY',seekbar_elem);
-            if(seekbar_elem) {
-                inject_fluctlight_graph(seekbar_elem,1);
-                inject_fluctlight_details(seekbar_elem,1);
-            }
-        }
+            return false;
+        }, 400, 25);
     }
 
     // 3rd-party scripts can use this for convenience

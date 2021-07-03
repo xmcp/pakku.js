@@ -202,6 +202,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('representative-percent').value=localStorage['REPRESENTATIVE_PERCENT'];
         // 播放器增强
         id('tooltip').checked=localStorage['TOOLTIP']==='on';
+        id('tooltip-keybinding').checked=localStorage['TOOLTIP_KEYBINDING']==='on';
         id('auto-disable-danmu').checked=localStorage['AUTO_DISABLE_DANMU']==='on';
         id('auto-danmu-list').checked=localStorage['AUTO_DANMU_LIST']==='on';
         id('fluctlight').checked=localStorage['FLUCTLIGHT']==='on';
@@ -220,6 +221,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // opacity stuff
         id('mark-threshold-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
         id('danmu-subscript-panel').style.opacity=localStorage['DANMU_MARK']==='off'?.3:1;
+        id('tooltip-keybinding-panel').style.opacity=localStorage['TOOLTIP']==='off'?.3:1;
         
         // FORCELIST
         window.cfg_forcelist=bgpage.fromholyjson(localStorage['FORCELIST']);
@@ -388,6 +390,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['REPRESENTATIVE_PERCENT']=id('representative-percent').value;
         // 播放器增强
         localStorage['TOOLTIP']=id('tooltip').checked?'on':'off';
+        localStorage['TOOLTIP_KEYBINDING']=id('tooltip-keybinding').checked?'on':'off';
         localStorage['AUTO_DISABLE_DANMU']=id('auto-disable-danmu').checked?'on':'off';
         localStorage['AUTO_DANMU_LIST']=id('auto-danmu-list').checked?'on':'off';
         localStorage['FLUCTLIGHT']=id('fluctlight').checked?'on':'off';
@@ -427,7 +430,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 显示设置
         'mark-threshold','danmu-mark','danmu-subscript','enlarge','shrink','mode-elevation','representative-percent',
         // 播放器增强
-        'tooltip','auto-disable-danmu','auto-danmu-list','fluctlight',
+        'tooltip','tooltip-keybinding','auto-disable-danmu','auto-danmu-list','fluctlight',
         // 实验室
         'remove-seek','break-update','hide-threshold','scroll-threshold',
         // 其他

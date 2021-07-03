@@ -70,6 +70,12 @@
             var link=document.createElement('a');
             link.href=this.pakku_url;
             this.pakku_url=link.href;
+
+            if(!this.pakku_load_callback && this.onreadystatechange)
+                this.pakku_load_callback=[this.onreadystatechange];
+
+            if(!this.pakku_load_callback && this.onload)
+                this.pakku_load_callback=[this.onload];
             
             var that=this;
             if(this.pakku_load_callback) {
@@ -78,7 +84,9 @@
                         return that.pakku_send(arg);
                     
                     Object.defineProperty(that,'response', {writable: true});
+                    Object.defineProperty(that,'responseURL', {writable: true});
                     Object.defineProperty(that,'responseText', {writable: true});
+                    Object.defineProperty(that,'getAllResponseHeaders', {writable: true});
                     Object.defineProperty(that,'readyState', {writable: true});
                     Object.defineProperty(that,'status', {writable: true});
                     Object.defineProperty(that,'statusText', {writable: true});
@@ -93,9 +101,13 @@
                     } else {
                         that.response=that.responseText=resp.data;
                     }
+                    that.getAllResponseHeaders=function() {
+                        return "X-Pakku: yay\r\n";
+                    };
+                    that.responseURL=that.pakku_url;
                     that.readyState=4;
                     that.status=200;
-                    that.statusText='Pakku OK';
+                    that.statusText='OK';
                     
                     console.log('pakku ajax: got tampered response for',that.pakku_url,that.responseType);
                     that.abort();

@@ -298,7 +298,8 @@ function load_danmaku(ir,id,tabid,ret_type) {
             TOOLTIP: TOOLTIP,
             AUTO_DISABLE_DANMU: AUTO_DISABLE_DANMU,
             AUTO_DANMU_LIST: AUTO_DANMU_LIST,
-            FLUCTLIGHT: FLUCTLIGHT
+            FLUCTLIGHT: FLUCTLIGHT,
+            TOOLTIP_KEYBINDING: TOOLTIP_KEYBINDING,
         });
         
         HISTORY[tabid]=S;

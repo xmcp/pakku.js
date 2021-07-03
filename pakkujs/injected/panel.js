@@ -217,16 +217,23 @@ function inject_panel(list_elem,player_elem) {
         console.log('pakku panel: removing previous hook listener');
     }
     list_elem.addEventListener('click',window._panel_listener=function(e) {
-        var dm_obj=e.target.parentElement;
-        if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno'))
+        var dm_obj=e.target;
+        if(!dm_obj.classList.contains('dm-info-row') && !dm_obj.classList.contains('danmaku-info-row'))
+            dm_obj=dm_obj.parentElement;
+        if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) // ver 2
             show_panel({
                 str: dm_obj.querySelector('.danmaku-info-danmaku').title,
                 index: parseInt(dm_obj.getAttribute('dmno')),
             });
+        if(dm_obj && dm_obj.classList.contains('dm-info-row') && dm_obj.getAttribute('data-index')) // ver 3
+            show_panel({
+                str: dm_obj.querySelector('.dm-info-dm').title,
+                index: parseInt(dm_obj.getAttribute('data-index')),
+            });
     });
     
-    var danmaku_stage=player_elem.querySelector('.bilibili-player-video-danmaku');
-    if(danmaku_stage) {
+    var danmaku_stage=player_elem.querySelector('.bilibili-player-video-danmaku, .bpx-player-row-dm-wrap');
+    if(danmaku_stage && OPT['TOOLTIP_KEYBINDING']) {
         var hover_counter=0;
         danmaku_stage.addEventListener('mouseover',function(e) {
             hover_counter++;

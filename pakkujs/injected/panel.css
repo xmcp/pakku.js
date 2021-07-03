@@ -1,5 +1,5 @@
 .pakku-panel {
-    background-color: rgba(221,221,221,.8);
+    background-color: rgba(235,235,235,.85);
     color: black;
     width: 300px;
     position: absolute;
@@ -9,8 +9,7 @@
     box-shadow: 0 0 20px black;
 }
 .pakku-floating .pakku-panel {
-    right: -20px;
-    filter: brightness(.9);
+    filter: brightness(.75);
     pointer-events: none;
 }
 .pakku-panel .pakku-panel-title {
@@ -73,7 +72,7 @@
 .pakku-panel hr {
     margin: 0;
 }
-.bilibili-player .pakku-panel button {
+.pakku-panel button {
     background: unset;
     border: unset;
     cursor: unset;
@@ -160,6 +159,10 @@
 .__pakku_pointer_event .bilibili-player-video-control-wrap,
 .__pakku_pointer_event .bilibili-player-video-control,
 .__pakku_pointer_event .bilibili-player-video-state,
-.__pakku_pointer_event .bilibili-player-dm-tip-wrap {
+.__pakku_pointer_event .bilibili-player-dm-tip-wrap,
+.__pakku_pointer_event .bpx-player-top-wrap,
+.__pakku_pointer_event .bpx-player-dm-tip,
+.__pakku_pointer_event .bpx-player-state-wrap,
+.__pakku_pointer_event .bpx-player-control-wrap {
     display: none !important;
 }
