@@ -8,10 +8,17 @@
     width: 160px;
     overflow: hidden !important;
     text-align: left;
-    font-size: 12px;
-    line-height: 14px;
-    padding: 0 2px;
+    padding: 2px;
     box-sizing: border-box;
     background-color: rgba(205,205,205,.8);
     color: black !important;
+}
+.pakku-fluctlight-fluct:empty {
+    display: none;
+}
+.pakku-fluctlight-fluct p {
+    white-space: nowrap;
+    height: 14px;
+    font-size: 12px;
+    line-height: 14px;
 }

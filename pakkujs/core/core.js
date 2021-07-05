@@ -4,7 +4,7 @@ var LOG_VERBOSE=false;
 var LOG_DISPVAL=false;
 var LOG_WEIGHT=false;
 
-var DISPVAL_THRESHOLD=70,SHRINK_TIME_THRESHOLD=3;
+var DISPVAL_THRESHOLD=80,SHRINK_TIME_THRESHOLD=3;
 
 var ENDING_CHARS=gen_set('.。,，/?？!！…~～@^、+=-_♂♀ ');
 var trim_space_re=/[ 　]+/g;
@@ -354,7 +354,7 @@ function parse(ir,tabid,S,D) {
                 if(LOG_VERBOSE)
                     console.log('time',dm.time,'val',chunkval,'rate',Math.sqrt(chunkval)/dispval_base);
                 S.shrink++;
-                var shrink_rate=Math.min(Math.sqrt(chunkval)/dispval_base,2);
+                var shrink_rate=Math.min(Math.sqrt(chunkval)/dispval_base,1.75);
                 dm.size/=shrink_rate;
                 dm.desc.push('已缩小 '+shrink_rate.toFixed(2)+' 倍：弹幕密度为 '+chunkval.toFixed(1));
             }

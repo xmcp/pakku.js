@@ -77,6 +77,9 @@ function zero_array(len) {
 
 function parse_time(time) { // HH:MM:SS or MMMMMM:SS -> seconds
     var res=/^(?:(\d+)\:)?(\d+)\:(\d{2})$/.exec(time);
+    if(!res)
+        return 0;
+    
     if(res[1])
         return parseInt(res[1])*3600 + parseInt(res[2])*60 + parseInt(res[3]);
     else

@@ -163,8 +163,10 @@ function inject_panel(list_elem,player_elem) {
 
             text_container.textContent=info.text;
 
+            var time_ms=(info.peers[0]||{ir_obj: {time_ms: 0}}).ir_obj.time_ms;
+
             selectbar.bar.style.display=infos.length>1 ? 'block' : 'none';
-            selectbar.content.textContent=(idx+1)+'/'+infos.length+' ['+format_duration((info.peers[0]||{ir_obj: {time: 0}}).ir_obj.time)+']';
+            selectbar.content.textContent=(idx+1)+'/'+infos.length+' ['+format_duration(time_ms/1000)+']';
             selectbar.left.onclick=function() {redraw_ui(idx-1);};
             selectbar.right.onclick=function() {redraw_ui(idx+1);};
 

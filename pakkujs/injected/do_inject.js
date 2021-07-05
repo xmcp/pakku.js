@@ -27,8 +27,7 @@ function try_inject() {
         root_elem=null;
     }
     // try to find the player element
-    if(!root_elem)
-        root_elem=document.querySelector('div.bilibili-player, #bilibili-player');
+    root_elem=document.querySelector('.bilibili-player-area, .bpx-player-primary-area');
     /*
     // <del>maybe player is in an iframe</del>
     // already set `allFrames: true` in `inject_panel` so don't need to care about iframes here anymore
@@ -70,8 +69,14 @@ function try_inject() {
         cid: OPT.CID,
     },'*');
 
-    if(pakku_tag_elem.classList.contains('.__pakku_injected')) {
+    if(pakku_tag_elem.classList.contains('__pakku_injected')) {
         console.log('pakku injector: already injected');
+        
+        // cleanup old cached value
+        var fluct_cache=root_elem.querySelector('[data-pakku_cache_width]');
+        if(fluct_cache)
+            fluct_cache.dataset['pakku_cache_width']='';
+
         return;
     } else {
         console.log('pakku injector: root_elem',root_elem,'tag_elem',pakku_tag_elem);
@@ -79,7 +84,7 @@ function try_inject() {
     }
 
     if(OPT['TOOLTIP']) {
-        var player_elem=root_elem.querySelector('.bilibili-player-area, .bpx-player-primary-area');
+        var player_elem=pakku_tag_elem;
         console.log('pakku injector: list_elem',list_elem,'player_elem',player_elem);
         if(player_elem)
             inject_panel(list_elem||document.createElement('div'),player_elem);
@@ -118,7 +123,7 @@ function try_inject() {
                 return true;
             }
             return false;
-        }, 400, 25);
+        }, 400, 50);
     }
 
     // 3rd-party scripts can use this for convenience

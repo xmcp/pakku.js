@@ -40,14 +40,15 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
     
     var DURATION=0;
     function getduration() {
+        var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total, .squirtle-video-time-total');
+        DURATION=(total_time_elem ? parse_time(total_time_elem.textContent) : 0);
         if(!DURATION) {
             var video_elem=root_elem.querySelector('video');
-            var total_time_elem=root_elem.querySelector('.bilibili-player-video-time-total');
-            DURATION=(
-                (total_time_elem ? parse_time(total_time_elem.textContent) : 0) ||
-                (video_elem ? video_elem.duration : 0)
-            )*1000+1000;
+            DURATION=(video_elem ? video_elem.duration : 0)
         }
+
+        if(DURATION>0)
+            DURATION=DURATION*1000+1000;
     }
     getduration();
 
@@ -268,12 +269,14 @@ function inject_fluctlight_details(bar_elem,_version) {
                     fluct.appendChild(to_dom(danmu));
                 });
 
-                fluct.style.height=(14*danmus.length)+'px';
+                var container_height=(danmus.length ? 4+14*danmus.length : 0);
+
+                fluct.style.height=container_height+'px';
                 if(_version==2)
                     fluct.style.bottom=0;
                 else {
-                    fluct.style.bottom=(14*danmus.length)+'px';
-                    fluct.style.marginBottom=-(14*danmus.length)+'px';
+                    fluct.style.bottom=container_height+'px';
+                    fluct.style.marginBottom=(-container_height)+'px';
                 }
 
                 if(window._pakku_fluctlight_highlight)
