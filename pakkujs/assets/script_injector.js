@@ -3,30 +3,25 @@ function gen_timestamp() {
     return x.getYear()+'/'+x.getMonth()+'/'+x.getDate();
 }
 
-// ajax hook
-chrome.runtime.sendMessage({type: 'need_ajax_hook', url: location.href},function(resp) {
-    if(!resp) return;
-    
-    console.log('pakku ajax: injecting hook');
-    
-    // https://stackoverflow.com/questions/38132246/firefox-addon-send-message-from-webpage-to-background-script
-    window.addEventListener('message',function(event) {
-        if (event.source!=window)
-            return;
-        if (event.data.type && event.data.type=='pakku_ajax_request')
-            chrome.runtime.sendMessage({type: 'ajax_hook', url: event.data.arg},function(resp) {
-                window.postMessage({
-                    type: 'pakku_ajax_response',
-                    arg: event.data.arg,
-                    resp: resp
-                },'*');
-            });
-    },false);
+console.log('pakku ajax: injecting hook');
 
-    var sc=document.createElement('script');
-    sc.src=chrome.runtime.getURL('assets/xhr_hook.js');
-    document.documentElement.appendChild(sc);
-});
+// https://stackoverflow.com/questions/38132246/firefox-addon-send-message-from-webpage-to-background-script
+window.addEventListener('message',function(event) {
+    if (event.source!=window)
+        return;
+    if (event.data.type && event.data.type=='pakku_ajax_request')
+        chrome.runtime.sendMessage({type: 'ajax_hook', url: event.data.arg},function(resp) {
+            window.postMessage({
+                type: 'pakku_ajax_response',
+                arg: event.data.arg,
+                resp: resp
+            },'*');
+        });
+},false);
+
+var sc=document.createElement('script');
+sc.src=chrome.runtime.getURL('assets/xhr_hook.js');
+document.documentElement.appendChild(sc);
 
 // statistics
 if(localStorage['_pakku_stats_time']!==gen_timestamp()) {

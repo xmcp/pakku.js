@@ -214,37 +214,3 @@ function protoapi_get_segs(cid,pid,pages,first_chunk_req) { // -> [[1, [...]], [
         });
     }
 }
-
-var _PTOTO_REQ_CACHE = {}; // tabid -> {cid_pid -> ir}
-
-function protoapi_get_all_ir_cached(cid,pid,tabid) {
-    return new Promise(function(resolve,reject) {
-        if(_PTOTO_REQ_CACHE[tabid] && _PTOTO_REQ_CACHE[tabid][cid+'_'+pid]) {
-            console.log('protobuf api: cached request', cid, pid, 'in tab', tabid);
-            resolve(_PTOTO_REQ_CACHE[tabid][cid+'_'+pid]);
-            return;
-        }
-
-        // preload first chunk to save time for short videos
-        var first_chunk_req=protoapi_get_seg(cid,pid,1);
-
-        protoapi_get_view(cid,pid)
-            .then(function(pages) {
-                return protoapi_get_segs(cid,pid,pages,first_chunk_req);
-            })
-            .then(function(dms) {
-                var ret = protobuf_to_ir(dms,cid);     
-
-                if(!_PTOTO_REQ_CACHE[tabid])
-                    _PTOTO_REQ_CACHE[tabid]={};
-                _PTOTO_REQ_CACHE[tabid][cid+'_'+pid]=ret;
-                resolve(ret);
-            })
-            .catch(reject);
-    });
-}
-
-chrome.tabs.onRemoved.addListener(function(tabId) {
-    if(_PTOTO_REQ_CACHE[tabId])
-        delete _PTOTO_REQ_CACHE[tabId];
-});

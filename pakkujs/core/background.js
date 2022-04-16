@@ -1,21 +1,10 @@
 // 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-/*
-
-[Technical Note]
-Pakku tampers the danmaku request by:
-
-- Firefox <57 and Chrome:  AJAX Hook + runtime.onMessage listener
-- Firefox >=57: webRequest.onBeforeRequest listener + Stream Filter (async)
-
-*/
-
 // note: need to change the rule in xhr_hook.js too
 var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?$/;
 var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list\.so\?oid=(\d+)$/;
 var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/seg\.so\?.*?oid=(\d+)&pid=(\d+).*?$/;
 var PROTO_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/history\/seg\.so\?type=\d+&oid=(\d+)&date=([\d\-]+)$/;
-var DANMU_URL_FILTER=['*://comment.bilibili.com/*','*://api.bilibili.com/x/v1/dm/*','*://api.bilibili.com/x/v2/dm/*']
 
 var UID_MAX_DIGIT=10;
 var UID_MAX_DIGIT_BATCH=9; // because 10 digit is too slow
@@ -213,8 +202,17 @@ function down_danmaku_protobuf_async(cid,pid,tabid) {
     
     console.log('load (protobuf) for CID '+cid);
 
+    // preload first chunk to save time for short videos
+    var first_chunk_req=protoapi_get_seg(cid,pid,1);
+
     return (
-        protoapi_get_all_ir_cached(cid,pid,tabid)
+        protoapi_get_view(cid,pid)
+            .then(function(pages) {
+                return protoapi_get_segs(cid,pid,pages,first_chunk_req);
+            })
+            .then(function(dms) {
+                return protobuf_to_ir(dms,cid);
+            })
             .catch(function(e) {
                 setbadge('NET!',ERROR_COLOR,tabid);
                 HISTORY[tabid]=FailingStatus(cid,'网络错误',e.message+'\n\n'+e.stack);
@@ -323,24 +321,33 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                     return sendResponse({data: ir_to_xml(BOUNCE.result)});
             }
 
-            
-            var got_ir_promise;
-            if(url_type=='proto_history')
-                got_ir_promise=down_danmaku_protobuf_url_async(cid,request.url,tabid);
-            else if(ret_type==='protobuf')
-                got_ir_promise=down_danmaku_protobuf_async(cid,ret.pid,tabid);
-            else
-                got_ir_promise=down_danmaku_xml_async(request.url,cid,tabid);
+            function get_ir_promise() {
+                var got_ir_promise;
+                if(url_type=='proto_history')
+                    got_ir_promise=down_danmaku_protobuf_url_async(cid,request.url,tabid);
+                else if(ret_type==='protobuf')
+                    got_ir_promise=down_danmaku_protobuf_async(cid,ret.pid,tabid);
+                else
+                    got_ir_promise=down_danmaku_xml_async(request.url,cid,tabid);
+                return got_ir_promise;
+            }
 
-            got_ir_promise
-                .then(function(ir) {
-                    if(!GLOBAL_SWITCH && url_type=='proto_magicreload') { // return unmodified ir obj if switch is off
+            if(!GLOBAL_SWITCH && url_type=='proto_magicreload') { // return unmodified ir obj if switch is off
+                get_ir_promise()
+                    .then(function(ir) {
                         setbadge('',SUCCESS_COLOR,tabid);
                         sendResponse({data:ir_to_protobuf(ir)});
-                    } else {
-                        var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
-                        sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type,segidx_filtering)});
-                    }
+                    })
+                    .catch(function() {
+                        sendResponse({data:null});
+                    });
+                return true;
+            }
+
+            get_ir_promise()
+                .then(function(ir) {
+                    var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
+                    sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type,segidx_filtering)});
                 })
                 .catch(function() {
                     sendResponse({data:null});
@@ -364,18 +371,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
             d.cracked_uid=res[0]||null;
         });
         return sendResponse(request.dinfo);
-    } else if(request.type==='need_ajax_hook') {
-        //console.log('request ajax hook',request.url);
-
-        //                  chrome     or qipa     or firefox <57
-        let browser_needed=!IS_FIREFOX || !browser || !browser.webRequest.filterResponseData;
-        
-        // skip injecting because window.Worker is necessary on that page
-        let should_skip_inject=request.url.indexOf('member.bilibili.com/studio')!==-1;
-
-        return sendResponse(
-            browser_needed && !should_skip_inject
-        );
     } else if(request.type==='xhr_proxy') { //to bypass CORB in content-script
         var xhr=new XMLHttpRequest();
         xhr.open(request.method,request.url);
@@ -390,113 +385,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
         return true;
     }
 });
-
-function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
-    ret_type=ret_type||'xml';
-    var encoder=new TextEncoder();
-
-    var loaded_res_first=null;
-    var onstart_first=false;
-
-    // called when both danmaku loaded and filter.onstart fired (otherwise filter.write is invalid)
-    function finish(res) {
-        //console.log('!! finish',ret_type,filter.status,res);
-        if(ret_type=='protobuf') { // res is Uin8Array
-            filter.write(res);
-            filter.close();
-        } else { // xml, res is string
-            filter.write(encoder.encode(res));
-            filter.close();
-        }
-    }
-
-    var got_ir_promise;
-    if(url_parse_ret.type=='proto_history')
-        got_ir_promise=down_danmaku_protobuf_url_async(url_parse_ret.cid,url_parse_ret.url,tabid);
-    else if(ret_type==='protobuf')
-        got_ir_promise=down_danmaku_protobuf_async(url_parse_ret.cid,url_parse_ret.pid,tabid);
-    else
-        got_ir_promise=down_danmaku_xml_async(url_parse_ret.url,url_parse_ret.cid,tabid);
-
-    got_ir_promise
-        .then(function(ir) {
-            var res;
-            if(!GLOBAL_SWITCH && url_parse_ret.type=='proto_magicreload') { // return unmodified ir obj if switch is off
-                setbadge('',SUCCESS_COLOR,tabid);
-                res=ir_to_protobuf(ir);
-            } else {
-                var segidx_filtering=(url_parse_ret.type.startsWith('proto_seg_') ? parseInt(url_parse_ret.type.substring(10)) : undefined);
-                res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type,segidx_filtering);
-            }
-            
-            if(onstart_first) {
-                finish(res);
-            }
-            else {
-                loaded_res_first=res;
-            }
-        })
-        .catch(function(err) {
-            console.error(err);
-            console.trace(err);
-            filter.disconnect();
-        });
-
-    filter.onstop=function() {
-        if(loaded_res_first) {
-            finish(loaded_res_first);
-        } else {
-            onstart_first=true;
-        }
-    }
-}
-
-function firefox_onbeforerequest(details) {
-    // for firefox>=57
-    
-    var ret=parse_danmu_url(details.url);
-    if(ret) {
-        var cid=ret.cid;
-        var url_type=ret.type;
-        if(!GLOBAL_SWITCH && url_type!='proto_magicreload') // tamper magic reload even if switch is off: avoid HTTP 400
-            return {cancel: false};
-
-        var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
-
-        // bounce
-        if(check_ir_bounce(cid)) {
-            console.log('bounce :: stream filter',cid);
-            var filter=browser.webRequest.filterResponseData(details.requestId);
-            
-            var encoder=new TextEncoder();
-            filter.onstop=function(event) {
-                if(ret_type=='protobuf')
-                    filter.write(encoder.encode(ir_to_prorotobuf(BOUNCE.result)));
-                else
-                    filter.write(encoder.encode(ir_to_xml(BOUNCE.result)));
-                filter.close();
-            };
-            filter.onerror=function(event) {
-                console.log(event.error);
-            };
-            return {cancel: false};
-        }
-
-        console.log('webrequest :: stream filter',details);
-        var filter=browser.webRequest.filterResponseData(details.requestId);
-        hook_stream_filter(filter,ret,details.tabId,ret_type);
-        return {cancel: false};
-    }
-    else
-        return {cancel: false};
-}
-
-/*for-firefox:
-
-if(browser.webRequest.filterResponseData)
-    chrome.webRequest.onBeforeRequest.addListener(firefox_onbeforerequest, {urls: DANMU_URL_FILTER}, ['blocking']);
-
-*/
 
 chrome.commands.onCommand.addListener(function(name) {
     if(name==='toggle-global-switch') {
