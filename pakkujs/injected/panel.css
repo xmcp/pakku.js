@@ -3,7 +3,7 @@
     color: black;
     width: 300px;
     position: absolute;
-    z-index: 10000;
+    z-index: 1001; /* topbar is 1002 */
     top: 50px;
     right: 0;
     box-shadow: 0 0 20px black;
