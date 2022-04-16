@@ -416,7 +416,6 @@ function parse(ir,tabid,S,D) {
             outtext='[W'+outweight+'] '+outtext;
         
         apply_danmu({
-            "id_protobuf_int": dm.ir_obj.id_protobuf_int,
             "time_ms": Math.floor(dm.time*1000),
             "mode": outmode,
             "fontsize": Math.ceil(dm.size),
@@ -427,6 +426,7 @@ function parse(ir,tabid,S,D) {
             "weight": outweight,
             "id": dm.ir_obj.id,
             "pool": dm.ir_obj.pool,
+            "extra": dm.ir_obj.extra,
         },dm.desc,dm.peers,dm.disp_str);
     });
     

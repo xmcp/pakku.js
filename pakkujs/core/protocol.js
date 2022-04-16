@@ -22,6 +22,7 @@ function xml_to_ir(xmlstr) {
                 "weight": 10, // not present in xml so fake max weight
                 "id": attr[7],
                 "pool": parseInt(attr[5]),
+                "extra": {},
             });
         } else { // conf
             conf[elem.tagName]=elem.childNodes[0].data;
@@ -34,24 +35,29 @@ function xml_to_ir(xmlstr) {
     };
 }
 
-function protobuf_to_ir(pb_elems,cid) {
+function protobuf_to_ir(chunks,cid) {
     var res=[];
-    pb_elems.forEach(function(item) {
-        res.push({
-            "time_ms": item.progress,
-            "mode": item.mode,
-            "fontsize": item.fontsize,
-            "color": item.color,
-            "sender_hash": item.midHash,
-            "content": item.content,
-            "sendtime": item.ctime,
-            "weight": item.weight,
-            "id": item.dmid,
-            "pool": item.pool,
-
-            "proto_attr": item.attr,
-            "proto_action": item.action,
-            "proto_animation": item.animation,
+    chunks.forEach(function(chunk) {
+        var segidx = chunk[0];
+        chunk[1].forEach(function(item) {
+            res.push({
+                "time_ms": item.progress,
+                "mode": item.mode,
+                "fontsize": item.fontsize,
+                "color": item.color,
+                "sender_hash": item.midHash,
+                "content": item.content,
+                "sendtime": item.ctime,
+                "weight": item.weight,
+                "id": item.dmid,
+                "pool": item.pool,
+                "extra": {
+                    "proto_segidx": segidx,
+                    "proto_attr": item.attr,
+                    "proto_action": item.action,
+                    "proto_animation": item.animation,
+                },
+            });
         });
     });
     return {
@@ -85,29 +91,32 @@ function ir_to_xml(ir) {
         elem.setAttribute('p',attr.join(','));
         i_elem.appendChild(elem);
     });
+    console.log('ir to xml: len', ir.danmakus.length);
     
     var serializer=new XMLSerializer();
     return serializer.serializeToString(dom);
 }
 
-function ir_to_protobuf(ir) {
+function ir_to_protobuf(ir, segidx_filtering) {
     var res=[];
     ir.danmakus.forEach(function(item) {
-        res.push({
-            "progress": item.time_ms,
-            "mode": item.mode,
-            "fontsize": item.fontsize,
-            "color": item.color,
-            "midHash": item.sender_hash,
-            "content": item.content,
-            "ctime": item.sendtime,
-            "weight": item.weight,
-            "dmid": item.id,
-            "attr": item.proto_attr,
-            "action": item.proto_action,
-            "animation": item.proto_animation,
-        });
+        if(segidx_filtering===undefined || item.extra.proto_segidx===segidx_filtering)
+            res.push({
+                "progress": item.time_ms,
+                "mode": item.mode,
+                "fontsize": item.fontsize,
+                "color": item.color,
+                "midHash": item.sender_hash,
+                "content": item.content,
+                "ctime": item.sendtime,
+                "weight": item.weight,
+                "dmid": item.id,
+                "attr": item.extra.proto_attr,
+                "action": item.extra.proto_action,
+                "animation": item.extra.proto_animation,
+            });
     });
+    console.log('ir to protobuf: segidx_filtering', segidx_filtering, ir, 'with len', res.length);
     var res_uint8arr=proto_seg.encode(proto_seg.create({elems: res})).finish();
     return res_uint8arr;
 }
@@ -153,27 +162,24 @@ function protobuf_get_url(url) {
 }
 
 function protoapi_get_seg(cid,pid,segidx) { // return dm list
-    return protobuf_get_url(
-        'https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
-    );
+    return new Promise(function(resolve,reject) {
+        protobuf_get_url(
+            'https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
+        )
+            .then(function(ret) {
+                resolve([segidx, ret]);
+            })
+            .catch(reject);
+    });
 }
 
-function protoapi_get_segs(cid,pid,pages,first_chunk_req) {
+function protoapi_get_segs(cid,pid,pages,first_chunk_req) { // -> [[1, [...]], [2, [...]], ...]
     if(pages) {
         console.log('protobuf api: total',pages,'pages');
         var req=[first_chunk_req];
         for(var i=2;i<=pages;i++)
             req.push(protoapi_get_seg(cid,pid,i));
-        return (
-            Promise.all(req)
-                .then(function(dms) {
-                    var tot=[];
-                    dms.forEach(function(dmchunk) {
-                        tot=tot.concat(dmchunk);
-                    });
-                    return tot;
-                })
-        );
+        return Promise.all(req);
     } else { // guess page numbers
         console.log('protobuf api: guessing page');
         return new Promise(function(resolve,reject) {
@@ -182,15 +188,15 @@ function protoapi_get_segs(cid,pid,pages,first_chunk_req) {
             function work(idx) {
                 req.shift()
                     .then(function(chunk) {
-                        if(chunk.length) {
-                            res=res.concat(chunk);
+                        if(chunk[1].length) {
+                            res.push(chunk);
                             req.push(protoapi_get_seg(cid,pid,idx+3));
                             work(idx+1);
                         } else {
                             req.shift()
                                 .then(function(chunk) {
-                                    if(chunk.length) {
-                                        res=res.concat(chunk);
+                                    if(chunk[1].length) {
+                                        res.push(chunk);
                                         req.push(protoapi_get_seg(cid,pid,idx+3));
                                         req.push(protoapi_get_seg(cid,pid,idx+4));
                                         work(idx+2);
@@ -208,3 +214,37 @@ function protoapi_get_segs(cid,pid,pages,first_chunk_req) {
         });
     }
 }
+
+var _PTOTO_REQ_CACHE = {}; // tabid -> {cid_pid -> ir}
+
+function protoapi_get_all_ir_cached(cid,pid,tabid) {
+    return new Promise(function(resolve,reject) {
+        if(_PTOTO_REQ_CACHE[tabid] && _PTOTO_REQ_CACHE[tabid][cid+'_'+pid]) {
+            console.log('protobuf api: cached request', cid, pid, 'in tab', tabid);
+            resolve(_PTOTO_REQ_CACHE[tabid][cid+'_'+pid]);
+            return;
+        }
+
+        // preload first chunk to save time for short videos
+        var first_chunk_req=protoapi_get_seg(cid,pid,1);
+
+        protoapi_get_view(cid,pid)
+            .then(function(pages) {
+                return protoapi_get_segs(cid,pid,pages,first_chunk_req);
+            })
+            .then(function(dms) {
+                var ret = protobuf_to_ir(dms,cid);     
+
+                if(!_PTOTO_REQ_CACHE[tabid])
+                    _PTOTO_REQ_CACHE[tabid]={};
+                _PTOTO_REQ_CACHE[tabid][cid+'_'+pid]=ret;
+                resolve(ret);
+            })
+            .catch(reject);
+    });
+}
+
+chrome.tabs.onRemoved.addListener(function(tabId) {
+    if(_PTOTO_REQ_CACHE[tabId])
+        delete _PTOTO_REQ_CACHE[tabId];
+});

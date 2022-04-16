@@ -107,20 +107,14 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
     } else if(url.indexOf('/seg.so')!==-1) {
         res=PROTO_DANMU_SEG_URL_RE.exec(url);
         _CID_TO_PID[res[2]]=res[3];
-        if(/segment_index=1(?!\d)/.test(url))
-            return {
-                url: url,
-                type: 'proto_seg',
-                cid: res[2],
-                pid: res[3],
-            };
-        else
-            return {
-                url: url,
-                type: 'proto_segtrail',
-                cid: res[2],
-                pid: res[3],
-            };
+        var url_param=new URLSearchParams(url.split('?')[1]);
+        var segidx=url_param.get('segment_index')||'1';
+        return {
+            url: url,
+            type: 'proto_seg_'+segidx,
+            cid: res[2],
+            pid: res[3],
+        };
     } else
         return null;
 }
@@ -219,17 +213,8 @@ function down_danmaku_protobuf_async(cid,pid,tabid) {
     
     console.log('load (protobuf) for CID '+cid);
 
-    // preload first chunk to save time for short videos
-    var first_chunk_req=protoapi_get_seg(cid,pid,1);
-
     return (
-        protoapi_get_view(cid,pid)
-            .then(function(pages) {
-                return protoapi_get_segs(cid,pid,pages,first_chunk_req);
-            })
-            .then(function(dms) {
-                return protobuf_to_ir(dms,cid);
-            })
+        protoapi_get_all_ir_cached(cid,pid,tabid)
             .catch(function(e) {
                 setbadge('NET!',ERROR_COLOR,tabid);
                 HISTORY[tabid]=FailingStatus(cid,'网络错误',e.message+'\n\n'+e.stack);
@@ -251,7 +236,7 @@ function down_danmaku_protobuf_url_async(cid,url,tabid) {
     return (
         protobuf_get_url(url)
             .then(function(dms) {
-                return protobuf_to_ir(dms,cid);
+                return protobuf_to_ir([[1, dms]],cid);
             })
             .catch(function(e) {
                 setbadge('NET!',ERROR_COLOR,tabid);
@@ -262,7 +247,7 @@ function down_danmaku_protobuf_url_async(cid,url,tabid) {
     );
 }
 
-function load_danmaku(ir,id,tabid,ret_type) {
+function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
     ret_type=ret_type||'xml';
     try {
         chrome.browserAction.setTitle({
@@ -306,7 +291,7 @@ function load_danmaku(ir,id,tabid,ret_type) {
         chrome.runtime.sendMessage({type:'browser_action_reload'});
 
         if(ret_type==='protobuf')
-            return ir_to_protobuf(new_ir);
+            return ir_to_protobuf(new_ir,segidx_filtering);
         else
             return ir_to_xml(new_ir);
     } catch(e) {
@@ -328,13 +313,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                 return sendResponse({data: null});
 
             var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
-
-            if(url_type=='proto_segtrail') {
-                console.log('skip trailing');
-                return sendResponse({
-                    data: empty_danmaku_proto_seg(),
-                });
-            }
 
             if(check_ir_bounce(cid)) {
                 console.log('bounce :: message to',ret_type,BOUNCE.result);
@@ -359,8 +337,10 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                     if(!GLOBAL_SWITCH && url_type=='proto_magicreload') { // return unmodified ir obj if switch is off
                         setbadge('',SUCCESS_COLOR,tabid);
                         sendResponse({data:ir_to_protobuf(ir)});
-                    } else
-                        sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type)});
+                    } else {
+                        var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
+                        sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type,segidx_filtering)});
+                    }
                 })
                 .catch(function() {
                     sendResponse({data:null});
@@ -444,31 +424,28 @@ function hook_stream_filter(filter,url_parse_ret,tabid,ret_type) {
             if(!GLOBAL_SWITCH && url_parse_ret.type=='proto_magicreload') { // return unmodified ir obj if switch is off
                 setbadge('',SUCCESS_COLOR,tabid);
                 res=ir_to_protobuf(ir);
-            } else
-                res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type);
+            } else {
+                var segidx_filtering=(url_parse_ret.type.startsWith('proto_seg_') ? parseInt(url_parse_ret.type.substring(10)) : undefined);
+                res=load_danmaku(ir,url_parse_ret.cid,tabid,ret_type,segidx_filtering);
+            }
             
             if(onstart_first) {
-                //console.log('!! onstop -> [load]');
                 finish(res);
             }
             else {
-                //console.log('!! [load] -> onstop');
                 loaded_res_first=res;
             }
         })
         .catch(function(err) {
             console.error(err);
             console.trace(err);
-            //console.log('!! disconn');
             filter.disconnect();
         });
 
     filter.onstop=function() {
         if(loaded_res_first) {
-            //console.log('!! load -> [onstop]');
             finish(loaded_res_first);
         } else {
-            //console.log('!! [onstop] -> load')
             onstart_first=true;
         }
     }
@@ -485,22 +462,6 @@ function firefox_onbeforerequest(details) {
             return {cancel: false};
 
         var ret_type=(url_type.indexOf('proto_')==0)?'protobuf':'xml';
-
-        // trailing
-        if(url_type=='proto_segtrail') {
-            console.log('webrequest :: stream filter :: trailing',details);
-
-            var filter=browser.webRequest.filterResponseData(details.requestId);
-            
-            filter.onstop=function(event) {
-                filter.write(empty_danmaku_proto_seg());
-                filter.close();
-            };
-            filter.onerror=function(event) {
-                console.log(event.error);
-            };
-            return {cancel: false};
-        }
 
         // bounce
         if(check_ir_bounce(cid)) {
