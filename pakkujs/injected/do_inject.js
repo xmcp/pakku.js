@@ -108,9 +108,16 @@ function try_inject() {
     if(OPT['FLUCTLIGHT']) {
         fluctlight_cleanup(root_elem);
         wait_until_success(function() {
-            var seekbar_cvs_elem=root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller');
+            var seekbar_cvs_elem=root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller, .bpx-player-control-wrap .bpx-player-progress-wrap');
+            var seekbar_v4_elem=root_elem.querySelector('.bpx-player-progress-wrap');
             var seekbar_v3_elem=root_elem.querySelector('.squirtle-progress-wrap');
             var seekbar_v2_elem=root_elem.querySelector('.bilibili-player-video-progress');
+            if(seekbar_v4_elem) {
+                console.log('pakku injector: seekbar v4_elem',seekbar_v4_elem,'cvs_elem',seekbar_cvs_elem);
+                inject_fluctlight_graph(seekbar_v4_elem,4);
+                inject_fluctlight_details(seekbar_v4_elem,4);
+                return true;
+            }
             if(seekbar_v3_elem) {
                 console.log('pakku injector: seekbar v3_elem',seekbar_v3_elem,'cvs_elem',seekbar_cvs_elem);
                 inject_fluctlight_graph(seekbar_v3_elem,3);

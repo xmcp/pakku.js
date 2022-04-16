@@ -22,3 +22,7 @@
     font-size: 12px;
     line-height: 14px;
 }
+
+.bpx-player-progress-area .bpx-player-progress-wrap .bpx-player-progress-popup {
+    overflow: visible !important; /* overriden from hidden, otherwise fluctlight does not show */
+}
