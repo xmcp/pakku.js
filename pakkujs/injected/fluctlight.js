@@ -7,7 +7,7 @@ var GRAPH_DENSITY_SCALE=.25;
 var GRAPH_ALPHA=.6;
 
 function fluctlight_cleanup(root_elem) {
-    var old_elems=[].slice.call(root_elem.querySelectorAll('.pakku-fluctlight'));
+    var old_elems=Array.from(root_elem.querySelectorAll('.pakku-fluctlight'));
     if(old_elems.length) {
         console.log('pakku fluctlight: cleanup elems',old_elems);
         old_elems.forEach(function(e) {
