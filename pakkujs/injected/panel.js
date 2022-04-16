@@ -40,7 +40,7 @@ function _load_info(uid,logger,callback) {
         url: 'https://api.bilibili.com/x/web-interface/card?type=json&mid='+uid,
     },function(res) {
         try {
-            if(res.status!=200) throw 1;
+            if(res.status!=200) throw new Error('pakku panel: get sender info failed');
             res=JSON.parse(res.responseText);
         } catch(e) {
             logger.innerHTML='';
@@ -48,7 +48,7 @@ function _load_info(uid,logger,callback) {
                 uid+' 个人信息加载失败',
                 '//space.bilibili.com/'+uid
             ));
-            throw e;
+            //throw e;
         }
         callback(_mem_info[uid]=res);
     });
