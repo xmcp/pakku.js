@@ -153,6 +153,12 @@
 .__pakku_pointer_event div.b-danmaku-hide {
     display: none !important;
 }
+.__pakku_pointer_event .bilibili-player-video-top,
+.__pakku_pointer_event .bilibili-player-video-control-mask,
+.__pakku_pointer_event .bilibili-player-video-control-wrap,
+.__pakku_pointer_event .bilibili-player-video-control,
+.__pakku_pointer_event .bilibili-player-video-state,
+.__pakku_pointer_event .bilibili-player-dm-tip-wrap,
 .__pakku_pointer_event .bpx-player-top-wrap,
 .__pakku_pointer_event .bpx-player-dm-tip,
 .__pakku_pointer_event .bpx-player-state-wrap,
