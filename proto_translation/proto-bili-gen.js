@@ -69,6 +69,9 @@
                              * @property {number|Long|null} [count] DmWebViewReply count
                              * @property {Array.<bilibili.community.service.dm.v1.ICommandDm>|null} [commandDms] DmWebViewReply commandDms
                              * @property {bilibili.community.service.dm.v1.IDanmuWebPlayerConfig|null} [dmSetting] DmWebViewReply dmSetting
+                             * @property {Array.<string>|null} [reportFilter] DmWebViewReply reportFilter
+                             * @property {Array.<bilibili.community.service.dm.v1.IExpressions>|null} [expressions] DmWebViewReply expressions
+                             * @property {Array.<bilibili.community.service.dm.v1.IPostPanel>|null} [postPanel] DmWebViewReply postPanel
                              */
     
                             /**
@@ -82,6 +85,9 @@
                             function DmWebViewReply(properties) {
                                 this.specialDms = [];
                                 this.commandDms = [];
+                                this.reportFilter = [];
+                                this.expressions = [];
+                                this.postPanel = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
@@ -169,6 +175,30 @@
                             DmWebViewReply.prototype.dmSetting = null;
     
                             /**
+                             * DmWebViewReply reportFilter.
+                             * @member {Array.<string>} reportFilter
+                             * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                             * @instance
+                             */
+                            DmWebViewReply.prototype.reportFilter = $util.emptyArray;
+    
+                            /**
+                             * DmWebViewReply expressions.
+                             * @member {Array.<bilibili.community.service.dm.v1.IExpressions>} expressions
+                             * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                             * @instance
+                             */
+                            DmWebViewReply.prototype.expressions = $util.emptyArray;
+    
+                            /**
+                             * DmWebViewReply postPanel.
+                             * @member {Array.<bilibili.community.service.dm.v1.IPostPanel>} postPanel
+                             * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                             * @instance
+                             */
+                            DmWebViewReply.prototype.postPanel = $util.emptyArray;
+    
+                            /**
                              * Creates a new DmWebViewReply instance using the specified properties.
                              * @function create
                              * @memberof bilibili.community.service.dm.v1.DmWebViewReply
@@ -214,6 +244,15 @@
                                         $root.bilibili.community.service.dm.v1.CommandDm.encode(message.commandDms[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
                                 if (message.dmSetting != null && Object.hasOwnProperty.call(message, "dmSetting"))
                                     $root.bilibili.community.service.dm.v1.DanmuWebPlayerConfig.encode(message.dmSetting, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                                if (message.reportFilter != null && message.reportFilter.length)
+                                    for (var i = 0; i < message.reportFilter.length; ++i)
+                                        writer.uint32(/* id 11, wireType 2 =*/90).string(message.reportFilter[i]);
+                                if (message.expressions != null && message.expressions.length)
+                                    for (var i = 0; i < message.expressions.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.Expressions.encode(message.expressions[i], writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                                if (message.postPanel != null && message.postPanel.length)
+                                    for (var i = 0; i < message.postPanel.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.PostPanel.encode(message.postPanel[i], writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
                                 return writer;
                             };
     
@@ -281,6 +320,21 @@
                                         break;
                                     case 10:
                                         message.dmSetting = $root.bilibili.community.service.dm.v1.DanmuWebPlayerConfig.decode(reader, reader.uint32());
+                                        break;
+                                    case 11:
+                                        if (!(message.reportFilter && message.reportFilter.length))
+                                            message.reportFilter = [];
+                                        message.reportFilter.push(reader.string());
+                                        break;
+                                    case 12:
+                                        if (!(message.expressions && message.expressions.length))
+                                            message.expressions = [];
+                                        message.expressions.push($root.bilibili.community.service.dm.v1.Expressions.decode(reader, reader.uint32()));
+                                        break;
+                                    case 13:
+                                        if (!(message.postPanel && message.postPanel.length))
+                                            message.postPanel = [];
+                                        message.postPanel.push($root.bilibili.community.service.dm.v1.PostPanel.decode(reader, reader.uint32()));
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -363,6 +417,31 @@
                                     if (error)
                                         return "dmSetting." + error;
                                 }
+                                if (message.reportFilter != null && message.hasOwnProperty("reportFilter")) {
+                                    if (!Array.isArray(message.reportFilter))
+                                        return "reportFilter: array expected";
+                                    for (var i = 0; i < message.reportFilter.length; ++i)
+                                        if (!$util.isString(message.reportFilter[i]))
+                                            return "reportFilter: string[] expected";
+                                }
+                                if (message.expressions != null && message.hasOwnProperty("expressions")) {
+                                    if (!Array.isArray(message.expressions))
+                                        return "expressions: array expected";
+                                    for (var i = 0; i < message.expressions.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.Expressions.verify(message.expressions[i]);
+                                        if (error)
+                                            return "expressions." + error;
+                                    }
+                                }
+                                if (message.postPanel != null && message.hasOwnProperty("postPanel")) {
+                                    if (!Array.isArray(message.postPanel))
+                                        return "postPanel: array expected";
+                                    for (var i = 0; i < message.postPanel.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.PostPanel.verify(message.postPanel[i]);
+                                        if (error)
+                                            return "postPanel." + error;
+                                    }
+                                }
                                 return null;
                             };
     
@@ -427,6 +506,33 @@
                                         throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.dmSetting: object expected");
                                     message.dmSetting = $root.bilibili.community.service.dm.v1.DanmuWebPlayerConfig.fromObject(object.dmSetting);
                                 }
+                                if (object.reportFilter) {
+                                    if (!Array.isArray(object.reportFilter))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.reportFilter: array expected");
+                                    message.reportFilter = [];
+                                    for (var i = 0; i < object.reportFilter.length; ++i)
+                                        message.reportFilter[i] = String(object.reportFilter[i]);
+                                }
+                                if (object.expressions) {
+                                    if (!Array.isArray(object.expressions))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.expressions: array expected");
+                                    message.expressions = [];
+                                    for (var i = 0; i < object.expressions.length; ++i) {
+                                        if (typeof object.expressions[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.expressions: object expected");
+                                        message.expressions[i] = $root.bilibili.community.service.dm.v1.Expressions.fromObject(object.expressions[i]);
+                                    }
+                                }
+                                if (object.postPanel) {
+                                    if (!Array.isArray(object.postPanel))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.postPanel: array expected");
+                                    message.postPanel = [];
+                                    for (var i = 0; i < object.postPanel.length; ++i) {
+                                        if (typeof object.postPanel[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.postPanel: object expected");
+                                        message.postPanel[i] = $root.bilibili.community.service.dm.v1.PostPanel.fromObject(object.postPanel[i]);
+                                    }
+                                }
                                 return message;
                             };
     
@@ -446,6 +552,9 @@
                                 if (options.arrays || options.defaults) {
                                     object.specialDms = [];
                                     object.commandDms = [];
+                                    object.reportFilter = [];
+                                    object.expressions = [];
+                                    object.postPanel = [];
                                 }
                                 if (options.defaults) {
                                     object.state = 0;
@@ -490,6 +599,21 @@
                                 }
                                 if (message.dmSetting != null && message.hasOwnProperty("dmSetting"))
                                     object.dmSetting = $root.bilibili.community.service.dm.v1.DanmuWebPlayerConfig.toObject(message.dmSetting, options);
+                                if (message.reportFilter && message.reportFilter.length) {
+                                    object.reportFilter = [];
+                                    for (var j = 0; j < message.reportFilter.length; ++j)
+                                        object.reportFilter[j] = message.reportFilter[j];
+                                }
+                                if (message.expressions && message.expressions.length) {
+                                    object.expressions = [];
+                                    for (var j = 0; j < message.expressions.length; ++j)
+                                        object.expressions[j] = $root.bilibili.community.service.dm.v1.Expressions.toObject(message.expressions[j], options);
+                                }
+                                if (message.postPanel && message.postPanel.length) {
+                                    object.postPanel = [];
+                                    for (var j = 0; j < message.postPanel.length; ++j)
+                                        object.postPanel[j] = $root.bilibili.community.service.dm.v1.PostPanel.toObject(message.postPanel[j], options);
+                                }
                                 return object;
                             };
     
@@ -507,13 +631,1996 @@
                             return DmWebViewReply;
                         })();
     
+                        v1.PostPanel = (function() {
+    
+                            /**
+                             * Properties of a PostPanel.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IPostPanel
+                             * @property {number|Long|null} [start] PostPanel start
+                             * @property {number|Long|null} [end] PostPanel end
+                             * @property {number|Long|null} [priority] PostPanel priority
+                             * @property {number|Long|null} [bizId] PostPanel bizId
+                             * @property {bilibili.community.service.dm.v1.PostPanelBizType|null} [bizType] PostPanel bizType
+                             * @property {bilibili.community.service.dm.v1.IClickButton|null} [clickButton] PostPanel clickButton
+                             * @property {bilibili.community.service.dm.v1.ITextInput|null} [textInput] PostPanel textInput
+                             * @property {bilibili.community.service.dm.v1.ICheckBox|null} [checkBox] PostPanel checkBox
+                             * @property {bilibili.community.service.dm.v1.IToast|null} [toast] PostPanel toast
+                             */
+    
+                            /**
+                             * Constructs a new PostPanel.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a PostPanel.
+                             * @implements IPostPanel
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IPostPanel=} [properties] Properties to set
+                             */
+                            function PostPanel(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * PostPanel start.
+                             * @member {number|Long} start
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.start = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * PostPanel end.
+                             * @member {number|Long} end
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.end = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * PostPanel priority.
+                             * @member {number|Long} priority
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.priority = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * PostPanel bizId.
+                             * @member {number|Long} bizId
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.bizId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * PostPanel bizType.
+                             * @member {bilibili.community.service.dm.v1.PostPanelBizType} bizType
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.bizType = 0;
+    
+                            /**
+                             * PostPanel clickButton.
+                             * @member {bilibili.community.service.dm.v1.IClickButton|null|undefined} clickButton
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.clickButton = null;
+    
+                            /**
+                             * PostPanel textInput.
+                             * @member {bilibili.community.service.dm.v1.ITextInput|null|undefined} textInput
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.textInput = null;
+    
+                            /**
+                             * PostPanel checkBox.
+                             * @member {bilibili.community.service.dm.v1.ICheckBox|null|undefined} checkBox
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.checkBox = null;
+    
+                            /**
+                             * PostPanel toast.
+                             * @member {bilibili.community.service.dm.v1.IToast|null|undefined} toast
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             */
+                            PostPanel.prototype.toast = null;
+    
+                            /**
+                             * Creates a new PostPanel instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPostPanel=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.PostPanel} PostPanel instance
+                             */
+                            PostPanel.create = function create(properties) {
+                                return new PostPanel(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified PostPanel message. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanel.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPostPanel} message PostPanel message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            PostPanel.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.start != null && Object.hasOwnProperty.call(message, "start"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.start);
+                                if (message.end != null && Object.hasOwnProperty.call(message, "end"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int64(message.end);
+                                if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).int64(message.priority);
+                                if (message.bizId != null && Object.hasOwnProperty.call(message, "bizId"))
+                                    writer.uint32(/* id 4, wireType 0 =*/32).int64(message.bizId);
+                                if (message.bizType != null && Object.hasOwnProperty.call(message, "bizType"))
+                                    writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bizType);
+                                if (message.clickButton != null && Object.hasOwnProperty.call(message, "clickButton"))
+                                    $root.bilibili.community.service.dm.v1.ClickButton.encode(message.clickButton, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                                if (message.textInput != null && Object.hasOwnProperty.call(message, "textInput"))
+                                    $root.bilibili.community.service.dm.v1.TextInput.encode(message.textInput, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                                if (message.checkBox != null && Object.hasOwnProperty.call(message, "checkBox"))
+                                    $root.bilibili.community.service.dm.v1.CheckBox.encode(message.checkBox, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                                if (message.toast != null && Object.hasOwnProperty.call(message, "toast"))
+                                    $root.bilibili.community.service.dm.v1.Toast.encode(message.toast, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified PostPanel message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanel.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPostPanel} message PostPanel message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            PostPanel.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a PostPanel message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.PostPanel} PostPanel
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            PostPanel.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.PostPanel();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.start = reader.int64();
+                                        break;
+                                    case 2:
+                                        message.end = reader.int64();
+                                        break;
+                                    case 3:
+                                        message.priority = reader.int64();
+                                        break;
+                                    case 4:
+                                        message.bizId = reader.int64();
+                                        break;
+                                    case 5:
+                                        message.bizType = reader.int32();
+                                        break;
+                                    case 6:
+                                        message.clickButton = $root.bilibili.community.service.dm.v1.ClickButton.decode(reader, reader.uint32());
+                                        break;
+                                    case 7:
+                                        message.textInput = $root.bilibili.community.service.dm.v1.TextInput.decode(reader, reader.uint32());
+                                        break;
+                                    case 8:
+                                        message.checkBox = $root.bilibili.community.service.dm.v1.CheckBox.decode(reader, reader.uint32());
+                                        break;
+                                    case 9:
+                                        message.toast = $root.bilibili.community.service.dm.v1.Toast.decode(reader, reader.uint32());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a PostPanel message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.PostPanel} PostPanel
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            PostPanel.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a PostPanel message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            PostPanel.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.start != null && message.hasOwnProperty("start"))
+                                    if (!$util.isInteger(message.start) && !(message.start && $util.isInteger(message.start.low) && $util.isInteger(message.start.high)))
+                                        return "start: integer|Long expected";
+                                if (message.end != null && message.hasOwnProperty("end"))
+                                    if (!$util.isInteger(message.end) && !(message.end && $util.isInteger(message.end.low) && $util.isInteger(message.end.high)))
+                                        return "end: integer|Long expected";
+                                if (message.priority != null && message.hasOwnProperty("priority"))
+                                    if (!$util.isInteger(message.priority) && !(message.priority && $util.isInteger(message.priority.low) && $util.isInteger(message.priority.high)))
+                                        return "priority: integer|Long expected";
+                                if (message.bizId != null && message.hasOwnProperty("bizId"))
+                                    if (!$util.isInteger(message.bizId) && !(message.bizId && $util.isInteger(message.bizId.low) && $util.isInteger(message.bizId.high)))
+                                        return "bizId: integer|Long expected";
+                                if (message.bizType != null && message.hasOwnProperty("bizType"))
+                                    switch (message.bizType) {
+                                    default:
+                                        return "bizType: enum value expected";
+                                    case 0:
+                                    case 1:
+                                        break;
+                                    }
+                                if (message.clickButton != null && message.hasOwnProperty("clickButton")) {
+                                    var error = $root.bilibili.community.service.dm.v1.ClickButton.verify(message.clickButton);
+                                    if (error)
+                                        return "clickButton." + error;
+                                }
+                                if (message.textInput != null && message.hasOwnProperty("textInput")) {
+                                    var error = $root.bilibili.community.service.dm.v1.TextInput.verify(message.textInput);
+                                    if (error)
+                                        return "textInput." + error;
+                                }
+                                if (message.checkBox != null && message.hasOwnProperty("checkBox")) {
+                                    var error = $root.bilibili.community.service.dm.v1.CheckBox.verify(message.checkBox);
+                                    if (error)
+                                        return "checkBox." + error;
+                                }
+                                if (message.toast != null && message.hasOwnProperty("toast")) {
+                                    var error = $root.bilibili.community.service.dm.v1.Toast.verify(message.toast);
+                                    if (error)
+                                        return "toast." + error;
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a PostPanel message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.PostPanel} PostPanel
+                             */
+                            PostPanel.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.PostPanel)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.PostPanel();
+                                if (object.start != null)
+                                    if ($util.Long)
+                                        (message.start = $util.Long.fromValue(object.start)).unsigned = false;
+                                    else if (typeof object.start === "string")
+                                        message.start = parseInt(object.start, 10);
+                                    else if (typeof object.start === "number")
+                                        message.start = object.start;
+                                    else if (typeof object.start === "object")
+                                        message.start = new $util.LongBits(object.start.low >>> 0, object.start.high >>> 0).toNumber();
+                                if (object.end != null)
+                                    if ($util.Long)
+                                        (message.end = $util.Long.fromValue(object.end)).unsigned = false;
+                                    else if (typeof object.end === "string")
+                                        message.end = parseInt(object.end, 10);
+                                    else if (typeof object.end === "number")
+                                        message.end = object.end;
+                                    else if (typeof object.end === "object")
+                                        message.end = new $util.LongBits(object.end.low >>> 0, object.end.high >>> 0).toNumber();
+                                if (object.priority != null)
+                                    if ($util.Long)
+                                        (message.priority = $util.Long.fromValue(object.priority)).unsigned = false;
+                                    else if (typeof object.priority === "string")
+                                        message.priority = parseInt(object.priority, 10);
+                                    else if (typeof object.priority === "number")
+                                        message.priority = object.priority;
+                                    else if (typeof object.priority === "object")
+                                        message.priority = new $util.LongBits(object.priority.low >>> 0, object.priority.high >>> 0).toNumber();
+                                if (object.bizId != null)
+                                    if ($util.Long)
+                                        (message.bizId = $util.Long.fromValue(object.bizId)).unsigned = false;
+                                    else if (typeof object.bizId === "string")
+                                        message.bizId = parseInt(object.bizId, 10);
+                                    else if (typeof object.bizId === "number")
+                                        message.bizId = object.bizId;
+                                    else if (typeof object.bizId === "object")
+                                        message.bizId = new $util.LongBits(object.bizId.low >>> 0, object.bizId.high >>> 0).toNumber();
+                                switch (object.bizType) {
+                                case "PostPanelBizTypeNone":
+                                case 0:
+                                    message.bizType = 0;
+                                    break;
+                                case "PostPanelBizTypeEncourage":
+                                case 1:
+                                    message.bizType = 1;
+                                    break;
+                                }
+                                if (object.clickButton != null) {
+                                    if (typeof object.clickButton !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.PostPanel.clickButton: object expected");
+                                    message.clickButton = $root.bilibili.community.service.dm.v1.ClickButton.fromObject(object.clickButton);
+                                }
+                                if (object.textInput != null) {
+                                    if (typeof object.textInput !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.PostPanel.textInput: object expected");
+                                    message.textInput = $root.bilibili.community.service.dm.v1.TextInput.fromObject(object.textInput);
+                                }
+                                if (object.checkBox != null) {
+                                    if (typeof object.checkBox !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.PostPanel.checkBox: object expected");
+                                    message.checkBox = $root.bilibili.community.service.dm.v1.CheckBox.fromObject(object.checkBox);
+                                }
+                                if (object.toast != null) {
+                                    if (typeof object.toast !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.PostPanel.toast: object expected");
+                                    message.toast = $root.bilibili.community.service.dm.v1.Toast.fromObject(object.toast);
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a PostPanel message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.PostPanel} message PostPanel
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            PostPanel.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.start = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.start = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.end = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.end = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.priority = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.priority = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.bizId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.bizId = options.longs === String ? "0" : 0;
+                                    object.bizType = options.enums === String ? "PostPanelBizTypeNone" : 0;
+                                    object.clickButton = null;
+                                    object.textInput = null;
+                                    object.checkBox = null;
+                                    object.toast = null;
+                                }
+                                if (message.start != null && message.hasOwnProperty("start"))
+                                    if (typeof message.start === "number")
+                                        object.start = options.longs === String ? String(message.start) : message.start;
+                                    else
+                                        object.start = options.longs === String ? $util.Long.prototype.toString.call(message.start) : options.longs === Number ? new $util.LongBits(message.start.low >>> 0, message.start.high >>> 0).toNumber() : message.start;
+                                if (message.end != null && message.hasOwnProperty("end"))
+                                    if (typeof message.end === "number")
+                                        object.end = options.longs === String ? String(message.end) : message.end;
+                                    else
+                                        object.end = options.longs === String ? $util.Long.prototype.toString.call(message.end) : options.longs === Number ? new $util.LongBits(message.end.low >>> 0, message.end.high >>> 0).toNumber() : message.end;
+                                if (message.priority != null && message.hasOwnProperty("priority"))
+                                    if (typeof message.priority === "number")
+                                        object.priority = options.longs === String ? String(message.priority) : message.priority;
+                                    else
+                                        object.priority = options.longs === String ? $util.Long.prototype.toString.call(message.priority) : options.longs === Number ? new $util.LongBits(message.priority.low >>> 0, message.priority.high >>> 0).toNumber() : message.priority;
+                                if (message.bizId != null && message.hasOwnProperty("bizId"))
+                                    if (typeof message.bizId === "number")
+                                        object.bizId = options.longs === String ? String(message.bizId) : message.bizId;
+                                    else
+                                        object.bizId = options.longs === String ? $util.Long.prototype.toString.call(message.bizId) : options.longs === Number ? new $util.LongBits(message.bizId.low >>> 0, message.bizId.high >>> 0).toNumber() : message.bizId;
+                                if (message.bizType != null && message.hasOwnProperty("bizType"))
+                                    object.bizType = options.enums === String ? $root.bilibili.community.service.dm.v1.PostPanelBizType[message.bizType] : message.bizType;
+                                if (message.clickButton != null && message.hasOwnProperty("clickButton"))
+                                    object.clickButton = $root.bilibili.community.service.dm.v1.ClickButton.toObject(message.clickButton, options);
+                                if (message.textInput != null && message.hasOwnProperty("textInput"))
+                                    object.textInput = $root.bilibili.community.service.dm.v1.TextInput.toObject(message.textInput, options);
+                                if (message.checkBox != null && message.hasOwnProperty("checkBox"))
+                                    object.checkBox = $root.bilibili.community.service.dm.v1.CheckBox.toObject(message.checkBox, options);
+                                if (message.toast != null && message.hasOwnProperty("toast"))
+                                    object.toast = $root.bilibili.community.service.dm.v1.Toast.toObject(message.toast, options);
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this PostPanel to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.PostPanel
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            PostPanel.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return PostPanel;
+                        })();
+    
+                        v1.ClickButton = (function() {
+    
+                            /**
+                             * Properties of a ClickButton.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IClickButton
+                             * @property {Array.<string>|null} [portraitText] ClickButton portraitText
+                             * @property {Array.<string>|null} [landscapeText] ClickButton landscapeText
+                             * @property {Array.<string>|null} [portraitTextFocus] ClickButton portraitTextFocus
+                             * @property {Array.<string>|null} [landscapeTextFocus] ClickButton landscapeTextFocus
+                             * @property {bilibili.community.service.dm.v1.RenderType|null} [renderType] ClickButton renderType
+                             * @property {boolean|null} [show] ClickButton show
+                             */
+    
+                            /**
+                             * Constructs a new ClickButton.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a ClickButton.
+                             * @implements IClickButton
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IClickButton=} [properties] Properties to set
+                             */
+                            function ClickButton(properties) {
+                                this.portraitText = [];
+                                this.landscapeText = [];
+                                this.portraitTextFocus = [];
+                                this.landscapeTextFocus = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * ClickButton portraitText.
+                             * @member {Array.<string>} portraitText
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.portraitText = $util.emptyArray;
+    
+                            /**
+                             * ClickButton landscapeText.
+                             * @member {Array.<string>} landscapeText
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.landscapeText = $util.emptyArray;
+    
+                            /**
+                             * ClickButton portraitTextFocus.
+                             * @member {Array.<string>} portraitTextFocus
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.portraitTextFocus = $util.emptyArray;
+    
+                            /**
+                             * ClickButton landscapeTextFocus.
+                             * @member {Array.<string>} landscapeTextFocus
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.landscapeTextFocus = $util.emptyArray;
+    
+                            /**
+                             * ClickButton renderType.
+                             * @member {bilibili.community.service.dm.v1.RenderType} renderType
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.renderType = 0;
+    
+                            /**
+                             * ClickButton show.
+                             * @member {boolean} show
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             */
+                            ClickButton.prototype.show = false;
+    
+                            /**
+                             * Creates a new ClickButton instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IClickButton=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.ClickButton} ClickButton instance
+                             */
+                            ClickButton.create = function create(properties) {
+                                return new ClickButton(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified ClickButton message. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButton.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IClickButton} message ClickButton message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClickButton.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.portraitText != null && message.portraitText.length)
+                                    for (var i = 0; i < message.portraitText.length; ++i)
+                                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.portraitText[i]);
+                                if (message.landscapeText != null && message.landscapeText.length)
+                                    for (var i = 0; i < message.landscapeText.length; ++i)
+                                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.landscapeText[i]);
+                                if (message.portraitTextFocus != null && message.portraitTextFocus.length)
+                                    for (var i = 0; i < message.portraitTextFocus.length; ++i)
+                                        writer.uint32(/* id 3, wireType 2 =*/26).string(message.portraitTextFocus[i]);
+                                if (message.landscapeTextFocus != null && message.landscapeTextFocus.length)
+                                    for (var i = 0; i < message.landscapeTextFocus.length; ++i)
+                                        writer.uint32(/* id 4, wireType 2 =*/34).string(message.landscapeTextFocus[i]);
+                                if (message.renderType != null && Object.hasOwnProperty.call(message, "renderType"))
+                                    writer.uint32(/* id 5, wireType 0 =*/40).int32(message.renderType);
+                                if (message.show != null && Object.hasOwnProperty.call(message, "show"))
+                                    writer.uint32(/* id 6, wireType 0 =*/48).bool(message.show);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified ClickButton message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButton.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IClickButton} message ClickButton message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClickButton.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a ClickButton message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.ClickButton} ClickButton
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClickButton.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.ClickButton();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.portraitText && message.portraitText.length))
+                                            message.portraitText = [];
+                                        message.portraitText.push(reader.string());
+                                        break;
+                                    case 2:
+                                        if (!(message.landscapeText && message.landscapeText.length))
+                                            message.landscapeText = [];
+                                        message.landscapeText.push(reader.string());
+                                        break;
+                                    case 3:
+                                        if (!(message.portraitTextFocus && message.portraitTextFocus.length))
+                                            message.portraitTextFocus = [];
+                                        message.portraitTextFocus.push(reader.string());
+                                        break;
+                                    case 4:
+                                        if (!(message.landscapeTextFocus && message.landscapeTextFocus.length))
+                                            message.landscapeTextFocus = [];
+                                        message.landscapeTextFocus.push(reader.string());
+                                        break;
+                                    case 5:
+                                        message.renderType = reader.int32();
+                                        break;
+                                    case 6:
+                                        message.show = reader.bool();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a ClickButton message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.ClickButton} ClickButton
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClickButton.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a ClickButton message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            ClickButton.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.portraitText != null && message.hasOwnProperty("portraitText")) {
+                                    if (!Array.isArray(message.portraitText))
+                                        return "portraitText: array expected";
+                                    for (var i = 0; i < message.portraitText.length; ++i)
+                                        if (!$util.isString(message.portraitText[i]))
+                                            return "portraitText: string[] expected";
+                                }
+                                if (message.landscapeText != null && message.hasOwnProperty("landscapeText")) {
+                                    if (!Array.isArray(message.landscapeText))
+                                        return "landscapeText: array expected";
+                                    for (var i = 0; i < message.landscapeText.length; ++i)
+                                        if (!$util.isString(message.landscapeText[i]))
+                                            return "landscapeText: string[] expected";
+                                }
+                                if (message.portraitTextFocus != null && message.hasOwnProperty("portraitTextFocus")) {
+                                    if (!Array.isArray(message.portraitTextFocus))
+                                        return "portraitTextFocus: array expected";
+                                    for (var i = 0; i < message.portraitTextFocus.length; ++i)
+                                        if (!$util.isString(message.portraitTextFocus[i]))
+                                            return "portraitTextFocus: string[] expected";
+                                }
+                                if (message.landscapeTextFocus != null && message.hasOwnProperty("landscapeTextFocus")) {
+                                    if (!Array.isArray(message.landscapeTextFocus))
+                                        return "landscapeTextFocus: array expected";
+                                    for (var i = 0; i < message.landscapeTextFocus.length; ++i)
+                                        if (!$util.isString(message.landscapeTextFocus[i]))
+                                            return "landscapeTextFocus: string[] expected";
+                                }
+                                if (message.renderType != null && message.hasOwnProperty("renderType"))
+                                    switch (message.renderType) {
+                                    default:
+                                        return "renderType: enum value expected";
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                        break;
+                                    }
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    if (typeof message.show !== "boolean")
+                                        return "show: boolean expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a ClickButton message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.ClickButton} ClickButton
+                             */
+                            ClickButton.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.ClickButton)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.ClickButton();
+                                if (object.portraitText) {
+                                    if (!Array.isArray(object.portraitText))
+                                        throw TypeError(".bilibili.community.service.dm.v1.ClickButton.portraitText: array expected");
+                                    message.portraitText = [];
+                                    for (var i = 0; i < object.portraitText.length; ++i)
+                                        message.portraitText[i] = String(object.portraitText[i]);
+                                }
+                                if (object.landscapeText) {
+                                    if (!Array.isArray(object.landscapeText))
+                                        throw TypeError(".bilibili.community.service.dm.v1.ClickButton.landscapeText: array expected");
+                                    message.landscapeText = [];
+                                    for (var i = 0; i < object.landscapeText.length; ++i)
+                                        message.landscapeText[i] = String(object.landscapeText[i]);
+                                }
+                                if (object.portraitTextFocus) {
+                                    if (!Array.isArray(object.portraitTextFocus))
+                                        throw TypeError(".bilibili.community.service.dm.v1.ClickButton.portraitTextFocus: array expected");
+                                    message.portraitTextFocus = [];
+                                    for (var i = 0; i < object.portraitTextFocus.length; ++i)
+                                        message.portraitTextFocus[i] = String(object.portraitTextFocus[i]);
+                                }
+                                if (object.landscapeTextFocus) {
+                                    if (!Array.isArray(object.landscapeTextFocus))
+                                        throw TypeError(".bilibili.community.service.dm.v1.ClickButton.landscapeTextFocus: array expected");
+                                    message.landscapeTextFocus = [];
+                                    for (var i = 0; i < object.landscapeTextFocus.length; ++i)
+                                        message.landscapeTextFocus[i] = String(object.landscapeTextFocus[i]);
+                                }
+                                switch (object.renderType) {
+                                case "RenderTypeNone":
+                                case 0:
+                                    message.renderType = 0;
+                                    break;
+                                case "RenderTypeSingle":
+                                case 1:
+                                    message.renderType = 1;
+                                    break;
+                                case "RenderTypeRotation":
+                                case 2:
+                                    message.renderType = 2;
+                                    break;
+                                }
+                                if (object.show != null)
+                                    message.show = Boolean(object.show);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a ClickButton message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ClickButton} message ClickButton
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            ClickButton.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults) {
+                                    object.portraitText = [];
+                                    object.landscapeText = [];
+                                    object.portraitTextFocus = [];
+                                    object.landscapeTextFocus = [];
+                                }
+                                if (options.defaults) {
+                                    object.renderType = options.enums === String ? "RenderTypeNone" : 0;
+                                    object.show = false;
+                                }
+                                if (message.portraitText && message.portraitText.length) {
+                                    object.portraitText = [];
+                                    for (var j = 0; j < message.portraitText.length; ++j)
+                                        object.portraitText[j] = message.portraitText[j];
+                                }
+                                if (message.landscapeText && message.landscapeText.length) {
+                                    object.landscapeText = [];
+                                    for (var j = 0; j < message.landscapeText.length; ++j)
+                                        object.landscapeText[j] = message.landscapeText[j];
+                                }
+                                if (message.portraitTextFocus && message.portraitTextFocus.length) {
+                                    object.portraitTextFocus = [];
+                                    for (var j = 0; j < message.portraitTextFocus.length; ++j)
+                                        object.portraitTextFocus[j] = message.portraitTextFocus[j];
+                                }
+                                if (message.landscapeTextFocus && message.landscapeTextFocus.length) {
+                                    object.landscapeTextFocus = [];
+                                    for (var j = 0; j < message.landscapeTextFocus.length; ++j)
+                                        object.landscapeTextFocus[j] = message.landscapeTextFocus[j];
+                                }
+                                if (message.renderType != null && message.hasOwnProperty("renderType"))
+                                    object.renderType = options.enums === String ? $root.bilibili.community.service.dm.v1.RenderType[message.renderType] : message.renderType;
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    object.show = message.show;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this ClickButton to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.ClickButton
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            ClickButton.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return ClickButton;
+                        })();
+    
+                        /**
+                         * PostPanelBizType enum.
+                         * @name bilibili.community.service.dm.v1.PostPanelBizType
+                         * @enum {number}
+                         * @property {number} PostPanelBizTypeNone=0 PostPanelBizTypeNone value
+                         * @property {number} PostPanelBizTypeEncourage=1 PostPanelBizTypeEncourage value
+                         */
+                        v1.PostPanelBizType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "PostPanelBizTypeNone"] = 0;
+                            values[valuesById[1] = "PostPanelBizTypeEncourage"] = 1;
+                            return values;
+                        })();
+    
+                        v1.TextInput = (function() {
+    
+                            /**
+                             * Properties of a TextInput.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface ITextInput
+                             * @property {Array.<string>|null} [portraitPlaceholder] TextInput portraitPlaceholder
+                             * @property {Array.<string>|null} [landscapePlaceholder] TextInput landscapePlaceholder
+                             * @property {bilibili.community.service.dm.v1.RenderType|null} [renderType] TextInput renderType
+                             * @property {boolean|null} [placeholderPost] TextInput placeholderPost
+                             * @property {boolean|null} [show] TextInput show
+                             */
+    
+                            /**
+                             * Constructs a new TextInput.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a TextInput.
+                             * @implements ITextInput
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.ITextInput=} [properties] Properties to set
+                             */
+                            function TextInput(properties) {
+                                this.portraitPlaceholder = [];
+                                this.landscapePlaceholder = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * TextInput portraitPlaceholder.
+                             * @member {Array.<string>} portraitPlaceholder
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             */
+                            TextInput.prototype.portraitPlaceholder = $util.emptyArray;
+    
+                            /**
+                             * TextInput landscapePlaceholder.
+                             * @member {Array.<string>} landscapePlaceholder
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             */
+                            TextInput.prototype.landscapePlaceholder = $util.emptyArray;
+    
+                            /**
+                             * TextInput renderType.
+                             * @member {bilibili.community.service.dm.v1.RenderType} renderType
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             */
+                            TextInput.prototype.renderType = 0;
+    
+                            /**
+                             * TextInput placeholderPost.
+                             * @member {boolean} placeholderPost
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             */
+                            TextInput.prototype.placeholderPost = false;
+    
+                            /**
+                             * TextInput show.
+                             * @member {boolean} show
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             */
+                            TextInput.prototype.show = false;
+    
+                            /**
+                             * Creates a new TextInput instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ITextInput=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.TextInput} TextInput instance
+                             */
+                            TextInput.create = function create(properties) {
+                                return new TextInput(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified TextInput message. Does not implicitly {@link bilibili.community.service.dm.v1.TextInput.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ITextInput} message TextInput message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            TextInput.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.portraitPlaceholder != null && message.portraitPlaceholder.length)
+                                    for (var i = 0; i < message.portraitPlaceholder.length; ++i)
+                                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.portraitPlaceholder[i]);
+                                if (message.landscapePlaceholder != null && message.landscapePlaceholder.length)
+                                    for (var i = 0; i < message.landscapePlaceholder.length; ++i)
+                                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.landscapePlaceholder[i]);
+                                if (message.renderType != null && Object.hasOwnProperty.call(message, "renderType"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.renderType);
+                                if (message.placeholderPost != null && Object.hasOwnProperty.call(message, "placeholderPost"))
+                                    writer.uint32(/* id 4, wireType 0 =*/32).bool(message.placeholderPost);
+                                if (message.show != null && Object.hasOwnProperty.call(message, "show"))
+                                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.show);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified TextInput message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.TextInput.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ITextInput} message TextInput message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            TextInput.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a TextInput message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.TextInput} TextInput
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            TextInput.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.TextInput();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.portraitPlaceholder && message.portraitPlaceholder.length))
+                                            message.portraitPlaceholder = [];
+                                        message.portraitPlaceholder.push(reader.string());
+                                        break;
+                                    case 2:
+                                        if (!(message.landscapePlaceholder && message.landscapePlaceholder.length))
+                                            message.landscapePlaceholder = [];
+                                        message.landscapePlaceholder.push(reader.string());
+                                        break;
+                                    case 3:
+                                        message.renderType = reader.int32();
+                                        break;
+                                    case 4:
+                                        message.placeholderPost = reader.bool();
+                                        break;
+                                    case 5:
+                                        message.show = reader.bool();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a TextInput message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.TextInput} TextInput
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            TextInput.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a TextInput message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            TextInput.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.portraitPlaceholder != null && message.hasOwnProperty("portraitPlaceholder")) {
+                                    if (!Array.isArray(message.portraitPlaceholder))
+                                        return "portraitPlaceholder: array expected";
+                                    for (var i = 0; i < message.portraitPlaceholder.length; ++i)
+                                        if (!$util.isString(message.portraitPlaceholder[i]))
+                                            return "portraitPlaceholder: string[] expected";
+                                }
+                                if (message.landscapePlaceholder != null && message.hasOwnProperty("landscapePlaceholder")) {
+                                    if (!Array.isArray(message.landscapePlaceholder))
+                                        return "landscapePlaceholder: array expected";
+                                    for (var i = 0; i < message.landscapePlaceholder.length; ++i)
+                                        if (!$util.isString(message.landscapePlaceholder[i]))
+                                            return "landscapePlaceholder: string[] expected";
+                                }
+                                if (message.renderType != null && message.hasOwnProperty("renderType"))
+                                    switch (message.renderType) {
+                                    default:
+                                        return "renderType: enum value expected";
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                        break;
+                                    }
+                                if (message.placeholderPost != null && message.hasOwnProperty("placeholderPost"))
+                                    if (typeof message.placeholderPost !== "boolean")
+                                        return "placeholderPost: boolean expected";
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    if (typeof message.show !== "boolean")
+                                        return "show: boolean expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a TextInput message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.TextInput} TextInput
+                             */
+                            TextInput.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.TextInput)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.TextInput();
+                                if (object.portraitPlaceholder) {
+                                    if (!Array.isArray(object.portraitPlaceholder))
+                                        throw TypeError(".bilibili.community.service.dm.v1.TextInput.portraitPlaceholder: array expected");
+                                    message.portraitPlaceholder = [];
+                                    for (var i = 0; i < object.portraitPlaceholder.length; ++i)
+                                        message.portraitPlaceholder[i] = String(object.portraitPlaceholder[i]);
+                                }
+                                if (object.landscapePlaceholder) {
+                                    if (!Array.isArray(object.landscapePlaceholder))
+                                        throw TypeError(".bilibili.community.service.dm.v1.TextInput.landscapePlaceholder: array expected");
+                                    message.landscapePlaceholder = [];
+                                    for (var i = 0; i < object.landscapePlaceholder.length; ++i)
+                                        message.landscapePlaceholder[i] = String(object.landscapePlaceholder[i]);
+                                }
+                                switch (object.renderType) {
+                                case "RenderTypeNone":
+                                case 0:
+                                    message.renderType = 0;
+                                    break;
+                                case "RenderTypeSingle":
+                                case 1:
+                                    message.renderType = 1;
+                                    break;
+                                case "RenderTypeRotation":
+                                case 2:
+                                    message.renderType = 2;
+                                    break;
+                                }
+                                if (object.placeholderPost != null)
+                                    message.placeholderPost = Boolean(object.placeholderPost);
+                                if (object.show != null)
+                                    message.show = Boolean(object.show);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a TextInput message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.TextInput} message TextInput
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            TextInput.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults) {
+                                    object.portraitPlaceholder = [];
+                                    object.landscapePlaceholder = [];
+                                }
+                                if (options.defaults) {
+                                    object.renderType = options.enums === String ? "RenderTypeNone" : 0;
+                                    object.placeholderPost = false;
+                                    object.show = false;
+                                }
+                                if (message.portraitPlaceholder && message.portraitPlaceholder.length) {
+                                    object.portraitPlaceholder = [];
+                                    for (var j = 0; j < message.portraitPlaceholder.length; ++j)
+                                        object.portraitPlaceholder[j] = message.portraitPlaceholder[j];
+                                }
+                                if (message.landscapePlaceholder && message.landscapePlaceholder.length) {
+                                    object.landscapePlaceholder = [];
+                                    for (var j = 0; j < message.landscapePlaceholder.length; ++j)
+                                        object.landscapePlaceholder[j] = message.landscapePlaceholder[j];
+                                }
+                                if (message.renderType != null && message.hasOwnProperty("renderType"))
+                                    object.renderType = options.enums === String ? $root.bilibili.community.service.dm.v1.RenderType[message.renderType] : message.renderType;
+                                if (message.placeholderPost != null && message.hasOwnProperty("placeholderPost"))
+                                    object.placeholderPost = message.placeholderPost;
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    object.show = message.show;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this TextInput to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.TextInput
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            TextInput.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return TextInput;
+                        })();
+    
+                        /**
+                         * RenderType enum.
+                         * @name bilibili.community.service.dm.v1.RenderType
+                         * @enum {number}
+                         * @property {number} RenderTypeNone=0 RenderTypeNone value
+                         * @property {number} RenderTypeSingle=1 RenderTypeSingle value
+                         * @property {number} RenderTypeRotation=2 RenderTypeRotation value
+                         */
+                        v1.RenderType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "RenderTypeNone"] = 0;
+                            values[valuesById[1] = "RenderTypeSingle"] = 1;
+                            values[valuesById[2] = "RenderTypeRotation"] = 2;
+                            return values;
+                        })();
+    
+                        v1.CheckBox = (function() {
+    
+                            /**
+                             * Properties of a CheckBox.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface ICheckBox
+                             * @property {string|null} [text] CheckBox text
+                             * @property {bilibili.community.service.dm.v1.CheckboxType|null} [type] CheckBox type
+                             * @property {boolean|null} [defaultValue] CheckBox defaultValue
+                             * @property {boolean|null} [show] CheckBox show
+                             */
+    
+                            /**
+                             * Constructs a new CheckBox.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a CheckBox.
+                             * @implements ICheckBox
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.ICheckBox=} [properties] Properties to set
+                             */
+                            function CheckBox(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * CheckBox text.
+                             * @member {string} text
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @instance
+                             */
+                            CheckBox.prototype.text = "";
+    
+                            /**
+                             * CheckBox type.
+                             * @member {bilibili.community.service.dm.v1.CheckboxType} type
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @instance
+                             */
+                            CheckBox.prototype.type = 0;
+    
+                            /**
+                             * CheckBox defaultValue.
+                             * @member {boolean} defaultValue
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @instance
+                             */
+                            CheckBox.prototype.defaultValue = false;
+    
+                            /**
+                             * CheckBox show.
+                             * @member {boolean} show
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @instance
+                             */
+                            CheckBox.prototype.show = false;
+    
+                            /**
+                             * Creates a new CheckBox instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ICheckBox=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.CheckBox} CheckBox instance
+                             */
+                            CheckBox.create = function create(properties) {
+                                return new CheckBox(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified CheckBox message. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBox.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ICheckBox} message CheckBox message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            CheckBox.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.text != null && Object.hasOwnProperty.call(message, "text"))
+                                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
+                                if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
+                                if (message.defaultValue != null && Object.hasOwnProperty.call(message, "defaultValue"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).bool(message.defaultValue);
+                                if (message.show != null && Object.hasOwnProperty.call(message, "show"))
+                                    writer.uint32(/* id 4, wireType 0 =*/32).bool(message.show);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified CheckBox message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBox.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.ICheckBox} message CheckBox message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            CheckBox.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a CheckBox message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.CheckBox} CheckBox
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            CheckBox.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.CheckBox();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.text = reader.string();
+                                        break;
+                                    case 2:
+                                        message.type = reader.int32();
+                                        break;
+                                    case 3:
+                                        message.defaultValue = reader.bool();
+                                        break;
+                                    case 4:
+                                        message.show = reader.bool();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a CheckBox message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.CheckBox} CheckBox
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            CheckBox.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a CheckBox message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            CheckBox.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    if (!$util.isString(message.text))
+                                        return "text: string expected";
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    switch (message.type) {
+                                    default:
+                                        return "type: enum value expected";
+                                    case 0:
+                                    case 1:
+                                        break;
+                                    }
+                                if (message.defaultValue != null && message.hasOwnProperty("defaultValue"))
+                                    if (typeof message.defaultValue !== "boolean")
+                                        return "defaultValue: boolean expected";
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    if (typeof message.show !== "boolean")
+                                        return "show: boolean expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a CheckBox message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.CheckBox} CheckBox
+                             */
+                            CheckBox.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.CheckBox)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.CheckBox();
+                                if (object.text != null)
+                                    message.text = String(object.text);
+                                switch (object.type) {
+                                case "CheckboxTypeNone":
+                                case 0:
+                                    message.type = 0;
+                                    break;
+                                case "CheckboxTypeEncourage":
+                                case 1:
+                                    message.type = 1;
+                                    break;
+                                }
+                                if (object.defaultValue != null)
+                                    message.defaultValue = Boolean(object.defaultValue);
+                                if (object.show != null)
+                                    message.show = Boolean(object.show);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a CheckBox message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.CheckBox} message CheckBox
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            CheckBox.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    object.text = "";
+                                    object.type = options.enums === String ? "CheckboxTypeNone" : 0;
+                                    object.defaultValue = false;
+                                    object.show = false;
+                                }
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    object.text = message.text;
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    object.type = options.enums === String ? $root.bilibili.community.service.dm.v1.CheckboxType[message.type] : message.type;
+                                if (message.defaultValue != null && message.hasOwnProperty("defaultValue"))
+                                    object.defaultValue = message.defaultValue;
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    object.show = message.show;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this CheckBox to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.CheckBox
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            CheckBox.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return CheckBox;
+                        })();
+    
+                        /**
+                         * CheckboxType enum.
+                         * @name bilibili.community.service.dm.v1.CheckboxType
+                         * @enum {number}
+                         * @property {number} CheckboxTypeNone=0 CheckboxTypeNone value
+                         * @property {number} CheckboxTypeEncourage=1 CheckboxTypeEncourage value
+                         */
+                        v1.CheckboxType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "CheckboxTypeNone"] = 0;
+                            values[valuesById[1] = "CheckboxTypeEncourage"] = 1;
+                            return values;
+                        })();
+    
+                        v1.Toast = (function() {
+    
+                            /**
+                             * Properties of a Toast.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IToast
+                             * @property {string|null} [text] Toast text
+                             * @property {number|null} [duration] Toast duration
+                             * @property {boolean|null} [show] Toast show
+                             * @property {bilibili.community.service.dm.v1.IButton|null} [button] Toast button
+                             */
+    
+                            /**
+                             * Constructs a new Toast.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a Toast.
+                             * @implements IToast
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IToast=} [properties] Properties to set
+                             */
+                            function Toast(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Toast text.
+                             * @member {string} text
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @instance
+                             */
+                            Toast.prototype.text = "";
+    
+                            /**
+                             * Toast duration.
+                             * @member {number} duration
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @instance
+                             */
+                            Toast.prototype.duration = 0;
+    
+                            /**
+                             * Toast show.
+                             * @member {boolean} show
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @instance
+                             */
+                            Toast.prototype.show = false;
+    
+                            /**
+                             * Toast button.
+                             * @member {bilibili.community.service.dm.v1.IButton|null|undefined} button
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @instance
+                             */
+                            Toast.prototype.button = null;
+    
+                            /**
+                             * Creates a new Toast instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IToast=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.Toast} Toast instance
+                             */
+                            Toast.create = function create(properties) {
+                                return new Toast(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Toast message. Does not implicitly {@link bilibili.community.service.dm.v1.Toast.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IToast} message Toast message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Toast.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.text != null && Object.hasOwnProperty.call(message, "text"))
+                                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
+                                if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.duration);
+                                if (message.show != null && Object.hasOwnProperty.call(message, "show"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).bool(message.show);
+                                if (message.button != null && Object.hasOwnProperty.call(message, "button"))
+                                    $root.bilibili.community.service.dm.v1.Button.encode(message.button, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Toast message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Toast.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IToast} message Toast message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Toast.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a Toast message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.Toast} Toast
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Toast.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.Toast();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.text = reader.string();
+                                        break;
+                                    case 2:
+                                        message.duration = reader.int32();
+                                        break;
+                                    case 3:
+                                        message.show = reader.bool();
+                                        break;
+                                    case 4:
+                                        message.button = $root.bilibili.community.service.dm.v1.Button.decode(reader, reader.uint32());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a Toast message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.Toast} Toast
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Toast.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a Toast message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Toast.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    if (!$util.isString(message.text))
+                                        return "text: string expected";
+                                if (message.duration != null && message.hasOwnProperty("duration"))
+                                    if (!$util.isInteger(message.duration))
+                                        return "duration: integer expected";
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    if (typeof message.show !== "boolean")
+                                        return "show: boolean expected";
+                                if (message.button != null && message.hasOwnProperty("button")) {
+                                    var error = $root.bilibili.community.service.dm.v1.Button.verify(message.button);
+                                    if (error)
+                                        return "button." + error;
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a Toast message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.Toast} Toast
+                             */
+                            Toast.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.Toast)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.Toast();
+                                if (object.text != null)
+                                    message.text = String(object.text);
+                                if (object.duration != null)
+                                    message.duration = object.duration | 0;
+                                if (object.show != null)
+                                    message.show = Boolean(object.show);
+                                if (object.button != null) {
+                                    if (typeof object.button !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.Toast.button: object expected");
+                                    message.button = $root.bilibili.community.service.dm.v1.Button.fromObject(object.button);
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a Toast message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.Toast} message Toast
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Toast.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    object.text = "";
+                                    object.duration = 0;
+                                    object.show = false;
+                                    object.button = null;
+                                }
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    object.text = message.text;
+                                if (message.duration != null && message.hasOwnProperty("duration"))
+                                    object.duration = message.duration;
+                                if (message.show != null && message.hasOwnProperty("show"))
+                                    object.show = message.show;
+                                if (message.button != null && message.hasOwnProperty("button"))
+                                    object.button = $root.bilibili.community.service.dm.v1.Button.toObject(message.button, options);
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Toast to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.Toast
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Toast.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Toast;
+                        })();
+    
+                        v1.Button = (function() {
+    
+                            /**
+                             * Properties of a Button.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IButton
+                             * @property {string|null} [text] Button text
+                             * @property {bilibili.community.service.dm.v1.ToastFunctionType|null} [action] Button action
+                             */
+    
+                            /**
+                             * Constructs a new Button.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a Button.
+                             * @implements IButton
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IButton=} [properties] Properties to set
+                             */
+                            function Button(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Button text.
+                             * @member {string} text
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @instance
+                             */
+                            Button.prototype.text = "";
+    
+                            /**
+                             * Button action.
+                             * @member {bilibili.community.service.dm.v1.ToastFunctionType} action
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @instance
+                             */
+                            Button.prototype.action = 0;
+    
+                            /**
+                             * Creates a new Button instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IButton=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.Button} Button instance
+                             */
+                            Button.create = function create(properties) {
+                                return new Button(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Button message. Does not implicitly {@link bilibili.community.service.dm.v1.Button.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IButton} message Button message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Button.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.text != null && Object.hasOwnProperty.call(message, "text"))
+                                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
+                                if (message.action != null && Object.hasOwnProperty.call(message, "action"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.action);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Button message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Button.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IButton} message Button message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Button.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a Button message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.Button} Button
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Button.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.Button();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.text = reader.string();
+                                        break;
+                                    case 2:
+                                        message.action = reader.int32();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a Button message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.Button} Button
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Button.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a Button message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Button.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    if (!$util.isString(message.text))
+                                        return "text: string expected";
+                                if (message.action != null && message.hasOwnProperty("action"))
+                                    switch (message.action) {
+                                    default:
+                                        return "action: enum value expected";
+                                    case 0:
+                                    case 1:
+                                        break;
+                                    }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a Button message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.Button} Button
+                             */
+                            Button.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.Button)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.Button();
+                                if (object.text != null)
+                                    message.text = String(object.text);
+                                switch (object.action) {
+                                case "ToastFunctionTypeNone":
+                                case 0:
+                                    message.action = 0;
+                                    break;
+                                case "ToastFunctionTypePostPanel":
+                                case 1:
+                                    message.action = 1;
+                                    break;
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a Button message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.Button} message Button
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Button.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    object.text = "";
+                                    object.action = options.enums === String ? "ToastFunctionTypeNone" : 0;
+                                }
+                                if (message.text != null && message.hasOwnProperty("text"))
+                                    object.text = message.text;
+                                if (message.action != null && message.hasOwnProperty("action"))
+                                    object.action = options.enums === String ? $root.bilibili.community.service.dm.v1.ToastFunctionType[message.action] : message.action;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Button to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.Button
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Button.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Button;
+                        })();
+    
+                        /**
+                         * ToastFunctionType enum.
+                         * @name bilibili.community.service.dm.v1.ToastFunctionType
+                         * @enum {number}
+                         * @property {number} ToastFunctionTypeNone=0 ToastFunctionTypeNone value
+                         * @property {number} ToastFunctionTypePostPanel=1 ToastFunctionTypePostPanel value
+                         */
+                        v1.ToastFunctionType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "ToastFunctionTypeNone"] = 0;
+                            values[valuesById[1] = "ToastFunctionTypePostPanel"] = 1;
+                            return values;
+                        })();
+    
+                        /**
+                         * ToastBizType enum.
+                         * @name bilibili.community.service.dm.v1.ToastBizType
+                         * @enum {number}
+                         * @property {number} ToastBizTypeNone=0 ToastBizTypeNone value
+                         * @property {number} ToastBizTypeEncourage=1 ToastBizTypeEncourage value
+                         */
+                        v1.ToastBizType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "ToastBizTypeNone"] = 0;
+                            values[valuesById[1] = "ToastBizTypeEncourage"] = 1;
+                            return values;
+                        })();
+    
                         v1.CommandDm = (function() {
     
                             /**
                              * Properties of a CommandDm.
                              * @memberof bilibili.community.service.dm.v1
                              * @interface ICommandDm
-                             * @property {number|Long|null} [id] CommandDm id
                              * @property {number|Long|null} [oid] CommandDm oid
                              * @property {number|Long|null} [mid] CommandDm mid
                              * @property {string|null} [command] CommandDm command
@@ -522,7 +2629,7 @@
                              * @property {string|null} [ctime] CommandDm ctime
                              * @property {string|null} [mtime] CommandDm mtime
                              * @property {string|null} [extra] CommandDm extra
-                             * @property {string|null} [idStr] CommandDm idStr
+                             * @property {string|null} [dmid] CommandDm dmid
                              */
     
                             /**
@@ -539,14 +2646,6 @@
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
-    
-                            /**
-                             * CommandDm id.
-                             * @member {number|Long} id
-                             * @memberof bilibili.community.service.dm.v1.CommandDm
-                             * @instance
-                             */
-                            CommandDm.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
     
                             /**
                              * CommandDm oid.
@@ -613,12 +2712,12 @@
                             CommandDm.prototype.extra = "";
     
                             /**
-                             * CommandDm idStr.
-                             * @member {string} idStr
+                             * CommandDm dmid.
+                             * @member {string} dmid
                              * @memberof bilibili.community.service.dm.v1.CommandDm
                              * @instance
                              */
-                            CommandDm.prototype.idStr = "";
+                            CommandDm.prototype.dmid = "";
     
                             /**
                              * Creates a new CommandDm instance using the specified properties.
@@ -644,8 +2743,6 @@
                             CommandDm.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
-                                if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
                                 if (message.oid != null && Object.hasOwnProperty.call(message, "oid"))
                                     writer.uint32(/* id 2, wireType 0 =*/16).int64(message.oid);
                                 if (message.mid != null && Object.hasOwnProperty.call(message, "mid"))
@@ -662,8 +2759,8 @@
                                     writer.uint32(/* id 8, wireType 2 =*/66).string(message.mtime);
                                 if (message.extra != null && Object.hasOwnProperty.call(message, "extra"))
                                     writer.uint32(/* id 9, wireType 2 =*/74).string(message.extra);
-                                if (message.idStr != null && Object.hasOwnProperty.call(message, "idStr"))
-                                    writer.uint32(/* id 10, wireType 2 =*/82).string(message.idStr);
+                                if (message.dmid != null && Object.hasOwnProperty.call(message, "dmid"))
+                                    writer.uint32(/* id 10, wireType 2 =*/82).string(message.dmid);
                                 return writer;
                             };
     
@@ -698,9 +2795,6 @@
                                 while (reader.pos < end) {
                                     var tag = reader.uint32();
                                     switch (tag >>> 3) {
-                                    case 1:
-                                        message.id = reader.int64();
-                                        break;
                                     case 2:
                                         message.oid = reader.int64();
                                         break;
@@ -726,7 +2820,7 @@
                                         message.extra = reader.string();
                                         break;
                                     case 10:
-                                        message.idStr = reader.string();
+                                        message.dmid = reader.string();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -763,9 +2857,6 @@
                             CommandDm.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
-                                if (message.id != null && message.hasOwnProperty("id"))
-                                    if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
-                                        return "id: integer|Long expected";
                                 if (message.oid != null && message.hasOwnProperty("oid"))
                                     if (!$util.isInteger(message.oid) && !(message.oid && $util.isInteger(message.oid.low) && $util.isInteger(message.oid.high)))
                                         return "oid: integer|Long expected";
@@ -790,9 +2881,9 @@
                                 if (message.extra != null && message.hasOwnProperty("extra"))
                                     if (!$util.isString(message.extra))
                                         return "extra: string expected";
-                                if (message.idStr != null && message.hasOwnProperty("idStr"))
-                                    if (!$util.isString(message.idStr))
-                                        return "idStr: string expected";
+                                if (message.dmid != null && message.hasOwnProperty("dmid"))
+                                    if (!$util.isString(message.dmid))
+                                        return "dmid: string expected";
                                 return null;
                             };
     
@@ -808,15 +2899,6 @@
                                 if (object instanceof $root.bilibili.community.service.dm.v1.CommandDm)
                                     return object;
                                 var message = new $root.bilibili.community.service.dm.v1.CommandDm();
-                                if (object.id != null)
-                                    if ($util.Long)
-                                        (message.id = $util.Long.fromValue(object.id)).unsigned = false;
-                                    else if (typeof object.id === "string")
-                                        message.id = parseInt(object.id, 10);
-                                    else if (typeof object.id === "number")
-                                        message.id = object.id;
-                                    else if (typeof object.id === "object")
-                                        message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
                                 if (object.oid != null)
                                     if ($util.Long)
                                         (message.oid = $util.Long.fromValue(object.oid)).unsigned = false;
@@ -847,8 +2929,8 @@
                                     message.mtime = String(object.mtime);
                                 if (object.extra != null)
                                     message.extra = String(object.extra);
-                                if (object.idStr != null)
-                                    message.idStr = String(object.idStr);
+                                if (object.dmid != null)
+                                    message.dmid = String(object.dmid);
                                 return message;
                             };
     
@@ -868,11 +2950,6 @@
                                 if (options.defaults) {
                                     if ($util.Long) {
                                         var long = new $util.Long(0, 0, false);
-                                        object.id = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                                    } else
-                                        object.id = options.longs === String ? "0" : 0;
-                                    if ($util.Long) {
-                                        var long = new $util.Long(0, 0, false);
                                         object.oid = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                                     } else
                                         object.oid = options.longs === String ? "0" : 0;
@@ -887,13 +2964,8 @@
                                     object.ctime = "";
                                     object.mtime = "";
                                     object.extra = "";
-                                    object.idStr = "";
+                                    object.dmid = "";
                                 }
-                                if (message.id != null && message.hasOwnProperty("id"))
-                                    if (typeof message.id === "number")
-                                        object.id = options.longs === String ? String(message.id) : message.id;
-                                    else
-                                        object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
                                 if (message.oid != null && message.hasOwnProperty("oid"))
                                     if (typeof message.oid === "number")
                                         object.oid = options.longs === String ? String(message.oid) : message.oid;
@@ -916,8 +2988,8 @@
                                     object.mtime = message.mtime;
                                 if (message.extra != null && message.hasOwnProperty("extra"))
                                     object.extra = message.extra;
-                                if (message.idStr != null && message.hasOwnProperty("idStr"))
-                                    object.idStr = message.idStr;
+                                if (message.dmid != null && message.hasOwnProperty("dmid"))
+                                    object.dmid = message.dmid;
                                 return object;
                             };
     
@@ -1619,7 +3691,6 @@
                              * Properties of a DanmakuElem.
                              * @memberof bilibili.community.service.dm.v1
                              * @interface IDanmakuElem
-                             * @property {number|Long|null} [id] DanmakuElem id
                              * @property {number|null} [progress] DanmakuElem progress
                              * @property {number|null} [mode] DanmakuElem mode
                              * @property {number|null} [fontsize] DanmakuElem fontsize
@@ -1630,8 +3701,9 @@
                              * @property {number|null} [weight] DanmakuElem weight
                              * @property {string|null} [action] DanmakuElem action
                              * @property {number|null} [pool] DanmakuElem pool
-                             * @property {string|null} [idStr] DanmakuElem idStr
+                             * @property {string|null} [dmid] DanmakuElem dmid
                              * @property {number|null} [attr] DanmakuElem attr
+                             * @property {string|null} [animation] DanmakuElem animation
                              */
     
                             /**
@@ -1648,14 +3720,6 @@
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
-    
-                            /**
-                             * DanmakuElem id.
-                             * @member {number|Long} id
-                             * @memberof bilibili.community.service.dm.v1.DanmakuElem
-                             * @instance
-                             */
-                            DanmakuElem.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
     
                             /**
                              * DanmakuElem progress.
@@ -1738,12 +3802,12 @@
                             DanmakuElem.prototype.pool = 0;
     
                             /**
-                             * DanmakuElem idStr.
-                             * @member {string} idStr
+                             * DanmakuElem dmid.
+                             * @member {string} dmid
                              * @memberof bilibili.community.service.dm.v1.DanmakuElem
                              * @instance
                              */
-                            DanmakuElem.prototype.idStr = "";
+                            DanmakuElem.prototype.dmid = "";
     
                             /**
                              * DanmakuElem attr.
@@ -1752,6 +3816,14 @@
                              * @instance
                              */
                             DanmakuElem.prototype.attr = 0;
+    
+                            /**
+                             * DanmakuElem animation.
+                             * @member {string} animation
+                             * @memberof bilibili.community.service.dm.v1.DanmakuElem
+                             * @instance
+                             */
+                            DanmakuElem.prototype.animation = "";
     
                             /**
                              * Creates a new DanmakuElem instance using the specified properties.
@@ -1777,8 +3849,6 @@
                             DanmakuElem.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
-                                if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
                                 if (message.progress != null && Object.hasOwnProperty.call(message, "progress"))
                                     writer.uint32(/* id 2, wireType 0 =*/16).int32(message.progress);
                                 if (message.mode != null && Object.hasOwnProperty.call(message, "mode"))
@@ -1799,10 +3869,12 @@
                                     writer.uint32(/* id 10, wireType 2 =*/82).string(message.action);
                                 if (message.pool != null && Object.hasOwnProperty.call(message, "pool"))
                                     writer.uint32(/* id 11, wireType 0 =*/88).int32(message.pool);
-                                if (message.idStr != null && Object.hasOwnProperty.call(message, "idStr"))
-                                    writer.uint32(/* id 12, wireType 2 =*/98).string(message.idStr);
+                                if (message.dmid != null && Object.hasOwnProperty.call(message, "dmid"))
+                                    writer.uint32(/* id 12, wireType 2 =*/98).string(message.dmid);
                                 if (message.attr != null && Object.hasOwnProperty.call(message, "attr"))
                                     writer.uint32(/* id 13, wireType 0 =*/104).int32(message.attr);
+                                if (message.animation != null && Object.hasOwnProperty.call(message, "animation"))
+                                    writer.uint32(/* id 22, wireType 2 =*/178).string(message.animation);
                                 return writer;
                             };
     
@@ -1837,9 +3909,6 @@
                                 while (reader.pos < end) {
                                     var tag = reader.uint32();
                                     switch (tag >>> 3) {
-                                    case 1:
-                                        message.id = reader.int64();
-                                        break;
                                     case 2:
                                         message.progress = reader.int32();
                                         break;
@@ -1871,10 +3940,13 @@
                                         message.pool = reader.int32();
                                         break;
                                     case 12:
-                                        message.idStr = reader.string();
+                                        message.dmid = reader.string();
                                         break;
                                     case 13:
                                         message.attr = reader.int32();
+                                        break;
+                                    case 22:
+                                        message.animation = reader.string();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -1911,9 +3983,6 @@
                             DanmakuElem.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
-                                if (message.id != null && message.hasOwnProperty("id"))
-                                    if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
-                                        return "id: integer|Long expected";
                                 if (message.progress != null && message.hasOwnProperty("progress"))
                                     if (!$util.isInteger(message.progress))
                                         return "progress: integer expected";
@@ -1944,12 +4013,15 @@
                                 if (message.pool != null && message.hasOwnProperty("pool"))
                                     if (!$util.isInteger(message.pool))
                                         return "pool: integer expected";
-                                if (message.idStr != null && message.hasOwnProperty("idStr"))
-                                    if (!$util.isString(message.idStr))
-                                        return "idStr: string expected";
+                                if (message.dmid != null && message.hasOwnProperty("dmid"))
+                                    if (!$util.isString(message.dmid))
+                                        return "dmid: string expected";
                                 if (message.attr != null && message.hasOwnProperty("attr"))
                                     if (!$util.isInteger(message.attr))
                                         return "attr: integer expected";
+                                if (message.animation != null && message.hasOwnProperty("animation"))
+                                    if (!$util.isString(message.animation))
+                                        return "animation: string expected";
                                 return null;
                             };
     
@@ -1965,15 +4037,6 @@
                                 if (object instanceof $root.bilibili.community.service.dm.v1.DanmakuElem)
                                     return object;
                                 var message = new $root.bilibili.community.service.dm.v1.DanmakuElem();
-                                if (object.id != null)
-                                    if ($util.Long)
-                                        (message.id = $util.Long.fromValue(object.id)).unsigned = false;
-                                    else if (typeof object.id === "string")
-                                        message.id = parseInt(object.id, 10);
-                                    else if (typeof object.id === "number")
-                                        message.id = object.id;
-                                    else if (typeof object.id === "object")
-                                        message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
                                 if (object.progress != null)
                                     message.progress = object.progress | 0;
                                 if (object.mode != null)
@@ -2001,10 +4064,12 @@
                                     message.action = String(object.action);
                                 if (object.pool != null)
                                     message.pool = object.pool | 0;
-                                if (object.idStr != null)
-                                    message.idStr = String(object.idStr);
+                                if (object.dmid != null)
+                                    message.dmid = String(object.dmid);
                                 if (object.attr != null)
                                     message.attr = object.attr | 0;
+                                if (object.animation != null)
+                                    message.animation = String(object.animation);
                                 return message;
                             };
     
@@ -2022,11 +4087,6 @@
                                     options = {};
                                 var object = {};
                                 if (options.defaults) {
-                                    if ($util.Long) {
-                                        var long = new $util.Long(0, 0, false);
-                                        object.id = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                                    } else
-                                        object.id = options.longs === String ? "0" : 0;
                                     object.progress = 0;
                                     object.mode = 0;
                                     object.fontsize = 0;
@@ -2041,14 +4101,10 @@
                                     object.weight = 0;
                                     object.action = "";
                                     object.pool = 0;
-                                    object.idStr = "";
+                                    object.dmid = "";
                                     object.attr = 0;
+                                    object.animation = "";
                                 }
-                                if (message.id != null && message.hasOwnProperty("id"))
-                                    if (typeof message.id === "number")
-                                        object.id = options.longs === String ? String(message.id) : message.id;
-                                    else
-                                        object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
                                 if (message.progress != null && message.hasOwnProperty("progress"))
                                     object.progress = message.progress;
                                 if (message.mode != null && message.hasOwnProperty("mode"))
@@ -2072,10 +4128,12 @@
                                     object.action = message.action;
                                 if (message.pool != null && message.hasOwnProperty("pool"))
                                     object.pool = message.pool;
-                                if (message.idStr != null && message.hasOwnProperty("idStr"))
-                                    object.idStr = message.idStr;
+                                if (message.dmid != null && message.hasOwnProperty("dmid"))
+                                    object.dmid = message.dmid;
                                 if (message.attr != null && message.hasOwnProperty("attr"))
                                     object.attr = message.attr;
+                                if (message.animation != null && message.hasOwnProperty("animation"))
+                                    object.animation = message.animation;
                                 return object;
                             };
     
@@ -2102,23 +4160,23 @@
                              * @property {boolean|null} [dmSwitch] DanmuWebPlayerConfig dmSwitch
                              * @property {boolean|null} [aiSwitch] DanmuWebPlayerConfig aiSwitch
                              * @property {number|null} [aiLevel] DanmuWebPlayerConfig aiLevel
-                             * @property {boolean|null} [blocktop] DanmuWebPlayerConfig blocktop
-                             * @property {boolean|null} [blockscroll] DanmuWebPlayerConfig blockscroll
-                             * @property {boolean|null} [blockbottom] DanmuWebPlayerConfig blockbottom
-                             * @property {boolean|null} [blockcolor] DanmuWebPlayerConfig blockcolor
-                             * @property {boolean|null} [blockspecial] DanmuWebPlayerConfig blockspecial
+                             * @property {boolean|null} [typeTop] DanmuWebPlayerConfig typeTop
+                             * @property {boolean|null} [typeScroll] DanmuWebPlayerConfig typeScroll
+                             * @property {boolean|null} [typeBottom] DanmuWebPlayerConfig typeBottom
+                             * @property {boolean|null} [typeColor] DanmuWebPlayerConfig typeColor
+                             * @property {boolean|null} [typeSpecial] DanmuWebPlayerConfig typeSpecial
                              * @property {boolean|null} [preventshade] DanmuWebPlayerConfig preventshade
                              * @property {boolean|null} [dmask] DanmuWebPlayerConfig dmask
                              * @property {number|null} [opacity] DanmuWebPlayerConfig opacity
                              * @property {number|null} [dmarea] DanmuWebPlayerConfig dmarea
                              * @property {number|null} [speedplus] DanmuWebPlayerConfig speedplus
                              * @property {number|null} [fontsize] DanmuWebPlayerConfig fontsize
-                             * @property {boolean|null} [screensync] DanmuWebPlayerConfig screensync
+                             * @property {boolean|null} [fullscreensync] DanmuWebPlayerConfig fullscreensync
                              * @property {boolean|null} [speedsync] DanmuWebPlayerConfig speedsync
                              * @property {string|null} [fontfamily] DanmuWebPlayerConfig fontfamily
                              * @property {boolean|null} [bold] DanmuWebPlayerConfig bold
                              * @property {number|null} [fontborder] DanmuWebPlayerConfig fontborder
-                             * @property {string|null} [drawType] DanmuWebPlayerConfig drawType
+                             * @property {number|null} [seniorModeSwitch] DanmuWebPlayerConfig seniorModeSwitch
                              */
     
                             /**
@@ -2161,44 +4219,44 @@
                             DanmuWebPlayerConfig.prototype.aiLevel = 0;
     
                             /**
-                             * DanmuWebPlayerConfig blocktop.
-                             * @member {boolean} blocktop
+                             * DanmuWebPlayerConfig typeTop.
+                             * @member {boolean} typeTop
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.blocktop = false;
+                            DanmuWebPlayerConfig.prototype.typeTop = false;
     
                             /**
-                             * DanmuWebPlayerConfig blockscroll.
-                             * @member {boolean} blockscroll
+                             * DanmuWebPlayerConfig typeScroll.
+                             * @member {boolean} typeScroll
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.blockscroll = false;
+                            DanmuWebPlayerConfig.prototype.typeScroll = false;
     
                             /**
-                             * DanmuWebPlayerConfig blockbottom.
-                             * @member {boolean} blockbottom
+                             * DanmuWebPlayerConfig typeBottom.
+                             * @member {boolean} typeBottom
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.blockbottom = false;
+                            DanmuWebPlayerConfig.prototype.typeBottom = false;
     
                             /**
-                             * DanmuWebPlayerConfig blockcolor.
-                             * @member {boolean} blockcolor
+                             * DanmuWebPlayerConfig typeColor.
+                             * @member {boolean} typeColor
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.blockcolor = false;
+                            DanmuWebPlayerConfig.prototype.typeColor = false;
     
                             /**
-                             * DanmuWebPlayerConfig blockspecial.
-                             * @member {boolean} blockspecial
+                             * DanmuWebPlayerConfig typeSpecial.
+                             * @member {boolean} typeSpecial
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.blockspecial = false;
+                            DanmuWebPlayerConfig.prototype.typeSpecial = false;
     
                             /**
                              * DanmuWebPlayerConfig preventshade.
@@ -2249,12 +4307,12 @@
                             DanmuWebPlayerConfig.prototype.fontsize = 0;
     
                             /**
-                             * DanmuWebPlayerConfig screensync.
-                             * @member {boolean} screensync
+                             * DanmuWebPlayerConfig fullscreensync.
+                             * @member {boolean} fullscreensync
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.screensync = false;
+                            DanmuWebPlayerConfig.prototype.fullscreensync = false;
     
                             /**
                              * DanmuWebPlayerConfig speedsync.
@@ -2289,12 +4347,12 @@
                             DanmuWebPlayerConfig.prototype.fontborder = 0;
     
                             /**
-                             * DanmuWebPlayerConfig drawType.
-                             * @member {string} drawType
+                             * DanmuWebPlayerConfig seniorModeSwitch.
+                             * @member {number} seniorModeSwitch
                              * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
                              * @instance
                              */
-                            DanmuWebPlayerConfig.prototype.drawType = "";
+                            DanmuWebPlayerConfig.prototype.seniorModeSwitch = 0;
     
                             /**
                              * Creates a new DanmuWebPlayerConfig instance using the specified properties.
@@ -2326,16 +4384,16 @@
                                     writer.uint32(/* id 2, wireType 0 =*/16).bool(message.aiSwitch);
                                 if (message.aiLevel != null && Object.hasOwnProperty.call(message, "aiLevel"))
                                     writer.uint32(/* id 3, wireType 0 =*/24).int32(message.aiLevel);
-                                if (message.blocktop != null && Object.hasOwnProperty.call(message, "blocktop"))
-                                    writer.uint32(/* id 4, wireType 0 =*/32).bool(message.blocktop);
-                                if (message.blockscroll != null && Object.hasOwnProperty.call(message, "blockscroll"))
-                                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.blockscroll);
-                                if (message.blockbottom != null && Object.hasOwnProperty.call(message, "blockbottom"))
-                                    writer.uint32(/* id 6, wireType 0 =*/48).bool(message.blockbottom);
-                                if (message.blockcolor != null && Object.hasOwnProperty.call(message, "blockcolor"))
-                                    writer.uint32(/* id 7, wireType 0 =*/56).bool(message.blockcolor);
-                                if (message.blockspecial != null && Object.hasOwnProperty.call(message, "blockspecial"))
-                                    writer.uint32(/* id 8, wireType 0 =*/64).bool(message.blockspecial);
+                                if (message.typeTop != null && Object.hasOwnProperty.call(message, "typeTop"))
+                                    writer.uint32(/* id 4, wireType 0 =*/32).bool(message.typeTop);
+                                if (message.typeScroll != null && Object.hasOwnProperty.call(message, "typeScroll"))
+                                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.typeScroll);
+                                if (message.typeBottom != null && Object.hasOwnProperty.call(message, "typeBottom"))
+                                    writer.uint32(/* id 6, wireType 0 =*/48).bool(message.typeBottom);
+                                if (message.typeColor != null && Object.hasOwnProperty.call(message, "typeColor"))
+                                    writer.uint32(/* id 7, wireType 0 =*/56).bool(message.typeColor);
+                                if (message.typeSpecial != null && Object.hasOwnProperty.call(message, "typeSpecial"))
+                                    writer.uint32(/* id 8, wireType 0 =*/64).bool(message.typeSpecial);
                                 if (message.preventshade != null && Object.hasOwnProperty.call(message, "preventshade"))
                                     writer.uint32(/* id 9, wireType 0 =*/72).bool(message.preventshade);
                                 if (message.dmask != null && Object.hasOwnProperty.call(message, "dmask"))
@@ -2348,8 +4406,8 @@
                                     writer.uint32(/* id 13, wireType 5 =*/109).float(message.speedplus);
                                 if (message.fontsize != null && Object.hasOwnProperty.call(message, "fontsize"))
                                     writer.uint32(/* id 14, wireType 5 =*/117).float(message.fontsize);
-                                if (message.screensync != null && Object.hasOwnProperty.call(message, "screensync"))
-                                    writer.uint32(/* id 15, wireType 0 =*/120).bool(message.screensync);
+                                if (message.fullscreensync != null && Object.hasOwnProperty.call(message, "fullscreensync"))
+                                    writer.uint32(/* id 15, wireType 0 =*/120).bool(message.fullscreensync);
                                 if (message.speedsync != null && Object.hasOwnProperty.call(message, "speedsync"))
                                     writer.uint32(/* id 16, wireType 0 =*/128).bool(message.speedsync);
                                 if (message.fontfamily != null && Object.hasOwnProperty.call(message, "fontfamily"))
@@ -2358,8 +4416,8 @@
                                     writer.uint32(/* id 18, wireType 0 =*/144).bool(message.bold);
                                 if (message.fontborder != null && Object.hasOwnProperty.call(message, "fontborder"))
                                     writer.uint32(/* id 19, wireType 0 =*/152).int32(message.fontborder);
-                                if (message.drawType != null && Object.hasOwnProperty.call(message, "drawType"))
-                                    writer.uint32(/* id 20, wireType 2 =*/162).string(message.drawType);
+                                if (message.seniorModeSwitch != null && Object.hasOwnProperty.call(message, "seniorModeSwitch"))
+                                    writer.uint32(/* id 21, wireType 0 =*/168).int32(message.seniorModeSwitch);
                                 return writer;
                             };
     
@@ -2404,19 +4462,19 @@
                                         message.aiLevel = reader.int32();
                                         break;
                                     case 4:
-                                        message.blocktop = reader.bool();
+                                        message.typeTop = reader.bool();
                                         break;
                                     case 5:
-                                        message.blockscroll = reader.bool();
+                                        message.typeScroll = reader.bool();
                                         break;
                                     case 6:
-                                        message.blockbottom = reader.bool();
+                                        message.typeBottom = reader.bool();
                                         break;
                                     case 7:
-                                        message.blockcolor = reader.bool();
+                                        message.typeColor = reader.bool();
                                         break;
                                     case 8:
-                                        message.blockspecial = reader.bool();
+                                        message.typeSpecial = reader.bool();
                                         break;
                                     case 9:
                                         message.preventshade = reader.bool();
@@ -2437,7 +4495,7 @@
                                         message.fontsize = reader.float();
                                         break;
                                     case 15:
-                                        message.screensync = reader.bool();
+                                        message.fullscreensync = reader.bool();
                                         break;
                                     case 16:
                                         message.speedsync = reader.bool();
@@ -2451,8 +4509,8 @@
                                     case 19:
                                         message.fontborder = reader.int32();
                                         break;
-                                    case 20:
-                                        message.drawType = reader.string();
+                                    case 21:
+                                        message.seniorModeSwitch = reader.int32();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -2498,21 +4556,21 @@
                                 if (message.aiLevel != null && message.hasOwnProperty("aiLevel"))
                                     if (!$util.isInteger(message.aiLevel))
                                         return "aiLevel: integer expected";
-                                if (message.blocktop != null && message.hasOwnProperty("blocktop"))
-                                    if (typeof message.blocktop !== "boolean")
-                                        return "blocktop: boolean expected";
-                                if (message.blockscroll != null && message.hasOwnProperty("blockscroll"))
-                                    if (typeof message.blockscroll !== "boolean")
-                                        return "blockscroll: boolean expected";
-                                if (message.blockbottom != null && message.hasOwnProperty("blockbottom"))
-                                    if (typeof message.blockbottom !== "boolean")
-                                        return "blockbottom: boolean expected";
-                                if (message.blockcolor != null && message.hasOwnProperty("blockcolor"))
-                                    if (typeof message.blockcolor !== "boolean")
-                                        return "blockcolor: boolean expected";
-                                if (message.blockspecial != null && message.hasOwnProperty("blockspecial"))
-                                    if (typeof message.blockspecial !== "boolean")
-                                        return "blockspecial: boolean expected";
+                                if (message.typeTop != null && message.hasOwnProperty("typeTop"))
+                                    if (typeof message.typeTop !== "boolean")
+                                        return "typeTop: boolean expected";
+                                if (message.typeScroll != null && message.hasOwnProperty("typeScroll"))
+                                    if (typeof message.typeScroll !== "boolean")
+                                        return "typeScroll: boolean expected";
+                                if (message.typeBottom != null && message.hasOwnProperty("typeBottom"))
+                                    if (typeof message.typeBottom !== "boolean")
+                                        return "typeBottom: boolean expected";
+                                if (message.typeColor != null && message.hasOwnProperty("typeColor"))
+                                    if (typeof message.typeColor !== "boolean")
+                                        return "typeColor: boolean expected";
+                                if (message.typeSpecial != null && message.hasOwnProperty("typeSpecial"))
+                                    if (typeof message.typeSpecial !== "boolean")
+                                        return "typeSpecial: boolean expected";
                                 if (message.preventshade != null && message.hasOwnProperty("preventshade"))
                                     if (typeof message.preventshade !== "boolean")
                                         return "preventshade: boolean expected";
@@ -2531,9 +4589,9 @@
                                 if (message.fontsize != null && message.hasOwnProperty("fontsize"))
                                     if (typeof message.fontsize !== "number")
                                         return "fontsize: number expected";
-                                if (message.screensync != null && message.hasOwnProperty("screensync"))
-                                    if (typeof message.screensync !== "boolean")
-                                        return "screensync: boolean expected";
+                                if (message.fullscreensync != null && message.hasOwnProperty("fullscreensync"))
+                                    if (typeof message.fullscreensync !== "boolean")
+                                        return "fullscreensync: boolean expected";
                                 if (message.speedsync != null && message.hasOwnProperty("speedsync"))
                                     if (typeof message.speedsync !== "boolean")
                                         return "speedsync: boolean expected";
@@ -2546,9 +4604,9 @@
                                 if (message.fontborder != null && message.hasOwnProperty("fontborder"))
                                     if (!$util.isInteger(message.fontborder))
                                         return "fontborder: integer expected";
-                                if (message.drawType != null && message.hasOwnProperty("drawType"))
-                                    if (!$util.isString(message.drawType))
-                                        return "drawType: string expected";
+                                if (message.seniorModeSwitch != null && message.hasOwnProperty("seniorModeSwitch"))
+                                    if (!$util.isInteger(message.seniorModeSwitch))
+                                        return "seniorModeSwitch: integer expected";
                                 return null;
                             };
     
@@ -2570,16 +4628,16 @@
                                     message.aiSwitch = Boolean(object.aiSwitch);
                                 if (object.aiLevel != null)
                                     message.aiLevel = object.aiLevel | 0;
-                                if (object.blocktop != null)
-                                    message.blocktop = Boolean(object.blocktop);
-                                if (object.blockscroll != null)
-                                    message.blockscroll = Boolean(object.blockscroll);
-                                if (object.blockbottom != null)
-                                    message.blockbottom = Boolean(object.blockbottom);
-                                if (object.blockcolor != null)
-                                    message.blockcolor = Boolean(object.blockcolor);
-                                if (object.blockspecial != null)
-                                    message.blockspecial = Boolean(object.blockspecial);
+                                if (object.typeTop != null)
+                                    message.typeTop = Boolean(object.typeTop);
+                                if (object.typeScroll != null)
+                                    message.typeScroll = Boolean(object.typeScroll);
+                                if (object.typeBottom != null)
+                                    message.typeBottom = Boolean(object.typeBottom);
+                                if (object.typeColor != null)
+                                    message.typeColor = Boolean(object.typeColor);
+                                if (object.typeSpecial != null)
+                                    message.typeSpecial = Boolean(object.typeSpecial);
                                 if (object.preventshade != null)
                                     message.preventshade = Boolean(object.preventshade);
                                 if (object.dmask != null)
@@ -2592,8 +4650,8 @@
                                     message.speedplus = Number(object.speedplus);
                                 if (object.fontsize != null)
                                     message.fontsize = Number(object.fontsize);
-                                if (object.screensync != null)
-                                    message.screensync = Boolean(object.screensync);
+                                if (object.fullscreensync != null)
+                                    message.fullscreensync = Boolean(object.fullscreensync);
                                 if (object.speedsync != null)
                                     message.speedsync = Boolean(object.speedsync);
                                 if (object.fontfamily != null)
@@ -2602,8 +4660,8 @@
                                     message.bold = Boolean(object.bold);
                                 if (object.fontborder != null)
                                     message.fontborder = object.fontborder | 0;
-                                if (object.drawType != null)
-                                    message.drawType = String(object.drawType);
+                                if (object.seniorModeSwitch != null)
+                                    message.seniorModeSwitch = object.seniorModeSwitch | 0;
                                 return message;
                             };
     
@@ -2624,23 +4682,23 @@
                                     object.dmSwitch = false;
                                     object.aiSwitch = false;
                                     object.aiLevel = 0;
-                                    object.blocktop = false;
-                                    object.blockscroll = false;
-                                    object.blockbottom = false;
-                                    object.blockcolor = false;
-                                    object.blockspecial = false;
+                                    object.typeTop = false;
+                                    object.typeScroll = false;
+                                    object.typeBottom = false;
+                                    object.typeColor = false;
+                                    object.typeSpecial = false;
                                     object.preventshade = false;
                                     object.dmask = false;
                                     object.opacity = 0;
                                     object.dmarea = 0;
                                     object.speedplus = 0;
                                     object.fontsize = 0;
-                                    object.screensync = false;
+                                    object.fullscreensync = false;
                                     object.speedsync = false;
                                     object.fontfamily = "";
                                     object.bold = false;
                                     object.fontborder = 0;
-                                    object.drawType = "";
+                                    object.seniorModeSwitch = 0;
                                 }
                                 if (message.dmSwitch != null && message.hasOwnProperty("dmSwitch"))
                                     object.dmSwitch = message.dmSwitch;
@@ -2648,16 +4706,16 @@
                                     object.aiSwitch = message.aiSwitch;
                                 if (message.aiLevel != null && message.hasOwnProperty("aiLevel"))
                                     object.aiLevel = message.aiLevel;
-                                if (message.blocktop != null && message.hasOwnProperty("blocktop"))
-                                    object.blocktop = message.blocktop;
-                                if (message.blockscroll != null && message.hasOwnProperty("blockscroll"))
-                                    object.blockscroll = message.blockscroll;
-                                if (message.blockbottom != null && message.hasOwnProperty("blockbottom"))
-                                    object.blockbottom = message.blockbottom;
-                                if (message.blockcolor != null && message.hasOwnProperty("blockcolor"))
-                                    object.blockcolor = message.blockcolor;
-                                if (message.blockspecial != null && message.hasOwnProperty("blockspecial"))
-                                    object.blockspecial = message.blockspecial;
+                                if (message.typeTop != null && message.hasOwnProperty("typeTop"))
+                                    object.typeTop = message.typeTop;
+                                if (message.typeScroll != null && message.hasOwnProperty("typeScroll"))
+                                    object.typeScroll = message.typeScroll;
+                                if (message.typeBottom != null && message.hasOwnProperty("typeBottom"))
+                                    object.typeBottom = message.typeBottom;
+                                if (message.typeColor != null && message.hasOwnProperty("typeColor"))
+                                    object.typeColor = message.typeColor;
+                                if (message.typeSpecial != null && message.hasOwnProperty("typeSpecial"))
+                                    object.typeSpecial = message.typeSpecial;
                                 if (message.preventshade != null && message.hasOwnProperty("preventshade"))
                                     object.preventshade = message.preventshade;
                                 if (message.dmask != null && message.hasOwnProperty("dmask"))
@@ -2670,8 +4728,8 @@
                                     object.speedplus = options.json && !isFinite(message.speedplus) ? String(message.speedplus) : message.speedplus;
                                 if (message.fontsize != null && message.hasOwnProperty("fontsize"))
                                     object.fontsize = options.json && !isFinite(message.fontsize) ? String(message.fontsize) : message.fontsize;
-                                if (message.screensync != null && message.hasOwnProperty("screensync"))
-                                    object.screensync = message.screensync;
+                                if (message.fullscreensync != null && message.hasOwnProperty("fullscreensync"))
+                                    object.fullscreensync = message.fullscreensync;
                                 if (message.speedsync != null && message.hasOwnProperty("speedsync"))
                                     object.speedsync = message.speedsync;
                                 if (message.fontfamily != null && message.hasOwnProperty("fontfamily"))
@@ -2680,8 +4738,8 @@
                                     object.bold = message.bold;
                                 if (message.fontborder != null && message.hasOwnProperty("fontborder"))
                                     object.fontborder = message.fontborder;
-                                if (message.drawType != null && message.hasOwnProperty("drawType"))
-                                    object.drawType = message.drawType;
+                                if (message.seniorModeSwitch != null && message.hasOwnProperty("seniorModeSwitch"))
+                                    object.seniorModeSwitch = message.seniorModeSwitch;
                                 return object;
                             };
     
@@ -2697,6 +4755,722 @@
                             };
     
                             return DanmuWebPlayerConfig;
+                        })();
+    
+                        v1.Expressions = (function() {
+    
+                            /**
+                             * Properties of an Expressions.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IExpressions
+                             * @property {Array.<bilibili.community.service.dm.v1.IExpression>|null} [data] Expressions data
+                             */
+    
+                            /**
+                             * Constructs a new Expressions.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents an Expressions.
+                             * @implements IExpressions
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IExpressions=} [properties] Properties to set
+                             */
+                            function Expressions(properties) {
+                                this.data = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Expressions data.
+                             * @member {Array.<bilibili.community.service.dm.v1.IExpression>} data
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @instance
+                             */
+                            Expressions.prototype.data = $util.emptyArray;
+    
+                            /**
+                             * Creates a new Expressions instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpressions=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.Expressions} Expressions instance
+                             */
+                            Expressions.create = function create(properties) {
+                                return new Expressions(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Expressions message. Does not implicitly {@link bilibili.community.service.dm.v1.Expressions.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpressions} message Expressions message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Expressions.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.data != null && message.data.length)
+                                    for (var i = 0; i < message.data.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.Expression.encode(message.data[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Expressions message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Expressions.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpressions} message Expressions message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Expressions.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an Expressions message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.Expressions} Expressions
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Expressions.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.Expressions();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.data && message.data.length))
+                                            message.data = [];
+                                        message.data.push($root.bilibili.community.service.dm.v1.Expression.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an Expressions message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.Expressions} Expressions
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Expressions.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an Expressions message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Expressions.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.data != null && message.hasOwnProperty("data")) {
+                                    if (!Array.isArray(message.data))
+                                        return "data: array expected";
+                                    for (var i = 0; i < message.data.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.Expression.verify(message.data[i]);
+                                        if (error)
+                                            return "data." + error;
+                                    }
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an Expressions message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.Expressions} Expressions
+                             */
+                            Expressions.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.Expressions)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.Expressions();
+                                if (object.data) {
+                                    if (!Array.isArray(object.data))
+                                        throw TypeError(".bilibili.community.service.dm.v1.Expressions.data: array expected");
+                                    message.data = [];
+                                    for (var i = 0; i < object.data.length; ++i) {
+                                        if (typeof object.data[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.Expressions.data: object expected");
+                                        message.data[i] = $root.bilibili.community.service.dm.v1.Expression.fromObject(object.data[i]);
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an Expressions message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.Expressions} message Expressions
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Expressions.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.data = [];
+                                if (message.data && message.data.length) {
+                                    object.data = [];
+                                    for (var j = 0; j < message.data.length; ++j)
+                                        object.data[j] = $root.bilibili.community.service.dm.v1.Expression.toObject(message.data[j], options);
+                                }
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Expressions to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.Expressions
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Expressions.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Expressions;
+                        })();
+    
+                        v1.Expression = (function() {
+    
+                            /**
+                             * Properties of an Expression.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IExpression
+                             * @property {Array.<string>|null} [keyword] Expression keyword
+                             * @property {string|null} [url] Expression url
+                             * @property {Array.<bilibili.community.service.dm.v1.IPeriod>|null} [period] Expression period
+                             */
+    
+                            /**
+                             * Constructs a new Expression.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents an Expression.
+                             * @implements IExpression
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IExpression=} [properties] Properties to set
+                             */
+                            function Expression(properties) {
+                                this.keyword = [];
+                                this.period = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Expression keyword.
+                             * @member {Array.<string>} keyword
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @instance
+                             */
+                            Expression.prototype.keyword = $util.emptyArray;
+    
+                            /**
+                             * Expression url.
+                             * @member {string} url
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @instance
+                             */
+                            Expression.prototype.url = "";
+    
+                            /**
+                             * Expression period.
+                             * @member {Array.<bilibili.community.service.dm.v1.IPeriod>} period
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @instance
+                             */
+                            Expression.prototype.period = $util.emptyArray;
+    
+                            /**
+                             * Creates a new Expression instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpression=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.Expression} Expression instance
+                             */
+                            Expression.create = function create(properties) {
+                                return new Expression(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Expression message. Does not implicitly {@link bilibili.community.service.dm.v1.Expression.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpression} message Expression message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Expression.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.keyword != null && message.keyword.length)
+                                    for (var i = 0; i < message.keyword.length; ++i)
+                                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.keyword[i]);
+                                if (message.url != null && Object.hasOwnProperty.call(message, "url"))
+                                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.url);
+                                if (message.period != null && message.period.length)
+                                    for (var i = 0; i < message.period.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.Period.encode(message.period[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Expression message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Expression.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IExpression} message Expression message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Expression.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an Expression message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.Expression} Expression
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Expression.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.Expression();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.keyword && message.keyword.length))
+                                            message.keyword = [];
+                                        message.keyword.push(reader.string());
+                                        break;
+                                    case 2:
+                                        message.url = reader.string();
+                                        break;
+                                    case 3:
+                                        if (!(message.period && message.period.length))
+                                            message.period = [];
+                                        message.period.push($root.bilibili.community.service.dm.v1.Period.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an Expression message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.Expression} Expression
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Expression.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an Expression message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Expression.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.keyword != null && message.hasOwnProperty("keyword")) {
+                                    if (!Array.isArray(message.keyword))
+                                        return "keyword: array expected";
+                                    for (var i = 0; i < message.keyword.length; ++i)
+                                        if (!$util.isString(message.keyword[i]))
+                                            return "keyword: string[] expected";
+                                }
+                                if (message.url != null && message.hasOwnProperty("url"))
+                                    if (!$util.isString(message.url))
+                                        return "url: string expected";
+                                if (message.period != null && message.hasOwnProperty("period")) {
+                                    if (!Array.isArray(message.period))
+                                        return "period: array expected";
+                                    for (var i = 0; i < message.period.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.Period.verify(message.period[i]);
+                                        if (error)
+                                            return "period." + error;
+                                    }
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an Expression message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.Expression} Expression
+                             */
+                            Expression.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.Expression)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.Expression();
+                                if (object.keyword) {
+                                    if (!Array.isArray(object.keyword))
+                                        throw TypeError(".bilibili.community.service.dm.v1.Expression.keyword: array expected");
+                                    message.keyword = [];
+                                    for (var i = 0; i < object.keyword.length; ++i)
+                                        message.keyword[i] = String(object.keyword[i]);
+                                }
+                                if (object.url != null)
+                                    message.url = String(object.url);
+                                if (object.period) {
+                                    if (!Array.isArray(object.period))
+                                        throw TypeError(".bilibili.community.service.dm.v1.Expression.period: array expected");
+                                    message.period = [];
+                                    for (var i = 0; i < object.period.length; ++i) {
+                                        if (typeof object.period[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.Expression.period: object expected");
+                                        message.period[i] = $root.bilibili.community.service.dm.v1.Period.fromObject(object.period[i]);
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an Expression message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.Expression} message Expression
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Expression.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults) {
+                                    object.keyword = [];
+                                    object.period = [];
+                                }
+                                if (options.defaults)
+                                    object.url = "";
+                                if (message.keyword && message.keyword.length) {
+                                    object.keyword = [];
+                                    for (var j = 0; j < message.keyword.length; ++j)
+                                        object.keyword[j] = message.keyword[j];
+                                }
+                                if (message.url != null && message.hasOwnProperty("url"))
+                                    object.url = message.url;
+                                if (message.period && message.period.length) {
+                                    object.period = [];
+                                    for (var j = 0; j < message.period.length; ++j)
+                                        object.period[j] = $root.bilibili.community.service.dm.v1.Period.toObject(message.period[j], options);
+                                }
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Expression to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.Expression
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Expression.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Expression;
+                        })();
+    
+                        v1.Period = (function() {
+    
+                            /**
+                             * Properties of a Period.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IPeriod
+                             * @property {number|Long|null} [start] Period start
+                             * @property {number|Long|null} [end] Period end
+                             */
+    
+                            /**
+                             * Constructs a new Period.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a Period.
+                             * @implements IPeriod
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IPeriod=} [properties] Properties to set
+                             */
+                            function Period(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Period start.
+                             * @member {number|Long} start
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @instance
+                             */
+                            Period.prototype.start = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * Period end.
+                             * @member {number|Long} end
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @instance
+                             */
+                            Period.prototype.end = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * Creates a new Period instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPeriod=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.Period} Period instance
+                             */
+                            Period.create = function create(properties) {
+                                return new Period(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Period message. Does not implicitly {@link bilibili.community.service.dm.v1.Period.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPeriod} message Period message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Period.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.start != null && Object.hasOwnProperty.call(message, "start"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.start);
+                                if (message.end != null && Object.hasOwnProperty.call(message, "end"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int64(message.end);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Period message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Period.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IPeriod} message Period message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Period.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a Period message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.Period} Period
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Period.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.Period();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.start = reader.int64();
+                                        break;
+                                    case 2:
+                                        message.end = reader.int64();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a Period message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.Period} Period
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Period.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a Period message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Period.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.start != null && message.hasOwnProperty("start"))
+                                    if (!$util.isInteger(message.start) && !(message.start && $util.isInteger(message.start.low) && $util.isInteger(message.start.high)))
+                                        return "start: integer|Long expected";
+                                if (message.end != null && message.hasOwnProperty("end"))
+                                    if (!$util.isInteger(message.end) && !(message.end && $util.isInteger(message.end.low) && $util.isInteger(message.end.high)))
+                                        return "end: integer|Long expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a Period message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.Period} Period
+                             */
+                            Period.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.Period)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.Period();
+                                if (object.start != null)
+                                    if ($util.Long)
+                                        (message.start = $util.Long.fromValue(object.start)).unsigned = false;
+                                    else if (typeof object.start === "string")
+                                        message.start = parseInt(object.start, 10);
+                                    else if (typeof object.start === "number")
+                                        message.start = object.start;
+                                    else if (typeof object.start === "object")
+                                        message.start = new $util.LongBits(object.start.low >>> 0, object.start.high >>> 0).toNumber();
+                                if (object.end != null)
+                                    if ($util.Long)
+                                        (message.end = $util.Long.fromValue(object.end)).unsigned = false;
+                                    else if (typeof object.end === "string")
+                                        message.end = parseInt(object.end, 10);
+                                    else if (typeof object.end === "number")
+                                        message.end = object.end;
+                                    else if (typeof object.end === "object")
+                                        message.end = new $util.LongBits(object.end.low >>> 0, object.end.high >>> 0).toNumber();
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a Period message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.Period} message Period
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Period.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.start = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.start = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.end = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.end = options.longs === String ? "0" : 0;
+                                }
+                                if (message.start != null && message.hasOwnProperty("start"))
+                                    if (typeof message.start === "number")
+                                        object.start = options.longs === String ? String(message.start) : message.start;
+                                    else
+                                        object.start = options.longs === String ? $util.Long.prototype.toString.call(message.start) : options.longs === Number ? new $util.LongBits(message.start.low >>> 0, message.start.high >>> 0).toNumber() : message.start;
+                                if (message.end != null && message.hasOwnProperty("end"))
+                                    if (typeof message.end === "number")
+                                        object.end = options.longs === String ? String(message.end) : message.end;
+                                    else
+                                        object.end = options.longs === String ? $util.Long.prototype.toString.call(message.end) : options.longs === Number ? new $util.LongBits(message.end.low >>> 0, message.end.high >>> 0).toNumber() : message.end;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Period to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.Period
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Period.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Period;
                         })();
     
                         return v1;

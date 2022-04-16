@@ -12,7 +12,6 @@ function xml_to_ir(xmlstr) {
             var attr=elem.attributes['p'].value.split(',');
             var str=elem.childNodes[0] ? elem.childNodes[0].data : '';
             res.push({
-                "id_protobuf_int": parseInt(attr[7]), // not present in xml so fake same as id
                 "time_ms": Math.floor(parseFloat(attr[0])*1000),
                 "mode": parseInt(attr[1]),
                 "fontsize": parseFloat(attr[2]),
@@ -23,7 +22,6 @@ function xml_to_ir(xmlstr) {
                 "weight": 10, // not present in xml so fake max weight
                 "id": attr[7],
                 "pool": parseInt(attr[5]),
-                "proto_attr": null,
             });
         } else { // conf
             conf[elem.tagName]=elem.childNodes[0].data;
@@ -40,7 +38,6 @@ function protobuf_to_ir(pb_elems,cid) {
     var res=[];
     pb_elems.forEach(function(item) {
         res.push({
-            "id_protobuf_int": item.id,
             "time_ms": item.progress,
             "mode": item.mode,
             "fontsize": item.fontsize,
@@ -49,9 +46,12 @@ function protobuf_to_ir(pb_elems,cid) {
             "content": item.content,
             "sendtime": item.ctime,
             "weight": item.weight,
-            "id": item.idStr,
-            "pool": 0, // not resent in protobuf so fake normal pool
-            "proto_attr": item.attr===undefined ? null : item.attr,
+            "id": item.dmid,
+            "pool": item.pool,
+
+            "proto_attr": item.attr,
+            "proto_action": item.action,
+            "proto_animation": item.animation,
         });
     });
     return {
@@ -94,7 +94,6 @@ function ir_to_protobuf(ir) {
     var res=[];
     ir.danmakus.forEach(function(item) {
         res.push({
-            "id": item.id_protobuf_int,
             "progress": item.time_ms,
             "mode": item.mode,
             "fontsize": item.fontsize,
@@ -103,8 +102,10 @@ function ir_to_protobuf(ir) {
             "content": item.content,
             "ctime": item.sendtime,
             "weight": item.weight,
-            "idStr": item.id,
-            "attr": item.proto_attr===null ? undefined : item.proto_attr,
+            "dmid": item.id,
+            "attr": item.proto_attr,
+            "action": item.proto_action,
+            "animation": item.proto_animation,
         });
     });
     var res_uint8arr=proto_seg.encode(proto_seg.create({elems: res})).finish();
