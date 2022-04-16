@@ -73,7 +73,7 @@ function initconfig() {
     localStorage['TRIM_SPACE']=localStorage['TRIM_SPACE']||'on';
     localStorage['TRIM_WIDTH']=localStorage['TRIM_WIDTH']||'on';
     // 例外设置
-    localStorage['FORCELIST']=localStorage['FORCELIST']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."],["^[yYoO0][yYoO0\\\\s~]+$","yoo..."]]';
+    localStorage['FORCELIST']=localStorage['FORCELIST']||'[["^23{2,}$","233..."],["^6{3,}$","666..."],["^[fF]+$","FFF..."],["^[hH]+$","hhh..."]]';
     localStorage['WHITELIST']=localStorage['WHITELIST']||'[]';
     localStorage['CROSS_MODE']=localStorage['CROSS_MODE']||'on';
     localStorage['PROC_TYPE7']=localStorage['PROC_TYPE7']||'on';

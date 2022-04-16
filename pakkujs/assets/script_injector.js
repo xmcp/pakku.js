@@ -40,7 +40,9 @@ if(document.head) {
         localStorage['_pakku_stats_time']=gen_timestamp();
     }
 
+/*
     // font patch
+// seems not necessary since 2022?
     if(!localStorage['_pakku_font_patched'] && localStorage['bilibili_player_settings']) {
         // https://github.com/xmcp/pakku.js/issues/51
         console.log('pakku font patch: will perform');
@@ -57,4 +59,4 @@ if(document.head) {
 
         localStorage['_pakku_font_patched']='yes';
     }
-}
+*/
