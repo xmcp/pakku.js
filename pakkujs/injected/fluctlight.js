@@ -3,6 +3,8 @@
 var DETAILS_MAX_TIMEDELTA_MS=10*1000;
 var GRAPH_MAX_TIMEDELTA_MS=5*1000;
 var GRAPH_DENSITY_POWER=.8;
+var GRAPH_DENSITY_SCALE=.25;
+var GRAPH_ALPHA=.6;
 
 function fluctlight_cleanup(root_elem) {
     var old_elems=[].slice.call(root_elem.querySelectorAll('.pakku-fluctlight'));
@@ -110,19 +112,19 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-            ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)/2);
+            ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE);
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // before
         ctx.globalCompositeOperation='source-over';
-        ctx.globalAlpha=.8;
+        ctx.globalAlpha=GRAPH_ALPHA;
         ctx.fillStyle='#ff4444';
         ctx.fill();
 
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-            ctx.lineTo(w,HEIGHT-Math.pow(den_aft[w],GRAPH_DENSITY_POWER)/2);
+            ctx.lineTo(w,HEIGHT-Math.pow(den_aft[w],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE);
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // clear
@@ -132,7 +134,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         // after
         ctx.globalCompositeOperation='source-over';
         ctx.fillStyle='#7744ff';
-        ctx.globalAlpha=.8;
+        ctx.globalAlpha=GRAPH_ALPHA;
         ctx.fill();
 
         var hlblock=(hltime===undefined)?undefined:block(hltime*1000+1000);
@@ -156,8 +158,8 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
             ctx.globalCompositeOperation='source-over';
-            drawline(curblock,Math.pow(den_bef[curblock],GRAPH_DENSITY_POWER)/2,2,'#cc0000',1);
-            drawline(curblock,Math.pow(den_aft[curblock],GRAPH_DENSITY_POWER)/2,2,'#0000cc',1);
+            drawline(curblock,Math.pow(den_bef[curblock],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE,2,'#cc0000',1);
+            drawline(curblock,Math.pow(den_aft[curblock],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE,2,'#0000cc',1);
         }
     }
     redraw();
@@ -250,7 +252,7 @@ function inject_fluctlight_details(bar_elem,_version) {
         muts.forEach(function(mut) {
             if(mut.addedNodes) {
                 var time_str=mut.addedNodes[0].textContent;
-                console.log('pakku fluctlight: details', time_str);
+                //console.log('pakku fluctlight: details', time_str);
 
                 if(time_str===fluct.dataset['current_time']) return;
                 fluct.dataset['current_time']=time_str;
