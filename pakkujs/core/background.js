@@ -245,6 +245,8 @@ function down_danmaku_protobuf_url_async(cid,url,tabid) {
     );
 }
 
+var _IR_CACHE={}; // tabid -> {cid, data}
+
 function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
     ret_type=ret_type||'xml';
     try {
@@ -286,7 +288,9 @@ function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
         });
         
         HISTORY[tabid]=S;
-        chrome.runtime.sendMessage({type:'browser_action_reload'});
+        chrome.runtime.sendMessage({type: 'browser_action_reload'});
+
+        _IR_CACHE[tabid]={cid: id, data: new_ir};
 
         if(ret_type==='protobuf')
             return ir_to_protobuf(new_ir,segidx_filtering);
@@ -341,6 +345,20 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                     .catch(function() {
                         sendResponse({data:null});
                     });
+                return true;
+            }
+
+            if(_IR_CACHE[tabid] && _IR_CACHE[tabid].cid==cid) {
+                var new_ir=_IR_CACHE[tabid].data;
+                console.log('ir cached', cid, 'for tabid', tabid);
+
+                if((request.ret_type||ret_type)==='protobuf') {
+                    var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
+                    sendResponse({data: ir_to_protobuf(new_ir,segidx_filtering)});
+                }
+                else
+                    sendResponse({data: ir_to_xml(new_ir)});
+                
                 return true;
             }
 
@@ -404,4 +422,9 @@ chrome.commands.onCommand.addListener(function(name) {
     } else if(name==='show-local') {
         chrome.tabs.create({url: chrome.runtime.getURL('page/parse_local.html')});
     }
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId) {
+    if(_IR_CACHE[tabId])
+        delete _IR_CACHE[tabId];
 });
