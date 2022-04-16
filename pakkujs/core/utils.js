@@ -167,7 +167,8 @@ function req_breaker(details) {
 }
 var update_filter={urls: [
     'ws://chat.bilibili.com/*','wss://chat.bilibili.com/*',
-    'ws://broadcast.chat.bilibili.com/sub','wss://broadcast.chat.bilibili.com/sub'
+    'ws://broadcast.chat.bilibili.com/sub','wss://broadcast.chat.bilibili.com/sub',
+    'wss://broadcast.chat.bilibili.com:7826/sub*',
 ]};
 
 function gen_set(st) {
