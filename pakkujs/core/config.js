@@ -57,6 +57,7 @@ function loadconfig() {
     window.CLOUD_SYNC=localStorage['CLOUD_SYNC']==='on';
     
     load_update_breaker();
+    window._IR_CACHE = {};
     sync_cloud_config();
 }
 

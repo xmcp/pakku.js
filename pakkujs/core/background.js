@@ -425,6 +425,22 @@ chrome.commands.onCommand.addListener(function(name) {
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId) {
+    console.log('ir cache :: removed', tabId);
     if(_IR_CACHE[tabId])
         delete _IR_CACHE[tabId];
+});
+
+chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
+    // https://stackoverflow.com/questions/23995642/when-will-the-tabid-change
+    console.log('ir cache :: replaced', addedTabId, removedTabId);
+    if(_IR_CACHE[removedTabId])
+        delete _IR_CACHE[removedTabId];
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+    if(changeInfo.status) { // flush the cache if the page is refreshed
+        console.log('ir cache :: updated', tabId, changeInfo);
+        if(_IR_CACHE[tabId])
+            delete _IR_CACHE[tabId];
+    }
 });
