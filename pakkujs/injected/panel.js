@@ -122,6 +122,14 @@ function inject_panel(list_elem,player_elem) {
     
     player_elem.appendChild(panel_obj);
 
+    function extract_danmaku_text(elem) {
+        for(var sub of elem.children) {
+            if(sub.className.endsWith('text')) // e.g. b-danmaku-high-text
+                return sub.textContent;
+        }
+        return elem.textContent;
+    }
+
     function show_panel(dminfo,floating) {
         var dm_ultralong=dminfo.str.length>498;
         var dm_str=dminfo.str.replace(/([\r\n\t]|\/n)/g,'').trim();
@@ -220,27 +228,23 @@ function inject_panel(list_elem,player_elem) {
     }
     list_elem.addEventListener('click',window._panel_listener=function(e) {
         var dm_obj=e.target;
-        if(!dm_obj.classList.contains('dm-info-row') && !dm_obj.classList.contains('danmaku-info-row'))
+        if(!dm_obj.classList.contains('dm-info-row'))
             dm_obj=dm_obj.parentElement;
-        if(dm_obj && dm_obj.classList.contains('danmaku-info-row') && dm_obj.getAttribute('dmno')) // ver 2
-            show_panel({
-                str: dm_obj.querySelector('.danmaku-info-danmaku').title,
-                index: parseInt(dm_obj.getAttribute('dmno')),
-            });
-        if(dm_obj && dm_obj.classList.contains('dm-info-row') && dm_obj.getAttribute('data-index')) // ver 3
+        if(dm_obj && dm_obj.classList.contains('dm-info-row') && dm_obj.getAttribute('data-index'))
             show_panel({
                 str: dm_obj.querySelector('.dm-info-dm').title,
                 index: parseInt(dm_obj.getAttribute('data-index')),
             });
     });
     
-    var danmaku_stage=player_elem.querySelector('.bilibili-player-video-danmaku, .bpx-player-row-dm-wrap');
+    var danmaku_stage=player_elem.querySelector('.bpx-player-row-dm-wrap');
     if(danmaku_stage && OPT['TOOLTIP_KEYBINDING']) {
         var hover_counter=0;
         danmaku_stage.addEventListener('mouseover',function(e) {
             hover_counter++;
-            if(e.target.classList.contains('bilibili-danmaku') || e.target.classList.contains('b-danmaku')) {
-                show_panel({str: e.target.textContent},true);
+            var target=e.target.closest('.b-danmaku:not(.b-danmaku-hide)');
+            if(target) {
+                show_panel({str: extract_danmaku_text(target)},true);
             }
         });
         danmaku_stage.addEventListener('mouseout',function(e) {
@@ -250,8 +254,9 @@ function inject_panel(list_elem,player_elem) {
                 panel_obj.style.display='none';
         });
         danmaku_stage.addEventListener('click',function(e) {
-            if(e.target.classList.contains('bilibili-danmaku') || e.target.classList.contains('b-danmaku')) {
-                show_panel({str: e.target.textContent});
+            var target=e.target.closest('.b-danmaku:not(.b-danmaku-hide)');
+            if(target) {
+                show_panel({str: extract_danmaku_text(target)});
                 e.stopPropagation();
             }
             player_elem.classList.remove('__pakku_pointer_event');

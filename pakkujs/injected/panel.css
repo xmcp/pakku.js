@@ -141,25 +141,18 @@
 
 /* event fix */
 
-.__pakku_pointer_event div.bilibili-player-video-danmaku,
-.__pakku_pointer_event div.bilibili-danmaku,
 .__pakku_pointer_event div.b-danmaku {
     pointer-events: initial !important;
 }
-.__pakku_pointer_event div.bilibili-danmaku,
 .__pakku_pointer_event div.b-danmaku {
     background-color: rgba(255,255,0,.6);
 }
-.__pakku_pointer_event div.bilibili-danmaku:hover,
 .__pakku_pointer_event div.b-danmaku:hover {
     background-color: rgba(255,255,0,1);
 }
-.__pakku_pointer_event .bilibili-player-video-top,
-.__pakku_pointer_event .bilibili-player-video-control-mask,
-.__pakku_pointer_event .bilibili-player-video-control-wrap,
-.__pakku_pointer_event .bilibili-player-video-control,
-.__pakku_pointer_event .bilibili-player-video-state,
-.__pakku_pointer_event .bilibili-player-dm-tip-wrap,
+.__pakku_pointer_event div.b-danmaku-hide {
+    display: none !important;
+}
 .__pakku_pointer_event .bpx-player-top-wrap,
 .__pakku_pointer_event .bpx-player-dm-tip,
 .__pakku_pointer_event .bpx-player-state-wrap,
