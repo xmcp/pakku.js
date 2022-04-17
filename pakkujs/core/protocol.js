@@ -60,6 +60,7 @@ function protobuf_to_ir(chunks,cid) {
             });
         });
     });
+    //console.log('!! protobuf to ir', chunks, res);
     return {
         danmakus: res,
         cid: cid,

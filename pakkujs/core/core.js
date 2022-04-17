@@ -408,6 +408,13 @@ function parse(ir,tabid,S,D) {
             outweight=Math.max(outweight,peer.ir_obj.weight);
         });
 
+        // remove special effect for combined danmus
+        if(dm.peers.length>1) {
+            dm.ir_obj.extra.proto_animation='';
+            //dm.ir_obj.extra.proto_action='';
+            //dm.ir_obj.extra.proto_attr=0;
+        }
+
         if(LOG_WEIGHT)
             outtext='[W'+outweight+'] '+outtext;
         
