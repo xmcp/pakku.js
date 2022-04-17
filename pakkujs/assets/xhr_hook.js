@@ -46,6 +46,68 @@
     window.Worker=null;
     console.warn('pakku: [to developers] Web Worker is disabled for compatibility reasons');
     */
+
+    function proxied_send(that, send_arg, done_callback) {
+        send_msg_proxy(that.pakku_url, function(resp) {
+            if(!resp || !resp.data) {
+                that.pakku_send(send_arg);
+                done_callback();
+                return;
+            }
+            
+            Object.defineProperty(that,'response', {writable: true});
+            Object.defineProperty(that,'responseURL', {writable: true});
+            Object.defineProperty(that,'responseText', {writable: true});
+            Object.defineProperty(that,'getAllResponseHeaders', {writable: true});
+            Object.defineProperty(that,'readyState', {writable: true});
+            Object.defineProperty(that,'status', {writable: true});
+            Object.defineProperty(that,'statusText', {writable: true});
+        
+            if(that.responseType=='arraybuffer') {
+                if(resp.data instanceof Uint8Array)
+                    that.response=uint8array_to_arraybuffer(resp.data);
+                else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
+                    that.response=byte_object_to_arraybuffer(resp.data);
+                else // maybe str
+                    that.response=str_to_arraybuffer(resp.data);
+            } else {
+                that.response=that.responseText=resp.data;
+            }
+            that.getAllResponseHeaders=function() {
+                return "X-Pakku: yay\r\n";
+            };
+            that.responseURL=that.pakku_url;
+            that.readyState=4;
+            that.status=200;
+            that.statusText='OK';
+            
+            console.log('pakku ajax: got tampered response for',that.pakku_url,that.responseType);
+            that.abort();
+            for(var i=0;i<that.pakku_load_callback.length;i++)
+                that.pakku_load_callback[i].bind(that)();
+            
+            done_callback();
+        });
+    }
+
+    var send_queue={}; // mutex_key -> [(xhr, send_arg), ...]
+    var send_worker_running={}; // mutex_key -> bool
+
+    function send_worker(mutex_key) {
+        send_worker_running[mutex_key]=true;
+
+        if((send_queue[mutex_key]||[]).length>0) {
+            var front=send_queue[mutex_key].shift();
+            console.log('pakku ajax: worker send', mutex_key, front[0].pakku_url);
+            proxied_send(front[0], front[1], function() {
+                send_worker(mutex_key);
+            });
+        } else {
+            console.log('pakku ajax: worker finished for', mutex_key);
+            send_worker_running[mutex_key]=false;
+        }
+
+    }
     
     XMLHttpRequest.prototype.pakku_open=XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open=function(method,url,async,user,password) {
@@ -71,49 +133,20 @@
             link.href=this.pakku_url;
             this.pakku_url=link.href;
 
+            var mutex_key=new URLSearchParams(link.search).get('oid')||'';
+
             if(!this.pakku_load_callback && this.onreadystatechange)
                 this.pakku_load_callback=[this.onreadystatechange];
 
             if(!this.pakku_load_callback && this.onload)
                 this.pakku_load_callback=[this.onload];
             
-            var that=this;
             if(this.pakku_load_callback) {
-                send_msg_proxy(that.pakku_url, function(resp) {
-                    if(!resp || !resp.data)
-                        return that.pakku_send(arg);
-                    
-                    Object.defineProperty(that,'response', {writable: true});
-                    Object.defineProperty(that,'responseURL', {writable: true});
-                    Object.defineProperty(that,'responseText', {writable: true});
-                    Object.defineProperty(that,'getAllResponseHeaders', {writable: true});
-                    Object.defineProperty(that,'readyState', {writable: true});
-                    Object.defineProperty(that,'status', {writable: true});
-                    Object.defineProperty(that,'statusText', {writable: true});
-                
-                    if(that.responseType=='arraybuffer') {
-                        if(resp.data instanceof Uint8Array)
-                            that.response=uint8array_to_arraybuffer(resp.data);
-                        else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
-                            that.response=byte_object_to_arraybuffer(resp.data);
-                        else // maybe str
-                            that.response=str_to_arraybuffer(resp.data);
-                    } else {
-                        that.response=that.responseText=resp.data;
-                    }
-                    that.getAllResponseHeaders=function() {
-                        return "X-Pakku: yay\r\n";
-                    };
-                    that.responseURL=that.pakku_url;
-                    that.readyState=4;
-                    that.status=200;
-                    that.statusText='OK';
-                    
-                    console.log('pakku ajax: got tampered response for',that.pakku_url,that.responseType);
-                    that.abort();
-                    for(var i=0;i<that.pakku_load_callback.length;i++)
-                        that.pakku_load_callback[i].bind(that)();
-                });
+                if(!send_queue[mutex_key])
+                    send_queue[mutex_key]=[];
+                send_queue[mutex_key].push([this,arg]);
+                if(!send_worker_running[mutex_key])
+                    send_worker(mutex_key);
             } else {
                 console.log('pakku ajax: ignoring request as no onload callback found',this.pakku_url);
                 return that.pakku_send(arg);
