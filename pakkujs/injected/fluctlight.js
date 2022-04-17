@@ -21,7 +21,7 @@ function fluctlight_cleanup(root_elem) {
 }
 
 function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
-    var HEIGHT=600;
+    var HEIGHT=400;
     var SEEKBAR_PADDING=0;
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
 
@@ -39,6 +39,8 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         console.log('! fluctlight cannot find progress_elem');
         return;
     }
+
+    var v4_detail_elem=bar_elem.querySelector('.bpx-player-progress-popup');
     
     var DURATION=0;
     function getduration() {
@@ -194,6 +196,12 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
 
         console.log('pakku fluctlight: graph observer, bar_opened =', bar_opened);
 
+        if(_version===4 && v4_detail_elem) {
+            var v_offset = v4_detail_elem.clientHeight;
+            if(v_offset>0)
+                canvas_elem.style.top=(-HEIGHT-12-v_offset)+'px';
+        }
+
         if(bar_opened && canvas_elem.style.display=='none') {
             canvas_elem.style.display='initial';
             // detect resize
@@ -219,7 +227,7 @@ function inject_fluctlight_details(bar_elem,_version) {
     var fluct=document.createElement('div');
     fluct.className='pakku-fluctlight pakku-fluctlight-fluct';
     var time_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail-time, .squirtle-progress-time, .bpx-player-progress-preview-time');
-    var detail_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail, .squirtle-progress-detail, .bpx-player-progress-popup')
+    var detail_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail, .squirtle-progress-detail, .bpx-player-progress-popup');
     if(!time_elem) {
         console.log('! fluctlight cannot find time_elem');
         return;
