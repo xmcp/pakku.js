@@ -409,7 +409,7 @@ function parse(ir,tabid,S,D) {
         });
 
         // remove special effect for combined danmus
-        if(dm.peers.length>1) {
+        if(DANMU_MARK!=='off' && dm.peers.length>MARK_THRESHOLD) {
             dm.ir_obj.extra.proto_animation='';
             //dm.ir_obj.extra.proto_action='';
             //dm.ir_obj.extra.proto_attr=0;
