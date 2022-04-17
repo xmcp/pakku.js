@@ -290,7 +290,9 @@ function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
         HISTORY[tabid]=S;
         chrome.runtime.sendMessage({type: 'browser_action_reload'});
 
-        _IR_CACHE[tabid]={cid: id, data: new_ir};
+        var ir_cache_data={cid: id, data: new_ir, time_protection: +new Date()};;
+        _IR_CACHE[tabid]=ir_cache_data;
+        console.log('ir cache :: set', tabid, ir_cache_data);
 
         if(ret_type==='protobuf')
             return ir_to_protobuf(new_ir,segidx_filtering);
@@ -348,18 +350,23 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                 return true;
             }
 
-            if(_IR_CACHE[tabid] && _IR_CACHE[tabid].cid==cid) {
-                var new_ir=_IR_CACHE[tabid].data;
-                console.log('ir cached', cid, 'for tabid', tabid);
+            if(_IR_CACHE[tabid]) {
+                if(_IR_CACHE[tabid].cid==cid) {
+                    var new_ir=_IR_CACHE[tabid].data;
+                    console.log('ir cached', cid, 'for tabid', tabid);
 
-                if((request.ret_type||ret_type)==='protobuf') {
-                    var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
-                    sendResponse({data: ir_to_protobuf(new_ir,segidx_filtering)});
+                    if((request.ret_type||ret_type)==='protobuf') {
+                        var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
+                        sendResponse({data: ir_to_protobuf(new_ir,segidx_filtering)});
+                    }
+                    else
+                        sendResponse({data: ir_to_xml(new_ir)});
+                    
+                    return true;
+                } else {
+                    console.log('ir cache :: flushed', tabid,  'because cid mismatch', cid);
+                    delete _IR_CACHE[tabid];
                 }
-                else
-                    sendResponse({data: ir_to_xml(new_ir)});
-                
-                return true;
             }
 
             get_ir_promise()
@@ -425,21 +432,27 @@ chrome.commands.onCommand.addListener(function(name) {
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId) {
-    console.log('ir cache :: removed', tabId);
+    console.log('ir cache :: flushed', tabId, 'because tab removed');
     if(_IR_CACHE[tabId])
         delete _IR_CACHE[tabId];
 });
 
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
     // https://stackoverflow.com/questions/23995642/when-will-the-tabid-change
-    console.log('ir cache :: replaced', addedTabId, removedTabId);
+    console.log('ir cache :: flushed', removedTabId, 'because tab replaced with', addedTabId);
     if(_IR_CACHE[removedTabId])
         delete _IR_CACHE[removedTabId];
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
     if(changeInfo.status) { // flush the cache if the page is refreshed
-        console.log('ir cache :: updated', tabId, changeInfo);
+        if(changeInfo.status==='complete' && _IR_CACHE[tabId] && _IR_CACHE[tabId].time_protection+3000>(+new Date())) {
+            // race: when ir cache is set first, and then the page is fully loaded
+            _IR_CACHE[tabId].time_protection = -3000;
+            return;
+        }
+
+        console.log('ir cache :: flushed', tabId, 'because tab updated', changeInfo);
         if(_IR_CACHE[tabId])
             delete _IR_CACHE[tabId];
     }
