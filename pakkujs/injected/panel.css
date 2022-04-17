@@ -6,10 +6,10 @@
     z-index: 1001; /* topbar is 1002 */
     top: 50px;
     right: 0;
-    box-shadow: 0 0 20px black;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
 }
 .pakku-floating .pakku-panel {
-    filter: brightness(.75);
+    filter: brightness(.8);
     pointer-events: none;
 }
 .pakku-panel .pakku-panel-title {
