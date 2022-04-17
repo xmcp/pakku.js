@@ -1,6 +1,6 @@
 // 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
-console.log('pakku panel: script injected, D.length = '+D.length);
+console.log('pakku injector: got D, length = '+D.length);
 for(var i=0;i<D.length;i++) {
     D[i].text=D[i].text.replace(/([\r\n\t]|\/n)/g,'');
     D[i].trimmed_text=D[i].text.trim();
@@ -178,4 +178,15 @@ function try_inject() {
             });
     },false);
 }
-try_inject();
+
+// some part of the player ui (e.g. list_elem) is lazy-loaded until visible.
+// so we wait until page is visible, otherwise the element will be not found.
+function visible_handler() {
+    if(document.visibilityState==='visible') {
+        console.log('pakku injector: started to inject ui');
+        try_inject();
+        document.removeEventListener('visibilitychange', visible_handler);
+    }
+}
+document.addEventListener('visibilitychange', visible_handler);
+visible_handler();
