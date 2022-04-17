@@ -247,10 +247,6 @@ function parse(ir,tabid,S,D) {
             return;
         }
         if(mode===8) { // code danmu
-            if(REMOVE_SEEK && str.indexOf('Player.seek(')!==-1) {
-                S.player_seek++;
-                elem.content='/*! 已删除跳转脚本: '+str.replace(/\//g,'|')+' */';
-            }
             S.script++;
             apply_danmu(elem,['代码弹幕'],[make_peers_node(dm_obj,'IGN')]);
             return;
@@ -432,7 +428,6 @@ function parse(ir,tabid,S,D) {
     
     S.parse_time_ms=(+new Date())-start_time;
     
-    if(!REMOVE_SEEK && S.player_seek==0) S.player_seek='';
     if(PROC_TYPE7 && PROC_TYPE4 && PROC_POOL1 && S.batch_ignore==0) S.batch_ignore='';
     if(!ENLARGE && S.enlarge==0) S.enlarge='';
     if(!SHRINK && S.shrink==0) S.shrink='';

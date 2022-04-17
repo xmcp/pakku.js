@@ -128,8 +128,7 @@ function Status(CID) {
         pinyin_distance: 0,
         cosine_distance: 0,
         
-        player_seek: 0, // deleted
-        blacklist: 0,
+        blacklist: 0, // deleted
         count_hide: 0,
         
         whitelist: 0, // ignored

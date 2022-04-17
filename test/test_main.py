@@ -129,16 +129,10 @@ assert runner.parse_string(demo('bottom_2'))[0].getAttribute('p').split(',')[1]=
 print('!= test code danmu')
 
 assert len(runner.parse_string(demo('bas_2')))==2
-runner.update_settings('REMOVE_SEEK','off')
 danmus=runner.parse_string(demo('code_seek_2'))
 assert len(danmus)==2
 assert danmus[0].getAttribute('p').split(',')[1]=='8' # type == code_danmu
 assert danmus[0].childNodes[0].data=='Player.seek(0)'
-runner.update_settings('REMOVE_SEEK','on')
-danmus=runner.parse_string(demo('code_seek_2'))
-assert len(danmus)==2
-assert danmus[0].getAttribute('p').split(',')[1]=='8' # type == code_danmu
-assert danmus[0].childNodes[0].data.startswith('/*!')
 
 print('!= test bottom danmu')
 runner.update_settings('PROC_TYPE4','off')

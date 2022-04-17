@@ -47,7 +47,6 @@ function loadconfig() {
     window.AUTO_DANMU_LIST=localStorage['AUTO_DANMU_LIST']==='on';
     window.FLUCTLIGHT=localStorage['FLUCTLIGHT']==='on';
     // 实验室
-    window.REMOVE_SEEK=localStorage['REMOVE_SEEK']==='on';
     window.BREAK_UPDATE=localStorage['BREAK_UPDATE']==='on';
     window.BLACKLIST=fromholyjson_orempry(localStorage['BLACKLIST']||'[]');
     window.HIDE_THRESHOLD=parseInt(localStorage['HIDE_THRESHOLD']||0);
@@ -95,7 +94,6 @@ function initconfig() {
     localStorage['AUTO_DANMU_LIST']=localStorage['AUTO_DANMU_LIST']||'off';
     localStorage['FLUCTLIGHT']=localStorage['FLUCTLIGHT']||'off';
     // 实验室
-    localStorage['REMOVE_SEEK']=localStorage['REMOVE_SEEK']||'off';
     localStorage['BREAK_UPDATE']=localStorage['BREAK_UPDATE']||'off';
     localStorage['BLACKLIST']=localStorage['BLACKLIST']||'[]';
     localStorage['HIDE_THRESHOLD']=localStorage['HIDE_THRESHOLD']||0;

@@ -207,7 +207,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         id('auto-danmu-list').checked=localStorage['AUTO_DANMU_LIST']==='on';
         id('fluctlight').checked=localStorage['FLUCTLIGHT']==='on';
         // 实验室
-        id('remove-seek').checked=localStorage['REMOVE_SEEK']==='on';
         id('break-update').checked=localStorage['BREAK_UPDATE']==='on';
         id('hide-threshold').value=localStorage['HIDE_THRESHOLD'];
         id('scroll-threshold').value=localStorage['SCROLL_THRESHOLD'];
@@ -395,7 +394,6 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         localStorage['AUTO_DANMU_LIST']=id('auto-danmu-list').checked?'on':'off';
         localStorage['FLUCTLIGHT']=id('fluctlight').checked?'on':'off';
         // 实验室
-        localStorage['REMOVE_SEEK']=id('remove-seek').checked?'on':'off';
         localStorage['BREAK_UPDATE']=id('break-update').checked?'on':'off';
         localStorage['HIDE_THRESHOLD']=parseInt(id('hide-threshold').value)>=0?parseInt(id('hide-threshold').value):0;
         localStorage['SCROLL_THRESHOLD']=parseInt(id('scroll-threshold').value)>=0?parseInt(id('scroll-threshold').value):0;
@@ -432,7 +430,7 @@ chrome.runtime.getBackgroundPage(function(bgpage) {
         // 播放器增强
         'tooltip','tooltip-keybinding','auto-disable-danmu','auto-danmu-list','fluctlight',
         // 实验室
-        'remove-seek','break-update','hide-threshold','scroll-threshold',
+        'break-update','hide-threshold','scroll-threshold',
         // 其他
         'popup-badge','cloud-sync'
     ].forEach(function(elem) {
