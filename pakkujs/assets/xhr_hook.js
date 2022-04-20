@@ -135,13 +135,14 @@
 
             var mutex_key=new URLSearchParams(link.search).get('oid')||'';
 
-            if(!this.pakku_load_callback && this.onreadystatechange)
-                this.pakku_load_callback=[this.onreadystatechange];
+            this.pakku_load_callback=this.pakku_load_callback||[];
+            if(this.onreadystatechange)
+                this.pakku_load_callback.push(this.onreadystatechange);
 
-            if(!this.pakku_load_callback && this.onload)
-                this.pakku_load_callback=[this.onload];
+            if(this.onload)
+                this.pakku_load_callback.push(this.onreadystatechange);
             
-            if(this.pakku_load_callback) {
+            if(this.pakku_load_callback.length>0) {
                 if(!send_queue[mutex_key])
                     send_queue[mutex_key]=[];
                 send_queue[mutex_key].push([this,arg]);
