@@ -1,4 +1,4 @@
-// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2022 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 // https://stackoverflow.com/questions/3086068/how-do-i-check-whether-a-jquery-element-is-in-the-dom
 if(typeof root_elem=='undefined' || !root_elem || !root_elem.closest('html')) {

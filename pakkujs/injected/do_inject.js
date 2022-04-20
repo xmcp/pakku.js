@@ -1,4 +1,4 @@
-// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2022 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 console.log('pakku injector: got D, length = '+D.length);
 for(var i=0;i<D.length;i++) {

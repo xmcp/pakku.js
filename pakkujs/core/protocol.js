@@ -1,4 +1,4 @@
-// 2017-2020 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
+// 2017-2022 @xmcp. THIS PROJECT IS LICENSED UNDER GPL VERSION 3. SEE `LICENSE.txt`.
 
 var proto_seg=protobuf.roots.default.bilibili.community.service.dm.v1.DmSegMobileReply;
 var proto_view=protobuf.roots.default.bilibili.community.service.dm.v1.DmWebViewReply;
