@@ -150,7 +150,7 @@
                     send_worker(mutex_key);
             } else {
                 console.log('pakku ajax: ignoring request as no onload callback found',this.pakku_url);
-                return that.pakku_send(arg);
+                return this.pakku_send(arg);
             }
         }
     }
