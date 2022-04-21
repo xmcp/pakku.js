@@ -82,7 +82,6 @@
             that.statusText='OK';
             
             console.log('pakku ajax: got tampered response for',that.pakku_url,that.responseType);
-            that.abort();
             for(var i=0;i<that.pakku_load_callback.length;i++)
                 that.pakku_load_callback[i].bind(that)();
             
@@ -117,7 +116,7 @@
     
     XMLHttpRequest.prototype.pakku_addEventListener=XMLHttpRequest.prototype.addEventListener;
     XMLHttpRequest.prototype.addEventListener=function(name,callback) {
-        if(name=='load') {
+        if(name=='load' || name=='readystatechange') {
             this.pakku_load_callback=this.pakku_load_callback||[];
             this.pakku_load_callback.push(callback);
         }
