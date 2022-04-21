@@ -2,8 +2,9 @@
 
 var DETAILS_MAX_TIMEDELTA_MS=10*1000;
 var GRAPH_MAX_TIMEDELTA_MS=5*1000;
-var GRAPH_DENSITY_POWER=.8;
-var GRAPH_DENSITY_SCALE=.25;
+var GRAPH_DENSITY_POWER=.75;
+var GRAPH_DENSITY_SCALE=.375;
+var GRAPH_DENSITY_DELTA=1;
 var GRAPH_ALPHA=.6;
 
 function fluctlight_cleanup(root_elem) {
@@ -21,7 +22,7 @@ function fluctlight_cleanup(root_elem) {
 }
 
 function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
-    var HEIGHT=400;
+    var HEIGHT=350;
     var SEEKBAR_PADDING=0;
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
 
@@ -60,6 +61,10 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         ctx.fillStyle=color;
         ctx.globalAlpha=alpha;
         ctx.fillRect(w,HEIGHT-h,len,h);
+    }
+
+    function density_transform(d) {
+        return d<=.001 ? 0 : GRAPH_DENSITY_DELTA + Math.pow(d,GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
     }
     
     var den_bef=[], den_aft=[];
@@ -114,7 +119,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-            ctx.lineTo(w,HEIGHT-Math.pow(den_bef[w],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE);
+            ctx.lineTo(w,HEIGHT-density_transform(den_bef[w]));
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // before
@@ -126,7 +131,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
-            ctx.lineTo(w,HEIGHT-Math.pow(den_aft[w],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE);
+            ctx.lineTo(w,HEIGHT-density_transform(den_aft[w]));
         ctx.lineTo(WIDTH-1,HEIGHT);
         ctx.closePath();
         // clear
@@ -155,7 +160,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
             gra.addColorStop(.9,'rgba(255,255,255,1)');
             gra.addColorStop(1,'rgba(255,255,255,0)');
             ctx.globalCompositeOperation='destination-out';
-            ctx.globalAlpha=.5;
+            ctx.globalAlpha=.4;
             ctx.fillStyle=gra;
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
             // highlight current time
