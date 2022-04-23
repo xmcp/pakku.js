@@ -139,7 +139,7 @@
                 this.pakku_load_callback.push(this.onreadystatechange);
 
             if(this.onload)
-                this.pakku_load_callback.push(this.onreadystatechange);
+                this.pakku_load_callback.push(this.onload);
             
             if(this.pakku_load_callback.length>0) {
                 if(!send_queue[mutex_key])
