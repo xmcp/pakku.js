@@ -23,7 +23,7 @@ function fluctlight_cleanup(root_elem) {
 
 function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
     var HEIGHT=350;
-    var SEEKBAR_PADDING=0;
+    var SEEKBAR_PADDING=_version==1 ? 6 : 0;
     var WIDTH=bar_elem.clientWidth-SEEKBAR_PADDING;
 
     bar_elem.dataset['pakku_cache_width']=-1;
@@ -32,9 +32,13 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
     canvas_elem.className='pakku-fluctlight pakku-fluctlight-graph';
     var ctx=canvas_elem.getContext('2d');
     
-    var progress_elem=bar_elem;
-    if(_version==3)
+    var progress_elem;
+    if(_version==4 || _version==2)
+        progress_elem = bar_elem;
+    else if(_version==3)
         progress_elem=bar_elem.querySelector('.squirtle-progress-detail');
+    else if(_version==1)
+        progress_elem=bar_elem.querySelector('.bilibili-player-video-progress-detail');
 
     if(!progress_elem) {
         console.log('! fluctlight cannot find progress_elem');
@@ -176,18 +180,26 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
     
     canvas_elem.style.display='none';
     canvas_elem.style.position='absolute';
+    canvas_elem.style.marginBottom=-HEIGHT+'px';
+
     if(_version==4)
         canvas_elem.style.top=(-HEIGHT-102)+'px';
     else if(_version==3)
         canvas_elem.style.top=(-HEIGHT-92)+'px';
-    else
+    else if(_version==2)
         canvas_elem.style.bottom=(HEIGHT+119)+'px';
-    canvas_elem.style.marginBottom=-HEIGHT+'px';
+    else if(_version==1) {
+        canvas_elem.style.position='relative';
+        canvas_elem.style.bottom=(HEIGHT+120)+'px';
+        canvas_elem.style.marginBottom='0';
+    }
 
-    if(_version==2)
-        cvs_container_elem.insertBefore(canvas_elem,cvs_container_elem.firstChild);
-    else
+    if(_version==4 || _version==3)
         bar_elem.insertBefore(canvas_elem,bar_elem.firstChild);
+    else if(_version==2)
+        cvs_container_elem.insertBefore(canvas_elem,cvs_container_elem.firstChild);
+    else if(_version==1)
+        bar_elem.appendChild(canvas_elem);
     
     // show or hide
     window.graph_observer=new MutationObserver(function(muts) {
@@ -196,7 +208,11 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
                 progress_elem.classList.contains('bpx-state-active') :
             _version==3 ?
                 progress_elem.style.display=='block' :
-            progress_elem.classList.contains('bilibili-player-show')
+            _version==2 ?
+                progress_elem.classList.contains('bilibili-player-show') :
+            _version==1 ?
+                progress_elem.style.display!='none' :
+            false
         );
 
         console.log('pakku fluctlight: graph observer, bar_opened =', bar_opened);
@@ -222,7 +238,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
     });
     window.graph_observer.observe(progress_elem,{
         attributes: true,
-        attributeFilter: _version==4 ? ['class'] : _version==3 ? ['style'] : ['class']
+        attributeFilter: _version==4 ? ['class'] : _version==3 ? ['style'] : _version==2 ? ['class'] : ['style']
     });
 }
 
@@ -296,11 +312,13 @@ function inject_fluctlight_details(bar_elem,_version) {
                 var container_height=(danmus.length ? 4+14*danmus.length : 0);
 
                 fluct.style.height=container_height+'px';
-                if(_version==2)
-                    fluct.style.bottom=0;
-                else {
+                if(_version==3 || _version==4) {
                     fluct.style.bottom=container_height+'px';
                     fluct.style.marginBottom=(-container_height)+'px';
+                } else if(_version==2) {
+                    fluct.style.bottom=0;
+                } else {
+                    fluct.style.bottom=(72+container_height)+'px';
                 }
 
                 if(window._pakku_fluctlight_highlight)

@@ -247,7 +247,7 @@ function inject_panel(list_elem,player_elem) {
         var hover_counter=0;
         danmaku_stage.addEventListener('mouseover',function(e) {
             hover_counter++;
-            var target=e.target.closest('.b-danmaku:not(.b-danmaku-hide)');
+            var target=e.target.closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide)');
             if(target) {
                 show_panel({str: extract_danmaku_text(target)},true);
             }
@@ -259,7 +259,7 @@ function inject_panel(list_elem,player_elem) {
                 panel_obj.style.display='none';
         });
         danmaku_stage.addEventListener('click',function(e) {
-            var target=e.target.closest('.b-danmaku:not(.b-danmaku-hide)');
+            var target=e.target.closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide)');
             if(target) {
                 show_panel({str: extract_danmaku_text(target)});
                 e.stopPropagation();

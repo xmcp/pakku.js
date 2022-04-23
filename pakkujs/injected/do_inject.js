@@ -20,26 +20,38 @@ function inject_fluctlight() {
     fluctlight_cleanup(root_elem);
     wait_until_success(function() {
         var seekbar_cvs_elem=root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller, .bpx-player-control-wrap .bpx-player-progress-wrap');
+
         var seekbar_v4_elem=root_elem.querySelector('.bpx-player-progress-wrap');
-        var seekbar_v3_elem=root_elem.querySelector('.squirtle-progress-wrap');
-        var seekbar_v2_elem=root_elem.querySelector('.bilibili-player-video-progress');
         if(seekbar_v4_elem) {
             console.log('pakku injector: seekbar v4_elem',seekbar_v4_elem,'cvs_elem',seekbar_cvs_elem);
             inject_fluctlight_graph(seekbar_v4_elem,4);
             inject_fluctlight_details(seekbar_v4_elem,4);
             return true;
         }
+
+        var seekbar_v3_elem=root_elem.querySelector('.squirtle-progress-wrap');
         if(seekbar_v3_elem) {
             console.log('pakku injector: seekbar v3_elem',seekbar_v3_elem,'cvs_elem',seekbar_cvs_elem);
             inject_fluctlight_graph(seekbar_v3_elem,3);
             inject_fluctlight_details(seekbar_v3_elem,3);
             return true;
-        } else if(seekbar_v2_elem) {
+        }
+
+        var seekbar_v2_elem=root_elem.querySelector('.bilibili-player-video-progress');
+        if(seekbar_v2_elem && seekbar_cvs_elem) {
             console.log('pakku injector: seekbar v2_elem',seekbar_v2_elem,'cvs_elem',seekbar_cvs_elem);
             inject_fluctlight_graph(seekbar_v2_elem,2,seekbar_cvs_elem);
             inject_fluctlight_details(seekbar_v2_elem,2);
             return true;
         }
+
+        if(seekbar_v2_elem) {
+            console.log('pakku injector: seekbar v1_elem',seekbar_v2_elem);
+            inject_fluctlight_graph(seekbar_v2_elem,1,null);
+            inject_fluctlight_details(seekbar_v2_elem,1);
+            return true;
+        }
+
         return false;
     }, 400, 50);
 }
