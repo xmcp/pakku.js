@@ -71,7 +71,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         return d<=.001 ? 0 : GRAPH_DENSITY_DELTA + Math.pow(d,GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
     }
     
-    var den_bef=[], den_aft=[];
+    var den_bef=[], den_aft=[], graph_img=null;
     function block(time) {
         return Math.round(time*WIDTH/DURATION);
     }
@@ -83,11 +83,12 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         function dispval(str) {
             return Math.max(Math.sqrt(str.length),10);
         }
-        function apply_dispval(arr) {
+        function apply_dispval(arr, time_ms_override) {
             return function(p) {
                 var dispv=dispval(p.ir_obj.content);
-                arr[Math.max(0,block(p.ir_obj.time_ms))]+=dispv;
-                arr[block(p.ir_obj.time_ms+GRAPH_MAX_TIMEDELTA_MS)+1]-=dispv;
+                var time_ms=time_ms_override===undefined ? p.ir_obj.time_ms : time_ms_override;
+                arr[Math.max(0,block(time_ms))]+=dispv;
+                arr[block(time_ms+GRAPH_MAX_TIMEDELTA_MS)+1]-=dispv;
             }
         }
         
@@ -102,7 +103,7 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
 
         D.forEach(function(d) {
             if(!d.peers.length || d.peers[0].ir_obj.mode==8/*code*/) return;
-            apply_dispval(den_aft)(d.peers[0]);
+            apply_dispval(den_aft, d.time_ms)(d.peers[0]);
             d.peers.forEach(apply_dispval(den_bef));
         });
 
@@ -113,13 +114,14 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         // make the peak 1px wider to increase visibility
         for(var w=WIDTH;w>0;w--)
             den_bef[w]=Math.max(den_bef[w],den_bef[w-1]);
-        return true;
-    }
-    function redraw(hltime) {
-        ctx.clearRect(0,0,WIDTH,HEIGHT);
-        canvas_elem.width=WIDTH;
-        if(!recalc()) return;
-        
+
+        // now draw the canvas
+
+        var offscreen_canvas=document.createElement('canvas');
+        offscreen_canvas.width=WIDTH;
+        offscreen_canvas.height=HEIGHT;
+        var ctx=offscreen_canvas.getContext('2d');
+
         ctx.beginPath();
         ctx.moveTo(0,HEIGHT);
         for(var w=0;w<WIDTH;w++)
@@ -148,6 +150,19 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
         ctx.globalAlpha=GRAPH_ALPHA;
         ctx.fill();
 
+        graph_img=offscreen_canvas;
+
+        return true;
+    }
+    function redraw(hltime) {
+        if(!recalc()) return;
+        
+        canvas_elem.width=WIDTH;
+        ctx.clearRect(0,0,WIDTH,HEIGHT);
+        ctx.drawImage(graph_img,0,0,WIDTH,HEIGHT);
+
+        ctx.save();
+
         var hlblock=(hltime===undefined)?undefined:block(hltime*1000+1000);
         if(hlblock!==undefined) {
             // add gradient
@@ -167,11 +182,14 @@ function inject_fluctlight_graph(bar_elem,_version,cvs_container_elem) {
             ctx.globalAlpha=.4;
             ctx.fillStyle=gra;
             ctx.fillRect(hlblock-GRALENGTH,0,GRALENGTH*2,HEIGHT);
+
             // highlight current time
             ctx.globalCompositeOperation='source-over';
             drawline(curblock,Math.pow(den_bef[curblock],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE,2,'#cc0000',1);
             drawline(curblock,Math.pow(den_aft[curblock],GRAPH_DENSITY_POWER)*GRAPH_DENSITY_SCALE,2,'#0000cc',1);
         }
+
+        ctx.restore();
     }
     redraw();
     window._pakku_fluctlight_highlight=redraw;
@@ -275,6 +293,34 @@ function inject_fluctlight_details(bar_elem,_version) {
             default: return 999;
         }
     }
+
+    function sort_danmus() {
+        var danmus=[];
+        for(var i=0;i<D.length;i++) {
+            var d=D[i];
+            if(d.peers.length && d.peers[0].mode!=8/*code*/)
+                danmus.push(d);
+        }
+        danmus.sort(function(a,b) {
+            return a.time_ms - b.time_ms;
+        });
+        return danmus;
+    }
+
+    var D_tag=D; // handle D update
+    var D_sorted=sort_danmus();
+
+    function bisect_idx(time_ms) {
+        var lo=0, hi=D_sorted.length;
+        while(lo<hi) {
+            var mid=(lo+hi)>>1;
+            if(D_sorted[mid].time_ms<time_ms)
+                lo=mid+1;
+            else
+                hi=mid;
+        }
+        return lo;
+    }
     
     // time
     window.details_observer=new MutationObserver(function(muts) {
@@ -291,18 +337,24 @@ function inject_fluctlight_details(bar_elem,_version) {
                 var time=parse_time(time_str);
                 var time_ms=time*1000+1000;
                 var danmus=[];
-                for(var i=0;i<D.length;i++) {
-                    var d=D[i];
-                    if(d.peers.length && time_ms-d.peers[0].ir_obj.time_ms>=0 && time_ms-d.peers[0].ir_obj.time_ms<=DETAILS_MAX_TIMEDELTA_MS && d.peers[0].mode!=8/*code*/)
-                        danmus.push(d);
+
+                if(D!==D_tag) { // recalc D_sorted if D is changed
+                    D_tag=D;
+                    D_sorted=sort_danmus();
+                }
+
+                for(var i=bisect_idx(time_ms-DETAILS_MAX_TIMEDELTA_MS); i<D_sorted.length; i++) {
+                    var d=D_sorted[i];
+                    if(d.time_ms>time_ms)
+                        break;
+                    danmus.push(d);
                 }
 
                 danmus=danmus.sort(function(a,b) {
                     return (
                         a.peers.length - b.peers.length ||
                         mode_prio(b.peers[0].ir_obj.mode) - mode_prio(a.peers[0].ir_obj.mode) ||
-                        (time-b) - (time-a) ||
-                        0
+                        a.time_ms - b.time_ms
                     );
                 }).slice(-MAX_FLUCT);
                 danmus.forEach(function(danmu) {

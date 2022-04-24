@@ -192,6 +192,7 @@ function parse(ir,tabid,S,D) {
         D.push({
             text: dispstr || elem.content,
             desc: desc,
+            time_ms: elem.time_ms,
             peers: peers || [],
             ir_obj: elem, 
         });
