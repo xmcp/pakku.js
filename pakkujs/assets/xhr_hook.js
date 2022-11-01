@@ -26,6 +26,14 @@
         });
         return buf;
     }
+
+    function get_cur_cid() {
+        try {
+            return window.player.getManifest().cid;  
+        } catch(_) {
+            return null;
+        }
+    }
     
     window.addEventListener('message',function(event) {
         if (event.source!=window)
@@ -128,6 +136,12 @@
         if(this.pakku_url.indexOf('.xml')==-1 && this.pakku_url.indexOf('/dm/')==-1)
             return this.pakku_send(arg);
         else {
+            var cur_cid = get_cur_cid();
+            if(cur_cid && this.pakku_url.indexOf('&oid='+cur_cid+'&')===-1) {
+                console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
+                return this.pakku_send(arg);
+            }
+
             var link=document.createElement('a');
             link.href=this.pakku_url;
             this.pakku_url=link.href;
