@@ -68,6 +68,16 @@
                                                             "rule": "repeated",
                                                             "type": "PostPanel",
                                                             "id": 13
+                                                        },
+                                                        "activityMetas": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 14
+                                                        },
+                                                        "postPanelV2": {
+                                                            "rule": "repeated",
+                                                            "type": "PostPanelV2",
+                                                            "id": 15
                                                         }
                                                     }
                                                 },
@@ -111,6 +121,50 @@
                                                         }
                                                     }
                                                 },
+                                                "PostPanelV2": {
+                                                    "fields": {
+                                                        "start": {
+                                                            "type": "int64",
+                                                            "id": 1
+                                                        },
+                                                        "end": {
+                                                            "type": "int64",
+                                                            "id": 2
+                                                        },
+                                                        "bizType": {
+                                                            "type": "PostPanelBizType",
+                                                            "id": 3
+                                                        },
+                                                        "clickButton": {
+                                                            "type": "ClickButtonV2",
+                                                            "id": 4
+                                                        },
+                                                        "textInput": {
+                                                            "type": "TextInputV2",
+                                                            "id": 5
+                                                        },
+                                                        "checkBox": {
+                                                            "type": "CheckBoxV2",
+                                                            "id": 6
+                                                        },
+                                                        "toast": {
+                                                            "type": "ToastV2",
+                                                            "id": 7
+                                                        },
+                                                        "bubble": {
+                                                            "type": "BubbleV2",
+                                                            "id": 8
+                                                        },
+                                                        "label": {
+                                                            "type": "LabelV2",
+                                                            "id": 9
+                                                        },
+                                                        "postStatus": {
+                                                            "type": "PostStatus",
+                                                            "id": 10
+                                                        }
+                                                    }
+                                                },
                                                 "ClickButton": {
                                                     "fields": {
                                                         "portraitText": {
@@ -143,10 +197,52 @@
                                                         }
                                                     }
                                                 },
+                                                "ClickButtonV2": {
+                                                    "fields": {
+                                                        "portraitText": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "landscapeText": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "portraitTextFocus": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 3
+                                                        },
+                                                        "landscapeTextFocus": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 4
+                                                        },
+                                                        "renderType": {
+                                                            "type": "RenderType",
+                                                            "id": 5
+                                                        },
+                                                        "textInputPost": {
+                                                            "type": "bool",
+                                                            "id": 6
+                                                        },
+                                                        "exposureOnce": {
+                                                            "type": "bool",
+                                                            "id": 7
+                                                        },
+                                                        "exposureType": {
+                                                            "type": "ExposureType",
+                                                            "id": 8
+                                                        }
+                                                    }
+                                                },
                                                 "PostPanelBizType": {
                                                     "values": {
                                                         "PostPanelBizTypeNone": 0,
-                                                        "PostPanelBizTypeEncourage": 1
+                                                        "PostPanelBizTypeEncourage": 1,
+                                                        "PostPanelBizTypeFragClose": 4,
+                                                        "PostPanelBizTypeColorDM": 2
                                                     }
                                                 },
                                                 "TextInput": {
@@ -172,7 +268,43 @@
                                                         "show": {
                                                             "type": "bool",
                                                             "id": 5
+                                                        },
+                                                        "postStatus": {
+                                                            "type": "PostStatus",
+                                                            "id": 7
                                                         }
+                                                    }
+                                                },
+                                                "TextInputV2": {
+                                                    "fields": {
+                                                        "portraitPlaceholder": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "landscapePlaceholder": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "renderType": {
+                                                            "type": "RenderType",
+                                                            "id": 3
+                                                        },
+                                                        "placeholderPost": {
+                                                            "type": "bool",
+                                                            "id": 4
+                                                        },
+                                                        "textInputLimit": {
+                                                            "type": "int32",
+                                                            "id": 6
+                                                        }
+                                                    }
+                                                },
+                                                "PostStatus": {
+                                                    "values": {
+                                                        "PostStatusNormal": 0,
+                                                        "PostStatusClosed": 1
                                                     }
                                                 },
                                                 "RenderType": {
@@ -202,6 +334,22 @@
                                                         }
                                                     }
                                                 },
+                                                "CheckBoxV2": {
+                                                    "fields": {
+                                                        "text": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "type": {
+                                                            "type": "CheckboxType",
+                                                            "id": 2
+                                                        },
+                                                        "defaultValue": {
+                                                            "type": "bool",
+                                                            "id": 3
+                                                        }
+                                                    }
+                                                },
                                                 "CheckboxType": {
                                                     "values": {
                                                         "CheckboxTypeNone": 0,
@@ -225,6 +373,92 @@
                                                         "button": {
                                                             "type": "Button",
                                                             "id": 4
+                                                        }
+                                                    }
+                                                },
+                                                "ToastV2": {
+                                                    "fields": {
+                                                        "text": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "duration": {
+                                                            "type": "int32",
+                                                            "id": 2
+                                                        },
+                                                        "toastButtonV2": {
+                                                            "type": "ToastButtonV2",
+                                                            "id": 3
+                                                        }
+                                                    }
+                                                },
+                                                "BubbleV2": {
+                                                    "fields": {
+                                                        "text": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "url": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "bubbleType": {
+                                                            "type": "BubbleType",
+                                                            "id": 3
+                                                        },
+                                                        "exposureOnce": {
+                                                            "type": "bool",
+                                                            "id": 4
+                                                        },
+                                                        "exposureType": {
+                                                            "type": "ExposureType",
+                                                            "id": 5
+                                                        }
+                                                    }
+                                                },
+                                                "BubbleType": {
+                                                    "values": {
+                                                        "BubbleTypeNone": 0,
+                                                        "BubbleTypeClickButton": 1,
+                                                        "BubbleTypeDmSettingPanel": 2
+                                                    }
+                                                },
+                                                "LabelV2": {
+                                                    "fields": {
+                                                        "title": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "content": {
+                                                            "rule": "repeated",
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "exposureOnce": {
+                                                            "type": "bool",
+                                                            "id": 3
+                                                        },
+                                                        "exposureType": {
+                                                            "type": "ExposureType",
+                                                            "id": 4
+                                                        }
+                                                    }
+                                                },
+                                                "ExposureType": {
+                                                    "values": {
+                                                        "ExposureTypeNone": 0,
+                                                        "ExposureTypeDMSend": 1
+                                                    }
+                                                },
+                                                "ToastButtonV2": {
+                                                    "fields": {
+                                                        "text": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "action": {
+                                                            "type": "ToastFunctionType",
+                                                            "id": 2
                                                         }
                                                     }
                                                 },
@@ -266,11 +500,11 @@
                                                             "type": "string",
                                                             "id": 4
                                                         },
-                                                        "content": {
+                                                        "text": {
                                                             "type": "string",
                                                             "id": 5
                                                         },
-                                                        "progress": {
+                                                        "stime": {
                                                             "type": "int32",
                                                             "id": 6
                                                         },
@@ -331,7 +565,7 @@
                                                 },
                                                 "DanmakuElem": {
                                                     "fields": {
-                                                        "progress": {
+                                                        "stime": {
                                                             "type": "int32",
                                                             "id": 2
                                                         },
@@ -339,7 +573,7 @@
                                                             "type": "int32",
                                                             "id": 3
                                                         },
-                                                        "fontsize": {
+                                                        "size": {
                                                             "type": "int32",
                                                             "id": 4
                                                         },
@@ -347,15 +581,15 @@
                                                             "type": "uint32",
                                                             "id": 5
                                                         },
-                                                        "midHash": {
+                                                        "uhash": {
                                                             "type": "string",
                                                             "id": 6
                                                         },
-                                                        "content": {
+                                                        "text": {
                                                             "type": "string",
                                                             "id": 7
                                                         },
-                                                        "ctime": {
+                                                        "date": {
                                                             "type": "int64",
                                                             "id": 8
                                                         },

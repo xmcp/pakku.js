@@ -41,13 +41,13 @@ function protobuf_to_ir(chunks,cid) {
         var segidx = chunk[0];
         chunk[1].forEach(function(item) {
             res.push({
-                "time_ms": item.progress,
+                "time_ms": item.stime,
                 "mode": item.mode,
-                "fontsize": item.fontsize,
+                "fontsize": item.size,
                 "color": item.color,
-                "sender_hash": item.midHash,
-                "content": item.content,
-                "sendtime": item.ctime,
+                "sender_hash": item.uhash,
+                "content": item.text,
+                "sendtime": item.date,
                 "weight": item.weight,
                 "id": item.dmid,
                 "pool": item.pool,
@@ -103,13 +103,13 @@ function ir_to_protobuf(ir, segidx_filtering) {
     ir.danmakus.forEach(function(item) {
         if(segidx_filtering===undefined || item.extra.proto_segidx===segidx_filtering)
             res.push({
-                "progress": item.time_ms,
+                "stime": item.time_ms,
                 "mode": item.mode,
-                "fontsize": item.fontsize,
+                "size": item.fontsize,
                 "color": item.color,
-                "midHash": item.sender_hash,
-                "content": item.content,
-                "ctime": item.sendtime,
+                "uhash": item.sender_hash,
+                "text": item.content,
+                "date": item.sendtime,
                 "weight": item.weight,
                 "dmid": item.id,
                 "attr": item.extra.proto_attr,
