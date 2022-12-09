@@ -141,17 +141,18 @@
 
 /* event fix */
 
-.__pakku_pointer_event div.bilibili-player-video-danmaku,
-.__pakku_pointer_event div.bilibili-danmaku,
-.__pakku_pointer_event div.b-danmaku {
+.__pakku_pointer_event div.bilibili-player-video-danmaku {
     pointer-events: initial !important;
 }
 .__pakku_pointer_event div.bilibili-danmaku,
-.__pakku_pointer_event div.b-danmaku {
+.__pakku_pointer_event div.b-danmaku,
+.__pakku_pointer_event div.bili-dm {
+    pointer-events: initial !important;
     background-color: rgba(255,255,0,.6);
 }
 .__pakku_pointer_event div.bilibili-danmaku:hover,
-.__pakku_pointer_event div.b-danmaku:hover {
+.__pakku_pointer_event div.b-danmaku:hover,
+.__pakku_pointer_event div.bili-dm:hover {
     background-color: rgba(255,255,0,1);
 }
 .__pakku_pointer_event div.b-danmaku-hide {
