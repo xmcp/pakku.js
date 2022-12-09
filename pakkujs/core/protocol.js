@@ -98,10 +98,10 @@ function ir_to_xml(ir) {
     return serializer.serializeToString(dom);
 }
 
-function ir_to_protobuf(ir, segidx_filtering) {
+function ir_to_protobuf(ir, filter_fn) {
     var res=[];
     ir.danmakus.forEach(function(item) {
-        if(segidx_filtering===undefined || item.extra.proto_segidx===segidx_filtering)
+        if(filter_fn(item))
             res.push({
                 "stime": item.time_ms,
                 "mode": item.mode,
@@ -117,7 +117,7 @@ function ir_to_protobuf(ir, segidx_filtering) {
                 "animation": item.extra.proto_animation,
             });
     });
-    console.log('ir to protobuf: segidx_filtering', segidx_filtering, ir, 'with len', res.length);
+    console.log('ir to protobuf: ', ir, 'with len', res.length);
     var res_uint8arr=proto_seg.encode(proto_seg.create({elems: res})).finish();
     return res_uint8arr;
 }

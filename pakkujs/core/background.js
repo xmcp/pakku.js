@@ -53,7 +53,7 @@ function check_chrome_permission_hotfix(tabid,cid) {
 
 var _CID_TO_PID={};
 
-function parse_danmu_url(url) { // returns {url, type, cid, pid?}
+function parse_danmu_url(url) { // returns {url, type, filtering, cid, pid?}
     // ret_type=(type.indexOf('proto_')==0)?'protobuf':'xml' in other code
     // so protobuf results should starts with `proto_`
 
@@ -67,6 +67,7 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
         return {
             url: url,
             type: 'trad',
+            filtering: function(_ir) {return true;},
             cid: res[2],
         };
     } else if(url.indexOf('/list.so?')!==-1) {
@@ -74,6 +75,7 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
         return {
             url: url,
             type: 'list',
+            filtering: function(_ir) {return true;},
             cid: res[2],
         };
     } else if(url.indexOf('/history/seg.so?')!==-1) {
@@ -83,6 +85,7 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
             return {
                 url: url,
                 type: 'proto_magicreload',
+                filtering: function(_ir) {return true;},
                 cid: res[2],
                 pid: _CID_TO_PID[res[2]]||0,
             };
@@ -90,6 +93,7 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
             return {
                 url: url,
                 type: 'proto_history',
+                filtering: function(_ir) {return true;},
                 cid: res[2],
                 pid: _CID_TO_PID[res[2]]||0,
             };
@@ -97,10 +101,17 @@ function parse_danmu_url(url) { // returns {url, type, cid, pid?}
         res=PROTO_DANMU_SEG_URL_RE.exec(url);
         _CID_TO_PID[res[2]]=res[3];
         var url_param=new URLSearchParams(url.split('?')[1]);
-        var segidx=url_param.get('segment_index')||'1';
+
+        var segidx=parseInt(url_param.get('segment_index')||'1');
+        var ps=parseInt(url_param.get('ps')||'0');
+        var pe=parseInt(url_param.get('pe')||'999999999999');
+        
         return {
             url: url,
-            type: 'proto_seg_'+segidx,
+            type: 'proto_seg',
+            filtering: function(ir) {
+                return ir.extra.proto_segidx==segidx && ps<=ir.time_ms && ir.time_ms<pe;
+            },
             cid: res[2],
             pid: res[3],
         };
@@ -247,7 +258,7 @@ function down_danmaku_protobuf_url_async(cid,url,tabid) {
 
 var _IR_CACHE={}; // tabid -> {cid, data}
 
-function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
+function load_danmaku(ir,id,tabid,ret_type,filter_fn) {
     ret_type=ret_type||'xml';
     try {
         chrome.browserAction.setTitle({
@@ -295,7 +306,7 @@ function load_danmaku(ir,id,tabid,ret_type,segidx_filtering) {
         console.log('ir cache :: set', tabid, ir_cache_data);
 
         if(ret_type==='protobuf')
-            return ir_to_protobuf(new_ir,segidx_filtering);
+            return ir_to_protobuf(new_ir,filter_fn);
         else
             return ir_to_xml(new_ir);
     } catch(e) {
@@ -356,8 +367,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                     console.log('ir cached', cid, 'for tabid', tabid);
 
                     if((request.ret_type||ret_type)==='protobuf') {
-                        var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
-                        sendResponse({data: ir_to_protobuf(new_ir,segidx_filtering)});
+                        sendResponse({data: ir_to_protobuf(new_ir,ret.filtering)});
                     }
                     else
                         sendResponse({data: ir_to_xml(new_ir)});
@@ -371,8 +381,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
 
             get_ir_promise()
                 .then(function(ir) {
-                    var segidx_filtering=(url_type.startsWith('proto_seg_') ? parseInt(url_type.substring(10)) : undefined);
-                    sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type,segidx_filtering)});
+                    sendResponse({data:load_danmaku(ir,cid,tabid,request.ret_type||ret_type,ret.filtering)});
                 })
                 .catch(function() {
                     sendResponse({data:null});
