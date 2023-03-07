@@ -124,7 +124,7 @@
     
     XMLHttpRequest.prototype.pakku_addEventListener=XMLHttpRequest.prototype.addEventListener;
     XMLHttpRequest.prototype.addEventListener=function(name,callback) {
-        if(name=='load' || name=='readystatechange') {
+        if(name=='load' || name=='readystatechange' || name=='loadend') {
             this.pakku_load_callback=this.pakku_load_callback||[];
             this.pakku_load_callback.push(callback);
         }
@@ -149,11 +149,13 @@
             var mutex_key=new URLSearchParams(link.search).get('oid')||'';
 
             this.pakku_load_callback=this.pakku_load_callback||[];
+
             if(this.onreadystatechange)
                 this.pakku_load_callback.push(this.onreadystatechange);
-
             if(this.onload)
                 this.pakku_load_callback.push(this.onload);
+            if(this.onloadend)
+                this.pakku_load_callback.push(this.onloadend);
             
             if(this.pakku_load_callback.length>0) {
                 if(!send_queue[mutex_key])
