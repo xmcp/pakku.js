@@ -115,6 +115,7 @@ function ir_to_protobuf(ir, filter_fn) {
                 "attr": item.extra.proto_attr,
                 "action": item.extra.proto_action,
                 "animation": item.extra.proto_animation,
+                "colorful": 0,
             });
     });
     console.log('ir to protobuf: ', ir, 'with len', res.length);

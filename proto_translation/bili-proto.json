@@ -560,6 +560,11 @@
                                                             "rule": "repeated",
                                                             "type": "DanmakuElem",
                                                             "id": 1
+                                                        },
+                                                        "colorfulSrc": {
+                                                            "rule": "repeated",
+                                                            "type": "DmColorful",
+                                                            "id": 5
                                                         }
                                                     }
                                                 },
@@ -616,6 +621,10 @@
                                                         "animation": {
                                                             "type": "string",
                                                             "id": 22
+                                                        },
+                                                        "colorful": {
+                                                            "type": "DmColorfulType",
+                                                            "id": 24
                                                         }
                                                     }
                                                 },
@@ -741,10 +750,56 @@
                                                             "id": 2
                                                         }
                                                     }
+                                                },
+                                                "AnyBody": {
+                                                    "fields": {
+                                                        "body": {
+                                                            "type": "google.protobuf.Any",
+                                                            "id": 1
+                                                        }
+                                                    }
+                                                },
+                                                "DmColorful": {
+                                                    "fields": {
+                                                        "type": {
+                                                            "type": "DmColorfulType",
+                                                            "id": 1
+                                                        },
+                                                        "src": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        }
+                                                    }
+                                                },
+                                                "DmColorfulType": {
+                                                    "values": {
+                                                        "NoneType": 0,
+                                                        "VipGradualColor": 60001
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "google": {
+            "nested": {
+                "protobuf": {
+                    "nested": {
+                        "Any": {
+                            "fields": {
+                                "type_url": {
+                                    "type": "string",
+                                    "id": 1
+                                },
+                                "value": {
+                                    "type": "bytes",
+                                    "id": 2
                                 }
                             }
                         }

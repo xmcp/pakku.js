@@ -6667,6 +6667,7 @@
                              * @memberof bilibili.community.service.dm.v1
                              * @interface IDmSegMobileReply
                              * @property {Array.<bilibili.community.service.dm.v1.IDanmakuElem>|null} [elems] DmSegMobileReply elems
+                             * @property {Array.<bilibili.community.service.dm.v1.IDmColorful>|null} [colorfulSrc] DmSegMobileReply colorfulSrc
                              */
     
                             /**
@@ -6679,6 +6680,7 @@
                              */
                             function DmSegMobileReply(properties) {
                                 this.elems = [];
+                                this.colorfulSrc = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
@@ -6692,6 +6694,14 @@
                              * @instance
                              */
                             DmSegMobileReply.prototype.elems = $util.emptyArray;
+    
+                            /**
+                             * DmSegMobileReply colorfulSrc.
+                             * @member {Array.<bilibili.community.service.dm.v1.IDmColorful>} colorfulSrc
+                             * @memberof bilibili.community.service.dm.v1.DmSegMobileReply
+                             * @instance
+                             */
+                            DmSegMobileReply.prototype.colorfulSrc = $util.emptyArray;
     
                             /**
                              * Creates a new DmSegMobileReply instance using the specified properties.
@@ -6720,6 +6730,9 @@
                                 if (message.elems != null && message.elems.length)
                                     for (var i = 0; i < message.elems.length; ++i)
                                         $root.bilibili.community.service.dm.v1.DanmakuElem.encode(message.elems[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                if (message.colorfulSrc != null && message.colorfulSrc.length)
+                                    for (var i = 0; i < message.colorfulSrc.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.DmColorful.encode(message.colorfulSrc[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
                                 return writer;
                             };
     
@@ -6758,6 +6771,12 @@
                                             if (!(message.elems && message.elems.length))
                                                 message.elems = [];
                                             message.elems.push($root.bilibili.community.service.dm.v1.DanmakuElem.decode(reader, reader.uint32()));
+                                            break;
+                                        }
+                                    case 5: {
+                                            if (!(message.colorfulSrc && message.colorfulSrc.length))
+                                                message.colorfulSrc = [];
+                                            message.colorfulSrc.push($root.bilibili.community.service.dm.v1.DmColorful.decode(reader, reader.uint32()));
                                             break;
                                         }
                                     default:
@@ -6804,6 +6823,15 @@
                                             return "elems." + error;
                                     }
                                 }
+                                if (message.colorfulSrc != null && message.hasOwnProperty("colorfulSrc")) {
+                                    if (!Array.isArray(message.colorfulSrc))
+                                        return "colorfulSrc: array expected";
+                                    for (var i = 0; i < message.colorfulSrc.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.DmColorful.verify(message.colorfulSrc[i]);
+                                        if (error)
+                                            return "colorfulSrc." + error;
+                                    }
+                                }
                                 return null;
                             };
     
@@ -6829,6 +6857,16 @@
                                         message.elems[i] = $root.bilibili.community.service.dm.v1.DanmakuElem.fromObject(object.elems[i]);
                                     }
                                 }
+                                if (object.colorfulSrc) {
+                                    if (!Array.isArray(object.colorfulSrc))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmSegMobileReply.colorfulSrc: array expected");
+                                    message.colorfulSrc = [];
+                                    for (var i = 0; i < object.colorfulSrc.length; ++i) {
+                                        if (typeof object.colorfulSrc[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.DmSegMobileReply.colorfulSrc: object expected");
+                                        message.colorfulSrc[i] = $root.bilibili.community.service.dm.v1.DmColorful.fromObject(object.colorfulSrc[i]);
+                                    }
+                                }
                                 return message;
                             };
     
@@ -6845,12 +6883,19 @@
                                 if (!options)
                                     options = {};
                                 var object = {};
-                                if (options.arrays || options.defaults)
+                                if (options.arrays || options.defaults) {
                                     object.elems = [];
+                                    object.colorfulSrc = [];
+                                }
                                 if (message.elems && message.elems.length) {
                                     object.elems = [];
                                     for (var j = 0; j < message.elems.length; ++j)
                                         object.elems[j] = $root.bilibili.community.service.dm.v1.DanmakuElem.toObject(message.elems[j], options);
+                                }
+                                if (message.colorfulSrc && message.colorfulSrc.length) {
+                                    object.colorfulSrc = [];
+                                    for (var j = 0; j < message.colorfulSrc.length; ++j)
+                                        object.colorfulSrc[j] = $root.bilibili.community.service.dm.v1.DmColorful.toObject(message.colorfulSrc[j], options);
                                 }
                                 return object;
                             };
@@ -6903,6 +6948,7 @@
                              * @property {string|null} [dmid] DanmakuElem dmid
                              * @property {number|null} [attr] DanmakuElem attr
                              * @property {string|null} [animation] DanmakuElem animation
+                             * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [colorful] DanmakuElem colorful
                              */
     
                             /**
@@ -7025,6 +7071,14 @@
                             DanmakuElem.prototype.animation = "";
     
                             /**
+                             * DanmakuElem colorful.
+                             * @member {bilibili.community.service.dm.v1.DmColorfulType} colorful
+                             * @memberof bilibili.community.service.dm.v1.DanmakuElem
+                             * @instance
+                             */
+                            DanmakuElem.prototype.colorful = 0;
+    
+                            /**
                              * Creates a new DanmakuElem instance using the specified properties.
                              * @function create
                              * @memberof bilibili.community.service.dm.v1.DanmakuElem
@@ -7074,6 +7128,8 @@
                                     writer.uint32(/* id 13, wireType 0 =*/104).int32(message.attr);
                                 if (message.animation != null && Object.hasOwnProperty.call(message, "animation"))
                                     writer.uint32(/* id 22, wireType 2 =*/178).string(message.animation);
+                                if (message.colorful != null && Object.hasOwnProperty.call(message, "colorful"))
+                                    writer.uint32(/* id 24, wireType 0 =*/192).int32(message.colorful);
                                 return writer;
                             };
     
@@ -7160,6 +7216,10 @@
                                             message.animation = reader.string();
                                             break;
                                         }
+                                    case 24: {
+                                            message.colorful = reader.int32();
+                                            break;
+                                        }
                                     default:
                                         reader.skipType(tag & 7);
                                         break;
@@ -7234,6 +7294,14 @@
                                 if (message.animation != null && message.hasOwnProperty("animation"))
                                     if (!$util.isString(message.animation))
                                         return "animation: string expected";
+                                if (message.colorful != null && message.hasOwnProperty("colorful"))
+                                    switch (message.colorful) {
+                                    default:
+                                        return "colorful: enum value expected";
+                                    case 0:
+                                    case 60001:
+                                        break;
+                                    }
                                 return null;
                             };
     
@@ -7282,6 +7350,22 @@
                                     message.attr = object.attr | 0;
                                 if (object.animation != null)
                                     message.animation = String(object.animation);
+                                switch (object.colorful) {
+                                default:
+                                    if (typeof object.colorful === "number") {
+                                        message.colorful = object.colorful;
+                                        break;
+                                    }
+                                    break;
+                                case "NoneType":
+                                case 0:
+                                    message.colorful = 0;
+                                    break;
+                                case "VipGradualColor":
+                                case 60001:
+                                    message.colorful = 60001;
+                                    break;
+                                }
                                 return message;
                             };
     
@@ -7316,6 +7400,7 @@
                                     object.dmid = "";
                                     object.attr = 0;
                                     object.animation = "";
+                                    object.colorful = options.enums === String ? "NoneType" : 0;
                                 }
                                 if (message.stime != null && message.hasOwnProperty("stime"))
                                     object.stime = message.stime;
@@ -7346,6 +7431,8 @@
                                     object.attr = message.attr;
                                 if (message.animation != null && message.hasOwnProperty("animation"))
                                     object.animation = message.animation;
+                                if (message.colorful != null && message.hasOwnProperty("colorful"))
+                                    object.colorful = options.enums === String ? $root.bilibili.community.service.dm.v1.DmColorfulType[message.colorful] === undefined ? message.colorful : $root.bilibili.community.service.dm.v1.DmColorfulType[message.colorful] : message.colorful;
                                 return object;
                             };
     
@@ -8786,6 +8873,474 @@
                             return Period;
                         })();
     
+                        v1.AnyBody = (function() {
+    
+                            /**
+                             * Properties of an AnyBody.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IAnyBody
+                             * @property {google.protobuf.IAny|null} [body] AnyBody body
+                             */
+    
+                            /**
+                             * Constructs a new AnyBody.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents an AnyBody.
+                             * @implements IAnyBody
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IAnyBody=} [properties] Properties to set
+                             */
+                            function AnyBody(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * AnyBody body.
+                             * @member {google.protobuf.IAny|null|undefined} body
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @instance
+                             */
+                            AnyBody.prototype.body = null;
+    
+                            /**
+                             * Creates a new AnyBody instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IAnyBody=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.AnyBody} AnyBody instance
+                             */
+                            AnyBody.create = function create(properties) {
+                                return new AnyBody(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified AnyBody message. Does not implicitly {@link bilibili.community.service.dm.v1.AnyBody.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IAnyBody} message AnyBody message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            AnyBody.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.body != null && Object.hasOwnProperty.call(message, "body"))
+                                    $root.google.protobuf.Any.encode(message.body, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified AnyBody message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.AnyBody.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IAnyBody} message AnyBody message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            AnyBody.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an AnyBody message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.AnyBody} AnyBody
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            AnyBody.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.AnyBody();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1: {
+                                            message.body = $root.google.protobuf.Any.decode(reader, reader.uint32());
+                                            break;
+                                        }
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an AnyBody message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.AnyBody} AnyBody
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            AnyBody.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an AnyBody message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            AnyBody.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.body != null && message.hasOwnProperty("body")) {
+                                    var error = $root.google.protobuf.Any.verify(message.body);
+                                    if (error)
+                                        return "body." + error;
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an AnyBody message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.AnyBody} AnyBody
+                             */
+                            AnyBody.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.AnyBody)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.AnyBody();
+                                if (object.body != null) {
+                                    if (typeof object.body !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.AnyBody.body: object expected");
+                                    message.body = $root.google.protobuf.Any.fromObject(object.body);
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an AnyBody message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.AnyBody} message AnyBody
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            AnyBody.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.body = null;
+                                if (message.body != null && message.hasOwnProperty("body"))
+                                    object.body = $root.google.protobuf.Any.toObject(message.body, options);
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this AnyBody to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            AnyBody.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * Gets the default type url for AnyBody
+                             * @function getTypeUrl
+                             * @memberof bilibili.community.service.dm.v1.AnyBody
+                             * @static
+                             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns {string} The default type url
+                             */
+                            AnyBody.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                if (typeUrlPrefix === undefined) {
+                                    typeUrlPrefix = "type.googleapis.com";
+                                }
+                                return typeUrlPrefix + "/bilibili.community.service.dm.v1.AnyBody";
+                            };
+    
+                            return AnyBody;
+                        })();
+    
+                        v1.DmColorful = (function() {
+    
+                            /**
+                             * Properties of a DmColorful.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IDmColorful
+                             * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [type] DmColorful type
+                             * @property {string|null} [src] DmColorful src
+                             */
+    
+                            /**
+                             * Constructs a new DmColorful.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a DmColorful.
+                             * @implements IDmColorful
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IDmColorful=} [properties] Properties to set
+                             */
+                            function DmColorful(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * DmColorful type.
+                             * @member {bilibili.community.service.dm.v1.DmColorfulType} type
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @instance
+                             */
+                            DmColorful.prototype.type = 0;
+    
+                            /**
+                             * DmColorful src.
+                             * @member {string} src
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @instance
+                             */
+                            DmColorful.prototype.src = "";
+    
+                            /**
+                             * Creates a new DmColorful instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmColorful=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.DmColorful} DmColorful instance
+                             */
+                            DmColorful.create = function create(properties) {
+                                return new DmColorful(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified DmColorful message. Does not implicitly {@link bilibili.community.service.dm.v1.DmColorful.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmColorful} message DmColorful message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            DmColorful.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+                                if (message.src != null && Object.hasOwnProperty.call(message, "src"))
+                                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.src);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified DmColorful message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmColorful.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmColorful} message DmColorful message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            DmColorful.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a DmColorful message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.DmColorful} DmColorful
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            DmColorful.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DmColorful();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1: {
+                                            message.type = reader.int32();
+                                            break;
+                                        }
+                                    case 2: {
+                                            message.src = reader.string();
+                                            break;
+                                        }
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a DmColorful message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.DmColorful} DmColorful
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            DmColorful.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a DmColorful message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            DmColorful.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    switch (message.type) {
+                                    default:
+                                        return "type: enum value expected";
+                                    case 0:
+                                    case 60001:
+                                        break;
+                                    }
+                                if (message.src != null && message.hasOwnProperty("src"))
+                                    if (!$util.isString(message.src))
+                                        return "src: string expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a DmColorful message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.DmColorful} DmColorful
+                             */
+                            DmColorful.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.DmColorful)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.DmColorful();
+                                switch (object.type) {
+                                default:
+                                    if (typeof object.type === "number") {
+                                        message.type = object.type;
+                                        break;
+                                    }
+                                    break;
+                                case "NoneType":
+                                case 0:
+                                    message.type = 0;
+                                    break;
+                                case "VipGradualColor":
+                                case 60001:
+                                    message.type = 60001;
+                                    break;
+                                }
+                                if (object.src != null)
+                                    message.src = String(object.src);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a DmColorful message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.DmColorful} message DmColorful
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            DmColorful.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    object.type = options.enums === String ? "NoneType" : 0;
+                                    object.src = "";
+                                }
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    object.type = options.enums === String ? $root.bilibili.community.service.dm.v1.DmColorfulType[message.type] === undefined ? message.type : $root.bilibili.community.service.dm.v1.DmColorfulType[message.type] : message.type;
+                                if (message.src != null && message.hasOwnProperty("src"))
+                                    object.src = message.src;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this DmColorful to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            DmColorful.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * Gets the default type url for DmColorful
+                             * @function getTypeUrl
+                             * @memberof bilibili.community.service.dm.v1.DmColorful
+                             * @static
+                             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns {string} The default type url
+                             */
+                            DmColorful.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                if (typeUrlPrefix === undefined) {
+                                    typeUrlPrefix = "type.googleapis.com";
+                                }
+                                return typeUrlPrefix + "/bilibili.community.service.dm.v1.DmColorful";
+                            };
+    
+                            return DmColorful;
+                        })();
+    
+                        /**
+                         * DmColorfulType enum.
+                         * @name bilibili.community.service.dm.v1.DmColorfulType
+                         * @enum {number}
+                         * @property {number} NoneType=0 NoneType value
+                         * @property {number} VipGradualColor=60001 VipGradualColor value
+                         */
+                        v1.DmColorfulType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "NoneType"] = 0;
+                            values[valuesById[60001] = "VipGradualColor"] = 60001;
+                            return values;
+                        })();
+    
                         return v1;
                     })();
     
@@ -8799,6 +9354,266 @@
         })();
     
         return bilibili;
+    })();
+    
+    $root.google = (function() {
+    
+        /**
+         * Namespace google.
+         * @exports google
+         * @namespace
+         */
+        var google = {};
+    
+        google.protobuf = (function() {
+    
+            /**
+             * Namespace protobuf.
+             * @memberof google
+             * @namespace
+             */
+            var protobuf = {};
+    
+            protobuf.Any = (function() {
+    
+                /**
+                 * Properties of an Any.
+                 * @memberof google.protobuf
+                 * @interface IAny
+                 * @property {string|null} [type_url] Any type_url
+                 * @property {Uint8Array|null} [value] Any value
+                 */
+    
+                /**
+                 * Constructs a new Any.
+                 * @memberof google.protobuf
+                 * @classdesc Represents an Any.
+                 * @implements IAny
+                 * @constructor
+                 * @param {google.protobuf.IAny=} [properties] Properties to set
+                 */
+                function Any(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * Any type_url.
+                 * @member {string} type_url
+                 * @memberof google.protobuf.Any
+                 * @instance
+                 */
+                Any.prototype.type_url = "";
+    
+                /**
+                 * Any value.
+                 * @member {Uint8Array} value
+                 * @memberof google.protobuf.Any
+                 * @instance
+                 */
+                Any.prototype.value = $util.newBuffer([]);
+    
+                /**
+                 * Creates a new Any instance using the specified properties.
+                 * @function create
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {google.protobuf.IAny=} [properties] Properties to set
+                 * @returns {google.protobuf.Any} Any instance
+                 */
+                Any.create = function create(properties) {
+                    return new Any(properties);
+                };
+    
+                /**
+                 * Encodes the specified Any message. Does not implicitly {@link google.protobuf.Any.verify|verify} messages.
+                 * @function encode
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {google.protobuf.IAny} message Any message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Any.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.type_url != null && Object.hasOwnProperty.call(message, "type_url"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.type_url);
+                    if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.value);
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified Any message, length delimited. Does not implicitly {@link google.protobuf.Any.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {google.protobuf.IAny} message Any message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Any.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes an Any message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {google.protobuf.Any} Any
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Any.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Any();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.type_url = reader.string();
+                                break;
+                            }
+                        case 2: {
+                                message.value = reader.bytes();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes an Any message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {google.protobuf.Any} Any
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Any.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies an Any message.
+                 * @function verify
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                Any.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.type_url != null && message.hasOwnProperty("type_url"))
+                        if (!$util.isString(message.type_url))
+                            return "type_url: string expected";
+                    if (message.value != null && message.hasOwnProperty("value"))
+                        if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
+                            return "value: buffer expected";
+                    return null;
+                };
+    
+                /**
+                 * Creates an Any message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {google.protobuf.Any} Any
+                 */
+                Any.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.Any)
+                        return object;
+                    var message = new $root.google.protobuf.Any();
+                    if (object.type_url != null)
+                        message.type_url = String(object.type_url);
+                    if (object.value != null)
+                        if (typeof object.value === "string")
+                            $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
+                        else if (object.value.length >= 0)
+                            message.value = object.value;
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from an Any message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {google.protobuf.Any} message Any
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                Any.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.type_url = "";
+                        if (options.bytes === String)
+                            object.value = "";
+                        else {
+                            object.value = [];
+                            if (options.bytes !== Array)
+                                object.value = $util.newBuffer(object.value);
+                        }
+                    }
+                    if (message.type_url != null && message.hasOwnProperty("type_url"))
+                        object.type_url = message.type_url;
+                    if (message.value != null && message.hasOwnProperty("value"))
+                        object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
+                    return object;
+                };
+    
+                /**
+                 * Converts this Any to JSON.
+                 * @function toJSON
+                 * @memberof google.protobuf.Any
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                Any.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                /**
+                 * Gets the default type url for Any
+                 * @function getTypeUrl
+                 * @memberof google.protobuf.Any
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                Any.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/google.protobuf.Any";
+                };
+    
+                return Any;
+            })();
+    
+            return protobuf;
+        })();
+    
+        return google;
     })();
 
     return $root;
