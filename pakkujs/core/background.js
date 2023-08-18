@@ -3,7 +3,7 @@
 // note: need to change the rule in xhr_hook.js too
 var TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?$/;
 var NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list\.so\?oid=(\d+)$/;
-var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/seg\.so\?.*?oid=(\d+)&pid=(\d+).*?$/;
+var PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/(?:wbi\/)?web\/seg\.so\?.*?oid=(\d+)&pid=(\d+).*?$/;
 var PROTO_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/history\/seg\.so\?type=\d+&oid=(\d+)&date=([\d\-]+)$/;
 
 var UID_MAX_DIGIT=10;

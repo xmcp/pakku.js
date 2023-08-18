@@ -165,7 +165,7 @@ function protobuf_get_url(url) {
 function protoapi_get_seg(cid,pid,segidx) { // return dm list
     return new Promise(function(resolve,reject) {
         protobuf_get_url(
-            'https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
+            'https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
         )
             .then(function(ret) {
                 resolve([segidx, ret]);
