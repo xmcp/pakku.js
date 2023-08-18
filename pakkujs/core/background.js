@@ -361,7 +361,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
                 return true;
             }
 
-            if(_IR_CACHE[tabid]) {
+            if(url_type!='proto_history' && _IR_CACHE[tabid]) {
                 if(_IR_CACHE[tabid].cid==cid) {
                     var new_ir=_IR_CACHE[tabid].data;
                     console.log('ir cached', cid, 'for tabid', tabid);
