@@ -97,7 +97,9 @@ function show_danmu_list() {
     var list_switch_elem=root_elem.querySelector('.danmaku-box .bui-collapse-wrap-folded .bui-collapse-header');
     console.log('pakku injector: list_switch_elem',list_switch_elem);
     if(list_switch_elem) {
-        list_switch_elem.click();
+        setTimeout(function() {
+            list_switch_elem.click();
+        }, 500);
     }
 }
 
