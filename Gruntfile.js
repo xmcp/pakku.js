@@ -62,6 +62,7 @@ module.exports = function(grunt) {
     {
       src: [
         'pakkujs/core/protobuf.min.js',
+        'pakkujs/core/md5.js',
         'pakkujs/core/pinyin_dict.min.js',
         'pakkujs/core/crc32-crack.js',
         'pakkujs/core/utils.js',

@@ -10,7 +10,12 @@ window.addEventListener('message',function(event) {
     if (event.source!=window)
         return;
     if (event.data.type && event.data.type=='pakku_ajax_request')
-        chrome.runtime.sendMessage({type: 'ajax_hook', url: event.data.arg},function(resp) {
+        chrome.runtime.sendMessage({
+            type: 'ajax_hook',
+            url: event.data.arg,
+            wbi_img_url: window.localStorage.getItem('wbi_img_url', null),
+            wbi_sub_url: window.localStorage.getItem('wbi_sub_url', null),
+        },function(resp) {
             window.postMessage({
                 type: 'pakku_ajax_response',
                 arg: event.data.arg,

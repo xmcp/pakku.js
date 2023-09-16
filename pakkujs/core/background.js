@@ -318,6 +318,9 @@ function load_danmaku(ir,id,tabid,ret_type,filter_fn) {
 
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     if (request.type==='ajax_hook') {
+        window.protoapi_img_url = request.wbi_img_url;
+        window.protoapi_sub_url = request.wbi_sub_url;
+        
         var tabid=sender.tab.id;
         console.log('message',request);
         var ret=parse_danmu_url(request.url);

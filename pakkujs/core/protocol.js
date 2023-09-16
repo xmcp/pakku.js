@@ -132,6 +132,43 @@ function empty_danmaku_proto_seg() {
     });
 }
 
+window.protoapi_img_url = null;
+window.protoapi_sub_url = null;
+
+function protoapi_sign_req(e) {
+    var static_img_url = "https://i0.hdslb.com/bfs/wbi/5a6f002d0bb14fc9848fc64157648ad4.png";
+    var static_sub_url = "https://i0.hdslb.com/bfs/wbi/0503a77b29d7409d9548fb44fe9daa1a.png";
+
+    e.web_location = 1315873;
+    var t = window.protoapi_img_url || static_img_url;
+    var r = window.protoapi_sub_url || static_sub_url;
+
+    var n = function(e) {
+        var t = [];
+        return [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52].forEach((function(r) {
+            e.charAt(r) && t.push(e.charAt(r))
+        }
+        )),
+        t.join("").slice(0, 32)
+    }(t.substring(t.lastIndexOf("/") + 1, t.length).split(".")[0] + r.substring(r.lastIndexOf("/") + 1, r.length).split(".")[0]);
+    var i = Math.round(Date.now() / 1e3);
+    var o = Object.assign({}, e, {
+        wts: i
+    });
+    var a = Object.keys(o).sort();
+    var s = [];
+    for (var c = 0; c < a.length; c++) {
+        var p = a[c], h = o[p];
+        null != h && s.push("".concat(encodeURIComponent(p), "=").concat(encodeURIComponent(h)))
+    }
+    var y = s.join("&");
+    var m = md5(y + n);
+    return Object.assign(e, {
+        w_rid: m,
+        wts: i.toString()
+    });
+}
+
 function protoapi_get_view(cid,pid) { // return page count
     return new Promise(function(resolve,reject) {
         var xhr=new XMLHttpRequest();
@@ -155,8 +192,13 @@ function protobuf_get_url(url) {
         xhr.open('get',add_pakku_fingerprint(url),true);
         xhr.responseType='arraybuffer';
         xhr.addEventListener('load',function() {
-            let d=proto_seg.decode(new Uint8Array(xhr.response));
-            resolve(d.elems);
+            try {
+                let d=proto_seg.decode(new Uint8Array(xhr.response));
+                resolve(d.elems);
+            } catch(e) {
+                console.error('cannot parse protobuf dm', e);
+                reject(e);
+            }
         });
         xhr.addEventListener('error',reject);
         xhr.send();
@@ -165,9 +207,19 @@ function protobuf_get_url(url) {
 
 function protoapi_get_seg(cid,pid,segidx) { // return dm list
     return new Promise(function(resolve,reject) {
-        protobuf_get_url(
-            'https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?type=1&oid='+encodeURIComponent(cid)+'&pid='+encodeURIComponent(pid)+'&segment_index='+encodeURIComponent(segidx)
-        )
+        var param=protoapi_sign_req({
+            'type': '1',
+            'oid': cid,
+            'pid': pid,
+            'segment_index': segidx,
+        });
+        var param_list = [];
+        for (var key in param) {
+            param_list.push(key + '=' + encodeURIComponent(param[key]));
+        }
+        var param_str = param_list.join('&');
+
+        protobuf_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str)
             .then(function(ret) {
                 resolve([segidx, ret]);
             })

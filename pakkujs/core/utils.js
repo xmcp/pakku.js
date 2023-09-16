@@ -242,7 +242,9 @@ function migrate_legacy() {
 }
 
 function add_pakku_fingerprint(url) {
-    return url + (url.indexOf('?')===-1 ? '?' : '&') + 'pakku_request'
+    return url;
+    // fuck req signature, no longer add fingerprint
+    //return url + (url.indexOf('?')===-1 ? '?' : '&') + 'pakku_request'
 }
 
 function make_xml_datauri(txt) {
