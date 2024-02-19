@@ -313,7 +313,7 @@ function parse(ir,tabid,S,D) {
                     Math.min(Math.floor(dm.peers.length*REPRESENTATIVE_PERCENT/100),dm.peers.length-1)
                 ];
                 dm.time=representative.ir_obj.time_ms/1000;
-                dm.mode=representative.ir_obj.mode;
+                //dm.mode=representative.ir_obj.mode; // mode may be changed by MODE_ELEVATION
                 dm.size=representative.ir_obj.fontsize;
                 dm.ir_obj=representative.ir_obj;
             }
