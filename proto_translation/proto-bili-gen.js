@@ -74,6 +74,8 @@
                              * @property {Array.<bilibili.community.service.dm.v1.IPostPanel>|null} [postPanel] DmWebViewReply postPanel
                              * @property {Array.<string>|null} [activityMetas] DmWebViewReply activityMetas
                              * @property {Array.<bilibili.community.service.dm.v1.IPostPanelV2>|null} [postPanelV2] DmWebViewReply postPanelV2
+                             * @property {Array.<bilibili.community.service.dm.v1.IDmSubView>|null} [subViews] DmWebViewReply subViews
+                             * @property {bilibili.community.service.dm.v1.IQoeInfo|null} [qoe] DmWebViewReply qoe
                              */
     
                             /**
@@ -92,6 +94,7 @@
                                 this.postPanel = [];
                                 this.activityMetas = [];
                                 this.postPanelV2 = [];
+                                this.subViews = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
@@ -219,6 +222,22 @@
                             DmWebViewReply.prototype.postPanelV2 = $util.emptyArray;
     
                             /**
+                             * DmWebViewReply subViews.
+                             * @member {Array.<bilibili.community.service.dm.v1.IDmSubView>} subViews
+                             * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                             * @instance
+                             */
+                            DmWebViewReply.prototype.subViews = $util.emptyArray;
+    
+                            /**
+                             * DmWebViewReply qoe.
+                             * @member {bilibili.community.service.dm.v1.IQoeInfo|null|undefined} qoe
+                             * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                             * @instance
+                             */
+                            DmWebViewReply.prototype.qoe = null;
+    
+                            /**
                              * Creates a new DmWebViewReply instance using the specified properties.
                              * @function create
                              * @memberof bilibili.community.service.dm.v1.DmWebViewReply
@@ -279,6 +298,11 @@
                                 if (message.postPanelV2 != null && message.postPanelV2.length)
                                     for (var i = 0; i < message.postPanelV2.length; ++i)
                                         $root.bilibili.community.service.dm.v1.PostPanelV2.encode(message.postPanelV2[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+                                if (message.subViews != null && message.subViews.length)
+                                    for (var i = 0; i < message.subViews.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.DmSubView.encode(message.subViews[i], writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
+                                if (message.qoe != null && Object.hasOwnProperty.call(message, "qoe"))
+                                    $root.bilibili.community.service.dm.v1.QoeInfo.encode(message.qoe, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
                                 return writer;
                             };
     
@@ -385,6 +409,16 @@
                                             if (!(message.postPanelV2 && message.postPanelV2.length))
                                                 message.postPanelV2 = [];
                                             message.postPanelV2.push($root.bilibili.community.service.dm.v1.PostPanelV2.decode(reader, reader.uint32()));
+                                            break;
+                                        }
+                                    case 16: {
+                                            if (!(message.subViews && message.subViews.length))
+                                                message.subViews = [];
+                                            message.subViews.push($root.bilibili.community.service.dm.v1.DmSubView.decode(reader, reader.uint32()));
+                                            break;
+                                        }
+                                    case 17: {
+                                            message.qoe = $root.bilibili.community.service.dm.v1.QoeInfo.decode(reader, reader.uint32());
                                             break;
                                         }
                                     default:
@@ -509,6 +543,20 @@
                                             return "postPanelV2." + error;
                                     }
                                 }
+                                if (message.subViews != null && message.hasOwnProperty("subViews")) {
+                                    if (!Array.isArray(message.subViews))
+                                        return "subViews: array expected";
+                                    for (var i = 0; i < message.subViews.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.DmSubView.verify(message.subViews[i]);
+                                        if (error)
+                                            return "subViews." + error;
+                                    }
+                                }
+                                if (message.qoe != null && message.hasOwnProperty("qoe")) {
+                                    var error = $root.bilibili.community.service.dm.v1.QoeInfo.verify(message.qoe);
+                                    if (error)
+                                        return "qoe." + error;
+                                }
                                 return null;
                             };
     
@@ -617,6 +665,21 @@
                                         message.postPanelV2[i] = $root.bilibili.community.service.dm.v1.PostPanelV2.fromObject(object.postPanelV2[i]);
                                     }
                                 }
+                                if (object.subViews) {
+                                    if (!Array.isArray(object.subViews))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.subViews: array expected");
+                                    message.subViews = [];
+                                    for (var i = 0; i < object.subViews.length; ++i) {
+                                        if (typeof object.subViews[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.subViews: object expected");
+                                        message.subViews[i] = $root.bilibili.community.service.dm.v1.DmSubView.fromObject(object.subViews[i]);
+                                    }
+                                }
+                                if (object.qoe != null) {
+                                    if (typeof object.qoe !== "object")
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmWebViewReply.qoe: object expected");
+                                    message.qoe = $root.bilibili.community.service.dm.v1.QoeInfo.fromObject(object.qoe);
+                                }
                                 return message;
                             };
     
@@ -641,6 +704,7 @@
                                     object.postPanel = [];
                                     object.activityMetas = [];
                                     object.postPanelV2 = [];
+                                    object.subViews = [];
                                 }
                                 if (options.defaults) {
                                     object.state = 0;
@@ -655,6 +719,7 @@
                                     } else
                                         object.count = options.longs === String ? "0" : 0;
                                     object.dmSetting = null;
+                                    object.qoe = null;
                                 }
                                 if (message.state != null && message.hasOwnProperty("state"))
                                     object.state = message.state;
@@ -710,6 +775,13 @@
                                     for (var j = 0; j < message.postPanelV2.length; ++j)
                                         object.postPanelV2[j] = $root.bilibili.community.service.dm.v1.PostPanelV2.toObject(message.postPanelV2[j], options);
                                 }
+                                if (message.subViews && message.subViews.length) {
+                                    object.subViews = [];
+                                    for (var j = 0; j < message.subViews.length; ++j)
+                                        object.subViews[j] = $root.bilibili.community.service.dm.v1.DmSubView.toObject(message.subViews[j], options);
+                                }
+                                if (message.qoe != null && message.hasOwnProperty("qoe"))
+                                    object.qoe = $root.bilibili.community.service.dm.v1.QoeInfo.toObject(message.qoe, options);
                                 return object;
                             };
     
@@ -740,6 +812,209 @@
                             };
     
                             return DmWebViewReply;
+                        })();
+    
+                        v1.QoeInfo = (function() {
+    
+                            /**
+                             * Properties of a QoeInfo.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IQoeInfo
+                             * @property {string|null} [info] QoeInfo info
+                             */
+    
+                            /**
+                             * Constructs a new QoeInfo.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a QoeInfo.
+                             * @implements IQoeInfo
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IQoeInfo=} [properties] Properties to set
+                             */
+                            function QoeInfo(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * QoeInfo info.
+                             * @member {string} info
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @instance
+                             */
+                            QoeInfo.prototype.info = "";
+    
+                            /**
+                             * Creates a new QoeInfo instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IQoeInfo=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.QoeInfo} QoeInfo instance
+                             */
+                            QoeInfo.create = function create(properties) {
+                                return new QoeInfo(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified QoeInfo message. Does not implicitly {@link bilibili.community.service.dm.v1.QoeInfo.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IQoeInfo} message QoeInfo message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            QoeInfo.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.info != null && Object.hasOwnProperty.call(message, "info"))
+                                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.info);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified QoeInfo message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.QoeInfo.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IQoeInfo} message QoeInfo message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            QoeInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a QoeInfo message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.QoeInfo} QoeInfo
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            QoeInfo.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.QoeInfo();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1: {
+                                            message.info = reader.string();
+                                            break;
+                                        }
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a QoeInfo message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.QoeInfo} QoeInfo
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            QoeInfo.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a QoeInfo message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            QoeInfo.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.info != null && message.hasOwnProperty("info"))
+                                    if (!$util.isString(message.info))
+                                        return "info: string expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a QoeInfo message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.QoeInfo} QoeInfo
+                             */
+                            QoeInfo.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.QoeInfo)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.QoeInfo();
+                                if (object.info != null)
+                                    message.info = String(object.info);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a QoeInfo message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.QoeInfo} message QoeInfo
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            QoeInfo.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.info = "";
+                                if (message.info != null && message.hasOwnProperty("info"))
+                                    object.info = message.info;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this QoeInfo to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            QoeInfo.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * Gets the default type url for QoeInfo
+                             * @function getTypeUrl
+                             * @memberof bilibili.community.service.dm.v1.QoeInfo
+                             * @static
+                             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns {string} The default type url
+                             */
+                            QoeInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                if (typeUrlPrefix === undefined) {
+                                    typeUrlPrefix = "type.googleapis.com";
+                                }
+                                return typeUrlPrefix + "/bilibili.community.service.dm.v1.QoeInfo";
+                            };
+    
+                            return QoeInfo;
                         })();
     
                         v1.PostPanel = (function() {
@@ -6949,6 +7224,7 @@
                              * @property {number|null} [attr] DanmakuElem attr
                              * @property {string|null} [animation] DanmakuElem animation
                              * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [colorful] DanmakuElem colorful
+                             * @property {number|Long|null} [oid] DanmakuElem oid
                              */
     
                             /**
@@ -7079,6 +7355,14 @@
                             DanmakuElem.prototype.colorful = 0;
     
                             /**
+                             * DanmakuElem oid.
+                             * @member {number|Long} oid
+                             * @memberof bilibili.community.service.dm.v1.DanmakuElem
+                             * @instance
+                             */
+                            DanmakuElem.prototype.oid = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
                              * Creates a new DanmakuElem instance using the specified properties.
                              * @function create
                              * @memberof bilibili.community.service.dm.v1.DanmakuElem
@@ -7130,6 +7414,8 @@
                                     writer.uint32(/* id 22, wireType 2 =*/178).string(message.animation);
                                 if (message.colorful != null && Object.hasOwnProperty.call(message, "colorful"))
                                     writer.uint32(/* id 24, wireType 0 =*/192).int32(message.colorful);
+                                if (message.oid != null && Object.hasOwnProperty.call(message, "oid"))
+                                    writer.uint32(/* id 26, wireType 0 =*/208).int64(message.oid);
                                 return writer;
                             };
     
@@ -7220,6 +7506,10 @@
                                             message.colorful = reader.int32();
                                             break;
                                         }
+                                    case 26: {
+                                            message.oid = reader.int64();
+                                            break;
+                                        }
                                     default:
                                         reader.skipType(tag & 7);
                                         break;
@@ -7302,6 +7592,9 @@
                                     case 60001:
                                         break;
                                     }
+                                if (message.oid != null && message.hasOwnProperty("oid"))
+                                    if (!$util.isInteger(message.oid) && !(message.oid && $util.isInteger(message.oid.low) && $util.isInteger(message.oid.high)))
+                                        return "oid: integer|Long expected";
                                 return null;
                             };
     
@@ -7366,6 +7659,15 @@
                                     message.colorful = 60001;
                                     break;
                                 }
+                                if (object.oid != null)
+                                    if ($util.Long)
+                                        (message.oid = $util.Long.fromValue(object.oid)).unsigned = false;
+                                    else if (typeof object.oid === "string")
+                                        message.oid = parseInt(object.oid, 10);
+                                    else if (typeof object.oid === "number")
+                                        message.oid = object.oid;
+                                    else if (typeof object.oid === "object")
+                                        message.oid = new $util.LongBits(object.oid.low >>> 0, object.oid.high >>> 0).toNumber();
                                 return message;
                             };
     
@@ -7401,6 +7703,11 @@
                                     object.attr = 0;
                                     object.animation = "";
                                     object.colorful = options.enums === String ? "NoneType" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.oid = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.oid = options.longs === String ? "0" : 0;
                                 }
                                 if (message.stime != null && message.hasOwnProperty("stime"))
                                     object.stime = message.stime;
@@ -7433,6 +7740,11 @@
                                     object.animation = message.animation;
                                 if (message.colorful != null && message.hasOwnProperty("colorful"))
                                     object.colorful = options.enums === String ? $root.bilibili.community.service.dm.v1.DmColorfulType[message.colorful] === undefined ? message.colorful : $root.bilibili.community.service.dm.v1.DmColorfulType[message.colorful] : message.colorful;
+                                if (message.oid != null && message.hasOwnProperty("oid"))
+                                    if (typeof message.oid === "number")
+                                        object.oid = options.longs === String ? String(message.oid) : message.oid;
+                                    else
+                                        object.oid = options.longs === String ? $util.Long.prototype.toString.call(message.oid) : options.longs === Number ? new $util.LongBits(message.oid.low >>> 0, message.oid.high >>> 0).toNumber() : message.oid;
                                 return object;
                             };
     
@@ -9339,6 +9651,329 @@
                             values[valuesById[0] = "NoneType"] = 0;
                             values[valuesById[60001] = "VipGradualColor"] = 60001;
                             return values;
+                        })();
+    
+                        v1.DmSubView = (function() {
+    
+                            /**
+                             * Properties of a DmSubView.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @interface IDmSubView
+                             * @property {number|null} [type] DmSubView type
+                             * @property {number|Long|null} [oid] DmSubView oid
+                             * @property {number|Long|null} [pid] DmSubView pid
+                             * @property {Array.<bilibili.community.service.dm.v1.IPostPanelV2>|null} [postPanel_2] DmSubView postPanel_2
+                             */
+    
+                            /**
+                             * Constructs a new DmSubView.
+                             * @memberof bilibili.community.service.dm.v1
+                             * @classdesc Represents a DmSubView.
+                             * @implements IDmSubView
+                             * @constructor
+                             * @param {bilibili.community.service.dm.v1.IDmSubView=} [properties] Properties to set
+                             */
+                            function DmSubView(properties) {
+                                this.postPanel_2 = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * DmSubView type.
+                             * @member {number} type
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @instance
+                             */
+                            DmSubView.prototype.type = 0;
+    
+                            /**
+                             * DmSubView oid.
+                             * @member {number|Long} oid
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @instance
+                             */
+                            DmSubView.prototype.oid = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * DmSubView pid.
+                             * @member {number|Long} pid
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @instance
+                             */
+                            DmSubView.prototype.pid = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * DmSubView postPanel_2.
+                             * @member {Array.<bilibili.community.service.dm.v1.IPostPanelV2>} postPanel_2
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @instance
+                             */
+                            DmSubView.prototype.postPanel_2 = $util.emptyArray;
+    
+                            /**
+                             * Creates a new DmSubView instance using the specified properties.
+                             * @function create
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmSubView=} [properties] Properties to set
+                             * @returns {bilibili.community.service.dm.v1.DmSubView} DmSubView instance
+                             */
+                            DmSubView.create = function create(properties) {
+                                return new DmSubView(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified DmSubView message. Does not implicitly {@link bilibili.community.service.dm.v1.DmSubView.verify|verify} messages.
+                             * @function encode
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmSubView} message DmSubView message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            DmSubView.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+                                if (message.oid != null && Object.hasOwnProperty.call(message, "oid"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int64(message.oid);
+                                if (message.pid != null && Object.hasOwnProperty.call(message, "pid"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).int64(message.pid);
+                                if (message.postPanel_2 != null && message.postPanel_2.length)
+                                    for (var i = 0; i < message.postPanel_2.length; ++i)
+                                        $root.bilibili.community.service.dm.v1.PostPanelV2.encode(message.postPanel_2[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified DmSubView message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmSubView.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.IDmSubView} message DmSubView message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            DmSubView.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a DmSubView message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {bilibili.community.service.dm.v1.DmSubView} DmSubView
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            DmSubView.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DmSubView();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1: {
+                                            message.type = reader.int32();
+                                            break;
+                                        }
+                                    case 2: {
+                                            message.oid = reader.int64();
+                                            break;
+                                        }
+                                    case 3: {
+                                            message.pid = reader.int64();
+                                            break;
+                                        }
+                                    case 4: {
+                                            if (!(message.postPanel_2 && message.postPanel_2.length))
+                                                message.postPanel_2 = [];
+                                            message.postPanel_2.push($root.bilibili.community.service.dm.v1.PostPanelV2.decode(reader, reader.uint32()));
+                                            break;
+                                        }
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a DmSubView message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {bilibili.community.service.dm.v1.DmSubView} DmSubView
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            DmSubView.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a DmSubView message.
+                             * @function verify
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            DmSubView.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    if (!$util.isInteger(message.type))
+                                        return "type: integer expected";
+                                if (message.oid != null && message.hasOwnProperty("oid"))
+                                    if (!$util.isInteger(message.oid) && !(message.oid && $util.isInteger(message.oid.low) && $util.isInteger(message.oid.high)))
+                                        return "oid: integer|Long expected";
+                                if (message.pid != null && message.hasOwnProperty("pid"))
+                                    if (!$util.isInteger(message.pid) && !(message.pid && $util.isInteger(message.pid.low) && $util.isInteger(message.pid.high)))
+                                        return "pid: integer|Long expected";
+                                if (message.postPanel_2 != null && message.hasOwnProperty("postPanel_2")) {
+                                    if (!Array.isArray(message.postPanel_2))
+                                        return "postPanel_2: array expected";
+                                    for (var i = 0; i < message.postPanel_2.length; ++i) {
+                                        var error = $root.bilibili.community.service.dm.v1.PostPanelV2.verify(message.postPanel_2[i]);
+                                        if (error)
+                                            return "postPanel_2." + error;
+                                    }
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a DmSubView message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {bilibili.community.service.dm.v1.DmSubView} DmSubView
+                             */
+                            DmSubView.fromObject = function fromObject(object) {
+                                if (object instanceof $root.bilibili.community.service.dm.v1.DmSubView)
+                                    return object;
+                                var message = new $root.bilibili.community.service.dm.v1.DmSubView();
+                                if (object.type != null)
+                                    message.type = object.type | 0;
+                                if (object.oid != null)
+                                    if ($util.Long)
+                                        (message.oid = $util.Long.fromValue(object.oid)).unsigned = false;
+                                    else if (typeof object.oid === "string")
+                                        message.oid = parseInt(object.oid, 10);
+                                    else if (typeof object.oid === "number")
+                                        message.oid = object.oid;
+                                    else if (typeof object.oid === "object")
+                                        message.oid = new $util.LongBits(object.oid.low >>> 0, object.oid.high >>> 0).toNumber();
+                                if (object.pid != null)
+                                    if ($util.Long)
+                                        (message.pid = $util.Long.fromValue(object.pid)).unsigned = false;
+                                    else if (typeof object.pid === "string")
+                                        message.pid = parseInt(object.pid, 10);
+                                    else if (typeof object.pid === "number")
+                                        message.pid = object.pid;
+                                    else if (typeof object.pid === "object")
+                                        message.pid = new $util.LongBits(object.pid.low >>> 0, object.pid.high >>> 0).toNumber();
+                                if (object.postPanel_2) {
+                                    if (!Array.isArray(object.postPanel_2))
+                                        throw TypeError(".bilibili.community.service.dm.v1.DmSubView.postPanel_2: array expected");
+                                    message.postPanel_2 = [];
+                                    for (var i = 0; i < object.postPanel_2.length; ++i) {
+                                        if (typeof object.postPanel_2[i] !== "object")
+                                            throw TypeError(".bilibili.community.service.dm.v1.DmSubView.postPanel_2: object expected");
+                                        message.postPanel_2[i] = $root.bilibili.community.service.dm.v1.PostPanelV2.fromObject(object.postPanel_2[i]);
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a DmSubView message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {bilibili.community.service.dm.v1.DmSubView} message DmSubView
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            DmSubView.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.postPanel_2 = [];
+                                if (options.defaults) {
+                                    object.type = 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.oid = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.oid = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.pid = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.pid = options.longs === String ? "0" : 0;
+                                }
+                                if (message.type != null && message.hasOwnProperty("type"))
+                                    object.type = message.type;
+                                if (message.oid != null && message.hasOwnProperty("oid"))
+                                    if (typeof message.oid === "number")
+                                        object.oid = options.longs === String ? String(message.oid) : message.oid;
+                                    else
+                                        object.oid = options.longs === String ? $util.Long.prototype.toString.call(message.oid) : options.longs === Number ? new $util.LongBits(message.oid.low >>> 0, message.oid.high >>> 0).toNumber() : message.oid;
+                                if (message.pid != null && message.hasOwnProperty("pid"))
+                                    if (typeof message.pid === "number")
+                                        object.pid = options.longs === String ? String(message.pid) : message.pid;
+                                    else
+                                        object.pid = options.longs === String ? $util.Long.prototype.toString.call(message.pid) : options.longs === Number ? new $util.LongBits(message.pid.low >>> 0, message.pid.high >>> 0).toNumber() : message.pid;
+                                if (message.postPanel_2 && message.postPanel_2.length) {
+                                    object.postPanel_2 = [];
+                                    for (var j = 0; j < message.postPanel_2.length; ++j)
+                                        object.postPanel_2[j] = $root.bilibili.community.service.dm.v1.PostPanelV2.toObject(message.postPanel_2[j], options);
+                                }
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this DmSubView to JSON.
+                             * @function toJSON
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            DmSubView.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * Gets the default type url for DmSubView
+                             * @function getTypeUrl
+                             * @memberof bilibili.community.service.dm.v1.DmSubView
+                             * @static
+                             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns {string} The default type url
+                             */
+                            DmSubView.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                if (typeUrlPrefix === undefined) {
+                                    typeUrlPrefix = "type.googleapis.com";
+                                }
+                                return typeUrlPrefix + "/bilibili.community.service.dm.v1.DmSubView";
+                            };
+    
+                            return DmSubView;
                         })();
     
                         return v1;

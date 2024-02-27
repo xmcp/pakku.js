@@ -176,6 +176,7 @@ function protoapi_get_view(cid,pid) { // return page count
         xhr.responseType='arraybuffer';
         xhr.addEventListener('load',function() {
             let d=proto_view.decode(new Uint8Array(xhr.response));
+            //console.log('!! dm view', d);
             if(d.dmSge.total && d.dmSge.total<100)
                 resolve(d.dmSge.total);
             else
