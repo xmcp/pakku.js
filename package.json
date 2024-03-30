@@ -1,0 +1,20 @@
+{
+  "name": "pakku-x",
+  "private": true,
+  "version": "2024.3.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "build:proto": "proto_translation\\transform_to_module.bat"
+  },
+  "dependencies": {
+    "@types/chrome": "^0.0.222",
+    "@types/md5": "^2.3.5",
+    "md5": "^2.3.0",
+    "protobufjs-cli": "^1.1.2",
+    "typescript": "^4.9.3",
+    "vite": "^4.1.0"
+  }
+}

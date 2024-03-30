@@ -1,0 +1,201 @@
+import protogen from "./proto-bili-gen";
+import md5 from "md5";
+import {AnyObject, DanmuChunk, DanmuObject, int} from "../core/types";
+
+type proto_seg = protogen.bilibili.community.service.dm.v1.DmSegMobileReply;
+
+let proto_seg = protogen.bilibili.community.service.dm.v1.DmSegMobileReply;
+let proto_view = protogen.bilibili.community.service.dm.v1.DmWebViewReply;
+
+export interface ProtobufIngressHistory {
+    type: 'proto_history';
+    url: string;
+}
+
+export interface ProtobufIngressSeg {
+    type: 'proto_seg';
+    is_magicreload: boolean;
+    cid: string;
+    pid: string;
+    static_img_url: string | null;
+    static_sub_url: string | null;
+}
+
+export interface ProtobufEgress {
+    type: 'proto';
+    segidx: number | null;
+    ps: number | null;
+    pe: number | null;
+}
+
+export function protobuf_to_obj(chunk: proto_seg): DanmuChunk {
+    return {
+        objs: chunk.elems.map((item): DanmuObject =>({
+            'time_ms': item.stime!,
+            'mode': item.mode!,
+            'fontsize': item.size!,
+            'color': item.color!,
+            'sender_hash': item.uhash!,
+            'content': item.text!,
+            // @ts-ignore: protobuf may use a Long type
+            'sendtime': item.date!,
+            'weight': item.weight!,
+            'id': item.dmid!,
+            'pool': item.pool!,
+            'extra': {
+                'proto_attr': item.attr,
+                'proto_action': item.action,
+                'proto_animation': item.animation,
+            },
+        })),
+        extra: {},
+    };
+}
+
+export function obj_to_protobuf(chunk: DanmuChunk): Uint8Array {
+    let res = chunk.objs.map((item) => ({
+        "stime": item.time_ms,
+        "mode": item.mode,
+        "size": item.fontsize,
+        "color": item.color,
+        "uhash": item.sender_hash,
+        "text": item.content,
+        "date": item.sendtime,
+        "weight": item.weight,
+        "dmid": item.id,
+        "attr": item.extra.proto_attr,
+        "action": item.extra.proto_action,
+        "animation": item.extra.proto_animation,
+        "colorful": 0,
+    }));
+    return proto_seg.encode(proto_seg.create({elems: res})).finish();
+}
+
+function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoapi_sub_url: string | null): AnyObject {
+    let static_img_url = "https://i0.hdslb.com/bfs/wbi/5a6f002d0bb14fc9848fc64157648ad4.png";
+    let static_sub_url = "https://i0.hdslb.com/bfs/wbi/0503a77b29d7409d9548fb44fe9daa1a.png";
+
+    e.web_location = 1315873;
+    let t = protoapi_img_url || static_img_url;
+    let r = protoapi_sub_url || static_sub_url;
+
+    let n = function(e) {
+        let t: any[] = [];
+        // noinspection CommaExpressionJS
+        return [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52].forEach((function(r) {
+            e.charAt(r) && t.push(e.charAt(r))
+        })),
+        t.join("").slice(0, 32)
+    }(t.substring(t.lastIndexOf("/") + 1, t.length).split(".")[0] + r.substring(r.lastIndexOf("/") + 1, r.length).split(".")[0]);
+    let i = Math.round(Date.now() / 1e3);
+    let o = Object.assign({}, e, {
+        wts: i
+    });
+    let a = Object.keys(o).sort();
+    let s = [];
+    for (let c = 0; c < a.length; c++) {
+        let p = a[c], h = o[p];
+        null != h && s.push("".concat(encodeURIComponent(p), "=").concat(encodeURIComponent(h)))
+    }
+    let y = s.join("&");
+    let m = md5(y + n);
+    return Object.assign(e, {
+        w_rid: m,
+        wts: i.toString()
+    });
+}
+
+async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int | null> {
+    let res = await fetch(
+        `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${encodeURIComponent(ingress.cid)}&pid=${encodeURIComponent(ingress.pid)}`
+    );
+    let buffer = await res.arrayBuffer();
+    let d = proto_view.decode(new Uint8Array(buffer));
+
+    if(d.dmSge && d.dmSge.total && d.dmSge.total < 100)
+        return d.dmSge.total as int;
+    else
+        return null;
+}
+
+async function protoapi_get_url(url: string): Promise<proto_seg> {
+    let res = await fetch(url);
+    let buffer = await res.arrayBuffer();
+    return proto_seg.decode(new Uint8Array(buffer));
+}
+
+async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promise<proto_seg> { // return dm list
+    let param = protoapi_sign_req({
+        'type': '1',
+        'oid': ingress.cid,
+        'pid': ingress.pid,
+        'segment_index': segidx,
+    }, ingress.static_img_url, ingress.static_sub_url);
+
+    let param_list = [];
+    for(let key in param) {
+        param_list.push(key + '=' + encodeURIComponent(param[key]));
+    }
+    let param_str = param_list.join('&');
+
+    return await protoapi_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str);
+}
+
+export async function ingress_proto_history(ingress: ProtobufIngressHistory): Promise<DanmuChunk[]> {
+    let d = await protoapi_get_url(ingress.url);
+    return [protobuf_to_obj(d)];
+}
+
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg): Promise<DanmuChunk[]> {
+    // preload first chunk to save time for short videos
+    let first_chunk_req = protoapi_get_seg(ingress, 1);
+    let pages = await protoapi_get_segcount(ingress);
+
+    if(pages) {
+        let req = [first_chunk_req];
+        for(let i=2; i<=pages; i++)
+            req.push(protoapi_get_seg(ingress,i));
+        let ds = await Promise.all(req);
+        return ds.map(protobuf_to_obj);
+    } else { // guess page numbers
+        console.log('protobuf api: guessing page numbers');
+        // noinspection ES6MissingAwait
+        let req= [first_chunk_req, protoapi_get_seg(ingress, 2), protoapi_get_seg(ingress, 3)];
+        let res: proto_seg[] = [];
+
+        async function work(idx: int): Promise<undefined> {
+            let d = await req.shift()!;
+            if(d.elems.length) {
+                res.push(d);
+                req.push(protoapi_get_seg(ingress, idx+3));
+                await work(idx+1);
+            } else { // finished?
+                let dd = await req.shift()!;
+                if(dd.elems.length) { // no
+                    res.push(d);
+                    res.push(dd);
+                    req.push(protoapi_get_seg(ingress, idx+3));
+                    req.push(protoapi_get_seg(ingress, idx+4));
+                    await work(idx+2);
+                } else { // probably yes
+                    console.log('protobuf api: ASSUMING total', idx-1, 'pages');
+                    return;
+                }
+            }
+        }
+        await work(1);
+
+        return res.map(protobuf_to_obj);
+    }
+}
+
+export function egress_proto(egress: ProtobufEgress, chunks: DanmuChunk[]): Uint8Array {
+    let chunk = egress.segidx===null ?
+        {
+            objs: chunks.flatMap(c=>c.objs),
+            extra: {},
+        } :
+        chunks[egress.segidx-1];
+
+    return obj_to_protobuf(chunk);
+}

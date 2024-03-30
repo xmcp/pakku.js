@@ -1,8 +1,7 @@
 .vscode/
-/test/driver/
-*.pyc
-__pycache__/
+.idea/
 node_modules/
 package-lock.json
 /dist/
-debug.log
+*.log
+TODO
