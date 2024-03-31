@@ -53,15 +53,22 @@
     },
     
     "background": {
-        "service_worker": "assets/background.js",
+        "service_worker": "generated/background.js",
         "type": "module"
     },
     "content_scripts": [
         {
             "matches": ["*://*.bilibili.com/*"],
-            "js": ["assets/injected.js"],
+            "js": ["assets/xhr_hook.js"],
             "run_at": "document_start",
+            "world": "MAIN",
             "all_frames": true
+        },
+        {
+            "matches": ["*://*.bilibili.com/*"],
+            "js": ["generated/injected.js"],
+            "run_at": "document_start",
+            "all_frames": false
         }
     ],
 
@@ -72,15 +79,8 @@
             "path": "assets/danmu_update_blocker.json"
         }]
     },
-    
-    "web_accessible_resources": [
-        {
-          "resources": [
-            "assets/xhr_hook.js"
-          ],
-          "matches": [
-            "*://*/*"
-          ]
-        }
-    ]
+    "web_accessible_resources": [{
+        "resources": ["/generated/combine_worker.js"],
+        "matches": ["*://*.bilibili.com/*"]
+    }]
 }

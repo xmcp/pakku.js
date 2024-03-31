@@ -7,8 +7,8 @@ const PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/(?:wbi\/)?
 const PROTO_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/history\/seg\.so\?type=\d+&oid=(\d+)&date=([\d\-]+)$/;
 
 class DanmuUrlFinder {
-    protoapi_img_url = null;
-    protoapi_sub_url = null;
+    protoapi_img_url: string | null = null;
+    protoapi_sub_url: string | null = null;
 
     _cid_to_pid: AnyObject = {};
 

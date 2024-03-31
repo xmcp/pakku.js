@@ -2,20 +2,36 @@
   "name": "pakku-x",
   "private": true,
   "version": "2024.3.1",
-  "type": "module",
   "scripts": {
-    "watch": "cross-env BUILD_DIST_NAME=dev PAKKU_CHANNEL=chrome vite build --watch",
-    "build:chrome": "cross-env BUILD_DIST_NAME=chrome PAKKU_CHANNEL=chrome vite build",
-    "build:firefox": "cross-env BUILD_DIST_NAME=firefox PAKKU_CHANNEL=firefox vite build",
+    "dev": "grunt dev",
+    "watch": "grunt watch",
+    "build:chrome": "grunt chrome",
+    "build:firefox": "grunt firefox",
     "build:proto": "proto_translation\\transform_to_module.bat"
   },
   "dependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/chrome": "^0.0.222",
     "@types/md5": "^2.3.5",
-    "cross-env": "^7.0.3",
     "md5": "^2.3.0",
     "protobufjs-cli": "^1.1.2",
+    "remote-web-worker": "^0.0.9",
+    "tslib": "^2.6.2",
     "typescript": "^4.9.3",
-    "vite": "^4.1.0"
+    "grunt": "^1.0.3",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-compress": "^1.4.3",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^2.2.1",
+    "grunt-contrib-htmlmin": "^2.4.0",
+    "grunt-contrib-uglify-es": "^3.3.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-rollup": "^12.0.0",
+    "grunt-move": "^1.0.0",
+    "load-grunt-tasks": "^4.0.0"
   }
 }

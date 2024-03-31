@@ -1,6 +1,6 @@
 import protogen from "./proto-bili-gen";
 import md5 from "md5";
-import {AnyObject, DanmuChunk, DanmuObject, int} from "../core/types";
+import {AnyObject, DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
 type proto_seg = protogen.bilibili.community.service.dm.v1.DmSegMobileReply;
 
@@ -28,7 +28,7 @@ export interface ProtobufEgress {
     pe: number | null;
 }
 
-export function protobuf_to_obj(chunk: proto_seg): DanmuChunk {
+export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk {
     return {
         objs: chunk.elems.map((item): DanmuObject =>({
             'time_ms': item.stime!,
@@ -48,12 +48,22 @@ export function protobuf_to_obj(chunk: proto_seg): DanmuChunk {
                 'proto_animation': item.animation,
             },
         })),
-        extra: {},
+        extra: {
+            'proto_segidx': segidx,
+        },
     };
 }
 
-export function obj_to_protobuf(chunk: DanmuChunk): Uint8Array {
-    let res = chunk.objs.map((item) => ({
+export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk): Uint8Array {
+    let objs = chunk.objs;
+
+    if(egress.ps || egress.pe) {
+        let ps = egress.ps || 0;
+        let pe = egress.pe || 999999999999;
+        objs = objs.filter((item, idx) => ps<=item.time_ms && item.time_ms<pe);
+    }
+
+    let res = objs.map((item) => ({
         "stime": item.time_ms,
         "mode": item.mode,
         "size": item.fontsize,
@@ -141,39 +151,43 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
     return await protoapi_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str);
 }
 
-export async function ingress_proto_history(ingress: ProtobufIngressHistory): Promise<DanmuChunk[]> {
+export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
     let d = await protoapi_get_url(ingress.url);
-    return [protobuf_to_obj(d)];
+    chunk_callback(1, protobuf_to_obj(1, d));
 }
 
-export async function ingress_proto_seg(ingress: ProtobufIngressSeg): Promise<DanmuChunk[]> {
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
+    async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
+        chunk_callback(idx, protobuf_to_obj(1, await resp));
+    }
+
     // preload first chunk to save time for short videos
     let first_chunk_req = protoapi_get_seg(ingress, 1);
     let pages = await protoapi_get_segcount(ingress);
 
     if(pages) {
-        let req = [first_chunk_req];
+        // noinspection ES6MissingAwait
+        let jobs = [return_from_resp(1, first_chunk_req)];
         for(let i=2; i<=pages; i++)
-            req.push(protoapi_get_seg(ingress,i));
-        let ds = await Promise.all(req);
-        return ds.map(protobuf_to_obj);
+            jobs.push(return_from_resp(i, protoapi_get_seg(ingress, i)));
+        await Promise.all(jobs);
     } else { // guess page numbers
         console.log('protobuf api: guessing page numbers');
+
         // noinspection ES6MissingAwait
         let req= [first_chunk_req, protoapi_get_seg(ingress, 2), protoapi_get_seg(ingress, 3)];
-        let res: proto_seg[] = [];
 
-        async function work(idx: int): Promise<undefined> {
+        async function work(idx: int): Promise<void> {
             let d = await req.shift()!;
             if(d.elems.length) {
-                res.push(d);
+                chunk_callback(idx, protobuf_to_obj(idx, d));
                 req.push(protoapi_get_seg(ingress, idx+3));
                 await work(idx+1);
             } else { // finished?
                 let dd = await req.shift()!;
                 if(dd.elems.length) { // no
-                    res.push(d);
-                    res.push(dd);
+                    chunk_callback(idx, protobuf_to_obj(idx, d));
+                    chunk_callback(idx+1, protobuf_to_obj(idx+1, dd));
                     req.push(protoapi_get_seg(ingress, idx+3));
                     req.push(protoapi_get_seg(ingress, idx+4));
                     await work(idx+2);
@@ -184,18 +198,25 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg): Promise<Da
             }
         }
         await work(1);
-
-        return res.map(protobuf_to_obj);
     }
 }
 
-export function egress_proto(egress: ProtobufEgress, chunks: DanmuChunk[]): Uint8Array {
-    let chunk = egress.segidx===null ?
-        {
-            objs: chunks.flatMap(c=>c.objs),
-            extra: {},
-        } :
-        chunks[egress.segidx-1];
+export function egress_proto(egress: ProtobufEgress, num_chunks: int, chunks: Map<int, DanmuChunk>): Uint8Array | typeof MissingData {
+    if(egress.segidx===null) { // want all chunks
+        if(!num_chunks || num_chunks!==chunks.size)
+            return MissingData; // not finished
 
-    return obj_to_protobuf(chunk);
+        let chunk = {
+            objs: [...chunks.values()].flatMap(c=>c.objs),
+            extra: {},
+        };
+        return obj_to_protobuf(egress, chunk);
+
+    } else { // want specific chunk
+        let chunk = chunks.get(egress.segidx);
+        if(!chunk)
+            return MissingData;
+
+        return obj_to_protobuf(egress, chunk);
+    }
 }

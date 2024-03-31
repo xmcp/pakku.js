@@ -1,8 +1,8 @@
-import {Egress, Ingress} from "../protocol/interface";
-
 export type int = number;
 export type float = number;
 export type AnyObject = {[k: string]: any};
+
+export const MissingData = Symbol('missing data');
 
 export interface DanmuObject {
     time_ms: int;
@@ -23,27 +23,16 @@ export interface DanmuChunk {
     extra: AnyObject;
 }
 
-export class FailingStatus {
-    error: string;
-    details: string;
-
-    ingress: Ingress;
-
-    constructor(error: string, details: string, ingress: Ingress) {
-        this.error = error;
-        this.details = details;
-        this.ingress = ingress;
-    }
+export interface DanmuClusterOutput {
+    clusters: {
+        peers: DanmuObject[];
+        desc: string[];
+    }[];
+    stats: Stats;
 }
 
-export class Status {
+export class Stats {
     error = null;
-
-    ingress: Ingress;
-    egress: Egress;
-
-    network_time_ms = 0;
-    compute_time_ms = 0;
 
     combined_identical= 0
     combined_edit_distance= 0
@@ -65,9 +54,4 @@ export class Status {
     num_onscreen_danmu= 0
     num_max_combo= 0
     num_max_dispval = 0;
-
-    constructor(ingress: Ingress, egress: Egress) {
-        this.ingress = ingress;
-        this.egress = egress;
-    }
 }
