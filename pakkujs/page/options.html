@@ -220,7 +220,7 @@
             <tr id="title">
                 <td></td>
                 <td>
-                    <img src="../assets/logo.png" height="128" width="128">
+                    <img src="/assets/logo.png" height="128" width="128">
                 </td>
                 <td>
                     <p><span id="logo-text">pakku <small>:: 哔哩哔哩弹幕过滤器</small></span></p>
@@ -468,19 +468,6 @@
                     <p class="warning">
                         * 选中后，观看视频时将<b>不会动态更新弹幕</b>，也不会显示在线人数。
                     </p>
-                    <p class="advanced">
-                        <span style="font-weight: bold">弹幕黑名单：</span>
-                        <a id="blacklist-link" href="blacklist.html" target="_blank">前去设置</a>
-                    </p>
-                    <p>
-                        <label for="hide-threshold">眼不见心不烦模式：</label>
-                        不显示重复数量大于
-                        <input id="hide-threshold" type="number" min="0" step="1" max="999">
-                        的弹幕
-                    </p>
-                    <p class="warning">
-                        * 设为 0 来禁用此功能
-                    </p>
                     <p>
                         <label for="scroll-threshold">关怀小屏幕用户：</label>
                         将总长度超过
@@ -519,13 +506,6 @@
                         （有一些 <a href="#show-advanced">复杂的设置</a>
                         <span class="advanced">现在没有</span>
                         被隐藏了，一般人不需要修改它们。）
-                    </p>
-                    <p>
-                        <input id="cloud-sync" type="checkbox">
-                        <label for="cloud-sync">设置云同步 (beta)：</label>
-                        此功能需要浏览器支持。（设置丢失？点这里
-                        <a href="fuck_my_settings_are_gone.html" target="_blank">抢救本地设置</a>
-                        ）
                     </p>
                     <p>
                         <button type="button" id="reset">重置所有设置</button>
@@ -583,7 +563,6 @@
     <div id="saved-alert" class="saved-hidden">✓ 已保存</div>
     <img id="donate-img" src="https://s.xmcp.ltd/pakkujs/donate.png">
 
-    <iframe src="https://s.xmcp.ltd/pakkujs/stat/options.html" style="display: none; height: 0; width: 0;"></iframe>
     <script type="module" src="options.js"></script>
 </body>
 </html>

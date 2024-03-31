@@ -14,7 +14,8 @@
     
     "permissions": [
         "notifications",
-        "storage"
+        "storage",
+        "declarativeNetRequestWithHostAccess"
     ],
     "host_permissions": [
         "*://*.bilibili.com/*"
@@ -52,7 +53,8 @@
     },
     
     "background": {
-        "service_worker": "assets/background.js"
+        "service_worker": "assets/background.js",
+        "type": "module"
     },
     "content_scripts": [
         {
@@ -62,6 +64,14 @@
             "all_frames": true
         }
     ],
+
+    "declarative_net_request": {
+        "rule_resources": [{
+            "id": "danmu-update-blocker",
+            "enabled": false,
+            "path": "assets/danmu_update_blocker.json"
+        }]
+    },
     
     "web_accessible_resources": [
         {

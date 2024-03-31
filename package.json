@@ -4,14 +4,15 @@
   "version": "2024.3.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "watch": "vite build --watch",
+    "watch": "cross-env BUILD_DIST_NAME=dev PAKKU_CHANNEL=chrome vite build --watch",
+    "build:chrome": "cross-env BUILD_DIST_NAME=chrome PAKKU_CHANNEL=chrome vite build",
+    "build:firefox": "cross-env BUILD_DIST_NAME=firefox PAKKU_CHANNEL=firefox vite build",
     "build:proto": "proto_translation\\transform_to_module.bat"
   },
   "dependencies": {
     "@types/chrome": "^0.0.222",
     "@types/md5": "^2.3.5",
+    "cross-env": "^7.0.3",
     "md5": "^2.3.0",
     "protobufjs-cli": "^1.1.2",
     "typescript": "^4.9.3",

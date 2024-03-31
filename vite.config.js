@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 //import { crx } from '@crxjs/vite-plugin';
 //import manifest from './pakkujs/manifest.json';
 
+let dist_name = process.env.BUILD_DIST_NAME;
+
 // https://vitejs.dev/config/
 export default defineConfig({
   /*plugins: [
@@ -11,8 +13,11 @@ export default defineConfig({
   ],*/
   root: 'pakkujs',
   publicDir: '../pakkujs_public',
+  envPrefix: 'PAKKU_',
   esbuild: {
-    minifyWhitespace: false, // to make stack trace more readable
+    supported: {
+      'top-level-await': true,
+    },
   },
   build: {
     rollupOptions: {
@@ -25,10 +30,12 @@ export default defineConfig({
       output: {
         assetFileNames: 'assets/[name][extname]',
         entryFileNames: 'assets/[name].js',
+        minifyInternalExports: false,
       }
     },
     modulePreload: false,
-    outDir: '../dist/pakkujs',
+    outDir: `../dist/${dist_name}`,
+    minify: false,
     emptyOutDir: true,
   }
 });
