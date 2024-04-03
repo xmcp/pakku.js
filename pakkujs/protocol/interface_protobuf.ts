@@ -172,7 +172,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
             jobs.push(return_from_resp(i, protoapi_get_seg(ingress, i)));
         await Promise.all(jobs);
     } else { // guess page numbers
-        console.log('protobuf api: guessing page numbers');
+        console.log('pakku protobuf api: guessing page numbers');
 
         // noinspection ES6MissingAwait
         let req= [first_chunk_req, protoapi_get_seg(ingress, 2), protoapi_get_seg(ingress, 3)];
@@ -192,7 +192,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
                     req.push(protoapi_get_seg(ingress, idx+4));
                     await work(idx+2);
                 } else { // probably yes
-                    console.log('protobuf api: ASSUMING total', idx-1, 'pages');
+                    console.log('pakku protobuf api: ASSUMING total', idx-1, 'pages');
                     return;
                 }
             }

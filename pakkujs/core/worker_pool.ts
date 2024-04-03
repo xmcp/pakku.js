@@ -14,7 +14,7 @@ export class WorkerPool {
         this.terminated = false;
         this.workers = [];
         this.queue = [];
-        console.log('worker pool: spawned');
+        console.log('pakku worker pool: spawned');
         for(let i = 0; i < pool_size; i++) {
             let w = new Worker(chrome.runtime.getURL('/generated/combine_worker.js'));
             let config = {
@@ -29,7 +29,7 @@ export class WorkerPool {
                     else
                         config.resolve(e.data.output);
                 } else {
-                    console.error('worker pool: BAD MESSAGE', e);
+                    console.error('pakku worker pool: BAD MESSAGE', e);
                 }
                 this._try_perform_work();
             };
@@ -50,7 +50,7 @@ export class WorkerPool {
                 return;
             }
         }
-        console.log('worker pool: no idle workers, queue =', this.queue.length);
+        console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
     exec(args: [DanmuChunk, DanmuChunk]): Promise<DanmuClusterOutput> {
@@ -67,7 +67,7 @@ export class WorkerPool {
     terminate() {
         if(!this.terminated) {
             this.terminated = true;
-            console.log('worker pool: terminated');
+            console.log('pakku worker pool: terminated');
             for(let w of this.workers) {
                 w.worker.terminate();
             }

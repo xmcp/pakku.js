@@ -28,13 +28,13 @@ function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk): DanmuClusterOutp
 }
 
 onmessage = (e) => {
-    console.log('worker: received job');
+    console.log('pakku worker: received job');
     try {
         let res = do_combine(e.data[0], e.data[1]);
-        console.log('worker: job done');
+        console.log('pakku worker: job done');
         postMessage({error: null, output: res});
     } catch(err) {
-        console.log('worker: job FAILED', err);
+        console.error('pakku worker: job FAILED', err);
         postMessage({error: err});
     }
 };

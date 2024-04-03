@@ -16,8 +16,8 @@ export const DEFAULT_CONFIG = {
     TRIM_WIDTH: true,
 
     // 例外设置
-    FORCELIST: [["^23{2,}$","23333"],["^6{3,}$","66666"]],
-    WHITELIST: [],
+    FORCELIST: [["^23{2,}$", "23333"], ["^6{3,}$", "66666"]],
+    WHITELIST: [] as ([string, string])[],
     CROSS_MODE: true,
     PROC_TYPE7: true,
     PROC_TYPE4: true,
@@ -42,6 +42,7 @@ export const DEFAULT_CONFIG = {
     // 实验室
     BREAK_UPDATE: false,
     SCROLL_THRESHOLD: 1200, // 0 to disable
+    USERSCRIPT: null as (string | null),
 
     // 其他
     POPUP_BADGE: 'percent' as ('percent' | 'count' | 'off'),
@@ -65,7 +66,7 @@ export function migrate_config(remote_config: AnyObject): Config {
     config._CONFIG_VER = config._CONFIG_VER || 0;
 
     if(!remote_config._LAST_UPDATE_TIME) { // no remote config, init a default one
-        console.log('config: init to default');
+        console.log('pakku config: init to default');
         config = DEFAULT_CONFIG;
     }
 
@@ -102,6 +103,7 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.FLUCTLIGHT = remote_config.FLUCTLIGHT==='on';
         config.BREAK_UPDATE = remote_config.BREAK_UPDATE==='on';
         config.SCROLL_THRESHOLD = parseInt(remote_config.SCROLL_THRESHOLD);
+        config.USERSCRIPT = null;
         config.POPUP_BADGE = remote_config.POPUP_BADGE;
     }
 
@@ -115,7 +117,5 @@ export async function save_config(config: Config) {
 
 export async function get_config(): Promise<Config> {
     let remote = await chrome.storage.sync.get();
-    console.log('config: read remote', remote);
-
     return migrate_config(remote);
 }

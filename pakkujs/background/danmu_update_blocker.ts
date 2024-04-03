@@ -8,11 +8,11 @@ export async function reset_dnr_status() {
         await chrome.declarativeNetRequest.updateEnabledRulesets({
             enableRulesetIds: ['danmu-update-blocker'],
         });
-        console.log('update blocker: enabled dnr ruleset');
+        console.log('pakku update blocker: enabled dnr ruleset');
     } else {
         await chrome.declarativeNetRequest.updateEnabledRulesets({
             disableRulesetIds: ['danmu-update-blocker'],
         });
-        console.log('update blocker: disabled dnr ruleset');
+        console.log('pakku update blocker: disabled dnr ruleset');
     }
 }

@@ -1,4 +1,4 @@
-import {get_config, save_config, DEFAULT_CONFIG} from '../background/config';
+import {get_config, save_config} from '../background/config';
 
 const IS_FIREFOX = import.meta.env.PAKKU_CHANNEL === 'firefox';
 const IS_EDG = import.meta.env.PAKKU_CHANNEL === 'chrome' && navigator.userAgent.indexOf('Edg/') !== -1;
@@ -38,12 +38,6 @@ function highlighter() {
     if(!location.hash) return;
     let el = document.querySelector(location.hash);
     if(!el) return;
-
-    if(localStorage['_options_autofill']) {
-        let val = localStorage['_options_autofill'];
-        delete localStorage['_options_autofill'];
-        el.value = val;
-    }
 
     let adv_obj = el.closest('.advanced');
     if(adv_obj) adv_obj.classList.add('js-show-this');
@@ -111,7 +105,7 @@ async function ver_check() {
         id('version-checker').textContent = '✓ 是最新版本';
     }
 }
-ver_check();
+void ver_check();
 
 for(let elem of document.querySelectorAll('.donate')) {
     elem.addEventListener('mouseover', function() {
@@ -336,7 +330,7 @@ id('newforcelist-form').addEventListener('submit', function(e) {
         try_regexp(regexp_wrap(id('newforcelist-pattern').value)),
         id('newforcelist-name').value,
     ]);
-    reload();
+    void reload();
     id('newforcelist-pattern').value = '';
     id('newforcelist-name').value = '';
 });
@@ -346,13 +340,13 @@ id('newwhitelist-form').addEventListener('submit', function(e) {
         try_regexp(id('newwhitelist-pattern').value),
         "", // could be anything
     ]);
-    reload();
+    void reload();
     id('newwhitelist-pattern').value = '';
 });
 for(let elem of img_btns) {
     elem.addEventListener('click', function() {
         config[elem.dataset['name']] = elem.dataset['value'];
-        reload();
+        void reload();
     });
 }
 

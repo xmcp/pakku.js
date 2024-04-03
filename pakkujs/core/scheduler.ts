@@ -1,17 +1,26 @@
 import {WorkerPool} from "./worker_pool";
 
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
-import {DanmuChunk, DanmuClusterOutput, int, MissingData, Stats} from "./types";
-import {Config} from "../background/config";
+import {DanmuChunk, DanmuClusterOutput, int, LocalizedConfig, MessageStats, MissingData, Stats} from "./types";
 import {post_combine} from "./post_combine";
 
 const WORKER_POOL_SIZE = 3;
 const MAX_SCHEDULERS_PER_PAGE = 4;
 
+const BADGE_DOWNLOADING = '↓';
+const BADGE_PROCESSING = '...';
+const BADGE_ERR_NET = 'NET!';
+const BADGE_ERR_JS = 'JS!';
+
 class Scheduler {
     ingress: Ingress;
     egresses: Array<[Egress, (resp: any)=>void]>;
-    config: Config;
+    config: LocalizedConfig;
+
+    stats: Stats | MessageStats;
+    ongoing_stats: Stats;
+    tabid: int;
+    start_ts: number;
 
     chunks_in: Map<int, DanmuChunk>;
     clusters: Map<int, DanmuClusterOutput>;
@@ -22,10 +31,14 @@ class Scheduler {
     finished: boolean;
     pool: WorkerPool;
 
-    constructor(ingress: Ingress, config: Config) {
+    constructor(ingress: Ingress, config: LocalizedConfig, tabid: int) {
         this.ingress = ingress;
         this.egresses = [];
         this.config = config;
+        this.stats = new MessageStats('message', BADGE_DOWNLOADING, '正在下载弹幕文件').notify(tabid);
+        this.ongoing_stats = new Stats();
+        this.tabid = tabid;
+        this.start_ts = 0;
         this.chunks_in = new Map();
         this.clusters = new Map();
         this.chunks_out = new Map();
@@ -35,8 +48,15 @@ class Scheduler {
         this.pool = new WorkerPool(WORKER_POOL_SIZE);
     }
 
+    write_failing_stats(e: Error, badge: string) {
+        let msg = `弹幕加载失败 ${e.message}\n\nStacktrace:\n${e.stack}\n\nIngress:\n${this.ingress}`;
+        this.stats = new MessageStats('error', badge, msg).notify(this.tabid);
+
+        console.error('pakku scheduler: GOT EXCEPTION', e);
+    }
+
     add_egress(egress: Egress, callback: (resp: any)=>void) {
-        console.log('scheduler: route ingress =', this.ingress, 'egress =', egress);
+        console.log('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
         this.egresses.push([egress, callback]);
         this.try_serve_egress();
     }
@@ -58,10 +78,17 @@ class Scheduler {
             extra: next_chunk.extra,
         };
 
-        let res: DanmuClusterOutput = await this.pool.exec([chunk as DanmuChunk, next_chunk_filtered as DanmuChunk]);
+        let res: DanmuClusterOutput;
+        try {
+            res = await this.pool.exec([chunk as DanmuChunk, next_chunk_filtered as DanmuChunk]);
+        } catch(e) {
+            this.write_failing_stats(e as Error, BADGE_ERR_JS);
+            return;
+        }
 
-        console.log('scheduler: got combine result', segidx, res.clusters.length);
+        console.log('pakku scheduler: got combine result', segidx, res.clusters.length);
         this.clusters.set(segidx, res);
+        this.ongoing_stats.update_from(res.stats);
 
         this.try_start_postproc(segidx);
     }
@@ -75,8 +102,14 @@ class Scheduler {
         if(!clusters || !prev_clusters)
             return; // not ready
 
-        let res = post_combine(clusters, prev_clusters);
-        console.log('scheduler: got chunks out', segidx, res.objs.length);
+        let res;
+        try {
+            res = post_combine(clusters, prev_clusters, this.ongoing_stats);
+        } catch(e) {
+            this.write_failing_stats(e as Error, BADGE_ERR_JS);
+            return;
+        }
+        console.log('pakku scheduler: got chunks out', segidx, res.objs.length);
         this.chunks_out.set(segidx, res);
 
         this.try_serve_egress();
@@ -84,35 +117,56 @@ class Scheduler {
 
     try_serve_egress() {
         this.egresses = this.egresses.filter(([egress, callback]) => {
-            let res = perform_egress(egress, this.num_chunks, this.chunks_out);
+            let res = perform_egress(egress, this.num_chunks, this.config.GLOBAL_SWITCH ? this.chunks_out : this.chunks_in);
 
             if(res===MissingData)
                 return true; // keep in queue
             else {
-                console.log('scheduler: served egress', egress);
+                console.log('pakku scheduler: served egress', egress);
                 callback({data: res});
                 return false; // remove from queue
             }
         });
 
         if(this.num_chunks && this.num_chunks===this.chunks_out.size)
-            this.pool.terminate();
+            this.cleanup();
+    }
+
+    cleanup() {
+        if(this.stats.type!=='error') {
+            this.ongoing_stats.parse_time_ms = +new Date() - this.start_ts - this.ongoing_stats.download_time_ms;
+            this.ongoing_stats.notify(this.tabid, this.config);
+            this.stats = this.ongoing_stats;
+        }
+        this.pool.terminate();
+        this.clusters.clear(); // to free some RAM
     }
 
     async start() {
-        await perform_ingress(this.ingress, (idx, chunk) => {
-            console.log('scheduler: got ingress chunk', idx, chunk.objs.length);
-            chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
+        this.start_ts = +new Date();
+        try {
+            await perform_ingress(this.ingress, (idx, chunk) => {
+                console.log('pakku scheduler: got ingress chunk', idx, chunk.objs.length);
+                chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
 
-            this.chunks_in.set(idx, chunk);
-            this.try_start_combine(idx);
-        });
+                this.chunks_in.set(idx, chunk);
+                this.ongoing_stats.num_total_danmu += chunk.objs.length;
+
+                this.try_start_combine(idx);
+            });
+        } catch(e) {
+            this.write_failing_stats(e as Error, BADGE_ERR_NET);
+            return;
+        }
 
         this.num_chunks = this.chunks_in.size;
-        console.log('scheduler: total chunks', this.num_chunks);
+
+        this.ongoing_stats.download_time_ms = +new Date() - this.start_ts;
+        console.log('pakku scheduler: download finished, total chunks =', this.num_chunks);
+        this.stats = new MessageStats('message', BADGE_PROCESSING, '正在处理弹幕').notify(this.tabid);
 
         this.chunks_in.set(this.num_chunks+1, {objs: [], extra: {}}); // pad a pseudo chunk after the last one for the `next_chunk` arg
-        this.try_start_combine(this.num_chunks);
+        void this.try_start_combine(this.num_chunks);
 
         this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
         this.try_start_postproc(1);
@@ -125,7 +179,7 @@ function ingress_equals(a: Ingress, b: Ingress): boolean {
     return Object.keys(a).every(k => a[k] === b[k]);
 }
 
-export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: any)=>void, config: Config) {
+export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: any)=>void, config: LocalizedConfig, tabid: int) {
     for(let scheduler of schedulers)
         if(ingress_equals(scheduler.ingress, ingress)) {
             scheduler.add_egress(egress, callback);
@@ -133,9 +187,9 @@ export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: a
             return;
         }
 
-    let scheduler = new Scheduler(ingress, config);
+    let scheduler = new Scheduler(ingress, config, tabid);
     scheduler.add_egress(egress, callback);
-    scheduler.start();
+    void scheduler.start();
 
     schedulers.push(scheduler);
     if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)

@@ -1,1 +1,264 @@
-popup!
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>pakku</title>
+    <style>
+        .display-none {
+            display: none;
+        }
+        body {
+            width: 300px;
+            background-color: #f7f7f7;
+            font-size: 75%;
+        }
+        code, kbd, .code {
+            font-family: Consolas, Courier, monospace;
+        }
+        a {
+            color: inherit;
+        }
+        a[data-options-link] {
+            text-decoration: none !important;
+        }
+        a[data-options-link]::after {
+            content: ' ⌾';
+            color: #aaa;
+        }
+        .slim p {
+            margin: .3em;
+            text-align: left;
+        }
+        .clearfix {
+            clear: both;
+        }
+        kbd { /* stolen from github */
+            display: inline-block;
+            padding: 3px 5px;
+            font-size: 10px;
+            color: #444d56;
+            vertical-align: baseline;
+            background-color: #fafbfc;
+            border: solid 1px #c6cbd1;
+            border-bottom-color: #959da5;
+            border-radius: 3px;
+            box-shadow: inset 0 -1px 0 #959da5;
+        }
+        kbd:empty::after {
+            content: '无快捷键';
+            opacity: .5;
+        }
+        body, #switch {
+            font-family: '微软雅黑', 'Microsoft Yahei', '宋体', sans-serif;
+        }
+        #pakku-logo, #pakku-logo img {
+            display: block;
+            width: 80px;
+            height: 80px;
+            float: left;
+            margin-right: 15px;
+        }
+        #pakku-title {
+            font-size: 30px;
+            line-height: 30px;
+            font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', monospace;
+            margin: 0 0 .5em 0;
+        }
+        #pakku-title small {
+            font-weight: normal;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+        #switch {
+            border: black 1px solid;
+            border-radius: 3px;
+        }
+        #switch.on {
+            background-color: #dfd;
+        }
+        #switch.off {
+            background-color: #ddd;
+        }
+        #hint-text {
+            text-align: center;
+        }
+        #result table {
+            border-spacing: 0;
+            margin-top: 1em;
+            width: 100%;
+        }
+        tr:hover {
+            background-color: #fcfcfc;
+        }
+        #result td, #result th {
+            padding: 3px 0 3px 0;
+        }
+        #result tr.first-item td {
+            border-top: 1px solid #aaa;
+        }
+        #result tr.first-item td:first-child {
+            font-weight: bold;
+        }
+        #result th {
+            text-align: left;
+        }
+        #result td:last-child {
+            text-align: right;
+            padding-right: 1em;
+        }
+        #result * {
+            font-size: 13px;
+        }
+        #exception {
+            background-color: #ffaaaa;
+            overflow: auto;
+            padding-left: 1em;
+            margin-top: 1em;
+        }
+        .status-header-combined.first-item td:first-child:after {
+            color: #00aa00;
+            content: "已合并";
+        }
+        .status-header-deleted.first-item td:first-child::after {
+            color: #dd0000;
+            content: "已删除";
+        }
+        .status-header-ignored.first-item td:first-child::after {
+            color: #555555;
+            content: "已忽略";
+        }
+        .status-header-modified.first-item td:first-child::after {
+            color: #0000dd;
+            content: "已修改";
+        }
+        .status-header-info.first-item td:first-child::after {
+            color: black;
+            content: "* 信息";
+        }
+        .status-time {
+            opacity: .6;
+        }
+        .command-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="result" class="display-none">
+        <p>
+            <span style="float: right">
+                <span class="status-time" title="下载和处理弹幕用时">
+                    <span id="status-download_time_ms">---</span>
+                    +
+                    <span id="status-parse_time_ms">---</span>
+                    ms
+                </span>
+                &nbsp;
+                <a id="link-danmu-count" target="_blank">
+                    弹幕数 <span id="status-num_total_danmu">--</span>
+                    → <span id="status-num_onscreen_danmu">--</span>
+                </a>
+            </span>
+            <button type="button" id="userscript-btn"> JS </button>
+        </p>
+        <table>
+            <tbody>
+                <tr class="status-header-combined">
+                    <td></td>
+                    <td><a data-options-link="threshold">内容相同</a></td>
+                    <td id="status-combined_identical"></td>
+                </tr>
+                <tr class="status-header-combined">
+                    <td></td>
+                    <td><a data-options-link="max-dist">内容近似</a></td>
+                    <td id="status-combined_edit_distance"></td>
+                </tr>
+                <tr class="status-header-combined">
+                    <td></td>
+                    <td><a data-options-link="trim-pinyin">谐音</a></td>
+                    <td id="status-combined_pinyin_distance"></td>
+                </tr>
+                <tr class="status-header-combined">
+                    <td></td>
+                    <td><a data-options-link="max-cosine">词频向量近似</a></td>
+                    <td id="status-combined_cosine_distance"></td>
+                </tr>
+
+                <tr class="status-header-deleted">
+                    <td></td>
+                    <td>命中黑名单</td>
+                    <td id="status-deleted_blacklist"></td>
+                </tr>
+                
+                <tr class="status-header-ignored">
+                    <td></td>
+                    <td><a data-options-link="newwhitelist-pattern">根据内容强制忽略</a></td>
+                    <td id="status-ignored_whitelist"></td>
+                </tr>
+                <tr class="status-header-ignored">
+                    <td></td>
+                    <td>代码弹幕</td>
+                    <td id="status-ignored_script"></td>
+                </tr>
+                <tr class="status-header-ignored">
+                    <td></td>
+                    <td><a data-options-link="batch-ignore-panel">忽略特定类型弹幕</a></td>
+                    <td id="status-ignored_type"></td>
+                </tr>
+                
+                <tr class="status-header-modified">
+                    <td></td>
+                    <td><a data-options-link="enlarge">放大合并后的弹幕</a></td>
+                    <td id="status-modified_enlarge"></td>
+                </tr>
+                <tr class="status-header-modified">
+                    <td></td>
+                    <td><a data-options-link="shrink">缩小密度过高的弹幕</a></td>
+                    <td id="status-modified_shrink"></td>
+                </tr>
+                <tr class="status-header-modified">
+                    <td></td>
+                    <td><a data-options-link="scroll-threshold">超长弹幕转换为滚动</a></td>
+                    <td id="status-modified_scroll"></td>
+                </tr>
+                
+                <tr class="status-header-info">
+                    <td></td>
+                    <td><a data-options-link="newforcelist-pattern">命中强制合并规则</a></td>
+                    <td id="status-num_taolu_matched"></td>
+                </tr>
+                <tr class="status-header-info">
+                    <td></td>
+                    <td>最大合并数量</td>
+                    <td id="status-num_max_combo"></td>
+                </tr>
+                <tr class="status-header-info">
+                    <td></td>
+                    <td>最大弹幕密度</td>
+                    <td id="status-num_max_dispval"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="exception" class="display-none">
+        <p id="status-error"></p>
+        <pre><code id="status-details"></code></pre>
+    </div>
+    
+    <p id="pakku-title">
+        <span>pakku </span>
+        <small id="hint-text">......</small>
+    </p>
+    <hr>
+    <div>
+        <a id="pakku-logo" target="_blank" title="选项"><img src="/assets/icon_display.png"></a>
+        <div class="slim" style="padding-top: .5em">
+            <p><kbd class="command-link" id="command-_execute_action"></kbd> 显示本对话框</p>
+            <p><kbd class="command-link" id="command-toggle-global-switch"></kbd> 切换 <button id="switch">……</button></p>
+            <p class="code">pakku v<span id="version">...</span> by @xmcp</p>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    
+    <script src="/generated/popup.js"></script>
+</body>
+</html>

@@ -85,6 +85,7 @@ module.exports = function(grunt) {
                 files: {
                     'dist/_/generated/background.js': 'pakkujs/background/background.ts',
                     'dist/_/generated/options.js': 'pakkujs/page/options.js',
+                    'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
                     'dist/_/generated/injected.js': 'pakkujs/injected/main.ts',
                     'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
                 }
