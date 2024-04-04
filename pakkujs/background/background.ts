@@ -37,8 +37,16 @@ chrome.notifications.onButtonClicked.addListener(function(notif_id,btn_idx) {
     }
 });
 
+async function reset_badge() {
+    // reset badge options because options during the previous launch might not be cleared away
+    await chrome.action.setBadgeText({text: ''});
+    if(chrome.action.setBadgeTextColor)
+        await chrome.action.setBadgeTextColor({color: 'white'});
+}
+
 async function perform_init() {
     await init_state();
+    await reset_badge();
     await check_chrome_permission_hotfix();
 }
 

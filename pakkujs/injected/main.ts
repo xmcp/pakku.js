@@ -1,7 +1,7 @@
 import {url_finder} from "../protocol/urls";
 import {handle_task} from "../core/scheduler";
 import {Config, get_config} from "../background/config";
-import {get_state} from "../background/state";
+import {get_state, remove_state} from "../background/state";
 import {BlacklistItem, int, LocalizedConfig} from "../core/types";
 
 function get_player_blacklist(): BlacklistItem[] {
@@ -33,8 +33,14 @@ async function apply_local_config(config: Config): Promise<LocalizedConfig> {
 
     let userscript = config.USERSCRIPT;
 
-    if(!tabid)
+    if(!tabid) {
         tabid = await chrome.runtime.sendMessage({type: 'get_tabid'}) as int;
+
+        // storage cleanup
+        window.onunload = function() {
+            void remove_state([`STATS_${tabid}`]);
+        };
+    }
 
     if(state.USERSCRIPTS[tabid])
         userscript = (userscript || '') + '\n\n' + state.USERSCRIPTS[tabid];

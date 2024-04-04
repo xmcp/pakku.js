@@ -14,13 +14,8 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/chrome": "^0.0.222",
+    "@types/chrome": "^0.0.263",
     "@types/md5": "^2.3.5",
-    "md5": "^2.3.0",
-    "protobufjs-cli": "^1.1.2",
-    "remote-web-worker": "^0.0.9",
-    "tslib": "^2.6.2",
-    "typescript": "^4.9.3",
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-compress": "^1.4.3",
@@ -30,8 +25,13 @@
     "grunt-contrib-htmlmin": "^2.4.0",
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-rollup": "^12.0.0",
     "grunt-move": "^1.0.0",
-    "load-grunt-tasks": "^4.0.0"
+    "grunt-rollup": "^12.0.0",
+    "load-grunt-tasks": "^4.0.0",
+    "md5": "^2.3.0",
+    "protobufjs-cli": "^1.1.2",
+    "remote-web-worker": "^0.0.9",
+    "tslib": "^2.6.2",
+    "typescript": "^4.9.3"
   }
 }

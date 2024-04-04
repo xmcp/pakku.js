@@ -1,7 +1,7 @@
 import {get_config, save_config} from '../background/config';
 
-const IS_FIREFOX = import.meta.env.PAKKU_CHANNEL === 'firefox';
-const IS_EDG = import.meta.env.PAKKU_CHANNEL === 'chrome' && navigator.userAgent.indexOf('Edg/') !== -1;
+const IS_FIREFOX = process.env.PAKKU_CHANNEL === 'firefox';
+const IS_EDG = process.env.PAKKU_CHANNEL === 'chrome' && navigator.userAgent.indexOf('Edg/') !== -1;
 
 if(!IS_FIREFOX && navigator.userAgent.indexOf('Firefox/') !== -1 && window.InstallTrigger) {
     if(confirm('您正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请卸载当前版本，然后在 Firefox 附加组件中心下载 pakku。\n\n现在前往下载吗？'))

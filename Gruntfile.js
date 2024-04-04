@@ -76,7 +76,7 @@ module.exports = function(grunt) {
                     commonjs(),
                     replace({
                         preventAssignment: true,
-                       'import.meta.env.PAKKU_CHANNEL': 'chrome', // TODO: firefox
+                       'process.env.PAKKU_CHANNEL': 'chrome', // TODO: firefox
                     }),
                 ],
                 shimMissingExports: true,

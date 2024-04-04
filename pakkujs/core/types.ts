@@ -1,4 +1,5 @@
 import {Config} from "../background/config";
+import {save_state} from "../background/state";
 
 export type int = number;
 export type float = number;
@@ -45,7 +46,7 @@ export class MessageStats {
     }
 
     notify(tabid: int) {
-        void chrome.storage.session.set({['STATS_'+tabid]: this});
+        void save_state({['STATS_'+tabid]: this});
         const BGCOLORS = {error: '#ff4444', message: '#4444ff'};
         void chrome.runtime.sendMessage({
             type: 'update_badge',
@@ -84,7 +85,7 @@ export class Stats {
     num_max_dispval = 0;
 
     notify(tabid: int, config: Config) {
-        void chrome.storage.session.set({['STATS_'+tabid]: this});
+        void save_state({['STATS_'+tabid]: this});
         let text = (
             config.POPUP_BADGE==='count' ? (this.num_total_danmu - this.num_onscreen_danmu) :
             config.POPUP_BADGE==='percent' ? `${Math.max(0, 100 - 100 * this.num_onscreen_danmu / this.num_total_danmu).toFixed(0)}%` :

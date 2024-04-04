@@ -12,6 +12,13 @@ const BADGE_PROCESSING = '...';
 const BADGE_ERR_NET = 'NET!';
 const BADGE_ERR_JS = 'JS!';
 
+function _filter_aslongas<T>(x: Array<T>, fn: (x: T)=>boolean): Array<T> {
+    let i = 0;
+    while(i<x.length && fn(x[i]))
+        i++;
+    return x.slice(0, i);
+}
+
 class Scheduler {
     ingress: Ingress;
     egresses: Array<[Egress, (resp: any)=>void]>;
@@ -74,7 +81,7 @@ class Scheduler {
 
         let max_next_time = chunk.objs.length ? chunk.objs[chunk.objs.length-1].time_ms + 1000 * this.config.THRESHOLD : 0;
         let next_chunk_filtered = {
-            objs: next_chunk.objs.filter(obj => obj.time_ms < max_next_time),
+            objs: _filter_aslongas(next_chunk.objs, obj => obj.time_ms < max_next_time),
             extra: next_chunk.extra,
         };
 
@@ -91,6 +98,7 @@ class Scheduler {
         this.ongoing_stats.update_from(res.stats);
 
         this.try_start_postproc(segidx);
+        this.try_start_postproc(segidx+1);
     }
 
     try_start_postproc(segidx: int) {
@@ -153,6 +161,7 @@ class Scheduler {
                 this.ongoing_stats.num_total_danmu += chunk.objs.length;
 
                 this.try_start_combine(idx);
+                this.try_start_combine(idx-1);
             });
         } catch(e) {
             this.write_failing_stats(e as Error, BADGE_ERR_NET);
