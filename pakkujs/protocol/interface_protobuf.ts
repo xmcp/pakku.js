@@ -78,7 +78,7 @@ export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk): Uint
         "animation": item.extra.proto_animation,
         "colorful": 0,
     }));
-    return proto_seg.encode(proto_seg.create({elems: res})).finish();
+    return proto_seg.encode({elems: res}).finish();
 }
 
 function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoapi_sub_url: string | null): AnyObject {

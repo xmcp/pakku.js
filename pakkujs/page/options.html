@@ -503,6 +503,15 @@
                         * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
                     </p>
                     <p>
+                        <label for="combine-threads">并行处理：</label>
+                        使用
+                        <input id="combine-threads" type="number" min="1" step="1" max="6">
+                        个线程
+                    </p>
+                    <p class="warning">
+                        * 对于时间长、弹幕多的视频（如番剧和电影），可以增加线程数量以加快处理速度；对于短视频，可以减少线程数量以缩短初始化时间
+                    </p>
+                    <p>
                         （有一些 <a href="#show-advanced">复杂的设置</a>
                         <span class="advanced">现在没有</span>
                         被隐藏了，一般人不需要修改它们。）

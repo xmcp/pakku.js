@@ -209,6 +209,7 @@ function loadconfig() {
     id('scroll-threshold').value = config.SCROLL_THRESHOLD;
     // 其他
     id('popup-badge').value = config.POPUP_BADGE;
+    id('combine-threads').value = config.COMBINE_THREADS;
 
     // advanced options
     if(id('show-advanced').checked) document.body.classList.add('i-am-advanced');
@@ -316,8 +317,15 @@ function loadconfig() {
         whitelist.appendChild(container);
     }
 
+    function stringify(s) {
+        if(typeof s === 'boolean')
+            return s ? 'on' : 'off';
+        else
+            return s;
+    }
+
     for(let elem of img_btns) {
-        if(localStorage[elem.dataset['name']] === elem.dataset['value'])
+        if(stringify(config[elem.dataset['name']]) === elem.dataset['value'])
             elem.className = 'img-active';
         else
             elem.className = 'img-inactive';
@@ -384,7 +392,7 @@ async function update() {
     config.SCROLL_THRESHOLD = parseInt(id('scroll-threshold').value) >= 0 ? parseInt(id('scroll-threshold').value) : 0;
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
-
+    config.COMBINE_THREADS = id('combine-threads').value;
 
     await reload();
 
@@ -407,7 +415,7 @@ for(let elem of [
     // 实验室
     'break-update', 'scroll-threshold',
     // 其他
-    'popup-badge',
+    'popup-badge', 'combine-threads',
 ]) {
     id(elem).addEventListener('change', update);
 }

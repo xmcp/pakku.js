@@ -131,27 +131,12 @@ export namespace bilibili {
                         public qoe?: (bilibili.community.service.dm.v1.IQoeInfo|null);
 
                         /**
-                         * Creates a new DmWebViewReply instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DmWebViewReply instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDmWebViewReply): bilibili.community.service.dm.v1.DmWebViewReply;
-
-                        /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @param message DmWebViewReply message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDmWebViewReply, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DmWebViewReply message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
-                         * @param message DmWebViewReply message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDmWebViewReply, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DmWebViewReply message from the specified reader or buffer.
@@ -162,43 +147,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmWebViewReply;
-
-                        /**
-                         * Decodes a DmWebViewReply message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DmWebViewReply
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DmWebViewReply;
-
-                        /**
-                         * Verifies a DmWebViewReply message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DmWebViewReply message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DmWebViewReply
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DmWebViewReply;
-
-                        /**
-                         * Creates a plain object from a DmWebViewReply message. Also converts values to other types if specified.
-                         * @param message DmWebViewReply
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DmWebViewReply, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DmWebViewReply to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DmWebViewReply
@@ -228,27 +176,12 @@ export namespace bilibili {
                         public info: string;
 
                         /**
-                         * Creates a new QoeInfo instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns QoeInfo instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IQoeInfo): bilibili.community.service.dm.v1.QoeInfo;
-
-                        /**
                          * Encodes the specified QoeInfo message. Does not implicitly {@link bilibili.community.service.dm.v1.QoeInfo.verify|verify} messages.
                          * @param message QoeInfo message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IQoeInfo, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified QoeInfo message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.QoeInfo.verify|verify} messages.
-                         * @param message QoeInfo message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IQoeInfo, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a QoeInfo message from the specified reader or buffer.
@@ -259,43 +192,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.QoeInfo;
-
-                        /**
-                         * Decodes a QoeInfo message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns QoeInfo
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.QoeInfo;
-
-                        /**
-                         * Verifies a QoeInfo message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a QoeInfo message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns QoeInfo
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.QoeInfo;
-
-                        /**
-                         * Creates a plain object from a QoeInfo message. Also converts values to other types if specified.
-                         * @param message QoeInfo
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.QoeInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this QoeInfo to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for QoeInfo
@@ -373,27 +269,12 @@ export namespace bilibili {
                         public toast?: (bilibili.community.service.dm.v1.IToast|null);
 
                         /**
-                         * Creates a new PostPanel instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns PostPanel instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IPostPanel): bilibili.community.service.dm.v1.PostPanel;
-
-                        /**
                          * Encodes the specified PostPanel message. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanel.verify|verify} messages.
                          * @param message PostPanel message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IPostPanel, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified PostPanel message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanel.verify|verify} messages.
-                         * @param message PostPanel message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IPostPanel, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a PostPanel message from the specified reader or buffer.
@@ -404,43 +285,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.PostPanel;
-
-                        /**
-                         * Decodes a PostPanel message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns PostPanel
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.PostPanel;
-
-                        /**
-                         * Verifies a PostPanel message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a PostPanel message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns PostPanel
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.PostPanel;
-
-                        /**
-                         * Creates a plain object from a PostPanel message. Also converts values to other types if specified.
-                         * @param message PostPanel
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.PostPanel, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this PostPanel to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for PostPanel
@@ -524,27 +368,12 @@ export namespace bilibili {
                         public postStatus: bilibili.community.service.dm.v1.PostStatus;
 
                         /**
-                         * Creates a new PostPanelV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns PostPanelV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IPostPanelV2): bilibili.community.service.dm.v1.PostPanelV2;
-
-                        /**
                          * Encodes the specified PostPanelV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanelV2.verify|verify} messages.
                          * @param message PostPanelV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IPostPanelV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified PostPanelV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.PostPanelV2.verify|verify} messages.
-                         * @param message PostPanelV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IPostPanelV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a PostPanelV2 message from the specified reader or buffer.
@@ -555,43 +384,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.PostPanelV2;
-
-                        /**
-                         * Decodes a PostPanelV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns PostPanelV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.PostPanelV2;
-
-                        /**
-                         * Verifies a PostPanelV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a PostPanelV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns PostPanelV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.PostPanelV2;
-
-                        /**
-                         * Creates a plain object from a PostPanelV2 message. Also converts values to other types if specified.
-                         * @param message PostPanelV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.PostPanelV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this PostPanelV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for PostPanelV2
@@ -651,27 +443,12 @@ export namespace bilibili {
                         public show: boolean;
 
                         /**
-                         * Creates a new ClickButton instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns ClickButton instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IClickButton): bilibili.community.service.dm.v1.ClickButton;
-
-                        /**
                          * Encodes the specified ClickButton message. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButton.verify|verify} messages.
                          * @param message ClickButton message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IClickButton, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified ClickButton message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButton.verify|verify} messages.
-                         * @param message ClickButton message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IClickButton, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a ClickButton message from the specified reader or buffer.
@@ -682,43 +459,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.ClickButton;
-
-                        /**
-                         * Decodes a ClickButton message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns ClickButton
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.ClickButton;
-
-                        /**
-                         * Verifies a ClickButton message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a ClickButton message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns ClickButton
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.ClickButton;
-
-                        /**
-                         * Creates a plain object from a ClickButton message. Also converts values to other types if specified.
-                         * @param message ClickButton
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.ClickButton, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this ClickButton to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for ClickButton
@@ -790,27 +530,12 @@ export namespace bilibili {
                         public exposureType: bilibili.community.service.dm.v1.ExposureType;
 
                         /**
-                         * Creates a new ClickButtonV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns ClickButtonV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IClickButtonV2): bilibili.community.service.dm.v1.ClickButtonV2;
-
-                        /**
                          * Encodes the specified ClickButtonV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButtonV2.verify|verify} messages.
                          * @param message ClickButtonV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IClickButtonV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified ClickButtonV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.ClickButtonV2.verify|verify} messages.
-                         * @param message ClickButtonV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IClickButtonV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a ClickButtonV2 message from the specified reader or buffer.
@@ -821,43 +546,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.ClickButtonV2;
-
-                        /**
-                         * Decodes a ClickButtonV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns ClickButtonV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.ClickButtonV2;
-
-                        /**
-                         * Verifies a ClickButtonV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a ClickButtonV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns ClickButtonV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.ClickButtonV2;
-
-                        /**
-                         * Creates a plain object from a ClickButtonV2 message. Also converts values to other types if specified.
-                         * @param message ClickButtonV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.ClickButtonV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this ClickButtonV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for ClickButtonV2
@@ -925,27 +613,12 @@ export namespace bilibili {
                         public postStatus: bilibili.community.service.dm.v1.PostStatus;
 
                         /**
-                         * Creates a new TextInput instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns TextInput instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ITextInput): bilibili.community.service.dm.v1.TextInput;
-
-                        /**
                          * Encodes the specified TextInput message. Does not implicitly {@link bilibili.community.service.dm.v1.TextInput.verify|verify} messages.
                          * @param message TextInput message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ITextInput, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified TextInput message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.TextInput.verify|verify} messages.
-                         * @param message TextInput message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ITextInput, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a TextInput message from the specified reader or buffer.
@@ -956,43 +629,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.TextInput;
-
-                        /**
-                         * Decodes a TextInput message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns TextInput
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.TextInput;
-
-                        /**
-                         * Verifies a TextInput message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a TextInput message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns TextInput
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.TextInput;
-
-                        /**
-                         * Creates a plain object from a TextInput message. Also converts values to other types if specified.
-                         * @param message TextInput
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.TextInput, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this TextInput to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for TextInput
@@ -1046,27 +682,12 @@ export namespace bilibili {
                         public textInputLimit: number;
 
                         /**
-                         * Creates a new TextInputV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns TextInputV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ITextInputV2): bilibili.community.service.dm.v1.TextInputV2;
-
-                        /**
                          * Encodes the specified TextInputV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.TextInputV2.verify|verify} messages.
                          * @param message TextInputV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ITextInputV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified TextInputV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.TextInputV2.verify|verify} messages.
-                         * @param message TextInputV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ITextInputV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a TextInputV2 message from the specified reader or buffer.
@@ -1077,43 +698,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.TextInputV2;
-
-                        /**
-                         * Decodes a TextInputV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns TextInputV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.TextInputV2;
-
-                        /**
-                         * Verifies a TextInputV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a TextInputV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns TextInputV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.TextInputV2;
-
-                        /**
-                         * Creates a plain object from a TextInputV2 message. Also converts values to other types if specified.
-                         * @param message TextInputV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.TextInputV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this TextInputV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for TextInputV2
@@ -1174,27 +758,12 @@ export namespace bilibili {
                         public show: boolean;
 
                         /**
-                         * Creates a new CheckBox instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns CheckBox instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ICheckBox): bilibili.community.service.dm.v1.CheckBox;
-
-                        /**
                          * Encodes the specified CheckBox message. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBox.verify|verify} messages.
                          * @param message CheckBox message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ICheckBox, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified CheckBox message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBox.verify|verify} messages.
-                         * @param message CheckBox message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ICheckBox, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a CheckBox message from the specified reader or buffer.
@@ -1205,43 +774,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.CheckBox;
-
-                        /**
-                         * Decodes a CheckBox message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns CheckBox
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.CheckBox;
-
-                        /**
-                         * Verifies a CheckBox message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a CheckBox message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns CheckBox
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.CheckBox;
-
-                        /**
-                         * Creates a plain object from a CheckBox message. Also converts values to other types if specified.
-                         * @param message CheckBox
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.CheckBox, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this CheckBox to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for CheckBox
@@ -1283,27 +815,12 @@ export namespace bilibili {
                         public defaultValue: boolean;
 
                         /**
-                         * Creates a new CheckBoxV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns CheckBoxV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ICheckBoxV2): bilibili.community.service.dm.v1.CheckBoxV2;
-
-                        /**
                          * Encodes the specified CheckBoxV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBoxV2.verify|verify} messages.
                          * @param message CheckBoxV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ICheckBoxV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified CheckBoxV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.CheckBoxV2.verify|verify} messages.
-                         * @param message CheckBoxV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ICheckBoxV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a CheckBoxV2 message from the specified reader or buffer.
@@ -1314,43 +831,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.CheckBoxV2;
-
-                        /**
-                         * Decodes a CheckBoxV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns CheckBoxV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.CheckBoxV2;
-
-                        /**
-                         * Verifies a CheckBoxV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a CheckBoxV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns CheckBoxV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.CheckBoxV2;
-
-                        /**
-                         * Creates a plain object from a CheckBoxV2 message. Also converts values to other types if specified.
-                         * @param message CheckBoxV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.CheckBoxV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this CheckBoxV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for CheckBoxV2
@@ -1404,27 +884,12 @@ export namespace bilibili {
                         public button?: (bilibili.community.service.dm.v1.IButton|null);
 
                         /**
-                         * Creates a new Toast instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns Toast instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IToast): bilibili.community.service.dm.v1.Toast;
-
-                        /**
                          * Encodes the specified Toast message. Does not implicitly {@link bilibili.community.service.dm.v1.Toast.verify|verify} messages.
                          * @param message Toast message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IToast, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified Toast message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Toast.verify|verify} messages.
-                         * @param message Toast message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IToast, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a Toast message from the specified reader or buffer.
@@ -1435,43 +900,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.Toast;
-
-                        /**
-                         * Decodes a Toast message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns Toast
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.Toast;
-
-                        /**
-                         * Verifies a Toast message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a Toast message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns Toast
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.Toast;
-
-                        /**
-                         * Creates a plain object from a Toast message. Also converts values to other types if specified.
-                         * @param message Toast
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.Toast, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this Toast to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for Toast
@@ -1513,27 +941,12 @@ export namespace bilibili {
                         public toastButtonV2?: (bilibili.community.service.dm.v1.IToastButtonV2|null);
 
                         /**
-                         * Creates a new ToastV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns ToastV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IToastV2): bilibili.community.service.dm.v1.ToastV2;
-
-                        /**
                          * Encodes the specified ToastV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.ToastV2.verify|verify} messages.
                          * @param message ToastV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IToastV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified ToastV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.ToastV2.verify|verify} messages.
-                         * @param message ToastV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IToastV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a ToastV2 message from the specified reader or buffer.
@@ -1544,43 +957,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.ToastV2;
-
-                        /**
-                         * Decodes a ToastV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns ToastV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.ToastV2;
-
-                        /**
-                         * Verifies a ToastV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a ToastV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns ToastV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.ToastV2;
-
-                        /**
-                         * Creates a plain object from a ToastV2 message. Also converts values to other types if specified.
-                         * @param message ToastV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.ToastV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this ToastV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for ToastV2
@@ -1634,27 +1010,12 @@ export namespace bilibili {
                         public exposureType: bilibili.community.service.dm.v1.ExposureType;
 
                         /**
-                         * Creates a new BubbleV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns BubbleV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IBubbleV2): bilibili.community.service.dm.v1.BubbleV2;
-
-                        /**
                          * Encodes the specified BubbleV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.BubbleV2.verify|verify} messages.
                          * @param message BubbleV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IBubbleV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified BubbleV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.BubbleV2.verify|verify} messages.
-                         * @param message BubbleV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IBubbleV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a BubbleV2 message from the specified reader or buffer.
@@ -1665,43 +1026,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.BubbleV2;
-
-                        /**
-                         * Decodes a BubbleV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns BubbleV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.BubbleV2;
-
-                        /**
-                         * Verifies a BubbleV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a BubbleV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns BubbleV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.BubbleV2;
-
-                        /**
-                         * Creates a plain object from a BubbleV2 message. Also converts values to other types if specified.
-                         * @param message BubbleV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.BubbleV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this BubbleV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for BubbleV2
@@ -1756,27 +1080,12 @@ export namespace bilibili {
                         public exposureType: bilibili.community.service.dm.v1.ExposureType;
 
                         /**
-                         * Creates a new LabelV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns LabelV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ILabelV2): bilibili.community.service.dm.v1.LabelV2;
-
-                        /**
                          * Encodes the specified LabelV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.LabelV2.verify|verify} messages.
                          * @param message LabelV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ILabelV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified LabelV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.LabelV2.verify|verify} messages.
-                         * @param message LabelV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ILabelV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a LabelV2 message from the specified reader or buffer.
@@ -1787,43 +1096,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.LabelV2;
-
-                        /**
-                         * Decodes a LabelV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns LabelV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.LabelV2;
-
-                        /**
-                         * Verifies a LabelV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a LabelV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns LabelV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.LabelV2;
-
-                        /**
-                         * Creates a plain object from a LabelV2 message. Also converts values to other types if specified.
-                         * @param message LabelV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.LabelV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this LabelV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for LabelV2
@@ -1865,27 +1137,12 @@ export namespace bilibili {
                         public action: bilibili.community.service.dm.v1.ToastFunctionType;
 
                         /**
-                         * Creates a new ToastButtonV2 instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns ToastButtonV2 instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IToastButtonV2): bilibili.community.service.dm.v1.ToastButtonV2;
-
-                        /**
                          * Encodes the specified ToastButtonV2 message. Does not implicitly {@link bilibili.community.service.dm.v1.ToastButtonV2.verify|verify} messages.
                          * @param message ToastButtonV2 message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IToastButtonV2, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified ToastButtonV2 message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.ToastButtonV2.verify|verify} messages.
-                         * @param message ToastButtonV2 message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IToastButtonV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a ToastButtonV2 message from the specified reader or buffer.
@@ -1896,43 +1153,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.ToastButtonV2;
-
-                        /**
-                         * Decodes a ToastButtonV2 message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns ToastButtonV2
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.ToastButtonV2;
-
-                        /**
-                         * Verifies a ToastButtonV2 message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a ToastButtonV2 message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns ToastButtonV2
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.ToastButtonV2;
-
-                        /**
-                         * Creates a plain object from a ToastButtonV2 message. Also converts values to other types if specified.
-                         * @param message ToastButtonV2
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.ToastButtonV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this ToastButtonV2 to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for ToastButtonV2
@@ -1968,27 +1188,12 @@ export namespace bilibili {
                         public action: bilibili.community.service.dm.v1.ToastFunctionType;
 
                         /**
-                         * Creates a new Button instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns Button instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IButton): bilibili.community.service.dm.v1.Button;
-
-                        /**
                          * Encodes the specified Button message. Does not implicitly {@link bilibili.community.service.dm.v1.Button.verify|verify} messages.
                          * @param message Button message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IButton, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified Button message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Button.verify|verify} messages.
-                         * @param message Button message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IButton, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a Button message from the specified reader or buffer.
@@ -1999,43 +1204,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.Button;
-
-                        /**
-                         * Decodes a Button message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns Button
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.Button;
-
-                        /**
-                         * Verifies a Button message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a Button message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns Button
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.Button;
-
-                        /**
-                         * Creates a plain object from a Button message. Also converts values to other types if specified.
-                         * @param message Button
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.Button, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this Button to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for Button
@@ -2125,27 +1293,12 @@ export namespace bilibili {
                         public dmid: string;
 
                         /**
-                         * Creates a new CommandDm instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns CommandDm instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.ICommandDm): bilibili.community.service.dm.v1.CommandDm;
-
-                        /**
                          * Encodes the specified CommandDm message. Does not implicitly {@link bilibili.community.service.dm.v1.CommandDm.verify|verify} messages.
                          * @param message CommandDm message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.ICommandDm, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified CommandDm message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.CommandDm.verify|verify} messages.
-                         * @param message CommandDm message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.ICommandDm, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a CommandDm message from the specified reader or buffer.
@@ -2156,43 +1309,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.CommandDm;
-
-                        /**
-                         * Decodes a CommandDm message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns CommandDm
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.CommandDm;
-
-                        /**
-                         * Verifies a CommandDm message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a CommandDm message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns CommandDm
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.CommandDm;
-
-                        /**
-                         * Creates a plain object from a CommandDm message. Also converts values to other types if specified.
-                         * @param message CommandDm
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.CommandDm, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this CommandDm to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for CommandDm
@@ -2228,27 +1344,12 @@ export namespace bilibili {
                         public total: (number|Long);
 
                         /**
-                         * Creates a new DmSegConfig instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DmSegConfig instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDmSegConfig): bilibili.community.service.dm.v1.DmSegConfig;
-
-                        /**
                          * Encodes the specified DmSegConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DmSegConfig.verify|verify} messages.
                          * @param message DmSegConfig message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDmSegConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DmSegConfig message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmSegConfig.verify|verify} messages.
-                         * @param message DmSegConfig message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDmSegConfig, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DmSegConfig message from the specified reader or buffer.
@@ -2259,43 +1360,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmSegConfig;
-
-                        /**
-                         * Decodes a DmSegConfig message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DmSegConfig
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DmSegConfig;
-
-                        /**
-                         * Verifies a DmSegConfig message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DmSegConfig message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DmSegConfig
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DmSegConfig;
-
-                        /**
-                         * Creates a plain object from a DmSegConfig message. Also converts values to other types if specified.
-                         * @param message DmSegConfig
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DmSegConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DmSegConfig to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DmSegConfig
@@ -2337,27 +1401,12 @@ export namespace bilibili {
                         public recSwitch: number;
 
                         /**
-                         * Creates a new DanmakuFlagConfig instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DanmakuFlagConfig instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDanmakuFlagConfig): bilibili.community.service.dm.v1.DanmakuFlagConfig;
-
-                        /**
                          * Encodes the specified DanmakuFlagConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuFlagConfig.verify|verify} messages.
                          * @param message DanmakuFlagConfig message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDanmakuFlagConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DanmakuFlagConfig message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuFlagConfig.verify|verify} messages.
-                         * @param message DanmakuFlagConfig message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDanmakuFlagConfig, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DanmakuFlagConfig message from the specified reader or buffer.
@@ -2368,43 +1417,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DanmakuFlagConfig;
-
-                        /**
-                         * Decodes a DanmakuFlagConfig message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DanmakuFlagConfig
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DanmakuFlagConfig;
-
-                        /**
-                         * Verifies a DanmakuFlagConfig message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DanmakuFlagConfig message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DanmakuFlagConfig
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DanmakuFlagConfig;
-
-                        /**
-                         * Creates a plain object from a DanmakuFlagConfig message. Also converts values to other types if specified.
-                         * @param message DanmakuFlagConfig
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DanmakuFlagConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DanmakuFlagConfig to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DanmakuFlagConfig
@@ -2440,27 +1452,12 @@ export namespace bilibili {
                         public colorfulSrc: bilibili.community.service.dm.v1.IDmColorful[];
 
                         /**
-                         * Creates a new DmSegMobileReply instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DmSegMobileReply instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDmSegMobileReply): bilibili.community.service.dm.v1.DmSegMobileReply;
-
-                        /**
                          * Encodes the specified DmSegMobileReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmSegMobileReply.verify|verify} messages.
                          * @param message DmSegMobileReply message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDmSegMobileReply, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DmSegMobileReply message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmSegMobileReply.verify|verify} messages.
-                         * @param message DmSegMobileReply message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDmSegMobileReply, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DmSegMobileReply message from the specified reader or buffer.
@@ -2471,43 +1468,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmSegMobileReply;
-
-                        /**
-                         * Decodes a DmSegMobileReply message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DmSegMobileReply
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DmSegMobileReply;
-
-                        /**
-                         * Verifies a DmSegMobileReply message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DmSegMobileReply message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DmSegMobileReply
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DmSegMobileReply;
-
-                        /**
-                         * Creates a plain object from a DmSegMobileReply message. Also converts values to other types if specified.
-                         * @param message DmSegMobileReply
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DmSegMobileReply, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DmSegMobileReply to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DmSegMobileReply
@@ -2621,27 +1581,12 @@ export namespace bilibili {
                         public oid: (number|Long);
 
                         /**
-                         * Creates a new DanmakuElem instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DanmakuElem instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDanmakuElem): bilibili.community.service.dm.v1.DanmakuElem;
-
-                        /**
                          * Encodes the specified DanmakuElem message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuElem.verify|verify} messages.
                          * @param message DanmakuElem message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDanmakuElem, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DanmakuElem message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuElem.verify|verify} messages.
-                         * @param message DanmakuElem message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDanmakuElem, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DanmakuElem message from the specified reader or buffer.
@@ -2652,43 +1597,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DanmakuElem;
-
-                        /**
-                         * Decodes a DanmakuElem message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DanmakuElem
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DanmakuElem;
-
-                        /**
-                         * Verifies a DanmakuElem message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DanmakuElem message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DanmakuElem
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DanmakuElem;
-
-                        /**
-                         * Creates a plain object from a DanmakuElem message. Also converts values to other types if specified.
-                         * @param message DanmakuElem
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DanmakuElem, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DanmakuElem to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DanmakuElem
@@ -2832,27 +1740,12 @@ export namespace bilibili {
                         public seniorModeSwitch: number;
 
                         /**
-                         * Creates a new DanmuWebPlayerConfig instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DanmuWebPlayerConfig instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDanmuWebPlayerConfig): bilibili.community.service.dm.v1.DanmuWebPlayerConfig;
-
-                        /**
                          * Encodes the specified DanmuWebPlayerConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmuWebPlayerConfig.verify|verify} messages.
                          * @param message DanmuWebPlayerConfig message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDanmuWebPlayerConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DanmuWebPlayerConfig message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DanmuWebPlayerConfig.verify|verify} messages.
-                         * @param message DanmuWebPlayerConfig message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDanmuWebPlayerConfig, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DanmuWebPlayerConfig message from the specified reader or buffer.
@@ -2863,43 +1756,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DanmuWebPlayerConfig;
-
-                        /**
-                         * Decodes a DanmuWebPlayerConfig message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DanmuWebPlayerConfig
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DanmuWebPlayerConfig;
-
-                        /**
-                         * Verifies a DanmuWebPlayerConfig message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DanmuWebPlayerConfig message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DanmuWebPlayerConfig
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DanmuWebPlayerConfig;
-
-                        /**
-                         * Creates a plain object from a DanmuWebPlayerConfig message. Also converts values to other types if specified.
-                         * @param message DanmuWebPlayerConfig
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DanmuWebPlayerConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DanmuWebPlayerConfig to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DanmuWebPlayerConfig
@@ -2929,27 +1785,12 @@ export namespace bilibili {
                         public data: bilibili.community.service.dm.v1.IExpression[];
 
                         /**
-                         * Creates a new Expressions instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns Expressions instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IExpressions): bilibili.community.service.dm.v1.Expressions;
-
-                        /**
                          * Encodes the specified Expressions message. Does not implicitly {@link bilibili.community.service.dm.v1.Expressions.verify|verify} messages.
                          * @param message Expressions message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IExpressions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified Expressions message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Expressions.verify|verify} messages.
-                         * @param message Expressions message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IExpressions, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes an Expressions message from the specified reader or buffer.
@@ -2960,43 +1801,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.Expressions;
-
-                        /**
-                         * Decodes an Expressions message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns Expressions
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.Expressions;
-
-                        /**
-                         * Verifies an Expressions message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates an Expressions message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns Expressions
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.Expressions;
-
-                        /**
-                         * Creates a plain object from an Expressions message. Also converts values to other types if specified.
-                         * @param message Expressions
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.Expressions, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this Expressions to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for Expressions
@@ -3038,27 +1842,12 @@ export namespace bilibili {
                         public period: bilibili.community.service.dm.v1.IPeriod[];
 
                         /**
-                         * Creates a new Expression instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns Expression instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IExpression): bilibili.community.service.dm.v1.Expression;
-
-                        /**
                          * Encodes the specified Expression message. Does not implicitly {@link bilibili.community.service.dm.v1.Expression.verify|verify} messages.
                          * @param message Expression message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IExpression, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified Expression message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Expression.verify|verify} messages.
-                         * @param message Expression message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IExpression, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes an Expression message from the specified reader or buffer.
@@ -3069,43 +1858,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.Expression;
-
-                        /**
-                         * Decodes an Expression message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns Expression
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.Expression;
-
-                        /**
-                         * Verifies an Expression message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates an Expression message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns Expression
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.Expression;
-
-                        /**
-                         * Creates a plain object from an Expression message. Also converts values to other types if specified.
-                         * @param message Expression
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.Expression, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this Expression to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for Expression
@@ -3141,27 +1893,12 @@ export namespace bilibili {
                         public end: (number|Long);
 
                         /**
-                         * Creates a new Period instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns Period instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IPeriod): bilibili.community.service.dm.v1.Period;
-
-                        /**
                          * Encodes the specified Period message. Does not implicitly {@link bilibili.community.service.dm.v1.Period.verify|verify} messages.
                          * @param message Period message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IPeriod, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified Period message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.Period.verify|verify} messages.
-                         * @param message Period message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IPeriod, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a Period message from the specified reader or buffer.
@@ -3172,43 +1909,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.Period;
-
-                        /**
-                         * Decodes a Period message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns Period
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.Period;
-
-                        /**
-                         * Verifies a Period message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a Period message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns Period
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.Period;
-
-                        /**
-                         * Creates a plain object from a Period message. Also converts values to other types if specified.
-                         * @param message Period
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.Period, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this Period to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for Period
@@ -3238,27 +1938,12 @@ export namespace bilibili {
                         public body?: (google.protobuf.IAny|null);
 
                         /**
-                         * Creates a new AnyBody instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns AnyBody instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IAnyBody): bilibili.community.service.dm.v1.AnyBody;
-
-                        /**
                          * Encodes the specified AnyBody message. Does not implicitly {@link bilibili.community.service.dm.v1.AnyBody.verify|verify} messages.
                          * @param message AnyBody message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IAnyBody, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified AnyBody message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.AnyBody.verify|verify} messages.
-                         * @param message AnyBody message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IAnyBody, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes an AnyBody message from the specified reader or buffer.
@@ -3269,43 +1954,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.AnyBody;
-
-                        /**
-                         * Decodes an AnyBody message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns AnyBody
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.AnyBody;
-
-                        /**
-                         * Verifies an AnyBody message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates an AnyBody message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns AnyBody
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.AnyBody;
-
-                        /**
-                         * Creates a plain object from an AnyBody message. Also converts values to other types if specified.
-                         * @param message AnyBody
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.AnyBody, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this AnyBody to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for AnyBody
@@ -3341,27 +1989,12 @@ export namespace bilibili {
                         public src: string;
 
                         /**
-                         * Creates a new DmColorful instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DmColorful instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDmColorful): bilibili.community.service.dm.v1.DmColorful;
-
-                        /**
                          * Encodes the specified DmColorful message. Does not implicitly {@link bilibili.community.service.dm.v1.DmColorful.verify|verify} messages.
                          * @param message DmColorful message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDmColorful, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DmColorful message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmColorful.verify|verify} messages.
-                         * @param message DmColorful message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDmColorful, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DmColorful message from the specified reader or buffer.
@@ -3372,43 +2005,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmColorful;
-
-                        /**
-                         * Decodes a DmColorful message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DmColorful
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DmColorful;
-
-                        /**
-                         * Verifies a DmColorful message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DmColorful message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DmColorful
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DmColorful;
-
-                        /**
-                         * Creates a plain object from a DmColorful message. Also converts values to other types if specified.
-                         * @param message DmColorful
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DmColorful, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DmColorful to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DmColorful
@@ -3462,27 +2058,12 @@ export namespace bilibili {
                         public postPanel_2: bilibili.community.service.dm.v1.IPostPanelV2[];
 
                         /**
-                         * Creates a new DmSubView instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns DmSubView instance
-                         */
-                        public static create(properties?: bilibili.community.service.dm.v1.IDmSubView): bilibili.community.service.dm.v1.DmSubView;
-
-                        /**
                          * Encodes the specified DmSubView message. Does not implicitly {@link bilibili.community.service.dm.v1.DmSubView.verify|verify} messages.
                          * @param message DmSubView message or plain object to encode
                          * @param [writer] Writer to encode to
                          * @returns Writer
                          */
                         public static encode(message: bilibili.community.service.dm.v1.IDmSubView, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified DmSubView message, length delimited. Does not implicitly {@link bilibili.community.service.dm.v1.DmSubView.verify|verify} messages.
-                         * @param message DmSubView message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: bilibili.community.service.dm.v1.IDmSubView, writer?: $protobuf.Writer): $protobuf.Writer;
 
                         /**
                          * Decodes a DmSubView message from the specified reader or buffer.
@@ -3493,43 +2074,6 @@ export namespace bilibili {
                          * @throws {$protobuf.util.ProtocolError} If required fields are missing
                          */
                         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmSubView;
-
-                        /**
-                         * Decodes a DmSubView message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns DmSubView
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): bilibili.community.service.dm.v1.DmSubView;
-
-                        /**
-                         * Verifies a DmSubView message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a DmSubView message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns DmSubView
-                         */
-                        public static fromObject(object: { [k: string]: any }): bilibili.community.service.dm.v1.DmSubView;
-
-                        /**
-                         * Creates a plain object from a DmSubView message. Also converts values to other types if specified.
-                         * @param message DmSubView
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: bilibili.community.service.dm.v1.DmSubView, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this DmSubView to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
 
                         /**
                          * Gets the default type url for DmSubView
@@ -3576,27 +2120,12 @@ export namespace google {
             public value: Uint8Array;
 
             /**
-             * Creates a new Any instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns Any instance
-             */
-            public static create(properties?: google.protobuf.IAny): google.protobuf.Any;
-
-            /**
              * Encodes the specified Any message. Does not implicitly {@link google.protobuf.Any.verify|verify} messages.
              * @param message Any message or plain object to encode
              * @param [writer] Writer to encode to
              * @returns Writer
              */
             public static encode(message: google.protobuf.IAny, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified Any message, length delimited. Does not implicitly {@link google.protobuf.Any.verify|verify} messages.
-             * @param message Any message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.IAny, writer?: $protobuf.Writer): $protobuf.Writer;
 
             /**
              * Decodes an Any message from the specified reader or buffer.
@@ -3607,43 +2136,6 @@ export namespace google {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Any;
-
-            /**
-             * Decodes an Any message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns Any
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Any;
-
-            /**
-             * Verifies an Any message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates an Any message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns Any
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.Any;
-
-            /**
-             * Creates a plain object from an Any message. Also converts values to other types if specified.
-             * @param message Any
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.Any, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this Any to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
 
             /**
              * Gets the default type url for Any

@@ -46,6 +46,7 @@ export const DEFAULT_CONFIG = {
 
     // 其他
     POPUP_BADGE: 'percent' as ('percent' | 'count' | 'off'),
+    COMBINE_THREADS: 3,
 }
 
 export type Config = typeof DEFAULT_CONFIG;
@@ -103,8 +104,9 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.FLUCTLIGHT = remote_config.FLUCTLIGHT==='on';
         config.BREAK_UPDATE = remote_config.BREAK_UPDATE==='on';
         config.SCROLL_THRESHOLD = parseInt(remote_config.SCROLL_THRESHOLD);
-        config.USERSCRIPT = null;
+        config.USERSCRIPT = DEFAULT_CONFIG.USERSCRIPT;
         config.POPUP_BADGE = remote_config.POPUP_BADGE;
+        config.COMBINE_THREADS = DEFAULT_CONFIG.COMBINE_THREADS;
     }
 
     return config;

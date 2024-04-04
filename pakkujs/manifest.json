@@ -59,14 +59,14 @@
     "content_scripts": [
         {
             "matches": ["*://*.bilibili.com/*"],
-            "js": ["assets/xhr_hook.js"],
+            "js": ["/assets/xhr_hook.js"],
             "run_at": "document_start",
             "world": "MAIN",
             "all_frames": true
         },
         {
             "matches": ["*://*.bilibili.com/*"],
-            "js": ["generated/injected.js"],
+            "js": ["/generated/injected.js"],
             "run_at": "document_start",
             "all_frames": false
         }

@@ -4,8 +4,7 @@ import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/inte
 import {DanmuChunk, DanmuClusterOutput, int, LocalizedConfig, MessageStats, MissingData, Stats} from "./types";
 import {post_combine} from "./post_combine";
 
-const WORKER_POOL_SIZE = 3;
-const MAX_SCHEDULERS_PER_PAGE = 4;
+const MAX_SCHEDULERS_PER_PAGE = 3;
 
 const BADGE_DOWNLOADING = '↓';
 const BADGE_PROCESSING = '...';
@@ -52,11 +51,11 @@ class Scheduler {
         this.num_chunks = 0;
         this.combine_started = new Set();
         this.finished = false;
-        this.pool = new WorkerPool(WORKER_POOL_SIZE);
+        this.pool = new WorkerPool(config.COMBINE_THREADS);
     }
 
     write_failing_stats(e: Error, badge: string) {
-        let msg = `弹幕加载失败 ${e.message}\n\nStacktrace:\n${e.stack}\n\nIngress:\n${this.ingress}`;
+        let msg = `${e.message}\n\nStacktrace:\n${e.stack}\n\nIngress:\n${JSON.stringify(this.ingress)}`;
         this.stats = new MessageStats('error', badge, msg).notify(this.tabid);
 
         console.error('pakku scheduler: GOT EXCEPTION', e);

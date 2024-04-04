@@ -104,6 +104,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             tabId: msg.tabid,
             color: msg.bgcolor,
         });
+        // refresh the popup
+        chrome.runtime.sendMessage({type: 'reload_state'})
+            .catch(()=>{});
     }
     else if(msg.type==='toggle_switch') {
         async function perform() {
