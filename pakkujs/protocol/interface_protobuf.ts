@@ -117,7 +117,8 @@ function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoa
 
 async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int | null> {
     let res = await fetch(
-        `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${encodeURIComponent(ingress.cid)}&pid=${encodeURIComponent(ingress.pid)}`
+        `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${encodeURIComponent(ingress.cid)}&pid=${encodeURIComponent(ingress.pid)}`,
+        {credentials: 'include'}
     );
     let buffer = await res.arrayBuffer();
     let d = proto_view.decode(new Uint8Array(buffer));
@@ -129,7 +130,7 @@ async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int |
 }
 
 async function protoapi_get_url(url: string): Promise<proto_seg> {
-    let res = await fetch(url);
+    let res = await fetch(url, {credentials: 'include'});
     let buffer = await res.arrayBuffer();
     return proto_seg.decode(new Uint8Array(buffer));
 }

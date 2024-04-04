@@ -127,7 +127,7 @@ async function get_ws_permission() {
         config.BREAK_UPDATE = false;
         // noinspection ES6MissingAwait
         reload();
-        alert('您的浏览器不支持此功能');
+        alert('权限不足或者您的浏览器不支持此功能');
     }
 }
 

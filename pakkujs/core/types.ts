@@ -18,19 +18,44 @@ export interface DanmuObject {
     weight: int;
     id: string;
     pool: int;
-    extra: AnyObject;
+
+    extra: {
+        // for protobuf ingress
+        proto_attr?: int | null;
+        proto_action?: string | null;
+        proto_animation?: string | null;
+
+        // for peers node
+        pakku_sim_reason?: string;
+
+        // for representative node
+        pakku_peers?: DanmuObject[];
+        pakku_desc?: string[];
+        pakku_disp_str?: string;
+    };
 }
 
 export interface DanmuChunk {
     objs: DanmuObject[];
-    extra: AnyObject;
+
+    extra: {
+        // for protobuf ingress
+        proto_segidx?: int;
+
+        // for xml ingress
+        xml_maxlimit?: string;
+        xml_chatid?: string;
+    };
+}
+
+export interface DanmuCluster {
+    peers: DanmuObject[];
+    desc: string[];
+    chosen_str?: string;
 }
 
 export interface DanmuClusterOutput {
-    clusters: {
-        peers: DanmuObject[];
-        desc: string[];
-    }[];
+    clusters: DanmuCluster[];
     stats: Stats;
 }
 

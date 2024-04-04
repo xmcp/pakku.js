@@ -50,6 +50,28 @@ async function perform_init() {
     await check_chrome_permission_hotfix();
 }
 
+async function toggle_global_switch() {
+    let new_switch = !(await get_state()).GLOBAL_SWITCH;
+    await save_state({
+        GLOBAL_SWITCH: new_switch,
+    });
+    await chrome.action.setBadgeText({
+        text: new_switch ? '' : 'zzz',
+    });
+
+    // notify popup and content scripts
+    chrome.runtime.sendMessage({type: 'reload_state'})
+        .catch(()=>{});
+    for(let tab of await chrome.tabs.query({})) {
+        let url = tab.url;
+        if(url?.includes('bilibili.com/'))
+            chrome.tabs.sendMessage(tab.id!, {type: 'reload_state'})
+                .catch(()=>{});
+    }
+
+    return new_switch;
+}
+
 chrome.runtime.onStartup.addListener(async ()=>{
     await perform_init();
 });
@@ -76,32 +98,38 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     else if(msg.type==='update_badge') {
         void chrome.action.setBadgeText({
             tabId: msg.tabid,
-            text: msg.text,
+            text: ''+msg.text,
         });
         void chrome.action.setBadgeBackgroundColor({
             tabId: msg.tabid,
             color: msg.bgcolor,
         });
-        void chrome.tabs.sendMessage(msg.tabid, {type: 'reload_state'});
     }
     else if(msg.type==='toggle_switch') {
         async function perform() {
-            let state = await get_state();
-            await save_state({
-                GLOBAL_SWITCH: !state.GLOBAL_SWITCH,
-            });
-
-            // notify popup and content scripts
-            await chrome.runtime.sendMessage({type: 'reload_state'});
-            for(let tab of await chrome.tabs.query({})) {
-                let url = tab.url;
-                if(url?.includes('bilibili.com/'))
-                    await chrome.tabs.sendMessage(tab.id!, {type: 'reload_state'});
-            }
-
+            await toggle_global_switch();
             sendResponse(null);
         }
         void perform();
         return true;
+    }
+});
+
+let _clear_timeout: number | null = null;
+chrome.commands.onCommand.addListener(async function(name) {
+    if (name==='toggle-global-switch') {
+        let new_switch = await toggle_global_switch();
+
+        chrome.notifications.create('//switch', {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/logo.png'),
+            title: `[ ${new_switch ? 'ON' : 'OFF'} ]`,
+            message: 'Pakku is ' + (new_switch ? 'ON' : 'OFF'),
+        });
+        if(_clear_timeout)
+            clearTimeout(_clear_timeout);
+        _clear_timeout = setTimeout(function() {
+            chrome.notifications.clear('//switch');
+        }, 1500) as any;
     }
 });

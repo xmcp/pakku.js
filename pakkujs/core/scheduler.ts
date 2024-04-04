@@ -87,7 +87,7 @@ class Scheduler {
 
         let res: DanmuClusterOutput;
         try {
-            res = await this.pool.exec([chunk as DanmuChunk, next_chunk_filtered as DanmuChunk]);
+            res = await this.pool.exec([chunk as DanmuChunk, next_chunk_filtered as DanmuChunk, this.config as LocalizedConfig]);
         } catch(e) {
             this.write_failing_stats(e as Error, BADGE_ERR_JS);
             return;
@@ -105,6 +105,7 @@ class Scheduler {
         if(this.chunks_out.has(segidx))
             return; // finished
 
+        let chunk = this.chunks_in.get(segidx);
         let clusters = this.clusters.get(segidx);
         let prev_clusters = this.clusters.get(segidx-1);
         if(!clusters || !prev_clusters)
@@ -112,7 +113,7 @@ class Scheduler {
 
         let res;
         try {
-            res = post_combine(clusters, prev_clusters, this.ongoing_stats);
+            res = post_combine(clusters, prev_clusters, chunk || null, this.config, this.ongoing_stats);
         } catch(e) {
             this.write_failing_stats(e as Error, BADGE_ERR_JS);
             return;
@@ -124,6 +125,9 @@ class Scheduler {
     }
 
     try_serve_egress() {
+        if(this.num_chunks && this.num_chunks===this.chunks_out.size)
+            this.cleanup();
+
         this.egresses = this.egresses.filter(([egress, callback]) => {
             let res = perform_egress(egress, this.num_chunks, this.config.GLOBAL_SWITCH ? this.chunks_out : this.chunks_in);
 
@@ -135,13 +139,10 @@ class Scheduler {
                 return false; // remove from queue
             }
         });
-
-        if(this.num_chunks && this.num_chunks===this.chunks_out.size)
-            this.cleanup();
     }
 
     cleanup() {
-        if(this.stats.type!=='error') {
+        if(this.stats.type==='message') {
             this.ongoing_stats.parse_time_ms = +new Date() - this.start_ts - this.ongoing_stats.download_time_ms;
             this.ongoing_stats.notify(this.tabid, this.config);
             this.stats = this.ongoing_stats;

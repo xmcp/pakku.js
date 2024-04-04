@@ -15,11 +15,13 @@ function get_player_blacklist(): BlacklistItem[] {
     };
     try {
         let j = (JSON.parse(window.localStorage.getItem('bpx_player_profile')!) as BpxProfileType).blockList;
-        return (
+        let ret = (
             j
                 .filter(item=>item.opened)
-                .map(item=>[item.type===1, item.filter])
+                .map(item=>[item.type===1, item.filter] as BlacklistItem)
         );
+        console.log('pakku injected: got player blacklist', ret.length);
+        return ret;
     } catch(e) {
         console.error('pakku injected: cannot get player blacklist', e);
         return [];
@@ -95,7 +97,7 @@ window.addEventListener('message',async function(event) {
             !local_config.GLOBAL_SWITCH &&
             !(url[0].type==='proto_seg' && url[0].is_magicreload) // still process magic reload requests to avoid HTTP 400
         ) {
-            console.log('pakku injected: global switch off');
+            console.log('pakku injected: SKIPPED because global switch off');
             sendResponse(null);
             return;
         }

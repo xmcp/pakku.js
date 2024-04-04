@@ -40,7 +40,7 @@ function xml_to_chunk(xmlstr: string): DanmuChunk {
                 "extra": {},
             });
         } else { // conf
-            conf[elem.tagName] = (elem.childNodes[0] as Text).data;
+            conf['xml_'+elem.tagName] = (elem.childNodes[0] as Text).data;
         }
     }
     return {
@@ -54,9 +54,9 @@ function chunk_to_xml(chunk: DanmuChunk): string {
     let dom_str = (
         '<i>' +
         '  <chatserver>chat.bilibili.com</chatserver>' +
-        `  <chatid>${chunk.extra.chatid || 0}</chatid>` +
+        `  <chatid>${chunk.extra.xml_chatid || 0}</chatid>` +
         '  <mission>0</mission>' +
-        `  <maxlimit>${chunk.extra.maxlimit || chunk.objs.length+1}}</maxlimit>` +
+        `  <maxlimit>${chunk.extra.xml_maxlimit || chunk.objs.length+1}}</maxlimit>` +
         '  <state>0</state>' +
         '  <real_name>0</real_name>' +
         '</i>'
@@ -87,7 +87,7 @@ function chunk_to_xml(chunk: DanmuChunk): string {
 }
 
 export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
-    let res = await fetch(ingress.url);
+    let res = await fetch(ingress.url, {credentials: 'include'});
     let txt = await res.text();
     chunk_callback(1, xml_to_chunk(txt));
 }

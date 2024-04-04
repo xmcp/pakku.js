@@ -2,7 +2,13 @@ import {MessageStats, Stats, int, AnyObject} from "../core/types";
 
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/session#browser_compatibility
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/setAccessLevel#browser_compatibility
-const HAS_SESSION_STORAGE = !!chrome.storage.session && !!chrome.storage.session.setAccessLevel;
+let HAS_SESSION_STORAGE: boolean;
+try {
+    HAS_SESSION_STORAGE = !!(chrome?.storage?.session?.setAccessLevel);
+} catch(e) { // e.g. in web worker
+    //console.error('pakku state: no session storage', e);
+    HAS_SESSION_STORAGE = false;
+}
 
 const DEFAULT_STATE = {
     _INITIALIZED: true,
@@ -24,7 +30,7 @@ export async function init_state() {
             await chrome.storage.session.set(DEFAULT_STATE);
         }
     } else {
-        console.log('pakku state: init state (emulated)');
+        console.log('pakku state: init state (EMULATED!)');
         await chrome.storage.local.clear();
         await chrome.storage.local.set(DEFAULT_STATE);
     }
