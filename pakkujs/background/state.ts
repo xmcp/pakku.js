@@ -2,7 +2,7 @@ import {MessageStats, Stats, int, AnyObject} from "../core/types";
 
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/session#browser_compatibility
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/setAccessLevel#browser_compatibility
-let HAS_SESSION_STORAGE: boolean;
+export let HAS_SESSION_STORAGE: boolean;
 try {
     HAS_SESSION_STORAGE = !!(chrome?.storage?.session?.setAccessLevel);
 } catch(e) { // e.g. in web worker
@@ -21,43 +21,32 @@ export type State = typeof DEFAULT_STATE & {
     [k: `STATS_${string}`]: {[tabid: int]: Stats|MessageStats},
 };
 
-export async function init_state() {
-    if(HAS_SESSION_STORAGE) {
-        let {_INITIALIZED} = await chrome.storage.session.get(['_INITIALIZED']);
-        if(!_INITIALIZED) {
-            console.log('pakku state: init state');
-            await chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
-            await chrome.storage.session.set(DEFAULT_STATE);
-        }
-    } else {
-        console.log('pakku state: init state (EMULATED!)');
-        await chrome.storage.local.clear();
-        await chrome.storage.local.set(DEFAULT_STATE);
+export async function init_state(): Promise<boolean> {
+    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+    let {_INITIALIZED} = await store.get(['_INITIALIZED']);
+    if(!_INITIALIZED) {
+        console.log('pakku state: init state');
+        if(store.setAccessLevel)
+            await store.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+        await store.set(DEFAULT_STATE);
+        return true;
     }
+    return false;
 }
 
 export async function save_state(state: AnyObject) {
-    if(HAS_SESSION_STORAGE) {
-        await chrome.storage.session.set(state);
-    } else {
-        await chrome.storage.local.set(state);
-    }
+    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+    await store.set(state);
 }
 
 export async function remove_state(keys: string[]) {
-    if(HAS_SESSION_STORAGE)
-        await chrome.storage.session.remove(keys);
-    else
-        await chrome.storage.local.remove(keys);
+    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+    await store.remove(keys);
 }
 
 export async function get_state(): Promise<State> {
-    let state;
-    if(HAS_SESSION_STORAGE) {
-        state = await chrome.storage.session.get() as State;
-    } else {
-        state = await chrome.storage.local.get() as State;
-    }
+    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+    let state = await store.get() as State;
 
     if(!state._INITIALIZED)
         return DEFAULT_STATE;

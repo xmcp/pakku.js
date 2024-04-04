@@ -1,6 +1,6 @@
 import {reset_dnr_status} from "./danmu_update_blocker";
 import {get_config, save_config} from "./config";
-import {get_state, init_state, save_state} from "./state";
+import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
 
 async function check_chrome_permission_hotfix() {
     let perms = await chrome.permissions.getAll();
@@ -45,10 +45,13 @@ async function reset_badge() {
 }
 
 async function perform_init() {
-    await init_state();
-    await reset_badge();
-    await check_chrome_permission_hotfix();
+    let is_init = await init_state();
+    if(is_init) {
+        await reset_badge();
+        await check_chrome_permission_hotfix();
+    }
 }
+void perform_init();
 
 async function toggle_global_switch() {
     let new_switch = !(await get_state()).GLOBAL_SWITCH;
@@ -73,11 +76,14 @@ async function toggle_global_switch() {
 }
 
 chrome.runtime.onStartup.addListener(async ()=>{
-    await perform_init();
+    if(!HAS_SESSION_STORAGE) {
+        console.error('pakku state: EMULATING session storage');
+        await chrome.storage.local.clear();
+        await perform_init();
+    }
 });
 
 chrome.runtime.onInstalled.addListener(async (details)=>{
-    await perform_init();
     await reset_dnr_status();
 
     if(details.reason==='install') {
