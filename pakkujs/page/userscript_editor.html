@@ -30,7 +30,7 @@
 
         <details>
             <summary>类型速查</summary>
-            <pre>type int = number; type float = number;
+            <pre>type int = number; type float = number; type AnyObject = {[k: string]: any};
 
 interface DanmuObject {
     time_ms: int; // 弹幕在视频中的时间
@@ -69,6 +69,7 @@ interface DanmuChunk&lt;ObjectType extends DanmuObject> {
     objs: ObjectType[];
     extra: { // 协议中的附加字段
         proto_segidx?: int;
+        proto_colorfulsrc?: AnyObject[];
         xml_maxlimit?: string;
         xml_chatid?: string;
     };
