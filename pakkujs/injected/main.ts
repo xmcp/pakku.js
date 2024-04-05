@@ -1,5 +1,5 @@
 import {url_finder} from "../protocol/urls";
-import {handle_task} from "../core/scheduler";
+import {handle_task, last_scheduler} from "../core/scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {BlacklistItem, int, LocalizedConfig} from "../core/types";
@@ -60,6 +60,21 @@ let local_config: null | LocalizedConfig = null;
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if(msg.type==='reload_state') {
         local_config = null; // will trigger reload later
+    } else if(msg.type==='dump_result') {
+        let s = last_scheduler;
+        if(!s) {
+            sendResponse({
+                error: '当前标签没有弹幕处理结果',
+            });
+        } else {
+            sendResponse({
+                error: null,
+                ingress: s.ingress,
+                num_chunks: s.num_chunks,
+                chunks_in: Object.fromEntries(s.chunks_in),
+                chunks_out: Object.fromEntries(s.chunks_out),
+            });
+        }
     } else {
         console.error('pakku injected: unknown chrome message', msg);
     }

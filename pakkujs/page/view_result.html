@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8">
+        <title>pakku :: 弹幕处理结果</title>
+        <style>
+            fieldset {
+                min-inline-size: inherit;
+            }
+            pre {
+                overflow-x: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <fieldset>
+            <legend>选项</legend>
+            <p>
+                阶段：
+                <label>
+                    <input type="radio" name="step" value="input">
+                    合并前
+                </label>
+                <label>
+                    <input type="radio" name="step" value="output" checked>
+                    合并后
+                </label>
+            </p>
+            <p>
+                格式：
+                <label>
+                    <input type="radio" name="egress" value="xml" checked>
+                    XML
+                </label>
+                <label>
+                    <input type="radio" name="egress" value="debug">
+                    Debug
+                </label>
+            </p>
+        </fieldset>
+
+        <fieldset>
+            <legend>输入</legend>
+            <pre id="ingress">loading...</pre>
+        </fieldset>
+
+        <fieldset>
+            <legend>弹幕</legend>
+            <pre id="content">loading...</pre>
+        </fieldset>
+
+        <script src="/generated/view_result.js"></script>
+    </body>
+</html>

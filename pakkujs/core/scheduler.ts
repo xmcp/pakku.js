@@ -43,7 +43,6 @@ class Scheduler {
 
     num_chunks: int;
     combine_started: Set<int>;
-    finished: boolean;
     pool: WorkerPool;
 
     constructor(ingress: Ingress, config: LocalizedConfig, tabid: int) {
@@ -59,7 +58,6 @@ class Scheduler {
         this.chunks_out = new Map();
         this.num_chunks = 0;
         this.combine_started = new Set();
-        this.finished = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
     }
 
@@ -192,6 +190,7 @@ class Scheduler {
     }
 }
 let schedulers: Array<Scheduler> = [];
+export let last_scheduler: null | Scheduler = null;
 
 function ingress_equals(a: Ingress, b: Ingress): boolean {
     // @ts-ignore
@@ -203,10 +202,14 @@ export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: a
         if(ingress_equals(scheduler.ingress, ingress)) {
             scheduler.add_egress(egress, callback);
             scheduler.config = config;
+
+            last_scheduler = scheduler;
             return;
         }
 
     let scheduler = new Scheduler(ingress, config, tabid);
+    last_scheduler = scheduler;
+
     scheduler.add_egress(egress, callback);
     void scheduler.start();
 

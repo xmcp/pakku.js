@@ -53,12 +53,12 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
     let parser = new DOMParser();
     let dom_str = (
         '<i>' +
-        '  <chatserver>chat.bilibili.com</chatserver>' +
-        `  <chatid>${chunk.extra.xml_chatid || 0}</chatid>` +
-        '  <mission>0</mission>' +
-        `  <maxlimit>${chunk.extra.xml_maxlimit || chunk.objs.length+1}}</maxlimit>` +
-        '  <state>0</state>' +
-        '  <real_name>0</real_name>' +
+        '<chatserver>chat.bilibili.com</chatserver>' +
+        `<chatid>${chunk.extra.xml_chatid || 0}</chatid>` +
+        '<mission>0</mission>' +
+        `<maxlimit>${chunk.extra.xml_maxlimit || chunk.objs.length+1}}</maxlimit>` +
+        '<state>0</state>' +
+        '<real_name>0</real_name>' +
         '</i>'
     );
     let dom = parser.parseFromString(dom_str, 'text/xml');
@@ -83,7 +83,10 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
     }
     
     let serializer = new XMLSerializer();
-    return serializer.serializeToString(dom);
+    let s = serializer.serializeToString(dom);
+
+    // prettify
+    return s.replace(/<d p=/g, '\n  <d p=').replace(/<\/i>/g, '\n</i>');
 }
 
 export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
@@ -100,7 +103,7 @@ export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, 
         objs: [],
         extra: chunks.get(1)!.extra,
     };
-    for(let chunk of Object.values(chunks)) {
+    for(let chunk of chunks.values()) {
         c.objs.push(...chunk.objs);
     }
 

@@ -59,7 +59,7 @@ async function loadui() {
             else if(stats.type==='done') {
                 id('pakku-title').style.display = 'none';
                 id('result').classList.remove('display-none');
-                id('link-danmu-count').href = chrome.runtime.getURL(`/page/parse_url.html?tabid=${tabid}`);
+                id('link-danmu-count').href = chrome.runtime.getURL(`/page/view_result.html?tabid=${tabid}`);
             }
 
             for(let name in stats)
