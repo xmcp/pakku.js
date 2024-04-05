@@ -1,9 +1,9 @@
-import {DanmuChunk, DanmuClusterOutput, DanmuObject, int, LocalizedConfig, Stats} from "./types";
+import {DanmuChunk, DanmuClusterOutput, DanmuObject, DanmuObjectPeer, int, LocalizedConfig, Stats} from "./types";
 import {PINYIN_DICT_RAW} from "./pinyin_dict";
 import {gen_2gram_array, similar_meta} from "./similarity";
 
 interface DanmuIr {
-    obj: DanmuObject;
+    obj: DanmuObjectPeer;
 
     // for similarity algorithms
     str: string;
@@ -118,7 +118,7 @@ declare var whitelisted: (text: string) => boolean;
 declare var blacklisted: (text: string) => boolean;
 declare var similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
 
-function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk, config: LocalizedConfig): DanmuClusterOutput {
+function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): DanmuClusterOutput {
     let ret: DanmuClusterOutput = {
         clusters: [],
         stats: new Stats(),
@@ -126,7 +126,12 @@ function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk, config: Localized
 
     function apply_single_cluster(obj: DanmuObject, desc: string) {
         ret.clusters.push({
-            peers: [obj],
+            peers: [{
+                ...obj,
+                pakku: {
+                    sim_reason: 'IGN',
+                },
+            }],
             desc: [desc],
         });
     }
@@ -226,9 +231,13 @@ function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk, config: Localized
                     s.num_taolu_matched++;
                 }
 
-                obj.extra.pakku_sim_reason = 'ORIG';
                 return {
-                    obj: obj,
+                    obj: {
+                        ...obj,
+                        pakku: {
+                            sim_reason: 'ORIG',
+                        },
+                    },
                     str: detaolued,
                     str_pinyin: config.TRIM_PINYIN ? trim_pinyin(detaolued) : null,
                     str_2gram: config.MAX_COSINE<100 ? gen_2gram_array(detaolued) : null,
@@ -257,7 +266,7 @@ function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk, config: Localized
 
             sim = similar(dm.str, dm0.str, dm.str_2gram, dm0.str_2gram, dm.str_pinyin, dm0.str_pinyin, ret.stats);
             if(sim!==null) {
-                dm.obj.extra.pakku_sim_reason = sim;
+                dm.obj.pakku.sim_reason = sim;
                 candidate.push(dm);
                 break;
             }
@@ -281,7 +290,7 @@ function do_combine(chunk: DanmuChunk, next_chunk: DanmuChunk, config: Localized
 
             sim = similar(dm.str, dm0.str, dm.str_2gram, dm0.str_2gram, dm.str_pinyin, dm0.str_pinyin, ret.stats);
             if(sim!==null) {
-                dm.obj.extra.pakku_sim_reason = sim;
+                dm.obj.pakku.sim_reason = sim;
                 candidate.push(dm);
                 break;
             }

@@ -24,19 +24,25 @@ export interface DanmuObject {
         proto_attr?: int | null;
         proto_action?: string | null;
         proto_animation?: string | null;
-
-        // for peers node
-        pakku_sim_reason?: string;
-
-        // for representative node
-        pakku_peers?: DanmuObject[];
-        pakku_desc?: string[];
-        pakku_disp_str?: string;
     };
 }
 
-export interface DanmuChunk {
-    objs: DanmuObject[];
+export interface DanmuObjectPeer extends DanmuObject {
+    pakku: {
+        sim_reason: string;
+    };
+}
+
+export interface DanmuObjectRepresentative extends DanmuObject {
+    pakku: {
+        peers: DanmuObjectPeer[];
+        desc: string[];
+        disp_str: string;
+    };
+}
+
+export interface DanmuChunk<ObjectType extends DanmuObject> {
+    objs: ObjectType[];
 
     extra: {
         // for protobuf ingress
@@ -49,7 +55,7 @@ export interface DanmuChunk {
 }
 
 export interface DanmuCluster {
-    peers: DanmuObject[];
+    peers: DanmuObjectPeer[];
     desc: string[];
     chosen_str?: string;
 }

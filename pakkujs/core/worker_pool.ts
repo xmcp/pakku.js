@@ -1,4 +1,4 @@
-import {DanmuChunk, DanmuClusterOutput, int, LocalizedConfig} from "./types";
+import {DanmuChunk, DanmuClusterOutput, DanmuObject, int, LocalizedConfig} from "./types";
 import 'remote-web-worker';
 
 export class WorkerPool {
@@ -8,7 +8,7 @@ export class WorkerPool {
         resolve: null | ((res: DanmuClusterOutput)=>void);
         reject: null | ((e: any)=>void);
     }[];
-    queue: [DanmuChunk, DanmuChunk, LocalizedConfig, (res: DanmuClusterOutput)=>void, (e: any)=>void][];
+    queue: [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig, (res: DanmuClusterOutput)=>void, (e: any)=>void][];
 
     constructor(pool_size: int) {
         this.terminated = false;
@@ -57,7 +57,7 @@ export class WorkerPool {
         console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
-    exec(args: [DanmuChunk, DanmuChunk, LocalizedConfig]): Promise<DanmuClusterOutput> {
+    exec(args: [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig]): Promise<DanmuClusterOutput> {
         return new Promise((resolve: (res: DanmuClusterOutput)=>void, reject: (e: any)=>void) => {
             if(this.terminated) {
                 reject('worker pool: cannot accept job because terminated');

@@ -28,7 +28,7 @@ export interface ProtobufEgress {
     pe: number | null;
 }
 
-export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk {
+export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<DanmuObject> {
     return {
         objs: chunk.elems.map((item): DanmuObject =>({
             'time_ms': item.stime!,
@@ -54,7 +54,7 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk {
     };
 }
 
-export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk): Uint8Array {
+export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk<DanmuObject>): Uint8Array {
     let objs = chunk.objs;
 
     if(egress.ps || egress.pe) {
@@ -152,12 +152,12 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
     return await protoapi_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str);
 }
 
-export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
+export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
     let d = await protoapi_get_url(ingress.url);
     chunk_callback(1, protobuf_to_obj(1, d));
 }
 
-export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
     async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
         chunk_callback(idx, protobuf_to_obj(1, await resp));
     }
@@ -202,7 +202,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
     }
 }
 
-export function egress_proto(egress: ProtobufEgress, num_chunks: int, chunks: Map<int, DanmuChunk>): Uint8Array | typeof MissingData {
+export function egress_proto(egress: ProtobufEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): Uint8Array | typeof MissingData {
     if(egress.segidx===null) { // want all chunks
         if(!num_chunks || num_chunks!==chunks.size)
             return MissingData; // not finished

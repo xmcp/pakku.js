@@ -1,7 +1,16 @@
 import {WorkerPool} from "./worker_pool";
 
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
-import {DanmuChunk, DanmuClusterOutput, int, LocalizedConfig, MessageStats, MissingData, Stats} from "./types";
+import {
+    DanmuChunk,
+    DanmuClusterOutput,
+    DanmuObject, DanmuObjectRepresentative,
+    int,
+    LocalizedConfig,
+    MessageStats,
+    MissingData,
+    Stats
+} from "./types";
 import {post_combine} from "./post_combine";
 
 const MAX_SCHEDULERS_PER_PAGE = 3;
@@ -28,9 +37,9 @@ class Scheduler {
     tabid: int;
     start_ts: number;
 
-    chunks_in: Map<int, DanmuChunk>;
+    chunks_in: Map<int, DanmuChunk<DanmuObject>>;
     clusters: Map<int, DanmuClusterOutput>;
-    chunks_out: Map<int, DanmuChunk>;
+    chunks_out: Map<int, DanmuChunk<DanmuObjectRepresentative>>;
 
     num_chunks: int;
     combine_started: Set<int>;
@@ -86,7 +95,7 @@ class Scheduler {
 
         let res: DanmuClusterOutput;
         try {
-            res = await this.pool.exec([chunk as DanmuChunk, next_chunk_filtered as DanmuChunk, this.config as LocalizedConfig]);
+            res = await this.pool.exec([chunk as DanmuChunk<DanmuObject>, next_chunk_filtered as DanmuChunk<DanmuObject>, this.config as LocalizedConfig]);
         } catch(e) {
             this.write_failing_stats(e as Error, BADGE_ERR_JS);
             return;

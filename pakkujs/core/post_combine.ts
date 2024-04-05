@@ -1,4 +1,13 @@
-import {DanmuChunk, DanmuCluster, DanmuClusterOutput, DanmuObject, int, LocalizedConfig, Stats} from "./types";
+import {
+    DanmuChunk,
+    DanmuCluster,
+    DanmuClusterOutput,
+    DanmuObject,
+    DanmuObjectRepresentative,
+    int,
+    LocalizedConfig,
+    Stats
+} from "./types";
 
 const MATH_LOG5 = Math.log(5);
 function calc_enlarge_rate(count: int): number {
@@ -50,14 +59,14 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
-function dispval(d: DanmuObject) {
-    return Math.sqrt(d.extra.pakku_disp_str!.length) * Math.pow(Math.min(d.fontsize/25, 2.5), 1.5);
+function dispval(d: DanmuObjectRepresentative) {
+    return Math.sqrt(d.pakku.disp_str.length) * Math.pow(Math.min(d.fontsize/25, 2.5), 1.5);
 }
 
 let _last_config: null | LocalizedConfig = null;
 declare var make_mark: (text: string, cnt: int) => string;
 
-function build_text(c: DanmuCluster, rep_dm: DanmuObject): void {
+function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     let cnt = c.peers.length;
     let dumped = null;
     if(rep_dm.mode===7)
@@ -67,14 +76,14 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObject): void {
 
     if(dumped) {
         dumped[4] = make_mark(dumped[4], cnt);
-        rep_dm.extra.pakku_disp_str = dumped[4].replace(/\/n/g, '');
+        rep_dm.pakku.disp_str = dumped[4].replace(/\/n/g, '');
         rep_dm.content = JSON.stringify(dumped);
     } else {
-        rep_dm.content = rep_dm.extra.pakku_disp_str = make_mark(rep_dm.content, cnt);
+        rep_dm.content = rep_dm.pakku.disp_str = make_mark(rep_dm.content, cnt);
     }
 }
 
-export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk | null, config: LocalizedConfig, stats: Stats): DanmuChunk {
+export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject> | null, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
     if(input.clusters.length===0) // empty chunk
         return {objs: [], extra: {}};
 
@@ -86,7 +95,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         make_mark = make_mark_meta(config);
     }
 
-    let out_danmus = [] as DanmuObject[];
+    let out_danmus = [] as DanmuObjectRepresentative[];
 
     // calc danmus included in prev cluster
 
@@ -119,13 +128,18 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
         // select a representative obj and make a copy
 
-        let rep_dm = c.peers[
+        let _rep_dm = c.peers[
             Math.min(Math.floor(c.peers.length * config.REPRESENTATIVE_PERCENT / 100), c.peers.length-1)
         ];
-        rep_dm = {
-            ...rep_dm,
+        let rep_dm: DanmuObjectRepresentative = {
+            ..._rep_dm,
             extra: {
-                ...rep_dm.extra,
+                ..._rep_dm.extra,
+            },
+            pakku: {
+                peers: c.peers,
+                desc: c.desc,
+                disp_str: '',
             },
         };
 
@@ -166,9 +180,6 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
         // add to out_danmus
 
-        rep_dm.extra.pakku_peers = c.peers;
-        rep_dm.extra.pakku_desc = c.desc;
-
         out_danmus.push(rep_dm);
     }
 
@@ -193,7 +204,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             if(onscreen_dispval > DISPVAL_THRESHOLD) {
                 let shrink_rate = Math.min(Math.sqrt(onscreen_dispval)/DISPVAL_BASE, 1.75);
                 dm.fontsize /= shrink_rate;
-                dm.extra.pakku_desc!.push(`已缩小 ${shrink_rate.toFixed(2)} 倍：弹幕密度为 ${onscreen_dispval.toFixed(1)}`);
+                dm.pakku.desc.push(`已缩小 ${shrink_rate.toFixed(2)} 倍：弹幕密度为 ${onscreen_dispval.toFixed(1)}`);
                 stats.modified_shrink++;
             }
         }
@@ -204,13 +215,13 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                 if(width > config.SCROLL_THRESHOLD) {
                     dm.mode = 1;
                     dm.content = (dm.mode===4 ? '↓' : '↑') + dm.content;
-                    dm.extra.pakku_desc!.push(`转换为滚动弹幕：宽度为 ${width.toFixed(0)} px`);
+                    dm.pakku.desc.push(`转换为滚动弹幕：宽度为 ${width.toFixed(0)} px`);
                     stats.modified_scroll++;
                 }
             }
         }
 
-        stats.num_max_combo = Math.max(stats.num_max_combo, dm.extra.pakku_peers!.length);
+        stats.num_max_combo = Math.max(stats.num_max_combo, dm.pakku.peers.length);
     }
 
     return {

@@ -1,4 +1,4 @@
-import {AnyObject, DanmuChunk, int, MissingData} from "../core/types";
+import {AnyObject, DanmuChunk, DanmuObject, DanmuObjectRepresentative, int, MissingData} from "../core/types";
 
 export interface XmlIngress {
     type: 'xml';
@@ -17,7 +17,7 @@ function parse_xml_magic(k: string) {
 	return (new window.DOMParser).parseFromString(k, 'text/xml');
 }
 
-function xml_to_chunk(xmlstr: string): DanmuChunk {
+function xml_to_chunk(xmlstr: string): DanmuChunk<DanmuObject> {
     let dom = parse_xml_magic(xmlstr);
     let res = [];
     let conf: AnyObject = {};
@@ -49,7 +49,7 @@ function xml_to_chunk(xmlstr: string): DanmuChunk {
     };
 }
 
-function chunk_to_xml(chunk: DanmuChunk): string {
+function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
     let parser = new DOMParser();
     let dom_str = (
         '<i>' +
@@ -86,17 +86,17 @@ function chunk_to_xml(chunk: DanmuChunk): string {
     return serializer.serializeToString(dom);
 }
 
-export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk)=>void): Promise<void> {
+export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
     let res = await fetch(ingress.url, {credentials: 'include'});
     let txt = await res.text();
     chunk_callback(1, xml_to_chunk(txt));
 }
 
-export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk>): string | typeof MissingData {
+export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {
     if(!num_chunks || num_chunks!==chunks.size)
         return MissingData; // not finished
 
-    let c: DanmuChunk = {
+    let c: DanmuChunk<DanmuObject> = {
         objs: [],
         extra: chunks.get(1)!.extra,
     };
