@@ -16,7 +16,10 @@ export function egress_debug(egress: DebugEgress, num_chunks: int, chunks: Map<i
 
         ret.push(`// chunk #${chunk_idx}: ${JSON.stringify(chunk.extra)}`);
         for(let obj of chunk.objs) {
-            let o = egress.show_peers ? obj : {...obj, pakku: {peers: null}};
+            let o: any = obj;
+            if(!egress.show_peers && (obj as any).pakku) {
+                o = {...obj, pakku: {...(obj as any).pakku, peers: null}};
+            }
             ret.push(`  ${JSON.stringify(o)} ,`);
         }
     }

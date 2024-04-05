@@ -135,6 +135,7 @@ export class UserscriptWorker {
             || !chunk.objs
             || !chunk.extra
             || !Array.isArray(chunk.objs)
+            || typeof chunk.extra !== 'object'
         ) {
             throw new Error(`userscript returned invalid value: ${JSON.stringify(chunk)}`);
         }

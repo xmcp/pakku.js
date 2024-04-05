@@ -46,10 +46,14 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
                 'proto_attr': item.attr,
                 'proto_action': item.action,
                 'proto_animation': item.animation,
+                'proto_colorful': item.colorful,
+                // @ts-ignore: protobuf may use a Long type
+                'proto_oid': item.oid,
             },
         })),
         extra: {
             'proto_segidx': segidx,
+            'proto_colorfulsrc': chunk.colorfulSrc,
         },
     };
 }
@@ -76,9 +80,10 @@ export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk<DanmuO
         "attr": item.extra.proto_attr,
         "action": item.extra.proto_action,
         "animation": item.extra.proto_animation,
-        "colorful": 0,
+        "colorful": item.extra.proto_colorful,
+        "oid": item.extra.proto_oid,
     }));
-    return proto_seg.encode({elems: res}).finish();
+    return proto_seg.encode({elems: res, colorfulSrc: chunk.extra.proto_colorfulsrc}).finish();
 }
 
 function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoapi_sub_url: string | null): AnyObject {

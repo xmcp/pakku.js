@@ -24,6 +24,8 @@ export interface DanmuObject {
         proto_attr?: int | null;
         proto_action?: string | null;
         proto_animation?: string | null;
+        proto_colorful?: int | null;
+        proto_oid?: int | null;
     };
 }
 
@@ -47,6 +49,7 @@ export interface DanmuChunk<ObjectType extends DanmuObject> {
     extra: {
         // for protobuf ingress
         proto_segidx?: int;
+        proto_colorfulsrc?: AnyObject[];
 
         // for xml ingress
         xml_maxlimit?: string;
