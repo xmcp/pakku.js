@@ -176,7 +176,7 @@ async function reload() {
 }
 
 function loadconfig() {
-    id('show-advanced').checked = config._ADVANCED_USER;
+    id('show-advanced').checked = config.ADVANCED_USER;
     // 弹幕合并
     id('threshold').value = config.THRESHOLD;
     id('max-dist').value = config.MAX_DIST;
@@ -359,7 +359,7 @@ for(let elem of img_btns) {
 }
 
 async function update() {
-    config._ADVANCED_USER = id('show-advanced').checked;
+    config.ADVANCED_USER = id('show-advanced').checked;
     // 弹幕合并
     config.THRESHOLD = parseInt(id('threshold').value, 10) > -2 ? parseInt(id('threshold').value, 10) : 20;
     config.MAX_DIST = parseInt(id('max-dist').value);

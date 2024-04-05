@@ -43,9 +43,7 @@ interface DanmuObject {
     weight: int; // 权重，低于云屏蔽等级时会被播放器过滤
     id: string; // 弹幕ID，举报等操作使用
     pool: int; // 0 普通, 1 字幕
-
-    extra: {
-        // protobuf协议中的附加字段
+    extra: { // 协议中的附加字段
         proto_attr?: int | null;
         proto_action?: string | null;
         proto_animation?: string | null;
@@ -57,7 +55,6 @@ interface DanmuObjectPeer extends DanmuObject {
         sim_reason: string; // 相似性判断结果
     };
 }
-
 interface DanmuObjectRepresentative extends DanmuObject {
     pakku: {
         peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
@@ -68,12 +65,8 @@ interface DanmuObjectRepresentative extends DanmuObject {
 
 interface DanmuChunk&lt;ObjectType extends DanmuObject> {
     objs: ObjectType[];
-
-    extra: {
-        // protobuf协议中的附加字段
+    extra: { // 协议中的附加字段
         proto_segidx?: int;
-
-        // xml协议中的附加字段
         xml_maxlimit?: string;
         xml_chatid?: string;
     };
@@ -84,9 +77,10 @@ function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresenta
 </pre>
         </details>
 
-        <textarea id="editor" class="code" placeholder="// tweak_before_pakku((chunk)=>{});"></textarea>
+        <textarea id="editor" class="code" placeholder="// tweak_before_pakku(chunk=>{});"></textarea>
         <p>
             <button type="button" id="save">...</button>
+            &nbsp;
             <button type="button" id="clear">清除</button>
         </p>
 

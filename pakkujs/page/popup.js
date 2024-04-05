@@ -1,4 +1,5 @@
 import {get_state} from '../background/state';
+import {get_config} from '../background/config';
 
 function id(x) {
     return document.getElementById(x);
@@ -30,6 +31,7 @@ chrome.commands.getAll(function(cmds) {
 });
 
 async function loadui() {
+    let config = await get_config();
     let state = await get_state();
     let enabled = state.GLOBAL_SWITCH;
     switch_btn.classList.add(enabled ? 'on' : 'off');
@@ -39,9 +41,12 @@ async function loadui() {
         let general = enabled ? '本页面没有发现B站播放器' : 'zzzzzzzzzz'
         let tabid = d[0]?.id;
         if(tabid) {
-            id('userscript-btn').onclick = function() {
-                void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript_editor.html?tabid='+tabid)});
-            };
+            if(config.ADVANCED_USER) {
+                id('userscript-btn').classList.remove('display-none');
+                id('userscript-btn').onclick = function() {
+                    void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript_editor.html?tabid='+tabid)});
+                };
+            }
 
             let stats = state['STATS_'+tabid];
             if(!stats) {
