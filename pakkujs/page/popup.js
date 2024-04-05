@@ -40,7 +40,7 @@ async function loadui() {
         let tabid = d[0]?.id;
         if(tabid) {
             id('userscript-btn').onclick = function() {
-                void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript.html?tabid='+tabid)});
+                void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript_editor.html?tabid='+tabid)});
             };
 
             let stats = state['STATS_'+tabid];

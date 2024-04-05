@@ -12,6 +12,7 @@ import {
     Stats
 } from "./types";
 import {post_combine} from "./post_combine";
+import {UserscriptWorker} from "./userscript";
 
 const MAX_SCHEDULERS_PER_PAGE = 3;
 
@@ -43,7 +44,9 @@ class Scheduler {
 
     num_chunks: int;
     combine_started: Set<int>;
+    failed: boolean;
     pool: WorkerPool;
+    userscript: UserscriptWorker | null;
 
     constructor(ingress: Ingress, config: LocalizedConfig, tabid: int) {
         this.ingress = ingress;
@@ -58,7 +61,9 @@ class Scheduler {
         this.chunks_out = new Map();
         this.num_chunks = 0;
         this.combine_started = new Set();
+        this.failed = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
+        this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
     }
 
     write_failing_stats(prompt: string, e: Error, badge: string) {
@@ -66,6 +71,9 @@ class Scheduler {
         this.stats = new MessageStats('error', badge, msg).notify(this.tabid);
 
         console.error('pakku scheduler: GOT EXCEPTION', e);
+
+        this.failed = true;
+        this.try_serve_egress();
     }
 
     add_egress(egress: Egress, callback: (resp: any)=>void) {
@@ -103,11 +111,11 @@ class Scheduler {
         this.clusters.set(segidx, res);
         this.ongoing_stats.update_from(res.stats);
 
-        this.try_start_postproc(segidx);
-        this.try_start_postproc(segidx+1);
+        void this.try_start_postproc(segidx);
+        void this.try_start_postproc(segidx+1);
     }
 
-    try_start_postproc(segidx: int) {
+    async try_start_postproc(segidx: int) {
         if(this.chunks_out.has(segidx))
             return; // finished
 
@@ -117,20 +125,39 @@ class Scheduler {
         if(!clusters || !prev_clusters)
             return; // not ready
 
-        let res;
+        let chunk_out;
         try {
-            res = post_combine(clusters, prev_clusters, chunk || null, this.config, this.ongoing_stats);
+            chunk_out = post_combine(clusters, prev_clusters, chunk || null, this.config, this.ongoing_stats);
         } catch(e) {
             this.write_failing_stats(`后处理分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
-        console.log('pakku scheduler: got chunks out', segidx, res.objs.length);
-        this.chunks_out.set(segidx, res);
+
+        if(this.userscript && this.userscript.n_after) {
+            try {
+                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
+                this.userscript.sancheck_output(chunk_out);
+            } catch(e) {
+                this.write_failing_stats(`处理分片 #${segidx} 后执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
+                return;
+            }
+        }
+
+        console.log('pakku scheduler: got chunks out', segidx, chunk_out.objs.length);
+        this.chunks_out.set(segidx, chunk_out);
 
         this.try_serve_egress();
     }
 
     try_serve_egress() {
+        if(this.failed) {
+            for(let [efress, callback] of this.egresses) {
+                callback(null);
+            }
+            this.egresses = [];
+            return;
+        }
+
         if(this.num_chunks && this.num_chunks===this.chunks_out.size)
             this.cleanup();
 
@@ -159,17 +186,37 @@ class Scheduler {
 
     async start() {
         await this.pool.spawn();
+
+        if(this.userscript) {
+            try {
+                await this.userscript.init();
+            } catch(e) {
+                this.write_failing_stats('初始化用户脚本时出错', e as Error, BADGE_ERR_JS);
+                return;
+            }
+        }
+
         this.start_ts = +new Date();
         try {
-            await perform_ingress(this.ingress, (idx, chunk) => {
+            await perform_ingress(this.ingress, async (idx, chunk) => {
                 console.log('pakku scheduler: got ingress chunk', idx, chunk.objs.length);
                 chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
+
+                if(this.userscript && this.userscript.n_before) {
+                    try {
+                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
+                        this.userscript.sancheck_output(chunk);
+                    } catch(e) {
+                        this.write_failing_stats(`处理分片 #${idx} 前执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
+                        return;
+                    }
+                }
 
                 this.chunks_in.set(idx, chunk);
                 this.ongoing_stats.num_total_danmu += chunk.objs.length;
 
-                void this.try_start_combine(idx);
                 void this.try_start_combine(idx-1);
+                void this.try_start_combine(idx);
             });
         } catch(e) {
             this.write_failing_stats('下载弹幕时出错', e as Error, BADGE_ERR_NET);
@@ -180,13 +227,14 @@ class Scheduler {
 
         this.ongoing_stats.download_time_ms = +new Date() - this.start_ts;
         console.log('pakku scheduler: download finished, total chunks =', this.num_chunks);
-        this.stats = new MessageStats('message', BADGE_PROCESSING, '正在处理弹幕').notify(this.tabid);
+        if(this.stats.type!=='error')
+            this.stats = new MessageStats('message', BADGE_PROCESSING, '正在处理弹幕').notify(this.tabid);
 
         this.chunks_in.set(this.num_chunks+1, {objs: [], extra: {}}); // pad a pseudo chunk after the last one for the `next_chunk` arg
         void this.try_start_combine(this.num_chunks);
 
         this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
-        this.try_start_postproc(1);
+        void this.try_start_postproc(1);
     }
 }
 let schedulers: Array<Scheduler> = [];

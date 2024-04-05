@@ -31,7 +31,7 @@ async function process() {
     );
 
     let egress_fn = options.egress==='xml' ? egress_xml : egress_debug;
-    let egress = options.egress==='xml' ? {type: 'xml'} : {type: 'debug'};
+    let egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
 
     $ingress.textContent = JSON.stringify(dumped_result.ingress);
 

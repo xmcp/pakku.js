@@ -152,14 +152,14 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
     return await protoapi_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str);
 }
 
-export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
+export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     let d = await protoapi_get_url(ingress.url);
-    chunk_callback(1, protobuf_to_obj(1, d));
+    await chunk_callback(1, protobuf_to_obj(1, d));
 }
 
-export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
-        chunk_callback(idx, protobuf_to_obj(1, await resp));
+        await chunk_callback(idx, protobuf_to_obj(1, await resp));
     }
 
     // preload first chunk to save time for short videos
@@ -181,14 +181,14 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
         async function work(idx: int): Promise<void> {
             let d = await req.shift()!;
             if(d.elems.length) {
-                chunk_callback(idx, protobuf_to_obj(idx, d));
+                await chunk_callback(idx, protobuf_to_obj(idx, d));
                 req.push(protoapi_get_seg(ingress, idx+3));
                 await work(idx+1);
             } else { // finished?
                 let dd = await req.shift()!;
                 if(dd.elems.length) { // no
-                    chunk_callback(idx, protobuf_to_obj(idx, d));
-                    chunk_callback(idx+1, protobuf_to_obj(idx+1, dd));
+                    await chunk_callback(idx, protobuf_to_obj(idx, d));
+                    await chunk_callback(idx+1, protobuf_to_obj(idx+1, dd));
                     req.push(protoapi_get_seg(ingress, idx+3));
                     req.push(protoapi_get_seg(ingress, idx+4));
                     await work(idx+2);

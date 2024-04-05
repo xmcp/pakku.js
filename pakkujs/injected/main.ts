@@ -29,6 +29,7 @@ function get_player_blacklist(): BlacklistItem[] {
 }
 
 let tabid: null | int = null;
+let unreg_userscript = true;
 
 async function apply_local_config(config: Config): Promise<LocalizedConfig> {
     let state = await get_state();
@@ -40,7 +41,10 @@ async function apply_local_config(config: Config): Promise<LocalizedConfig> {
 
         // storage cleanup
         window.onunload = function() {
-            void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
+            if(unreg_userscript)
+                void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
+            else
+                void remove_state([`STATS_${tabid}`]);
         };
     }
 
@@ -52,7 +56,7 @@ async function apply_local_config(config: Config): Promise<LocalizedConfig> {
         BLACKLIST: get_player_blacklist(),
         GLOBAL_SWITCH: state.GLOBAL_SWITCH,
         USERSCRIPT: userscript,
-    }
+    };
 }
 
 let local_config: null | LocalizedConfig = null;
@@ -60,7 +64,12 @@ let local_config: null | LocalizedConfig = null;
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if(msg.type==='reload_state') {
         local_config = null; // will trigger reload later
-    } else if(msg.type==='dump_result') {
+    }
+    else if(msg.type==='refresh') {
+        unreg_userscript = false;
+        window.location.reload();
+    }
+    else if(msg.type==='dump_result') {
         let s = last_scheduler;
         if(!s) {
             sendResponse({
@@ -75,7 +84,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 chunks_out: Object.fromEntries(s.chunks_out),
             });
         }
-    } else {
+    }
+    else {
         console.error('pakku injected: unknown chrome message', msg);
     }
 });

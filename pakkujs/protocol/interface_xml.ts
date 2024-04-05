@@ -89,10 +89,10 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
     return s.replace(/<d p=/g, '\n  <d p=').replace(/<\/i>/g, '\n</i>');
 }
 
-export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
+export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     let res = await fetch(ingress.url, {credentials: 'include'});
     let txt = await res.text();
-    chunk_callback(1, xml_to_chunk(txt));
+    await chunk_callback(1, xml_to_chunk(txt));
 }
 
 export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {

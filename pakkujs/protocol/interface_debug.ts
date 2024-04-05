@@ -2,6 +2,7 @@ import {DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
 export interface DebugEgress {
     type: 'debug';
+    show_peers: boolean;
 }
 
 export function egress_debug(egress: DebugEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {
@@ -15,7 +16,8 @@ export function egress_debug(egress: DebugEgress, num_chunks: int, chunks: Map<i
 
         ret.push(`// chunk #${chunk_idx}: ${JSON.stringify(chunk.extra)}`);
         for(let obj of chunk.objs) {
-            ret.push(`  ${JSON.stringify(obj)} ,`);
+            let o = egress.show_peers ? obj : {...obj, pakku: {peers: null}};
+            ret.push(`  ${JSON.stringify(o)} ,`);
         }
     }
     ret.push(']');

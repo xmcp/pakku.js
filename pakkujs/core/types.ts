@@ -119,7 +119,7 @@ export class Stats {
         void save_state({['STATS_'+tabid]: this});
         let text = (
             config.POPUP_BADGE==='count' ? (this.num_total_danmu - this.num_onscreen_danmu) :
-            config.POPUP_BADGE==='percent' ? `${Math.max(0, 100 - 100 * this.num_onscreen_danmu / this.num_total_danmu).toFixed(0)}%` :
+            config.POPUP_BADGE==='percent' ? `${this.num_total_danmu ? Math.max(0, 100 - 100 * this.num_onscreen_danmu / this.num_total_danmu).toFixed(0) : 0}%` :
             /* off */ ''
         );
         void chrome.runtime.sendMessage({

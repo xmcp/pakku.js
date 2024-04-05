@@ -112,7 +112,7 @@ export function migrate_config(remote_config: AnyObject): Config {
     return config;
 }
 
-export async function save_config(config: Config) {
+export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig) {
     config._LAST_UPDATE_TIME = +new Date();
     await chrome.storage.sync.set(config);
 }

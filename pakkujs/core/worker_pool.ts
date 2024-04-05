@@ -149,7 +149,7 @@ export class WorkerPool {
                 return;
             }
         }
-        console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
+        //console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
     exec(args: ArgsType): Promise<RetType> {

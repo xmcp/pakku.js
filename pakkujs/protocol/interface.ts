@@ -16,7 +16,7 @@ function ts_assert_never(x: never): never {
     throw new Error('Unexpected object: '+x);
 }
 
-export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>void): Promise<void> {
+export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     if(ingress.type==='xml')
         return await ingress_xml(ingress, chunk_callback);
     else if(ingress.type==='proto_seg')

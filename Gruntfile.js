@@ -90,6 +90,7 @@ module.exports = function(grunt) {
                     'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
                     'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
                     'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
+                    'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
                 }
             }
         },

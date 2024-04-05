@@ -11,7 +11,7 @@ import {
 
 const MATH_LOG5 = Math.log(5);
 function calc_enlarge_rate(count: int): number {
-    return count<=5 ? 1 : Math.log(count) / MATH_LOG5;
+    return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
 const DISPVAL_THRESHOLD = 80, SHRINK_TIME_THRESHOLD = 3;
@@ -145,10 +145,11 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
         // text, mode elevation, fontsize enlarge, weight, proto_animation
 
-        let max_dm_size = 0, max_weight = rep_dm.weight, max_mode = rep_dm.mode;
+        let max_dm_size = rep_dm.fontsize, max_weight = rep_dm.weight, max_mode = rep_dm.mode;
         for(let p of c.peers) {
-            max_dm_size = Math.max(max_dm_size, p.fontsize);
             max_weight = Math.max(max_weight, p.weight);
+            if(p.fontsize<30)
+                max_dm_size = Math.max(max_dm_size, p.fontsize);
 
             if(p.mode===4) // bottom danmu get top priority
                 max_mode = 4;
