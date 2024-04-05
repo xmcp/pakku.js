@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>pakku :: Troubleshooting</title>
+        <style>
+            #debug-box, #debug-box pre {
+                font-family: Consolas, Courier, monospace;
+            }
+            #debug-box {
+                width: calc(100% - 10px);
+                border: 5px solid blue;
+                background-color: lightblue;
+            }
+            #debug-box pre {
+                line-height: .5em;
+                padding: .5em;
+                overflow-x: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <br>
+        <p><b>
+            如果你遇到了任何 bug 或者对功能有疑问，请
+            <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">在 GitHub 上反馈给开发者</a>
+        </b></p>
+        <br>
+        <p>提交反馈之前请先确认你的浏览器和 pakku 已经是最新版本。</p>
+        <p>如果你安装了其他扩展程序（比如 TamperMonkey、哔哩哔哩助手、某些代理软件等），请尝试禁用它们，看看问题是否解决。</p>
+        <p>请在 pakku 的选项页面里选择“重置所有设置”，并重启浏览器，看看问题是否解决。</p>
+        <br>
+        <p>下面的调试信息包括当前系统环境和你现在的设置。如果需要，请在 bug report 中附上它们。</p>
+        <p>如果你发现 pakku 右上角的图标出现红色提示，请点击它，并在 bug report 中附上相关报错信息。</p>
+        <div id="debug-box">
+            <p>&lt;details></p>
+            <p><b>如果 pakku 完全无法工作，请完整地复制蓝框里的所有文字，并在反馈 bug 时附上。</b></p>
+            <pre id="debug"></pre>
+            <pre id="error"></pre>
+            <p>&lt;/details></p>
+        </div>
+        <script src="/generated/troubleshooting.js"></script>
+    </body>
+</html>

@@ -12,13 +12,12 @@ try {
 
 const DEFAULT_STATE = {
     _INITIALIZED: true,
-
     GLOBAL_SWITCH: true,
-    USERSCRIPTS: {} as {[tabid: int]: string},
 };
 
 export type State = typeof DEFAULT_STATE & {
-    [k: `STATS_${string}`]: {[tabid: int]: Stats|MessageStats},
+    [k: `STATS_${string}`]: Stats|MessageStats,
+    [k: `USERSCRIPT_${string}`]: string,
 };
 
 export async function init_state(): Promise<boolean> {
@@ -39,7 +38,7 @@ export async function save_state(state: AnyObject) {
     await store.set(state);
 }
 
-export async function remove_state(keys: string[]) {
+export async function remove_state(keys: (keyof State)[]) {
     let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
     await store.remove(keys);
 }

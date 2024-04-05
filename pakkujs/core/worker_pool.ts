@@ -1,25 +1,120 @@
 import {DanmuChunk, DanmuClusterOutput, DanmuObject, int, LocalizedConfig} from "./types";
-import 'remote-web-worker';
+
+type ArgsType = [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig];
+type RetType = DanmuClusterOutput;
+const FUNCTION_NAME = 'do_combine';
+
+const WORKER_FOOTER = `
+onmessage = (e) => {
+    console.log('pakku worker: received job');
+    try {
+        let res = ${FUNCTION_NAME}(...e.data);
+        console.log('pakku worker: job done');
+        postMessage({error: null, output: res});
+    } catch(err) {
+        console.error('pakku worker: job FAILED', err);
+        postMessage({error: err});
+    }
+};
+`;
+
+interface WebWorkerLike {
+    postMessage: (msg: ArgsType)=>void;
+    onmessage: null | ((e: {data: {error: Error} | {error: null, output: RetType}})=>void);
+    terminate: ()=>void;
+}
+
+export class WorkerMaker {
+    url: string;
+    use_simulated: boolean;
+
+    worker_blob_url: string | null;
+    fallback_fn: ((...args: ArgsType)=>RetType) | null;
+    constructor(url: string) {
+        this.url = url;
+        this.use_simulated = false;
+        this.worker_blob_url = null;
+        this.fallback_fn = null;
+    }
+
+    async spawn(): Promise<WebWorkerLike> {
+        if(this.use_simulated)
+            return this._spawn_simulated();
+
+        if(!this.worker_blob_url) {
+            let src = await (await fetch(this.url)).text();
+            // remove `export { do_combine };`
+            src = src.replace(/\bexport\s*\{\s*[a-zA-Z0-9_]+\s*}/, '');
+
+            this.worker_blob_url = URL.createObjectURL(new Blob([src + WORKER_FOOTER], {
+                type: "text/javascript",
+            }));
+        }
+
+        try {
+            return new Worker(this.worker_blob_url) as any;
+        } catch(e) {
+            console.error('pakku worker pool: USE SIMULATED because web worker init failed', e);
+            this.use_simulated = true;
+            return await this._spawn_simulated();
+        }
+    }
+
+    async _spawn_simulated(): Promise<WebWorkerLike> {
+        if(!this.fallback_fn) {
+            let module = await import(this.url);
+            this.fallback_fn = module[FUNCTION_NAME] as (...args: ArgsType)=>RetType;
+        }
+
+        let ret = {
+            onmessage: null as (null | ((e: {data: {error: any} | {error: null, output: RetType}})=>void)),
+            postMessage: (args: ArgsType)=>{
+                console.log('pakku worker (simulated): received job');
+                try {
+                    let res = this.fallback_fn!(...args);
+                    console.log('pakku worker (simulated): job done');
+                    ret.onmessage!({data: {error: null, output: res}});
+                } catch(err) {
+                    console.error('pakku worker (simulated): job FAILED', err);
+                    ret.onmessage!({data: {error: err}});
+                }
+            },
+            terminate: ()=>{},
+        };
+        return ret;
+    }
+}
 
 export class WorkerPool {
     terminated: boolean;
+    pool_size: int;
     workers: {
-        worker: Worker;
-        resolve: null | ((res: DanmuClusterOutput)=>void);
+        worker: WebWorkerLike;
+        resolve: null | ((res: RetType)=>void);
         reject: null | ((e: any)=>void);
     }[];
-    queue: [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig, (res: DanmuClusterOutput)=>void, (e: any)=>void][];
+    queue: [...ArgsType, (res: RetType)=>void, (e: any)=>void][];
 
     constructor(pool_size: int) {
         this.terminated = false;
+        this.pool_size = pool_size;
         this.workers = [];
         this.queue = [];
-        console.log('pakku worker pool: spawned');
-        for(let i = 0; i < pool_size; i++) {
-            let w = new Worker(chrome.runtime.getURL('/generated/combine_worker.js'));
+    }
+
+    async spawn() {
+        console.log('pakku worker pool: spawn', this.pool_size, 'workers');
+
+        let url = chrome.runtime.getURL('/generated/combine_worker.js');
+        let maker = new WorkerMaker(url);
+        if(this.pool_size===1)
+            maker.use_simulated = true;
+
+        for(let i = 0; i < this.pool_size; i++) {
+            let w = await maker.spawn();
             let config = {
                 worker: w,
-                resolve: null as (null | ((res: DanmuClusterOutput)=>void)),
+                resolve: null as (null | ((res: RetType)=>void)),
                 reject: null as (null | ((e: any)=>void)),
             };
             w.onmessage = (e) => {
@@ -57,13 +152,13 @@ export class WorkerPool {
         console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
-    exec(args: [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig]): Promise<DanmuClusterOutput> {
-        return new Promise((resolve: (res: DanmuClusterOutput)=>void, reject: (e: any)=>void) => {
+    exec(args: ArgsType): Promise<RetType> {
+        return new Promise((resolve: (res: RetType)=>void, reject: (e: any)=>void) => {
             if(this.terminated) {
                 reject('worker pool: cannot accept job because terminated');
                 return;
             }
-            this.queue.push([args[0], args[1], args[2], resolve, reject]);
+            this.queue.push([...args, resolve, reject]);
             this._try_perform_work();
         });
     }

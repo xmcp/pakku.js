@@ -64,7 +64,7 @@ function dispval(d: DanmuObjectRepresentative) {
 }
 
 let _last_config: null | LocalizedConfig = null;
-declare var make_mark: (text: string, cnt: int) => string;
+let make_mark: (text: string, cnt: int) => string;
 
 function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     let cnt = c.peers.length;

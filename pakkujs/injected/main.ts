@@ -40,12 +40,12 @@ async function apply_local_config(config: Config): Promise<LocalizedConfig> {
 
         // storage cleanup
         window.onunload = function() {
-            void remove_state([`STATS_${tabid}`]);
+            void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
         };
     }
 
-    if(state.USERSCRIPTS[tabid])
-        userscript = (userscript || '') + '\n\n' + state.USERSCRIPTS[tabid];
+    if(state[`USERSCRIPT_${tabid}`])
+        userscript = (userscript || '') + '\n\n' + state[`USERSCRIPT_${tabid}`];
 
     return {
         ...config,

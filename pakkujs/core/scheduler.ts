@@ -63,8 +63,8 @@ class Scheduler {
         this.pool = new WorkerPool(config.COMBINE_THREADS);
     }
 
-    write_failing_stats(e: Error, badge: string) {
-        let msg = `${e.message}\n\nStacktrace:\n${e.stack}\n\nIngress:\n${JSON.stringify(this.ingress)}`;
+    write_failing_stats(prompt: string, e: Error, badge: string) {
+        let msg = `${prompt}\n${e.message}\n\nStacktrace:\n${e.stack}\n\nIngress:\n${JSON.stringify(this.ingress)}`;
         this.stats = new MessageStats('error', badge, msg).notify(this.tabid);
 
         console.error('pakku scheduler: GOT EXCEPTION', e);
@@ -97,7 +97,7 @@ class Scheduler {
         try {
             res = await this.pool.exec([chunk as DanmuChunk<DanmuObject>, next_chunk_filtered as DanmuChunk<DanmuObject>, this.config as LocalizedConfig]);
         } catch(e) {
-            this.write_failing_stats(e as Error, BADGE_ERR_JS);
+            this.write_failing_stats(`合并分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
 
@@ -123,7 +123,7 @@ class Scheduler {
         try {
             res = post_combine(clusters, prev_clusters, chunk || null, this.config, this.ongoing_stats);
         } catch(e) {
-            this.write_failing_stats(e as Error, BADGE_ERR_JS);
+            this.write_failing_stats(`后处理分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
         console.log('pakku scheduler: got chunks out', segidx, res.objs.length);
@@ -160,6 +160,7 @@ class Scheduler {
     }
 
     async start() {
+        await this.pool.spawn();
         this.start_ts = +new Date();
         try {
             await perform_ingress(this.ingress, (idx, chunk) => {
@@ -169,11 +170,11 @@ class Scheduler {
                 this.chunks_in.set(idx, chunk);
                 this.ongoing_stats.num_total_danmu += chunk.objs.length;
 
-                this.try_start_combine(idx);
-                this.try_start_combine(idx-1);
+                void this.try_start_combine(idx);
+                void this.try_start_combine(idx-1);
             });
         } catch(e) {
-            this.write_failing_stats(e as Error, BADGE_ERR_NET);
+            this.write_failing_stats('下载弹幕时出错', e as Error, BADGE_ERR_NET);
             return;
         }
 

@@ -392,7 +392,7 @@ async function update() {
     config.SCROLL_THRESHOLD = parseInt(id('scroll-threshold').value) >= 0 ? parseInt(id('scroll-threshold').value) : 0;
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
-    config.COMBINE_THREADS = id('combine-threads').value;
+    config.COMBINE_THREADS = parseInt(id('combine-threads').value) >= 1 ? parseInt(id('combine-threads').value) : 1;
 
     await reload();
 

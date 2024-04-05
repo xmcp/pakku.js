@@ -113,10 +113,10 @@ function trim_pinyin(text: string): string {
 }
 
 let _fn_initialized = false;
-declare var detaolu: (text: string) => [boolean, string];
-declare var whitelisted: (text: string) => boolean;
-declare var blacklisted: (text: string) => boolean;
-declare var similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
+let detaolu: (text: string) => [boolean, string];
+let whitelisted: (text: string) => boolean;
+let blacklisted: (text: string) => boolean;
+let similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
 
 function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): DanmuClusterOutput {
     let ret: DanmuClusterOutput = {
@@ -305,14 +305,4 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
     return ret;
 }
 
-onmessage = (e) => {
-    console.log('pakku worker: received job');
-    try {
-        let res = do_combine(e.data[0], e.data[1], e.data[2]);
-        console.log('pakku worker: job done');
-        postMessage({error: null, output: res});
-    } catch(err) {
-        console.error('pakku worker: job FAILED', err);
-        postMessage({error: err});
-    }
-};
+export { do_combine };
