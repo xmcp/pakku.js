@@ -27,6 +27,10 @@ function get_width_if_exceeds(text: string, size: number, threshold: number): nu
     return _ctx.measureText(text).width / 20 * size;
 }
 
+function trim_dispstr(text: string): string {
+    return text.replace(/([\r\n\t])/g,'').trim();
+}
+
 // \u2080 is subscript_number_0
 const SUBSCRIPT_CHARS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => String.fromCharCode(0x2080 + x));
 function to_subscript(x: int): string {
@@ -76,10 +80,11 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
 
     if(dumped) {
         dumped[4] = make_mark(dumped[4], cnt);
-        rep_dm.pakku.disp_str = dumped[4];
+        rep_dm.pakku.disp_str = trim_dispstr(dumped[4]);
         rep_dm.content = JSON.stringify(dumped);
     } else {
-        rep_dm.content = rep_dm.pakku.disp_str = make_mark(rep_dm.content, cnt);
+        rep_dm.content = make_mark(rep_dm.content, cnt);
+        rep_dm.pakku.disp_str = trim_dispstr(rep_dm.content);
     }
 }
 
