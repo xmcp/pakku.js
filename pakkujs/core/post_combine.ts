@@ -14,8 +14,8 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-const DISPVAL_THRESHOLD = 80, SHRINK_TIME_THRESHOLD = 3000;
-const DISPVAL_BASE = Math.sqrt(DISPVAL_THRESHOLD);
+const DISPVAL_THRESHOLD = 60, SHRINK_TIME_THRESHOLD = 2500, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.7;
+const DISPVAL_BASE = Math.pow(DISPVAL_THRESHOLD, DISPVAL_POWER);
 
 const _cvs = document.createElement('canvas');
 const _ctx = _cvs.getContext('2d')!;
@@ -192,21 +192,27 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         out_danmus.sort((a, b) => a.time_ms - b.time_ms);
 
     let onscreen_l = 0, onscreen_r = 0, onscreen_dispval = 0;
+
+    let dispval_cache: Map<string, number> = new Map();
     for(let dm of out_danmus) {
         if(config.SHRINK) {
             while(onscreen_r<out_danmus.length && out_danmus[onscreen_r].time_ms - dm.time_ms < SHRINK_TIME_THRESHOLD) {
                 let dmr = out_danmus[onscreen_r];
-                onscreen_dispval += dispval(dmr);
+                let dv = dispval(dmr);
+                dispval_cache.set(dmr.id, dv);
+                onscreen_dispval += dv;
                 onscreen_r++;
             }
             while(dm.time_ms - out_danmus[onscreen_l].time_ms > SHRINK_TIME_THRESHOLD) {
-                onscreen_dispval -= dispval(out_danmus[onscreen_l]);
+                onscreen_dispval -= dispval_cache.get(out_danmus[onscreen_l].id)!;
                 onscreen_l++;
             }
             stats.num_max_dispval = Math.max(stats.num_max_dispval, onscreen_dispval);
 
+            //dm.content = `${onscreen_dispval.toFixed(0)}:${dm.content}`; ///// debug dispval
+
             if(onscreen_dispval > DISPVAL_THRESHOLD) {
-                let shrink_rate = Math.min(Math.sqrt(onscreen_dispval)/DISPVAL_BASE, 1.75);
+                let shrink_rate = Math.min(Math.pow(onscreen_dispval, DISPVAL_POWER)/DISPVAL_BASE, SHRINK_MAX_RATE);
                 dm.fontsize /= shrink_rate;
                 dm.pakku.desc.push(`已缩小 ${shrink_rate.toFixed(2)} 倍：弹幕密度为 ${onscreen_dispval.toFixed(1)}`);
                 stats.modified_shrink++;
