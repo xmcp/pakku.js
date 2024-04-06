@@ -37,7 +37,6 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
             'color': item.color!,
             'sender_hash': item.uhash!,
             'content': item.text!,
-            // @ts-ignore: protobuf may use a Long type
             'sendtime': item.date!,
             'weight': item.weight!,
             'id': item.dmid!,
@@ -47,7 +46,6 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
                 'proto_action': item.action,
                 'proto_animation': item.animation,
                 'proto_colorful': item.colorful,
-                // @ts-ignore: protobuf may use a Long type
                 'proto_oid': item.oid,
             },
         })),

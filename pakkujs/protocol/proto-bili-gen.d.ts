@@ -40,7 +40,7 @@ export namespace bilibili {
                         checkBox?: (boolean|null);
 
                         /** DmWebViewReply count */
-                        count?: (number|Long|null);
+                        count?: (number|null);
 
                         /** DmWebViewReply commandDms */
                         commandDms?: (bilibili.community.service.dm.v1.ICommandDm[]|null);
@@ -101,7 +101,7 @@ export namespace bilibili {
                         public checkBox: boolean;
 
                         /** DmWebViewReply count. */
-                        public count: (number|Long);
+                        public count: number;
 
                         /** DmWebViewReply commandDms. */
                         public commandDms: bilibili.community.service.dm.v1.ICommandDm[];
@@ -205,16 +205,16 @@ export namespace bilibili {
                     interface IPostPanel {
 
                         /** PostPanel start */
-                        start?: (number|Long|null);
+                        start?: (number|null);
 
                         /** PostPanel end */
-                        end?: (number|Long|null);
+                        end?: (number|null);
 
                         /** PostPanel priority */
-                        priority?: (number|Long|null);
+                        priority?: (number|null);
 
                         /** PostPanel bizId */
-                        bizId?: (number|Long|null);
+                        bizId?: (number|null);
 
                         /** PostPanel bizType */
                         bizType?: (bilibili.community.service.dm.v1.PostPanelBizType|null);
@@ -242,16 +242,16 @@ export namespace bilibili {
                         constructor(properties?: bilibili.community.service.dm.v1.IPostPanel);
 
                         /** PostPanel start. */
-                        public start: (number|Long);
+                        public start: number;
 
                         /** PostPanel end. */
-                        public end: (number|Long);
+                        public end: number;
 
                         /** PostPanel priority. */
-                        public priority: (number|Long);
+                        public priority: number;
 
                         /** PostPanel bizId. */
-                        public bizId: (number|Long);
+                        public bizId: number;
 
                         /** PostPanel bizType. */
                         public bizType: bilibili.community.service.dm.v1.PostPanelBizType;
@@ -298,10 +298,10 @@ export namespace bilibili {
                     interface IPostPanelV2 {
 
                         /** PostPanelV2 start */
-                        start?: (number|Long|null);
+                        start?: (number|null);
 
                         /** PostPanelV2 end */
-                        end?: (number|Long|null);
+                        end?: (number|null);
 
                         /** PostPanelV2 bizType */
                         bizType?: (bilibili.community.service.dm.v1.PostPanelBizType|null);
@@ -338,10 +338,10 @@ export namespace bilibili {
                         constructor(properties?: bilibili.community.service.dm.v1.IPostPanelV2);
 
                         /** PostPanelV2 start. */
-                        public start: (number|Long);
+                        public start: number;
 
                         /** PostPanelV2 end. */
-                        public end: (number|Long);
+                        public end: number;
 
                         /** PostPanelV2 bizType. */
                         public bizType: bilibili.community.service.dm.v1.PostPanelBizType;
@@ -1229,10 +1229,10 @@ export namespace bilibili {
                     interface ICommandDm {
 
                         /** CommandDm oid */
-                        oid?: (number|Long|null);
+                        oid?: (number|null);
 
                         /** CommandDm mid */
-                        mid?: (number|Long|null);
+                        mid?: (number|null);
 
                         /** CommandDm command */
                         command?: (string|null);
@@ -1266,10 +1266,10 @@ export namespace bilibili {
                         constructor(properties?: bilibili.community.service.dm.v1.ICommandDm);
 
                         /** CommandDm oid. */
-                        public oid: (number|Long);
+                        public oid: number;
 
                         /** CommandDm mid. */
-                        public mid: (number|Long);
+                        public mid: number;
 
                         /** CommandDm command. */
                         public command: string;
@@ -1322,10 +1322,10 @@ export namespace bilibili {
                     interface IDmSegConfig {
 
                         /** DmSegConfig pageSize */
-                        pageSize?: (number|Long|null);
+                        pageSize?: (number|null);
 
                         /** DmSegConfig total */
-                        total?: (number|Long|null);
+                        total?: (number|null);
                     }
 
                     /** Represents a DmSegConfig. */
@@ -1338,10 +1338,10 @@ export namespace bilibili {
                         constructor(properties?: bilibili.community.service.dm.v1.IDmSegConfig);
 
                         /** DmSegConfig pageSize. */
-                        public pageSize: (number|Long);
+                        public pageSize: number;
 
                         /** DmSegConfig total. */
-                        public total: (number|Long);
+                        public total: number;
 
                         /**
                          * Encodes the specified DmSegConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DmSegConfig.verify|verify} messages.
@@ -1499,7 +1499,7 @@ export namespace bilibili {
                         text?: (string|null);
 
                         /** DanmakuElem date */
-                        date?: (number|Long|null);
+                        date?: (number|null);
 
                         /** DanmakuElem weight */
                         weight?: (number|null);
@@ -1523,7 +1523,7 @@ export namespace bilibili {
                         colorful?: (bilibili.community.service.dm.v1.DmColorfulType|null);
 
                         /** DanmakuElem oid */
-                        oid?: (number|Long|null);
+                        oid?: (number|null);
                     }
 
                     /** Represents a DanmakuElem. */
@@ -1554,7 +1554,7 @@ export namespace bilibili {
                         public text: string;
 
                         /** DanmakuElem date. */
-                        public date: (number|Long);
+                        public date: number;
 
                         /** DanmakuElem weight. */
                         public weight: number;
@@ -1578,7 +1578,7 @@ export namespace bilibili {
                         public colorful: bilibili.community.service.dm.v1.DmColorfulType;
 
                         /** DanmakuElem oid. */
-                        public oid: (number|Long);
+                        public oid: number;
 
                         /**
                          * Encodes the specified DanmakuElem message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuElem.verify|verify} messages.
@@ -1871,10 +1871,10 @@ export namespace bilibili {
                     interface IPeriod {
 
                         /** Period start */
-                        start?: (number|Long|null);
+                        start?: (number|null);
 
                         /** Period end */
-                        end?: (number|Long|null);
+                        end?: (number|null);
                     }
 
                     /** Represents a Period. */
@@ -1887,10 +1887,10 @@ export namespace bilibili {
                         constructor(properties?: bilibili.community.service.dm.v1.IPeriod);
 
                         /** Period start. */
-                        public start: (number|Long);
+                        public start: number;
 
                         /** Period end. */
-                        public end: (number|Long);
+                        public end: number;
 
                         /**
                          * Encodes the specified Period message. Does not implicitly {@link bilibili.community.service.dm.v1.Period.verify|verify} messages.
@@ -2027,10 +2027,10 @@ export namespace bilibili {
                         type?: (number|null);
 
                         /** DmSubView oid */
-                        oid?: (number|Long|null);
+                        oid?: (number|null);
 
                         /** DmSubView pid */
-                        pid?: (number|Long|null);
+                        pid?: (number|null);
 
                         /** DmSubView postPanel_2 */
                         postPanel_2?: (bilibili.community.service.dm.v1.IPostPanelV2[]|null);
@@ -2049,10 +2049,10 @@ export namespace bilibili {
                         public type: number;
 
                         /** DmSubView oid. */
-                        public oid: (number|Long);
+                        public oid: number;
 
                         /** DmSubView pid. */
-                        public pid: (number|Long);
+                        public pid: number;
 
                         /** DmSubView postPanel_2. */
                         public postPanel_2: bilibili.community.service.dm.v1.IPostPanelV2[];

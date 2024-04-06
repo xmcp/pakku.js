@@ -65,7 +65,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {bilibili.community.service.dm.v1.IDanmakuFlagConfig|null} [flag] DmWebViewReply flag
                          * @property {Array.<string>|null} [specialDms] DmWebViewReply specialDms
                          * @property {boolean|null} [checkBox] DmWebViewReply checkBox
-                         * @property {number|Long|null} [count] DmWebViewReply count
+                         * @property {number|null} [count] DmWebViewReply count
                          * @property {Array.<bilibili.community.service.dm.v1.ICommandDm>|null} [commandDms] DmWebViewReply commandDms
                          * @property {bilibili.community.service.dm.v1.IDanmuWebPlayerConfig|null} [dmSetting] DmWebViewReply dmSetting
                          * @property {Array.<string>|null} [reportFilter] DmWebViewReply reportFilter
@@ -158,7 +158,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DmWebViewReply count.
-                         * @member {number|Long} count
+                         * @member {number} count
                          * @memberof bilibili.community.service.dm.v1.DmWebViewReply
                          * @instance
                          */
@@ -524,10 +524,10 @@ export const bilibili = $root.bilibili = (() => {
                          * Properties of a PostPanel.
                          * @memberof bilibili.community.service.dm.v1
                          * @interface IPostPanel
-                         * @property {number|Long|null} [start] PostPanel start
-                         * @property {number|Long|null} [end] PostPanel end
-                         * @property {number|Long|null} [priority] PostPanel priority
-                         * @property {number|Long|null} [bizId] PostPanel bizId
+                         * @property {number|null} [start] PostPanel start
+                         * @property {number|null} [end] PostPanel end
+                         * @property {number|null} [priority] PostPanel priority
+                         * @property {number|null} [bizId] PostPanel bizId
                          * @property {bilibili.community.service.dm.v1.PostPanelBizType|null} [bizType] PostPanel bizType
                          * @property {bilibili.community.service.dm.v1.IClickButton|null} [clickButton] PostPanel clickButton
                          * @property {bilibili.community.service.dm.v1.ITextInput|null} [textInput] PostPanel textInput
@@ -552,7 +552,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanel start.
-                         * @member {number|Long} start
+                         * @member {number} start
                          * @memberof bilibili.community.service.dm.v1.PostPanel
                          * @instance
                          */
@@ -560,7 +560,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanel end.
-                         * @member {number|Long} end
+                         * @member {number} end
                          * @memberof bilibili.community.service.dm.v1.PostPanel
                          * @instance
                          */
@@ -568,7 +568,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanel priority.
-                         * @member {number|Long} priority
+                         * @member {number} priority
                          * @memberof bilibili.community.service.dm.v1.PostPanel
                          * @instance
                          */
@@ -576,7 +576,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanel bizId.
-                         * @member {number|Long} bizId
+                         * @member {number} bizId
                          * @memberof bilibili.community.service.dm.v1.PostPanel
                          * @instance
                          */
@@ -741,8 +741,8 @@ export const bilibili = $root.bilibili = (() => {
                          * Properties of a PostPanelV2.
                          * @memberof bilibili.community.service.dm.v1
                          * @interface IPostPanelV2
-                         * @property {number|Long|null} [start] PostPanelV2 start
-                         * @property {number|Long|null} [end] PostPanelV2 end
+                         * @property {number|null} [start] PostPanelV2 start
+                         * @property {number|null} [end] PostPanelV2 end
                          * @property {bilibili.community.service.dm.v1.PostPanelBizType|null} [bizType] PostPanelV2 bizType
                          * @property {bilibili.community.service.dm.v1.IClickButtonV2|null} [clickButton] PostPanelV2 clickButton
                          * @property {bilibili.community.service.dm.v1.ITextInputV2|null} [textInput] PostPanelV2 textInput
@@ -770,7 +770,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanelV2 start.
-                         * @member {number|Long} start
+                         * @member {number} start
                          * @memberof bilibili.community.service.dm.v1.PostPanelV2
                          * @instance
                          */
@@ -778,7 +778,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * PostPanelV2 end.
-                         * @member {number|Long} end
+                         * @member {number} end
                          * @memberof bilibili.community.service.dm.v1.PostPanelV2
                          * @instance
                          */
@@ -2909,8 +2909,8 @@ export const bilibili = $root.bilibili = (() => {
                          * Properties of a CommandDm.
                          * @memberof bilibili.community.service.dm.v1
                          * @interface ICommandDm
-                         * @property {number|Long|null} [oid] CommandDm oid
-                         * @property {number|Long|null} [mid] CommandDm mid
+                         * @property {number|null} [oid] CommandDm oid
+                         * @property {number|null} [mid] CommandDm mid
                          * @property {string|null} [command] CommandDm command
                          * @property {string|null} [text] CommandDm text
                          * @property {number|null} [stime] CommandDm stime
@@ -2937,7 +2937,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * CommandDm oid.
-                         * @member {number|Long} oid
+                         * @member {number} oid
                          * @memberof bilibili.community.service.dm.v1.CommandDm
                          * @instance
                          */
@@ -2945,7 +2945,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * CommandDm mid.
-                         * @member {number|Long} mid
+                         * @member {number} mid
                          * @memberof bilibili.community.service.dm.v1.CommandDm
                          * @instance
                          */
@@ -3126,8 +3126,8 @@ export const bilibili = $root.bilibili = (() => {
                          * Properties of a DmSegConfig.
                          * @memberof bilibili.community.service.dm.v1
                          * @interface IDmSegConfig
-                         * @property {number|Long|null} [pageSize] DmSegConfig pageSize
-                         * @property {number|Long|null} [total] DmSegConfig total
+                         * @property {number|null} [pageSize] DmSegConfig pageSize
+                         * @property {number|null} [total] DmSegConfig total
                          */
 
                         /**
@@ -3147,7 +3147,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DmSegConfig pageSize.
-                         * @member {number|Long} pageSize
+                         * @member {number} pageSize
                          * @memberof bilibili.community.service.dm.v1.DmSegConfig
                          * @instance
                          */
@@ -3155,7 +3155,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DmSegConfig total.
-                         * @member {number|Long} total
+                         * @member {number} total
                          * @memberof bilibili.community.service.dm.v1.DmSegConfig
                          * @instance
                          */
@@ -3491,7 +3491,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {number|null} [color] DanmakuElem color
                          * @property {string|null} [uhash] DanmakuElem uhash
                          * @property {string|null} [text] DanmakuElem text
-                         * @property {number|Long|null} [date] DanmakuElem date
+                         * @property {number|null} [date] DanmakuElem date
                          * @property {number|null} [weight] DanmakuElem weight
                          * @property {string|null} [action] DanmakuElem action
                          * @property {number|null} [pool] DanmakuElem pool
@@ -3499,7 +3499,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {number|null} [attr] DanmakuElem attr
                          * @property {string|null} [animation] DanmakuElem animation
                          * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [colorful] DanmakuElem colorful
-                         * @property {number|Long|null} [oid] DanmakuElem oid
+                         * @property {number|null} [oid] DanmakuElem oid
                          */
 
                         /**
@@ -3567,7 +3567,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DanmakuElem date.
-                         * @member {number|Long} date
+                         * @member {number} date
                          * @memberof bilibili.community.service.dm.v1.DanmakuElem
                          * @instance
                          */
@@ -3631,7 +3631,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DanmakuElem oid.
-                         * @member {number|Long} oid
+                         * @member {number} oid
                          * @memberof bilibili.community.service.dm.v1.DanmakuElem
                          * @instance
                          */
@@ -4410,8 +4410,8 @@ export const bilibili = $root.bilibili = (() => {
                          * Properties of a Period.
                          * @memberof bilibili.community.service.dm.v1
                          * @interface IPeriod
-                         * @property {number|Long|null} [start] Period start
-                         * @property {number|Long|null} [end] Period end
+                         * @property {number|null} [start] Period start
+                         * @property {number|null} [end] Period end
                          */
 
                         /**
@@ -4431,7 +4431,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * Period start.
-                         * @member {number|Long} start
+                         * @member {number} start
                          * @memberof bilibili.community.service.dm.v1.Period
                          * @instance
                          */
@@ -4439,7 +4439,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * Period end.
-                         * @member {number|Long} end
+                         * @member {number} end
                          * @memberof bilibili.community.service.dm.v1.Period
                          * @instance
                          */
@@ -4746,8 +4746,8 @@ export const bilibili = $root.bilibili = (() => {
                          * @memberof bilibili.community.service.dm.v1
                          * @interface IDmSubView
                          * @property {number|null} [type] DmSubView type
-                         * @property {number|Long|null} [oid] DmSubView oid
-                         * @property {number|Long|null} [pid] DmSubView pid
+                         * @property {number|null} [oid] DmSubView oid
+                         * @property {number|null} [pid] DmSubView pid
                          * @property {Array.<bilibili.community.service.dm.v1.IPostPanelV2>|null} [postPanel_2] DmSubView postPanel_2
                          */
 
@@ -4777,7 +4777,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DmSubView oid.
-                         * @member {number|Long} oid
+                         * @member {number} oid
                          * @memberof bilibili.community.service.dm.v1.DmSubView
                          * @instance
                          */
@@ -4785,7 +4785,7 @@ export const bilibili = $root.bilibili = (() => {
 
                         /**
                          * DmSubView pid.
-                         * @member {number|Long} pid
+                         * @member {number} pid
                          * @memberof bilibili.community.service.dm.v1.DmSubView
                          * @instance
                          */
