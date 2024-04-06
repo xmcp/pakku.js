@@ -14,7 +14,7 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-const DISPVAL_THRESHOLD = 80, SHRINK_TIME_THRESHOLD = 3;
+const DISPVAL_THRESHOLD = 80, SHRINK_TIME_THRESHOLD = 3000;
 const DISPVAL_BASE = Math.sqrt(DISPVAL_THRESHOLD);
 
 const _cvs = document.createElement('canvas');
@@ -187,6 +187,9 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
     stats.num_onscreen_danmu += out_danmus.length;
 
     // final adjustments
+
+    if(config.SHRINK)
+        out_danmus.sort((a, b) => a.time_ms - b.time_ms);
 
     let onscreen_l = 0, onscreen_r = 0, onscreen_dispval = 0;
     for(let dm of out_danmus) {
