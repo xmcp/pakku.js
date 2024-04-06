@@ -90,6 +90,7 @@ module.exports = function(grunt) {
             commonjs(),
             replace({
                 preventAssignment: true,
+                'eval': 'undefined', // https://github.com/protobufjs/protobuf.js/issues/593
                'process.env.PAKKU_CHANNEL': `"${channel}"`,
             }),
         ];

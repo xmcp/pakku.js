@@ -7,6 +7,7 @@
     "watch": "grunt watch",
     "build:chrome": "grunt chrome",
     "build:firefox": "grunt firefox",
+    "build:src": "grunt src",
     "build:proto": "proto_translation\\transform_to_module.bat"
   },
   "dependencies": {
