@@ -251,7 +251,7 @@ function loadconfig() {
         savebtn.className = 'btn hidden';
 
         deletebtn.addEventListener('click', async function() {
-            delete config.FORCELIST[i];
+            config.FORCELIST.splice(i, 1);
             await reload();
         });
         savebtn.addEventListener('click', async function() {
