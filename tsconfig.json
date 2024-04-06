@@ -15,6 +15,5 @@
     "isolatedModules": true,
     "noEmitOnError": true
   },
-  "include": ["pakkujs"],
-  "references": [{ "path": "./tsconfig.node.json"}]
+  "include": ["pakkujs"]
 }

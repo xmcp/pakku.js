@@ -31,7 +31,7 @@ const PINYIN_TABLE = (()=>{
     let symbol_idx = 0xe000; // U+E000 ~ U+F8FF: Private Use Area
 
     for(let phonetic_raw in PINYIN_DICT_RAW) {
-        let phonetics = phonetic_raw.split('-').map(function(phonetic) {
+        let phonetics = phonetic_raw.split('_').map(function(phonetic) {
             let got = symbols.get(phonetic);
             if(got) {
                 return got;

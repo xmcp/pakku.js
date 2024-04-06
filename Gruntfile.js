@@ -11,7 +11,11 @@ function firefox_manifest(src, path) {
         delete obj.background.service_worker;
 
         // https://bugzilla.mozilla.org/show_bug.cgi?id=1736575
-        obj.content_scripts = obj.content_scripts.filter(s => s.world!=='MAIN');
+        for(let s of obj.content_scripts)
+            if(s.world==='MAIN') {
+                s.js = []; // will be injected by content_script.js
+                delete s.world;
+            }
 
         obj.browser_specific_settings = {
             gecko: {
@@ -23,10 +27,6 @@ function firefox_manifest(src, path) {
         return JSON.stringify(obj);
     }
 }
-
-let ALL_JS = ['**/*.js'];
-let ALL_HTML = ['**/*.html'];
-let ALL_EVERYTHING = ['**/*'];
 
 module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
@@ -51,12 +51,14 @@ module.exports = function(grunt) {
         });
     }
 
-    const COPY_FILES = make_filelist(NORMAL_DIR, ALL_EVERYTHING).concat([
+    const COPY_FILES = [
+        ...make_filelist(['assets'], ['**/*']),
+        ...make_filelist(['page'], ['**/*.html', 'img/*']),
         {
             src: ['pakkujs/LICENSE.txt'],
             dest: 'dist/_/LICENSE.txt',
         },
-    ]);
+    ];
 
     const MANIFEST_FILES = [
         {
@@ -76,6 +78,8 @@ module.exports = function(grunt) {
         'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
         'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
     };
+
+    const TERSER_FILES = Object.fromEntries(Object.keys(ROLLUP_FILES).map(k => [k, [k]]));
 
     function ROLLUP_PLUGINS(channel) {
         return [
@@ -121,6 +125,7 @@ module.exports = function(grunt) {
         },
 
         clean: {
+            tmp: ['dist/tmp/'],
             dist: ['dist/_/'],
             firefox: ['dist/F/'],
             chrome: ['dist/C/'],
@@ -168,8 +173,8 @@ module.exports = function(grunt) {
                 minifyCSS: true,
             },
 
-            main: {
-                files: make_filelist(NORMAL_DIR, ALL_HTML),
+            gen: {
+                files: make_filelist(NORMAL_DIR, ['**/*.html']),
             },
         },
 
@@ -185,6 +190,19 @@ module.exports = function(grunt) {
                 options: {
                     sourceMap: false,
                 },
+            },
+        },
+
+        terser: {
+            options: {
+                module: true,
+                ecma: 2020,
+                keep_classnames: true,
+                keep_fnames: true,
+            },
+
+            production: {
+                files: TERSER_FILES,
             },
         },
 
@@ -221,11 +239,11 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        src: ['Gruntfile.js', 'package.json', 'package-lock.json', 'pakkujs/**/*'],
+                        src: ['Gruntfile.js', 'package.json', 'package-lock.json', 'tsconfig.json', 'pakkujs/**/*'],
                     },
                     {
                         expand: true,
-                        src: 'BUILD.txt',
+                        src: 'BUILD_FIREFOX.txt',
                         rename: () => 'README.txt',
                     },
                 ],
@@ -237,9 +255,11 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('_common', [
+        'clean:tmp',
         'clean:dist',
         'copy:assets',
         'cssmin:gen',
+        'htmlmin:gen',
     ])
     grunt.registerTask('dev', [
         '_common',
@@ -249,7 +269,10 @@ module.exports = function(grunt) {
     grunt.registerTask('chrome', [
         'clean:chrome',
 
-        'dev',
+        '_common',
+        'rollup:chrome',
+        'terser:production',
+        'copy:chrome_manifest',
 
         'move:chrome',
         'compress:chrome',
@@ -259,6 +282,7 @@ module.exports = function(grunt) {
 
         '_common',
         'rollup:firefox',
+        'terser:production',
         'copy:firefox_manifest',
 
         'move:firefox',

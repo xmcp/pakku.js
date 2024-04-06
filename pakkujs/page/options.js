@@ -120,17 +120,17 @@ for(let elem of document.querySelectorAll('.donate')) {
 
 let config = await get_config();
 
-async function get_ws_permission() {
-    let granted = await chrome.permissions.request({
+function get_ws_permission_and_reload() {
+    chrome.permissions.request({
         origins: ['ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
+    }, (granted)=>{
+        if(!granted) {
+            config.BREAK_UPDATE = false;
+            // noinspection ES6MissingAwait
+            alert('权限不足或者您的浏览器不支持此功能');
+        }
+        void reload();
     });
-
-    if(!granted) {
-        config.BREAK_UPDATE = false;
-        // noinspection ES6MissingAwait
-        reload();
-        alert('权限不足或者您的浏览器不支持此功能');
-    }
 }
 
 async function backup_restore_prompt() {
@@ -146,9 +146,11 @@ async function backup_restore_prompt() {
             await save_config(config);
             loadconfig();
             if(config.BREAK_UPDATE)
-                await get_ws_permission();
+                get_ws_permission_and_reload();
             alert('导入成功。');
-            location.reload();
+            setTimeout(()=>{
+                location.reload();
+            }, 200);
         } catch(e) {
             alert('导入失败。\n\n' + e.message);
             throw e;
@@ -364,7 +366,7 @@ for(let elem of img_btns) {
     });
 }
 
-async function update() {
+function update() {
     config.ADVANCED_USER = id('show-advanced').checked;
     // 弹幕合并
     config.THRESHOLD = parseInt(id('threshold').value, 10) > -2 ? parseInt(id('threshold').value, 10) : 20;
@@ -400,10 +402,10 @@ async function update() {
     config.POPUP_BADGE = id('popup-badge').value;
     config.COMBINE_THREADS = parseInt(id('combine-threads').value) >= 1 ? parseInt(id('combine-threads').value) : 1;
 
-    await reload();
-
     if(this.id === 'break-update' && this.checked)
-        await get_ws_permission();
+        get_ws_permission_and_reload();
+    else
+        void reload();
 }
 
 loadconfig();
