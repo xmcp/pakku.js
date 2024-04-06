@@ -186,21 +186,26 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
         await chunk_callback(idx, protobuf_to_obj(1, await resp));
     }
 
-    // preload first chunk to save time for short videos
-    let first_chunk_req = protoapi_get_seg(ingress, 1);
+    // preload first 2 chunks to increase responsiveness
+    let chunk_1_req = protoapi_get_seg(ingress, 1);
+    let chunk_2_req = protoapi_get_seg(ingress, 2);
     let pages = await protoapi_get_segcount(ingress);
 
     if(pages) {
+        if(pages<=1) {
+            await return_from_resp(1, chunk_1_req);
+            return;
+        }
         // noinspection ES6MissingAwait
-        let jobs = [return_from_resp(1, first_chunk_req)];
-        for(let i=2; i<=pages; i++)
+        let jobs = [return_from_resp(1, chunk_1_req), return_from_resp(2, chunk_2_req)];
+        for(let i=3; i<=pages; i++)
             jobs.push(return_from_resp(i, protoapi_get_seg(ingress, i)));
         await Promise.all(jobs);
     } else { // guess page numbers
         console.log('pakku protobuf api: guessing page numbers');
 
         // noinspection ES6MissingAwait
-        let req= [first_chunk_req, protoapi_get_seg(ingress, 2), protoapi_get_seg(ingress, 3)];
+        let req= [chunk_1_req, chunk_2_req, protoapi_get_seg(ingress, 3)];
 
         async function work(idx: int): Promise<void> {
             let d = await req.shift()!;
