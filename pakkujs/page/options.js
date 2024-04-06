@@ -223,6 +223,8 @@ function loadconfig() {
     let forcelist = id('forcelist');
     forcelist.textContent = '';
     for(let i in config.FORCELIST) {
+        i = parseInt(i);
+
         let container = document.createElement('li'),
             code1 = document.createElement('code'),
             spliter = document.createElement('span'),
@@ -277,6 +279,8 @@ function loadconfig() {
     let whitelist = id('whitelist');
     whitelist.textContent = '';
     for(let i in config.WHITELIST) {
+        i = parseInt(i);
+
         let container = document.createElement('li'),
             code1 = document.createElement('code'),
             deletebtn = document.createElement('button'),
@@ -294,7 +298,7 @@ function loadconfig() {
         cancelbtn.className = 'btn hidden';
 
         deletebtn.addEventListener('click', async function() {
-            delete config.WHITELIST[i];
+            config.WHITELIST.splice(i, 1);
             await reload();
         });
         savebtn.addEventListener('click', async function() {

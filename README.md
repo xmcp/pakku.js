@@ -2,13 +2,14 @@ A rewritten version of pakku.js
 
 New Features:
 
-- Better customization user scripts
+- Better customization through user scripts
+- Parallelization with Web Worker
 
 Improvements:
 
 - Read blacklist from localStorage bpx_player_profile.blockList
-- Parallelization with Web Worker
-- Removed background page (reduces ~40MB RAM usage)
+- Supported colorful dm
+- Removed background page (reduces ~40MB RAM usage when idle)
 - Removed telemetry
 
 Code quality improvements:

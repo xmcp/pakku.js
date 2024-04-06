@@ -10,9 +10,14 @@ let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || 0);
 
 async function check_userscript(script) {
     let w = new UserscriptWorker(script);
+    w.worker.onerror = (e)=>{
+        alert('脚本存在错误：' + e.message);
+        w.worker.terminate();
+    };
     try {
         let [n_before, n_after] = await w.init();
         let tot = n_before + n_after;
+        w.worker.terminate();
         if(tot===0) {
             alert('没有注册任何函数，请使用 tweak_before_pakku 和 tweak_after_pakku 注册处理函数');
             return false;
@@ -20,6 +25,7 @@ async function check_userscript(script) {
         return true;
     } catch(e) {
         alert('脚本存在错误：' + e.message);
+        w.worker.terminate();
         throw e;
     }
 }
