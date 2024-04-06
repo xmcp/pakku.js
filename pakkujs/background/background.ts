@@ -2,38 +2,58 @@ import {reset_dnr_status} from "./danmu_update_blocker";
 import {get_config, save_config} from "./config";
 import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
 
-async function check_chrome_permission_hotfix() {
+async function check_fix_permission() {
     let perms = await chrome.permissions.getAll();
 
     if(!perms.origins?.includes('*://*.bilibili.com/*')) {
         chrome.notifications.create('//perm_hotfix', {
             type: 'basic',
-            iconUrl: chrome.runtime.getURL('assets/logo.png'),
+            iconUrl: chrome.runtime.getURL('/assets/logo.png'),
             title: '请授予pakku权限',
-            message: '您可能修改了权限设置，导致pakku没有修改弹幕所需的权限，无法正常工作。',
-            requireInteraction: true,
-            buttons: [
-                {title: '立即修复'},
-            ]
+            message: 'pakku目前没有修改弹幕所需的权限，无法正常工作。点击修复权限。',
+
+            // xxx: firefox does not support requireInteraction and buttons
+            ...process.env.PAKKU_CHANNEL==='firefox' ? {} : {
+                requireInteraction: true,
+                buttons: [
+                    {title: '立即修复'},
+                ],
+            },
         });
     }
 }
 
-chrome.notifications.onButtonClicked.addListener(function(notif_id,btn_idx) {
-    if(notif_id==='//perm_hotfix') {
-        chrome.permissions.request({
-            origins: ['*://*.bilibili.com/*'],
-            permissions: ['storage', 'declarativeNetRequestWithHostAccess'],
-        }, function(granted) {
-            if(granted) {
-                chrome.notifications.update('//perm_hotfix', {
-                    title: '权限修复成功',
-                    message: '您可能需要刷新已经打开的B站页面',
-                    requireInteraction: false,
-                    buttons: [],
-                });
-            }
+async function do_fix_permission() {
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1763915
+    if(process.env.PAKKU_CHANNEL==='firefox') {
+        await chrome.tabs.create({url: chrome.runtime.getURL('/page/options.html')});
+        return;
+    }
+
+    let granted = await chrome.permissions.request({
+        origins: ['*://*.bilibili.com/*'],
+    });
+    console.log('fix permission granted:', granted);
+
+    if(granted) {
+        chrome.notifications.clear('//perm_hotfix');
+        chrome.notifications.create('//perm_hotfix_done', {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('/assets/logo.png'),
+            title: '权限修复成功',
+            message: '您可能需要刷新已经打开的B站页面',
         });
+    }
+}
+
+chrome.notifications.onClicked.addListener(async function(notif_id) {
+    if(notif_id==='//perm_hotfix') {
+        await do_fix_permission();
+    }
+});
+chrome.notifications.onButtonClicked.addListener(async function(notif_id,btn_idx) {
+    if(notif_id==='//perm_hotfix') {
+        await do_fix_permission();
     }
 });
 
@@ -48,7 +68,7 @@ async function perform_init() {
     let is_init = await init_state();
     if(is_init) {
         await reset_badge();
-        await check_chrome_permission_hotfix();
+        await check_fix_permission();
     }
 }
 void perform_init();

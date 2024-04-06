@@ -80,14 +80,16 @@ export class MessageStats {
     }
 
     notify(tabid: int) {
-        void save_state({['STATS_'+tabid]: this});
-        const BGCOLORS = {error: '#ff4444', message: '#4444ff'};
-        void chrome.runtime.sendMessage({
-            type: 'update_badge',
-            tabid: tabid,
-            text: this.badge,
-            bgcolor: BGCOLORS[this.type],
-        });
+        save_state({['STATS_'+tabid]: this})
+            .then(()=>{
+                const BGCOLORS = {error: '#ff4444', message: '#4444ff'};
+                void chrome.runtime.sendMessage({
+                    type: 'update_badge',
+                    tabid: tabid,
+                    text: this.badge,
+                    bgcolor: BGCOLORS[this.type],
+                });
+            });
         return this;
     }
 }
@@ -119,18 +121,20 @@ export class Stats {
     num_max_dispval = 0;
 
     notify(tabid: int, config: Config) {
-        void save_state({['STATS_'+tabid]: this});
-        let text = (
-            config.POPUP_BADGE==='count' ? (this.num_total_danmu - this.num_onscreen_danmu) :
-            config.POPUP_BADGE==='percent' ? `${this.num_total_danmu ? Math.max(0, 100 - 100 * this.num_onscreen_danmu / this.num_total_danmu).toFixed(0) : 0}%` :
-            /* off */ ''
-        );
-        void chrome.runtime.sendMessage({
-            type: 'update_badge',
-            tabid: tabid,
-            text: text,
-            bgcolor: '#008800',
-        });
+        save_state({['STATS_'+tabid]: this})
+            .then(()=>{
+                let text = (
+                    config.POPUP_BADGE==='count' ? (this.num_total_danmu - this.num_onscreen_danmu) :
+                    config.POPUP_BADGE==='percent' ? `${this.num_total_danmu ? Math.max(0, 100 - 100 * this.num_onscreen_danmu / this.num_total_danmu).toFixed(0) : 0}%` :
+                    /* off */ ''
+                );
+                void chrome.runtime.sendMessage({
+                    type: 'update_badge',
+                    tabid: tabid,
+                    text: text,
+                    bgcolor: '#008800',
+                });
+            });
         return this;
     }
 

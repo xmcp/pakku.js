@@ -2,11 +2,21 @@ function firefox_manifest(src, path) {
     if(path.endsWith('manifest.json')) {
         let obj = JSON.parse(src);
 
-        obj['permissions'] = obj['permissions'].concat(obj['optional_permissions']);
-        obj['applications'] = {
-            'gecko': {
-                'id': '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
-                'strict_min_version': '56.0',
+        // https://github.com/w3c/webextensions/issues/119
+        obj.host_permissions = obj.host_permissions.concat(obj.optional_host_permissions);
+        delete obj.optional_host_permissions;
+
+        // https://github.com/mozilla/web-ext/issues/2532
+        obj.background.scripts = [obj.background.service_worker];
+        delete obj.background.service_worker;
+
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1736575
+        obj.content_scripts = obj.content_scripts.filter(s => s.world!=='MAIN');
+
+        obj.browser_specific_settings = {
+            gecko: {
+                id: '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
+                'strict_min_version': '113.0',
             },
         };
 
@@ -55,6 +65,31 @@ module.exports = function(grunt) {
         },
     ];
 
+    const ROLLUP_FILES = {
+        'dist/_/generated/background.js': 'pakkujs/background/background.ts',
+        'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
+        'dist/_/generated/injected.js': 'pakkujs/injected/main.ts',
+        'dist/_/generated/options.js': 'pakkujs/page/options.js',
+        'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
+        'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
+        'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
+        'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
+    };
+
+    function ROLLUP_PLUGINS(channel) {
+        return [
+            typescript(),
+            nodeResolve({
+                browser: true,
+            }),
+            commonjs(),
+            replace({
+                preventAssignment: true,
+               'process.env.PAKKU_CHANNEL': `"${channel}"`,
+            }),
+        ];
+    }
+
     grunt.initConfig({
         watch: {
             scripts: {
@@ -68,36 +103,24 @@ module.exports = function(grunt) {
 
         rollup: {
             options: {
-                plugins: [
-                    typescript(),
-                    nodeResolve({
-                        browser: true,
-                    }),
-                    commonjs(),
-                    replace({
-                        preventAssignment: true,
-                       'process.env.PAKKU_CHANNEL': '"chrome"', // TODO: firefox
-                    }),
-                ],
                 shimMissingExports: true,
             },
-            main: {
-                files: {
-                    'dist/_/generated/background.js': 'pakkujs/background/background.ts',
-                    'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
-                    'dist/_/generated/injected.js': 'pakkujs/injected/main.ts',
-                    'dist/_/generated/options.js': 'pakkujs/page/options.js',
-                    'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
-                    'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
-                    'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
-                    'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
-                }
-            }
+            chrome: {
+                files: ROLLUP_FILES,
+                options: {
+                    plugins: ROLLUP_PLUGINS('chrome'),
+                },
+            },
+            firefox: {
+                files: ROLLUP_FILES,
+                options: {
+                    plugins: ROLLUP_PLUGINS('firefox'),
+                },
+            },
         },
 
         clean: {
             dist: ['dist/_/'],
-            tmp: ['dist/tmp/'],
             firefox: ['dist/F/'],
             chrome: ['dist/C/'],
         },
@@ -199,39 +222,27 @@ module.exports = function(grunt) {
 
     grunt.registerTask('dev', [
         'clean:dist',
-        'clean:tmp',
-
         'copy:assets',
-        'rollup:main',
+        'rollup:chrome',
         'copy:chrome_manifest',
-
-        'clean:tmp',
     ]);
     grunt.registerTask('chrome', [
-        'clean:dist',
-        'clean:tmp',
         'clean:chrome',
-
+        'clean:dist',
         'copy:assets',
-        'htmlmin:main',
+        'rollup:chrome',
         'copy:chrome_manifest',
-
         'move:chrome',
         'compress:chrome',
-        'clean:tmp',
     ]);
     grunt.registerTask('firefox', [
-        'clean:dist',
-        'clean:tmp',
         'clean:firefox',
-
+        'clean:dist',
         'copy:assets',
-        'htmlmin:main',
+        'rollup:firefox',
         'copy:firefox_manifest',
-
         'move:firefox',
         'compress:firefox',
-        'clean:tmp',
     ]);
     grunt.registerTask('src', [
         'compress:src',

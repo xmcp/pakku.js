@@ -423,3 +423,19 @@ for(let elem of [
 ]) {
     id(elem).addEventListener('change', update);
 }
+
+let perms = await chrome.permissions.getAll();
+
+if(!perms.origins?.includes('*://*.bilibili.com/*')) {
+    id('fix-permission-hint').style.display = 'initial';
+    id('fix-permission-btn').addEventListener('click', function() {
+        /// xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
+        chrome.permissions.request({
+            origins: ['*://*.bilibili.com/*'],
+        })
+            .then((granted)=>{
+                if(granted)
+                    id('fix-permission-hint').style.display = 'none';
+            });
+    });
+}

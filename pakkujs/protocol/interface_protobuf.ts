@@ -126,7 +126,17 @@ async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int |
         {credentials: 'include'}
     );
     let buffer = await res.arrayBuffer();
-    let d = proto_view.decode(new Uint8Array(buffer));
+    let arr = new Uint8Array(buffer)
+
+    if(process.env.PAKKU_CHANNEL==='firefox') {
+        // have to clone this uint8array otherwise `arr instanceof Uint8Array` will be false
+        // https://medium.com/@simonwarta/limitations-of-the-instanceof-operator-f4bcdbe7a400
+        let arr2 = new Uint8Array(arr.byteLength);
+        arr2.set(arr);
+        arr = arr2;
+    }
+
+    let d = proto_view.decode(arr);
 
     if(d.dmSge && d.dmSge.total && d.dmSge.total < 100)
         return d.dmSge.total as int;
@@ -137,7 +147,17 @@ async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int |
 async function protoapi_get_url(url: string): Promise<proto_seg> {
     let res = await fetch(url, {credentials: 'include'});
     let buffer = await res.arrayBuffer();
-    return proto_seg.decode(new Uint8Array(buffer));
+    let arr = new Uint8Array(buffer);
+
+    if(process.env.PAKKU_CHANNEL==='firefox') {
+        // have to clone this uint8array otherwise `arr instanceof Uint8Array` will be false
+        // https://medium.com/@simonwarta/limitations-of-the-instanceof-operator-f4bcdbe7a400
+        let arr2 = new Uint8Array(arr.byteLength);
+        arr2.set(arr);
+        arr = arr2;
+    }
+
+    return proto_seg.decode(arr);
 }
 
 async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promise<proto_seg> { // return dm list

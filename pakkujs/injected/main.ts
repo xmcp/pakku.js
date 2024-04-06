@@ -130,3 +130,10 @@ window.addEventListener('message',async function(event) {
         handle_task(url[0], url[1], sendResponse, local_config, tabid as int);
     }
 },false);
+
+if(process.env.PAKKU_CHANNEL === 'firefox') {
+    console.log('pakku: inject xhr hook');
+    let sc = document.createElement('script');
+    sc.src = chrome.runtime.getURL('/assets/xhr_hook.js');
+    document.documentElement.appendChild(sc);
+}

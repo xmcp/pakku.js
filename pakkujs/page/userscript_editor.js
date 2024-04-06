@@ -9,6 +9,11 @@ let $editor = document.querySelector('#editor');
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || 0);
 
 async function check_userscript(script) {
+    if(process.env.PAKKU_CHANNEL==='firefox') {
+        // firefox's CSP disallow using blob or data urls for worker in extension pages
+        return true;
+    }
+
     let w = new UserscriptWorker(script);
     w.worker.onerror = (e)=>{
         alert('脚本存在错误：' + e.message);

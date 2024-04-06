@@ -53,8 +53,7 @@
     },
     
     "background": {
-        "service_worker": "generated/background.js",
-        "type": "module"
+        "service_worker": "generated/background.js"
     },
     "content_scripts": [
         {
@@ -80,7 +79,7 @@
         }]
     },
     "web_accessible_resources": [{
-        "resources": ["/generated/combine_worker.js"],
+        "resources": ["/generated/combine_worker.js", "/assets/xhr_hook.js"],
         "matches": ["*://*.bilibili.com/*"]
     }]
 }
