@@ -88,7 +88,7 @@ async function toggle_global_switch() {
     for(let tab of await chrome.tabs.query({})) {
         let url = tab.url;
         if(url?.includes('bilibili.com/'))
-            chrome.tabs.sendMessage(tab.id!, {type: 'reload_state'})
+            chrome.tabs.sendMessage(tab.id!, {type: 'reload_danmu'})
                 .catch(()=>{});
     }
 
@@ -135,9 +135,29 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             .catch(()=>{});
     }
     else if(msg.type==='toggle_switch') {
-        async function perform() {
+        let perform = async ()=>{
             await toggle_global_switch();
             sendResponse(null);
+        }
+        void perform();
+        return true;
+    }
+    else if(msg.type==='xhr_proxy') {
+        let perform = async ()=>{
+            try {
+                let res = await fetch(msg.url);
+                let status = res.status;
+                let text = await res.text();
+                sendResponse({
+                    error: null,
+                    text: text,
+                    status: status,
+                });
+            } catch(e) {
+                sendResponse({
+                    error: e,
+                });
+            }
         }
         void perform();
         return true;
@@ -146,7 +166,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 let _clear_timeout: number | null = null;
 chrome.commands.onCommand.addListener(async function(name) {
-    if (name==='toggle-global-switch') {
+    if(name==='toggle-global-switch') {
         let new_switch = await toggle_global_switch();
 
         chrome.notifications.create('//switch', {

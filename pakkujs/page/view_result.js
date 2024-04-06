@@ -27,7 +27,6 @@ async function process() {
             options.step==='input' ? dumped_result.chunks_in : dumped_result.chunks_out
         )
             .map(([k, v]) => [parseInt(k), v])
-            .filter(([k, v]) => k>=1 && k<=dumped_result.num_chunks)
     );
 
     let egress_fn = options.egress==='xml' ? egress_xml : egress_debug;

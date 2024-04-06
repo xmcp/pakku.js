@@ -76,7 +76,7 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
 
     if(dumped) {
         dumped[4] = make_mark(dumped[4], cnt);
-        rep_dm.pakku.disp_str = dumped[4].replace(/\/n/g, '');
+        rep_dm.pakku.disp_str = dumped[4];
         rep_dm.content = JSON.stringify(dumped);
     } else {
         rep_dm.content = rep_dm.pakku.disp_str = make_mark(rep_dm.content, cnt);
@@ -214,8 +214,10 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             if(dm.mode===4 || dm.mode===5) {
                 let width = get_width_if_exceeds(dm.content, dm.fontsize, config.SCROLL_THRESHOLD);
                 if(width > config.SCROLL_THRESHOLD) {
+                    let prefix = dm.mode===4 ? '↓' : '↑';
                     dm.mode = 1;
-                    dm.content = (dm.mode===4 ? '↓' : '↑') + dm.content;
+                    dm.content = prefix + dm.content;
+                    dm.pakku.disp_str = prefix + dm.pakku.disp_str;
                     dm.pakku.desc.push(`转换为滚动弹幕：宽度为 ${width.toFixed(0)} px`);
                     stats.modified_scroll++;
                 }

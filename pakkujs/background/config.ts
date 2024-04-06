@@ -76,7 +76,7 @@ export function migrate_config(remote_config: AnyObject): Config {
         config._LAST_UPDATE_TIME = +new Date();
         config._CONFIG_VER = 1;
 
-        config.ADVANCED_USER = remote_config.ADVANCED_USER==='on';
+        config.ADVANCED_USER = remote_config._ADVANCED_USER==='on';
         config.THRESHOLD = parseInt(remote_config.THRESHOLD);
         config.MAX_DIST = parseInt(remote_config.MAX_DIST);
         config.MAX_COSINE = parseInt(remote_config.MAX_COSINE);

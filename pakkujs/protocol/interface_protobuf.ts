@@ -108,7 +108,7 @@ function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoa
     });
     let a = Object.keys(o).sort();
     let s = [];
-    for (let c = 0; c < a.length; c++) {
+    for(let c = 0; c < a.length; c++) {
         let p = a[c], h = o[p];
         null != h && s.push("".concat(encodeURIComponent(p), "=").concat(encodeURIComponent(h)))
     }
@@ -137,8 +137,9 @@ async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int |
     }
 
     let d = proto_view.decode(arr);
+    console.log('pakku protobuf api: got view', d);
 
-    if(d.dmSge && d.dmSge.total && d.dmSge.total < 100)
+    if(d.dmSge && d.dmSge.total && d.dmSge.total < 200)
         return d.dmSge.total as int;
     else
         return null;

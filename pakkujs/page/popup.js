@@ -78,7 +78,7 @@ async function loadui() {
                         else
                             row.classList.remove('display-none');
                     }
-                    elem.textContent = (typeof r == 'number') ? Math.ceil(r) : r;
+                    elem.textContent = (typeof r === 'number') ? Math.ceil(r) : r;
                 }
             for(let category of ['combined', 'deleted', 'ignored', 'modified', 'info']) {
                 let rows = Array.from(document.querySelectorAll(`.status-header-${category}:not(.display-none)`));

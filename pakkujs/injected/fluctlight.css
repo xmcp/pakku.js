@@ -1,0 +1,29 @@
+.pakku-fluctlight-graph {
+    pointer-events: none;
+    z-index: 9999;
+}
+.pakku-fluctlight-fluct {
+    position: relative;
+    left: 0;
+    width: 160px;
+    overflow: hidden !important;
+    text-align: left;
+    padding: 2px;
+    box-sizing: border-box;
+    background-color: rgba(205,205,205,.8);
+    color: black !important;
+}
+.pakku-fluctlight-fluct:empty {
+    display: none;
+}
+.pakku-fluctlight-fluct p {
+    white-space: nowrap;
+    height: 14px;
+    font-size: 12px;
+    line-height: 14px;
+    margin: 0;
+}
+
+.bpx-player-progress-area .bpx-player-progress-wrap .bpx-player-progress-popup {
+    overflow: visible !important; /* overriden from hidden, otherwise fluctlight does not show */
+}

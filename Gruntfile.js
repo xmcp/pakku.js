@@ -68,7 +68,8 @@ module.exports = function(grunt) {
     const ROLLUP_FILES = {
         'dist/_/generated/background.js': 'pakkujs/background/background.ts',
         'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
-        'dist/_/generated/injected.js': 'pakkujs/injected/main.ts',
+        'dist/_/generated/content_script.js': 'pakkujs/core/main.ts',
+        'dist/_/generated/injected.js': 'pakkujs/injected/do_inject.ts',
         'dist/_/generated/options.js': 'pakkujs/page/options.js',
         'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
         'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
@@ -172,6 +173,21 @@ module.exports = function(grunt) {
             },
         },
 
+        cssmin: {
+            options: {
+                level: 2,
+            },
+
+            gen: {
+                files: {
+                    'dist/_/generated/injected.css': ['pakkujs/injected/*.css'],
+                },
+                options: {
+                    sourceMap: false,
+                },
+            },
+        },
+
         compress: {
             options: {
                 level: 9,
@@ -220,27 +236,31 @@ module.exports = function(grunt) {
         },
     });
 
-    grunt.registerTask('dev', [
+    grunt.registerTask('_common', [
         'clean:dist',
         'copy:assets',
+        'cssmin:gen',
+    ])
+    grunt.registerTask('dev', [
+        '_common',
         'rollup:chrome',
         'copy:chrome_manifest',
     ]);
     grunt.registerTask('chrome', [
         'clean:chrome',
-        'clean:dist',
-        'copy:assets',
-        'rollup:chrome',
-        'copy:chrome_manifest',
+
+        'dev',
+
         'move:chrome',
         'compress:chrome',
     ]);
     grunt.registerTask('firefox', [
         'clean:firefox',
-        'clean:dist',
-        'copy:assets',
+
+        '_common',
         'rollup:firefox',
         'copy:firefox_manifest',
+
         'move:firefox',
         'compress:firefox',
     ]);

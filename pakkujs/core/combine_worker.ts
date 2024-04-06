@@ -105,7 +105,7 @@ function extract_special_danmu(text: string): string {
     try {
         text = JSON.parse(text)[4];
     } catch(e) {}
-    return text.replace(/\/n/g,'');
+    return text;
 }
 
 function trim_pinyin(text: string): string {

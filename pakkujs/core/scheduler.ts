@@ -13,6 +13,7 @@ import {
 } from "./types";
 import {post_combine} from "./post_combine";
 import {UserscriptWorker} from "./userscript";
+import {do_inject} from "../injected/do_inject";
 
 const MAX_SCHEDULERS_PER_PAGE = 3;
 
@@ -87,7 +88,7 @@ class Scheduler {
             return; // working or finished
 
         let chunk = this.chunks_in.get(segidx);
-        let next_chunk = this.chunks_in.get(segidx+1);
+        let next_chunk = segidx===this.num_chunks ? {objs: [], extra: {}} : this.chunks_in.get(segidx+1);
         if(!chunk || !next_chunk)
             return; // not ready
 
@@ -159,7 +160,7 @@ class Scheduler {
         }
 
         if(this.num_chunks && this.num_chunks===this.chunks_out.size)
-            this.cleanup();
+            this.do_cleanup();
 
         this.egresses = this.egresses.filter(([egress, callback]) => {
             let res = perform_egress(egress, this.num_chunks, this.config.GLOBAL_SWITCH ? this.chunks_out : this.chunks_in);
@@ -174,11 +175,20 @@ class Scheduler {
         });
     }
 
-    cleanup() {
+    finish() {
+        console.log('pakku scheduler: all finished');
+
+        this.ongoing_stats.parse_time_ms = +new Date() - this.start_ts - this.ongoing_stats.download_time_ms;
+        this.ongoing_stats.notify(this.tabid, this.config);
+        this.stats = this.ongoing_stats;
+
+        if(this.config.GLOBAL_SWITCH)
+            do_inject(this.chunks_out, this.config);
+    }
+
+    do_cleanup() {
         if(this.stats.type==='message') {
-            this.ongoing_stats.parse_time_ms = +new Date() - this.start_ts - this.ongoing_stats.download_time_ms;
-            this.ongoing_stats.notify(this.tabid, this.config);
-            this.stats = this.ongoing_stats;
+            this.finish();
         }
         this.pool.terminate();
         this.clusters.clear(); // to free some RAM
@@ -230,7 +240,6 @@ class Scheduler {
         if(this.stats.type!=='error')
             this.stats = new MessageStats('message', BADGE_PROCESSING, '正在处理弹幕').notify(this.tabid);
 
-        this.chunks_in.set(this.num_chunks+1, {objs: [], extra: {}}); // pad a pseudo chunk after the last one for the `next_chunk` arg
         void this.try_start_combine(this.num_chunks);
 
         this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
@@ -248,8 +257,8 @@ function ingress_equals(a: Ingress, b: Ingress): boolean {
 export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: any)=>void, config: LocalizedConfig, tabid: int) {
     for(let scheduler of schedulers)
         if(ingress_equals(scheduler.ingress, ingress)) {
-            scheduler.add_egress(egress, callback);
             scheduler.config = config;
+            scheduler.add_egress(egress, callback);
 
             last_scheduler = scheduler;
             return;

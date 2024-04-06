@@ -69,7 +69,7 @@ type int = number; type float = number; type AnyObject = {[k: string]: any};
 
 interface DanmuObject {
     time_ms: int; // 弹幕在视频中的时间
-    mode: int; // 1 滚动, 4 底部, 5 顶部, 7 特殊, 8 代码, 9 BAS
+    mode: int; // 1 滚动, 4 底部, 5 顶部, 6 逆向滚动, 7 特殊, 8 代码, 9 BAS
     fontsize: float; // 字号
     color: int; // 颜色，0xRRGGBB
     sender_hash: string; // 发送者UID的CRC32

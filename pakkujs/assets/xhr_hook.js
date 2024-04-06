@@ -36,9 +36,9 @@
 
     let callbacks = {};
     window.addEventListener('message',function(event) {
-        if (event.source!==window)
+        if(event.source!==window)
             return;
-        if (event.data.type && event.data.type==='pakku_ajax_response') {
+        if(event.data.type && event.data.type==='pakku_ajax_response') {
             let cbs = callbacks[event.data.url] || [];
             for(let cb of cbs)
                 cb(event.data.resp);
@@ -56,12 +56,6 @@
             url: url,
         }, '*');
     }
-
-    // bilibili no longer uses web worker to decode danmaku, good
-    /*
-    window.Worker=null;
-    console.warn('pakku: [to developers] Web Worker is disabled for compatibility reasons');
-    */
 
     function proxied_send(xhr, send_arg) {
         send_msg_proxy(xhr.pakku_url, function(resp) {

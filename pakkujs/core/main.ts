@@ -1,8 +1,8 @@
 import {url_finder} from "../protocol/urls";
-import {handle_task, last_scheduler} from "../core/scheduler";
+import {handle_task, last_scheduler} from "./scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
-import {BlacklistItem, int, LocalizedConfig} from "../core/types";
+import {BlacklistItem, int, LocalizedConfig} from "./types";
 
 function get_player_blacklist(): BlacklistItem[] {
     type BpxProfileType = {
@@ -85,15 +85,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             });
         }
     }
+    else if(msg.type==='reload_danmu') {
+        local_config = null;
+        if(window.reload_danmu_magic)
+            window.reload_danmu_magic();
+    }
     else {
         console.error('pakku injected: unknown chrome message', msg);
     }
 });
 
 window.addEventListener('message',async function(event) {
-    if (event.source!=window)
+    if(event.source!=window)
         return;
-    if (event.data.type && event.data.type=='pakku_ajax_request') {
+    if(event.data.type && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: any) => {
             window.postMessage({
