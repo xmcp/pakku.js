@@ -24,8 +24,9 @@ const USERSCRIPT_TEMPLATE = `
                 try {
                     text = JSON.parse(obj.content)[4];
                 } catch(e) {}
+                text = text.replace(/\\/n/g,'');
             }
-            obj.pakku.disp_str = text;
+            obj.pakku.disp_str = text.replace(/([\\r\\n\\t])/g,'').trim();
         }
     }
     onmessage = (e) => {

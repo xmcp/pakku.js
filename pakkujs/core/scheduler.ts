@@ -127,7 +127,7 @@ class Scheduler {
 
         let chunk_out;
         try {
-            chunk_out = post_combine(clusters, prev_clusters, chunk || null, this.config, this.ongoing_stats);
+            chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats);
         } catch(e) {
             this.write_failing_stats(`后处理分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
@@ -200,7 +200,6 @@ class Scheduler {
         try {
             await perform_ingress(this.ingress, async (idx, chunk) => {
                 console.log('pakku scheduler: got ingress chunk', idx, chunk.objs.length);
-                chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
 
                 if(this.userscript && this.userscript.n_before) {
                     try {
@@ -212,6 +211,7 @@ class Scheduler {
                     }
                 }
 
+                chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
                 this.chunks_in.set(idx, chunk);
                 this.ongoing_stats.num_total_danmu += chunk.objs.length;
 

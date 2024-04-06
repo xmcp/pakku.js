@@ -94,15 +94,17 @@ async function ver_check() {
     let latest_ver = await res.json();
 
     console.log('latest version ', latest_ver);
-    if(latest_ver.value !== version && latest_ver.value.charAt(0) === 'v') {
-        let note = document.createElement('a');
-        note.href = 'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version);
-        note.id = 'update-note';
-        note.target = '_blank';
-        note.textContent = '你正在使用 pakku ' + version + '，' + latest_ver.name + ' 中的最新版是 ' + latest_ver.value + '。点击此处下载新版本。';
-        document.body.appendChild(note);
-    } else {
-        id('version-checker').textContent = '✓ 是最新版本';
+    if(latest_ver.value.charAt(0) === 'v') {
+        if(latest_ver.value !== version) {
+            let note = document.createElement('a');
+            note.href = 'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version);
+            note.id = 'update-note';
+            note.target = '_blank';
+            note.textContent = '你正在使用 pakku ' + version + '，' + latest_ver.name + ' 中的最新版是 ' + latest_ver.value + '。点击此处下载新版本。';
+            document.body.appendChild(note);
+        }  else {
+            id('version-checker').textContent = '✓ 是最新版本';
+        }
     }
 }
 void ver_check();

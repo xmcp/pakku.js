@@ -112,6 +112,10 @@ function trim_pinyin(text: string): string {
     return Array.from(text.toLowerCase()).map(c => PINYIN_TABLE.get(c) || c).join('');
 }
 
+function trim_dispstr(text: string): string {
+    return text.replace(/([\r\n\t])/g,'').trim();
+}
+
 let _fn_initialized = false;
 let detaolu: (text: string) => [boolean, string];
 let whitelisted: (text: string) => boolean;
@@ -211,7 +215,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
                     return null;
                 }
 
-                let disp_str = obj.mode===7 ? extract_special_danmu(obj.content) : obj.content;
+                let disp_str = trim_dispstr(obj.mode===7 ? extract_special_danmu(obj.content) : obj.content);
 
                 if(obj.mode!==8 && obj.mode!==9 && blacklisted(disp_str)) {
                     if(s) s.deleted_blacklist++;

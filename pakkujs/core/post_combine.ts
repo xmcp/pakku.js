@@ -83,12 +83,12 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     }
 }
 
-export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject> | null, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
-    if(input.clusters.length===0) // empty chunk
+export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
+    if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: {}};
 
     const THRESHOLD_MS =config.THRESHOLD * 1000;
-    const FIRST_TIME_MS = input.clusters[0].peers[0].time_ms;
+    const FIRST_TIME_MS = input_chunk.objs[0].time_ms;
 
     if(config!==_last_config) {
         _last_config = config;

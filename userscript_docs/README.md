@@ -2,6 +2,8 @@
 
 用户脚本是一项使用 JavaScript 代码来深度自定义 pakku 的功能。可以定义一些回调函数，它们将在 pakku 处理弹幕之前或之后运行，并修改弹幕内容。
 
+使用本功能将假定你有基本的 JavaScript 编程知识。
+
 ## 添加全局用户脚本
 
 全局用户脚本将保存在设置中，对 pakku 处理的所有视频生效，适合希望永久生效的自定义。
@@ -14,7 +16,7 @@
 
 ![screenshot](enable_advanced.png)
 
-然后在【实验室】中点击【全局用户脚本：前去设置】链接：
+然后在【实验室】中点击【全局用户脚本：前去设置】链接，进入用户脚本编辑器：
 
 ![screenshot](userscript_in_options.png)
 
@@ -22,7 +24,7 @@
 
 临时用户脚本仅针对特定标签页中的视频生效，关闭标签页或刷新后即失效，适合对个别视频的一次性调整。
 
-要添加临时用户脚本，请在B站视频页面上点击 pakku 图标，然后点击顶部【JS】按钮：
+要添加临时用户脚本，请在B站视频页面上点击 pakku 图标，然后点击顶部【JS】按钮打开编辑器：
 
 ![screenshot](userscript_in_popup.png)
 
@@ -114,12 +116,16 @@ function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentativ
 
 ## 示例
 
+以下是一些可以利用用户脚本实现的功能。
+
 [时间轴整体偏移](https://github.com/xmcp/pakku.js/issues/271)：
 
 ```javascript
+const OFFSET_MS = 5000;
+
 tweak_before_pakku(chunk=>{
   for(let dm of chunk.objs)
-    dm.time_ms += 5000;
+    dm.time_ms += OFFSET_MS;
 });
 ```
 
@@ -135,15 +141,69 @@ tweak_after_pakku(chunk=>{
 [修改增大弹幕字号的比例](https://github.com/xmcp/pakku.js/issues/163)：
 
 ```javascript
-function enlarge_ratio(count) {
+function ENLARGE_RATIO(count) {
     return count>=2 ? 1.5 : 1;
 }
 
 tweak_after_pakku(chunk=>{
   for(let dm of chunk.objs) {
     let orig_fontsize = Math.max(...dm.pakku.peers.map(p => p.fontsize));
-    dm.fontsize = orig_fontsize * enlarge_ratio(dm.pakku.peers.length);
+    dm.fontsize = orig_fontsize * ENLARGE_RATIO(dm.pakku.peers.length);
   }
 });
 ```
 
+[按发送时间过滤弹幕](https://github.com/xmcp/pakku.js/issues/235)：
+
+```javascript
+const TARGET_TIME = +new Date('2023/1/1') / 1000;
+
+tweak_before_pakku(chunk=>{
+  chunk.objs = chunk.objs.filter(
+    dm => dm.sendtime < TARGET_TIME
+  );
+});
+```
+
+[数量低于一定阈值则不合并](https://github.com/xmcp/pakku.js/issues/113)：
+
+```javascript
+const THRESHOLD_CONST = 5;
+
+tweak_after_pakku(chunk=>{
+    let extracted = [];
+    chunk.objs = chunk.objs.filter(dm=>{
+        if(dm.pakku.peers.length>1 && dm.pakku.peers.length<THRESHOLD_CONST) {
+            extracted.push(...dm.pakku.peers.map(p=>({
+                // from DanmuObjectPeer to DanmuObjectRepresentative
+                ...p,
+                pakku: {
+                    peers: [p],
+                    desc: [...dm.pakku.desc, '已手动取消合并'],
+                    disp_str: p.content,
+                },
+            })));
+            return false; // extract then remove
+        } else {
+            return true; // keep
+        }
+    });
+    chunk.objs.push(...extracted);
+});
+```
+
+## 调试
+
+如果用户脚本执行出错，pakku 图标上将出现红色角标，点击可以查看错误信息：
+
+![screenshot](popup_stacktrace.png)
+
+错误信息也会打印在网页的 console 中：
+
+![screenshot](exception-in-console.png)
+
+可以使用调试 JavaScript 程序的手段来调试用户脚本，比如使用 `debugger;` 语句来下断点：
+
+![screenshot](debugger-breakpoint.png)
+
+调试临时用户脚本时请注意不要刷新播放器，因为临时用户脚本会在刷新时被删除。如果确实需要刷新，可以在用户脚本编辑器页面再次点击【保存】，这样临时用户脚本就不会被删除。

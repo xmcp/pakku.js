@@ -16,7 +16,7 @@ function firefox_manifest(src, path) {
         obj.browser_specific_settings = {
             gecko: {
                 id: '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
-                'strict_min_version': '113.0',
+                strict_min_version: '113.0', // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/declarativeNetRequest
             },
         };
 
