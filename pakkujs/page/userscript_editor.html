@@ -51,7 +51,6 @@ interface DanmuObject {
         proto_oid?: int | null;
     };
 }
-
 interface DanmuObjectPeer extends DanmuObject {
     pakku: {
         sim_reason: string; // 相似性判断结果
@@ -64,7 +63,6 @@ interface DanmuObjectRepresentative extends DanmuObject {
         disp_str: string; // 弹幕实际显示的内容，特殊弹幕（mode为7）的content为JSON、此值为实际显示的文本，其他情况两者相同
     };
 }
-
 interface DanmuChunk&lt;ObjectType extends DanmuObject> {
     objs: ObjectType[];
     extra: { // 协议中的附加字段

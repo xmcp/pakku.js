@@ -26,7 +26,7 @@
 
 要添加临时用户脚本，请在B站视频页面上点击 pakku 图标，然后点击顶部【JS】按钮打开编辑器：
 
-![screenshot](userscript_in_popup.png)
+![screenshot](popup_js_btn.png)
 
 如果没有显示这个按钮，请先在选项页面勾选【我是高级用户】。
 
@@ -86,7 +86,6 @@ interface DanmuObject {
         proto_oid?: int | null;
     };
 }
-
 interface DanmuObjectPeer extends DanmuObject {
     pakku: {
         sim_reason: string; // 相似性判断结果
@@ -99,7 +98,6 @@ interface DanmuObjectRepresentative extends DanmuObject {
         disp_str: string; // 弹幕实际显示的内容，特殊弹幕（mode为7）的content为JSON、此值为实际显示的文本，其他情况两者相同
     };
 }
-
 interface DanmuChunk<ObjectType extends DanmuObject> {
     objs: ObjectType[];
     extra: { // 协议中的附加字段
@@ -202,8 +200,12 @@ tweak_after_pakku(chunk=>{
 
 ![screenshot](exception-in-console.png)
 
-可以使用调试 JavaScript 程序的手段来调试用户脚本，比如使用 `debugger;` 语句来下断点：
+可以使用任何调试 JavaScript 程序的手段来调试用户脚本，比如使用 `debugger;` 语句来下断点：
 
 ![screenshot](debugger-breakpoint.png)
 
-调试临时用户脚本时请注意不要刷新播放器，因为临时用户脚本会在刷新时被删除。如果确实需要刷新，可以在用户脚本编辑器页面再次点击【保存】，这样临时用户脚本就不会被删除。
+调试临时用户脚本时请注意不要刷新视频页面，因为临时用户脚本会在刷新时被删除。如果确实需要刷新，可以在用户脚本编辑器页面再次点击【保存】，从而刷新页面且不删除临时用户脚本。
+
+点击 pakku 界面的 “弹幕 x → x” 链接可以单独打开一个网页查看 pakku 的运行结果，这可能对编写用户脚本有所帮助：
+
+![screenshot](popup_result_link.png)

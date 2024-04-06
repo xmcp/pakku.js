@@ -30,7 +30,7 @@ export const DEFAULT_CONFIG = {
     ENLARGE: true,
     SHRINK: false,
     MODE_ELEVATION: true,
-    REPRESENTATIVE_PERCENT: 0,
+    REPRESENTATIVE_PERCENT: 20,
 
     // 播放器增强
     TOOLTIP: true,

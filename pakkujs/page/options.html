@@ -209,11 +209,6 @@
         body:not(.i-am-advanced) .advanced:not(.js-show-this) {
             display: none;
         }
-        #bgpage-null-note {
-            text-align: center;
-            margin-top: 5em;
-            font-size: 1.3em;
-        }
     </style>
 </head>
 <body>
@@ -321,7 +316,7 @@
                             <p>
                                 <input id="newforcelist-pattern" class="code" placeholder="正则表达式" required>
                                 →
-                                <input id="newforcelist-name" placeholder="替换文字" required>
+                                <input id="newforcelist-name" placeholder="替换为" required>
                                 <button type="submit">添加</button>
                                 &nbsp; <small><a href="https://s.xmcp.ltd/pakkujs/regex-help.png" target="_blank">一张图看懂正则表达式</a></small>
                             </p>
@@ -402,15 +397,15 @@
                             <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
                         </span>
                     </p>
-                    <p class="advanced">
+                    <p>
                         <label for="representative-percent">合并后的弹幕显示于 </label>
                         <select id="representative-percent">
-                            <option value="0">最先出现的时间</option>
-                            <option value="20">20% 弹幕出现的时间</option>
-                            <option value="50">50% 弹幕出现的时间</option>
+                            <option value="0">最先出现的时间点</option>
+                            <option value="20">其中 20% 弹幕出现的时间点</option>
+                            <option value="50">其中 50% 弹幕出现的时间点</option>
                         </select>
                     </p>
-                    <p>
+                    <p class="advanced">
                         <input id="mode-elevation" type="checkbox">
                         <label for="mode-elevation">合并后尽量显示为固定弹幕：</label>
                         <span>滚动弹幕和顶部 / 底部弹幕合并后显示在顶部 / 底部</span>
@@ -438,9 +433,6 @@
                         <input id="tooltip-keybinding" type="checkbox">
                         <label for="tooltip-keybinding">点击展开弹幕信息：</label>
                         <span>按住 Ctrl / Command 键点击屏幕上的弹幕显示详细信息</span>
-                    </p>
-                    <p class="warning">
-                        * 需要将弹幕渲染类型设为“CSS3”。
                     </p>
                     <p id="auto-panel">
                         <b>播放器自动化：</b>弹幕载入后，自动
@@ -519,11 +511,11 @@
                         个线程
                     </p>
                     <p class="warning">
-                        * 对于时间长、弹幕多的视频（如番剧和电影），可以增加线程数量以加快处理速度；对于短视频，可以减少线程数量以缩短初始化时间
+                        * 对于时间长、弹幕多的视频（如番剧和电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间
                     </p>
                     <p>
                         （有一些 <a href="#show-advanced">复杂的设置</a>
-                        <span class="advanced">现在没有</span>
+                        <span class="advanced">现在并没有</span>
                         被隐藏了，一般人不需要修改它们。）
                     </p>
                     <p>
@@ -540,7 +532,7 @@
                     <p>
                         <strong>xmcp/pakku.js</strong>
                         在 <a href="https://github.com/xmcp/pakku.js/" target="_blank"><span class="icon-github"></span>GitHub</a> 开放源代码。
-                        使用 <a href="/LICENSE.txt" target="_blank">GPL 3.0 协议</a>。
+                        使用 <a href="https://github.com/xmcp/pakku.js/blob/master/LICENSE.txt" target="_blank">GPL 3.0 协议</a>。
                     </p>
                     <p>
                         <strong>我，开发者，打钱 <span class="icon-coin darkblue"></span></strong>

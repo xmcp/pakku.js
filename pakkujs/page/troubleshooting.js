@@ -7,12 +7,15 @@ let channel = process.env.PAKKU_CHANNEL;
 let debug = document.getElementById('debug');
 let error = document.getElementById('error');
 
+function stringify_error(e) {
+    return (e instanceof Error) ? (`${e.message} (${JSON.stringify(e.stack)})`) : JSON.stringify(e);
+}
+
 window.addEventListener('error', (e)=>{
-    error.textContent += '\n\n**! Exception:** `' + e.message + '`';
-    error.textContent+='\n\n`' + e.filename + '` :: ' + e.lineno + ' :: ' + e.colno;
+    error.textContent += '\n\n**Exception:** `' + stringify_error(e.error) + '`';
 });
-window.addEventListener('onunhandledrejection', (e)=>{
-    error.textContent += '\n\n**! Exception (in Promise):** `' + JSON.stringify(e.reason) + '`';
+window.addEventListener('unhandledrejection', (e)=>{
+    error.textContent += '\n\n**Exception in Promise:** `' + stringify_error(e.reason) + '`';
 });
 
 debug.textContent += '<summary>[Debug Info]</summary>';
@@ -53,6 +56,9 @@ async function test_worker() {
 }
 void test_worker();
 
-window.test_error_log_is_working();
+(async function() {
+    throw new Error('async error log is working');
+})();
+throw new Error('error log is working');
 
-// DO NOT PUT ANYTHING BEHIND THIS LINE because the previous stmt will throw
+// DO NOT PUT ANYTHING BEYOND THIS LINE because the previous stmt will throw
