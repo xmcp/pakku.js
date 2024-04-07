@@ -119,18 +119,44 @@ for(let elem of document.querySelectorAll('.donate')) {
 }
 
 let config = await get_config();
+let perms = await chrome.permissions.getAll();
+
+if(!perms.origins?.includes('*://*.bilibili.com/*')) {
+    id('fix-permission-hint').style.display = 'initial';
+    id('fix-permission-btn').addEventListener('click', function() {
+        /// xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
+        chrome.permissions.request({
+            origins: ['*://*.bilibili.com/*', 'ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
+        })
+            .then((granted)=>{
+                if(granted) {
+                    id('fix-permission-hint').style.display = 'none';
+                    void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
+                    chrome.permissions.getAll().then((p)=>{perms = p;});
+                }
+            });
+    });
+}
 
 function get_ws_permission_and_reload() {
-    chrome.permissions.request({
-        origins: ['ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
-    }, (granted)=>{
+    function done(granted) {
         if(!granted) {
             config.BREAK_UPDATE = false;
             // noinspection ES6MissingAwait
             alert('权限不足或者您的浏览器不支持此功能');
         }
-        void reload();
-    });
+        void reload(true);
+    }
+
+    if(perms.origins?.includes('ws://*.bilibili.com/*') && perms.origins?.includes('wss://*.bilibili.com/*')) {
+        done(true);
+    } else {
+        chrome.permissions.request({
+            origins: ['ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
+        }, (granted)=>{
+            done(granted);
+        });
+    }
 }
 
 async function backup_restore_prompt() {
@@ -164,7 +190,7 @@ id('version').addEventListener('click', async function(event) {
 });
 id('backup-restore').addEventListener('click', backup_restore_prompt);
 
-async function reload() {
+async function reload(changed_dnr=false) {
     await save_config(config);
 
     id('saved-alert').classList.remove('saved-hidden');
@@ -175,6 +201,9 @@ async function reload() {
     let old = document.getElementById('highlighter');
     if(old)
         old.parentNode.removeChild(old);
+
+    if(changed_dnr)
+        void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
 
     loadconfig();
 }
@@ -402,10 +431,15 @@ function update() {
     config.POPUP_BADGE = id('popup-badge').value;
     config.COMBINE_THREADS = parseInt(id('combine-threads').value) >= 1 ? parseInt(id('combine-threads').value) : 1;
 
-    if(this.id === 'break-update' && this.checked)
-        get_ws_permission_and_reload();
-    else
+    if(this.id === 'break-update') {
+        if(this.checked)
+            get_ws_permission_and_reload();
+        else
+            void reload(true);
+    }
+    else {
         void reload();
+    }
 }
 
 loadconfig();
@@ -426,20 +460,4 @@ for(let elem of [
     'popup-badge', 'combine-threads',
 ]) {
     id(elem).addEventListener('change', update);
-}
-
-let perms = await chrome.permissions.getAll();
-
-if(!perms.origins?.includes('*://*.bilibili.com/*')) {
-    id('fix-permission-hint').style.display = 'initial';
-    id('fix-permission-btn').addEventListener('click', function() {
-        /// xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
-        chrome.permissions.request({
-            origins: ['*://*.bilibili.com/*'],
-        })
-            .then((granted)=>{
-                if(granted)
-                    id('fix-permission-hint').style.display = 'none';
-            });
-    });
 }

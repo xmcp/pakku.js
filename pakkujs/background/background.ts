@@ -143,6 +143,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         void perform();
         return true;
     }
+    else if(msg.type==='reset_dnr_status') {
+        void reset_dnr_status();
+    }
     else if(msg.type==='xhr_proxy') {
         let perform = async ()=>{
             try {
