@@ -14,7 +14,7 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-const DISPVAL_THRESHOLD = 60, SHRINK_TIME_THRESHOLD = 2500, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.7;
+const DISPVAL_THRESHOLD = 50, SHRINK_TIME_THRESHOLD = 2250, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
 const DISPVAL_BASE = Math.pow(DISPVAL_THRESHOLD, DISPVAL_POWER);
 
 const _cvs = document.createElement('canvas');
