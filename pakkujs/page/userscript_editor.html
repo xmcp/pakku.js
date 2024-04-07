@@ -22,6 +22,9 @@
                 cursor: pointer;
                 margin-bottom: 1em;
             }
+            #sandbox {
+                display: none;
+            }
         </style>
     </head>
     <body>
@@ -84,6 +87,8 @@ function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresenta
             &nbsp;
             <button type="button" id="clear">清除</button>
         </p>
+
+        <iframe id="sandbox"></iframe>
 
         <script src="/generated/userscript_editor.js"></script>
     </body>

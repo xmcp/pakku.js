@@ -5,20 +5,49 @@ import {UserscriptWorker} from '../core/userscript';
 let $save = document.querySelector('#save');
 let $clear = document.querySelector('#clear');
 let $editor = document.querySelector('#editor');
+let $sandbox = document.querySelector('#sandbox');
 
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || 0);
 
-async function check_userscript(script) {
-    if(process.env.PAKKU_CHANNEL==='firefox') {
-        // firefox's CSP disallow using blob or data urls for worker in extension pages
-        return true;
+let use_sandbox = false;
+(()=>{
+    function do_use_sandbox(e) {
+        $sandbox.src = 'https://www.bilibili.com/robots.txt?pakku_sandbox';
+        use_sandbox = true;
+        console.log('using sandbox because cannot create worker', e);
     }
 
+    try {
+        let w = new Worker(URL.createObjectURL(new Blob([''], {type: 'text/javascript'})));
+        w.onerror = (e)=>{
+            do_use_sandbox(e);
+        };
+    } catch(e) {
+        do_use_sandbox(e);
+    }
+})();
+
+function check_userscript_sandboxed(script) {
+    return new Promise((resolve) => {
+        window.onmessage = (e)=>{
+            if(e.data.type==='pakku_sandbox_result') {
+                if(e.data.error) {
+                    alert('脚本存在错误：\n' + e.data.error);
+                    resolve(false);
+                } else if(e.data.total===0) {
+                    alert('没有注册任何函数，请使用 tweak_before_pakku 和 tweak_after_pakku 注册处理函数');
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            }
+        };
+        $sandbox.contentWindow.postMessage({type: 'pakku_sandbox_request', script: script}, '*');
+    });
+}
+
+async function check_userscript_direct(script) {
     let w = new UserscriptWorker(script);
-    w.worker.onerror = (e)=>{
-        alert('脚本存在错误：' + e.message);
-        w.worker.terminate();
-    };
     try {
         let [n_before, n_after] = await w.init();
         let tot = n_before + n_after;
@@ -29,10 +58,13 @@ async function check_userscript(script) {
         }
         return true;
     } catch(e) {
-        alert('脚本存在错误：' + e.message);
+        alert('脚本存在错误：\n' + e.message + '\n\n' + e.stack);
         w.worker.terminate();
-        throw e;
     }
+}
+
+async function check_userscript(script) {
+    return await (use_sandbox ? check_userscript_sandboxed :check_userscript_direct)(script);
 }
 
 async function load() {
@@ -44,6 +76,7 @@ async function load() {
 
         $save.textContent = `保存（仅对 tabid = ${tabid} 临时生效，页面将会刷新）`;
         $save.onclick = async ()=>{
+            $save.disabled = true;
             if(await check_userscript($editor.value)) {
                 try {
                     await chrome.tabs.sendMessage(tabid, {type: 'reload_state'}); // make sure the tab (still) exists
@@ -54,6 +87,7 @@ async function load() {
                     alert('保存失败：' + e.message);
                 }
             }
+            $save.disabled = false;
         };
 
         $clear.onclick = async ()=>{
@@ -74,10 +108,12 @@ async function load() {
 
         $save.textContent = '保存全局用户脚本（对所有视频生效）';
         $save.onclick = async ()=>{
+            $save.disabled = true;
             if(await check_userscript($editor.value)) {
                 await save_config({['USERSCRIPT']: $editor.value});
                 alert('保存成功');
             }
+            $save.disabled = false;
         };
 
         $clear.onclick = async ()=>{

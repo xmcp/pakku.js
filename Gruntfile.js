@@ -17,6 +17,14 @@ function firefox_manifest(src, path) {
                 delete s.world;
             }
 
+        // sdd sandbox page
+        obj.content_scripts.push({
+            "matches": ["https://www.bilibili.com/robots.txt?pakku_sandbox"],
+            "js": ["/generated/bili_worker_sandbox.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        });
+
         obj.browser_specific_settings = {
             gecko: {
                 id: '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
@@ -77,6 +85,7 @@ module.exports = function(grunt) {
         'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
         'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
         'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
+        'dist/_/generated/bili_worker_sandbox.js': 'pakkujs/page/bili_worker_sandbox.ts',
     };
 
     const TERSER_FILES = Object.fromEntries(Object.keys(ROLLUP_FILES).map(k => [k, [k]]));

@@ -12,9 +12,13 @@ const USERSCRIPT_TEMPLATE = `
     let callbacks_before = [];
     let callbacks_after = [];
     function tweak_before_pakku(callback, timing=0) {
+        if(typeof callback !== 'function')
+            throw new Error('callback to tweak_before_pakku is not a function');
         callbacks_before.push([timing, callback]);
     }
     function tweak_after_pakku(callback, timing=0) {
+        if(typeof callback !== 'function')
+            throw new Error('callback to tweak_after_pakku is not a function');
         callbacks_after.push([timing, callback]);
     }
     function fix_dispstr(chunk) {
@@ -66,10 +70,11 @@ function install_callbacks(tweak_before_pakku, tweak_after_pakku) {
 export class UserscriptWorker {
     script: string;
     worker: Worker;
+    init_error: null | ErrorEvent = null;
 
     resolve: null | ((res: RetType)=>void);
     reject: null | ((e: any)=>void);
-    queue: Array<[ArgType, typeof this.resolve, typeof this.reject]>;
+    queue: Array<[ArgType, ((res: RetType)=>void), ((e: any)=>void)]>;
 
     n_before: int;
     n_after: int;
@@ -85,6 +90,12 @@ export class UserscriptWorker {
         this.n_before = 0;
         this.n_after = 0;
 
+        this.worker.onerror = (e: ErrorEvent) => {
+            console.error('pakku userscript: INIT ERROR', e);
+            this.init_error = e;
+            if(this.reject)
+                this.reject(e);
+        }
         this.worker.onmessage = (e) => {
             if(this.resolve && this.reject) {
                 if(e.data.error)
@@ -108,6 +119,11 @@ export class UserscriptWorker {
 
         if(this.resolve===null) { // idle
             let [arg, resolve, reject] = this.queue.shift()!;
+            if(this.init_error) {
+                reject(this.init_error);
+                return;
+            }
+
             this.resolve = resolve;
             this.reject = reject;
             this.worker.postMessage(arg);
