@@ -121,3 +121,8 @@ export async function get_config(): Promise<Config> {
     let remote = await chrome.storage.sync.get();
     return migrate_config(remote);
 }
+
+export function hotfix_on_update(config: Config) {
+    // 2024.3.1 may leave null in FORCELIST
+    config.FORCELIST = config.FORCELIST.filter(x => x!==null);
+}

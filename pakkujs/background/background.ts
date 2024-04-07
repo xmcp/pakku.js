@@ -1,5 +1,5 @@
 import {reset_dnr_status} from "./danmu_update_blocker";
-import {get_config, save_config} from "./config";
+import {get_config, hotfix_on_update, save_config} from "./config";
 import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
 
 async function check_fix_permission() {
@@ -113,6 +113,7 @@ chrome.runtime.onInstalled.addListener(async (details)=>{
     if(details.reason==='update') {
         console.log('pakku config: try to migrate');
         let config = await get_config();
+        hotfix_on_update(config);
         await save_config(config);
     }
 });
