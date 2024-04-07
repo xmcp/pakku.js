@@ -12,7 +12,8 @@ interface DanmuIr {
 }
 
 const ENDING_CHARS = new Set('.。,，/?？!！…~～@^、+=-_♂♀ ');
-const TRIM_SPACE_RE = /[ 　]+/g;
+const TRIM_EXTRA_SPACE_RE = /[ 　]+/g;
+const TRIM_CJK_SPACE_RE = /([\u3000-\u9FFF\uFF00-\uFFEF]) (?=[\u3000-\u9FFF\uFF00-\uFFEF])/g;
 const WIDTH_TABLE = new Map(Object.entries({
     "　":" ","１":"1","２":"2","３":"3","４":"4","５":"5","６":"6","７":"7","８":"8","９":"9","０":"0",
     "!":"！","＠":"@","＃":"#","＄":"$","％":"%","＾":"^","＆":"&","＊":"*","（":"(","）":")","－":"-","＝":"=","＿":"_","＋":"+",
@@ -77,7 +78,7 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
         }
 
         if(TRIM_SPACE) {
-            text = text.replace(TRIM_SPACE_RE,' ');
+            text = text.replace(TRIM_EXTRA_SPACE_RE,' ').replace(TRIM_CJK_SPACE_RE, '$1');
         }
 
         for(let taolu of FORCELIST) {
