@@ -50,7 +50,7 @@ chrome.tabs.query({}, function(tabs) {
 });
 
 async function test_worker() {
-    let maker = new WorkerMaker(chrome.runtime.getURL('/generated/combine_worker.js'));
+    let maker = new WorkerMaker();
     await maker.spawn();
     debug.textContent += '\n\n**Worker is Simulated:** `' + maker.use_simulated + '`';
 }

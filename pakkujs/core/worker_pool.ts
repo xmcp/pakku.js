@@ -24,14 +24,14 @@ interface WebWorkerLike {
     terminate: ()=>void;
 }
 
+const WORKER_URL = chrome.runtime.getURL('/generated/combine_worker.js');
+
 export class WorkerMaker {
-    url: string;
     use_simulated: boolean;
 
     worker_blob_url: string | null;
     fallback_fn: ((...args: ArgsType)=>RetType) | null;
-    constructor(url: string) {
-        this.url = url;
+    constructor() {
         this.use_simulated = false;
         this.worker_blob_url = null;
         this.fallback_fn = null;
@@ -42,7 +42,7 @@ export class WorkerMaker {
             return this._spawn_simulated();
 
         if(!this.worker_blob_url) {
-            let src = await (await fetch(this.url)).text();
+            let src = await (await fetch(WORKER_URL)).text();
             // remove `export { do_combine };`
             src = src.replace(/\bexport\s*\{\s*[a-zA-Z0-9_]+\s*}/, '');
 
@@ -62,7 +62,7 @@ export class WorkerMaker {
 
     async _spawn_simulated(): Promise<WebWorkerLike> {
         if(!this.fallback_fn) {
-            let module = await import(this.url);
+            let module = await import(WORKER_URL);
             this.fallback_fn = module[FUNCTION_NAME] as (...args: ArgsType)=>RetType;
         }
 
@@ -105,8 +105,7 @@ export class WorkerPool {
     async spawn() {
         console.log('pakku worker pool: spawn', this.pool_size, 'workers');
 
-        let url = chrome.runtime.getURL('/generated/combine_worker.js');
-        let maker = new WorkerMaker(url);
+        let maker = new WorkerMaker();
         if(this.pool_size===1)
             maker.use_simulated = true;
 
