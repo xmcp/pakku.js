@@ -120,14 +120,15 @@
         if(!this.pakku_url.includes('.xml') && !this.pakku_url.includes('/dm/'))
             return this.pakku_send(arg);
 
-        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // we are on homepage, skip processing thumbnail danmus
+        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // hovering on thumbnails on homepage
             return this.pakku_send(arg);
 
-        //let cur_cid = get_cur_cid();
-        //if(cur_cid && this.pakku_url.indexOf('&oid=' + cur_cid + '&') === -1) {
-        //    console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
-        //    return this.pakku_send(arg);
-        //}
+        let cur_cid = get_cur_cid();
+        let target_cid = parseInt(new URLSearchParams(this.pakku_url).get('oid'));
+        if(cur_cid && target_cid && cur_cid !== target_cid) { // hovering on thumbnails on video page
+            console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
+            return this.pakku_send(arg);
+        }
 
         let link = document.createElement('a');
         link.href = this.pakku_url;

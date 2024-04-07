@@ -100,8 +100,6 @@ function is_bilibili(origin: string): boolean {
 }
 
 window.addEventListener('message',async function(event) {
-    console.log('!!!message', event);
-
     if(is_bilibili(event.origin) && event.data.type && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: any) => {
