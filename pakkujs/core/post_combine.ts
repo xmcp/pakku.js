@@ -239,6 +239,11 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             }
         }
 
+        // it seems that hot colorful danmus have style may issues, so we remove the colorful if hot
+        if(dm.extra.proto_attr &&  (dm.extra.proto_attr & 4)) {
+            dm.extra.proto_colorful = 0;
+        }
+
         stats.num_max_combo = Math.max(stats.num_max_combo, dm.pakku.peers.length);
     }
 
