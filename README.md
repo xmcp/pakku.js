@@ -1,6 +1,6 @@
-[![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chrome.google.com/webstore/detail/pakku/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
+[![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
 /
 [![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 [![Mozilla Add-on - Downloads](https://img.shields.io/amo/users/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
