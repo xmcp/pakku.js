@@ -95,17 +95,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 });
 
+function is_bilibili(origin: string): boolean {
+    return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
+}
+
 window.addEventListener('message',async function(event) {
-    if(event.source!=window)
-        return;
-    if(event.data.type && event.data.type=='pakku_ajax_request') {
+    console.log('!!!message', event);
+
+    if(is_bilibili(event.origin) && event.data.type && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: any) => {
-            window.postMessage({
+            event.source!.postMessage({
                 type: 'pakku_ajax_response',
                 url: event.data.url,
                 resp: resp
-            }, '*');
+            }, event.origin as any);
         };
 
         url_finder.protoapi_img_url = window.localStorage.getItem('wbi_img_url');

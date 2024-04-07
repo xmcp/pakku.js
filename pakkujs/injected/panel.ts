@@ -133,7 +133,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
     panel_obj.addEventListener('mousewheel', function (e) {
         e.stopPropagation();
     });
-    document.addEventListener('click', function (e) {
+    window.root_elem.ownerDocument.addEventListener('click', function (e) {
         if(!panel_obj.contains(e.target as HTMLElement) && !list_elem.contains(e.target as HTMLElement))
             panel_obj.style.display = 'none';
     });
@@ -290,7 +290,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             }
             player_elem.classList.remove('__pakku_pointer_event');
         });
-        document.addEventListener('keydown', function (e) {
+        window.root_elem.ownerDocument.addEventListener('keydown', function (e) {
             if((e.key === 'Control' || e.key === 'Meta') && !e.repeat) {
                 if (!(e.target as HTMLElement).closest('input,textarea')) { // only enter selection mode if not in input box
                     hover_counter = 0;
@@ -302,7 +302,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
                     panel_obj.style.display = 'none';
             }
         });
-        document.addEventListener('keyup', function (e) {
+        window.root_elem.ownerDocument.addEventListener('keyup', function (e) {
             if (e.key === 'Control' || e.key === 'Meta') {
                 player_elem.classList.remove('__pakku_pointer_event');
                 if (panel_obj.classList.contains('pakku-floating'))
@@ -310,7 +310,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             }
         });
         // after the webpage lost focus, `keyup` event might not be dispatched
-        document.defaultView!.addEventListener('blur', function () {
+        window.root_elem.ownerDocument.defaultView!.addEventListener('blur', function () {
             player_elem.classList.remove('__pakku_pointer_event');
         })
     }

@@ -34,9 +34,13 @@
         }
     }
 
+    function is_bilibili(origin) {
+        return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
+    }
+
     let callbacks = {};
     window.addEventListener('message',function(event) {
-        if(event.source!==window)
+        if(!is_bilibili(event.origin))
             return;
         if(event.data.type && event.data.type==='pakku_ajax_response') {
             let cbs = callbacks[event.data.url] || [];
@@ -51,7 +55,7 @@
         else
             callbacks[url].push(callback);
 
-        window.postMessage({
+        window.top.postMessage({
             type: 'pakku_ajax_request',
             url: url,
         }, '*');
