@@ -17,14 +17,6 @@ function firefox_manifest(src, path) {
                 delete s.world;
             }
 
-        // sdd sandbox page
-        obj.content_scripts.push({
-            "matches": ["https://www.bilibili.com/robots.txt?pakku_sandbox"],
-            "js": ["/generated/bili_worker_sandbox.js"],
-            "run_at": "document_start",
-            "all_frames": true
-        });
-
         obj.browser_specific_settings = {
             gecko: {
                 id: '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',

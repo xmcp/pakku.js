@@ -69,6 +69,12 @@
             "js": ["/generated/content_script.js"],
             "run_at": "document_start",
             "all_frames": false
+        },
+        {
+            "matches": ["https://www.bilibili.com/robots.txt?pakku_sandbox"],
+            "js": ["/generated/bili_worker_sandbox.js"],
+            "run_at": "document_start",
+            "all_frames": true
         }
     ],
 
