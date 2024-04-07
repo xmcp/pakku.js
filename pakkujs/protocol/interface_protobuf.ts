@@ -183,7 +183,7 @@ export async function ingress_proto_history(ingress: ProtobufIngressHistory, chu
 
 export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
-        await chunk_callback(idx, protobuf_to_obj(1, await resp));
+        await chunk_callback(idx, protobuf_to_obj(idx, await resp));
     }
 
     // preload first 2 chunks to increase responsiveness
