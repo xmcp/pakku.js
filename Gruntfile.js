@@ -13,7 +13,7 @@ function firefox_manifest(src, path) {
         // https://bugzilla.mozilla.org/show_bug.cgi?id=1736575
         for(let s of obj.content_scripts)
             if(s.world==='MAIN') {
-                s.js = []; // will be injected by content_script.js
+                s.js = ['/assets/xhr_hook_injector.js'];
                 delete s.world;
             }
 

@@ -239,7 +239,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             }
         }
 
-        // it seems that hot colorful danmus have style may issues, so we remove the colorful if hot
+        // it seems that hot colorful danmus may have style issues, so we remove the colorful if hot
         if(dm.extra.proto_attr &&  (dm.extra.proto_attr & 4)) {
             dm.extra.proto_colorful = 0;
         }
