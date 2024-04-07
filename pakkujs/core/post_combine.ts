@@ -138,6 +138,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         ];
         let rep_dm: DanmuObjectRepresentative = {
             ..._rep_dm,
+            content: c.chosen_str,
             extra: {
                 ..._rep_dm.extra,
             },

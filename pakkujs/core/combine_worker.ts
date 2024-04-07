@@ -137,6 +137,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
                 },
             }],
             desc: [desc],
+            chosen_str: obj.content,
         });
     }
     function apply_cluster(irs: DanmuIr[]) {
@@ -144,6 +145,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
             ret.clusters.push({
                 peers: [irs[0].obj],
                 desc: [],
+                chosen_str: irs[0].str,
             });
         } else {
             let text_cnts = new Map(), most_text = irs[0].str, most_cnt = 1;

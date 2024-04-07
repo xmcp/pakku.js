@@ -60,7 +60,7 @@ export interface DanmuChunk<ObjectType extends DanmuObject> {
 export interface DanmuCluster {
     peers: DanmuObjectPeer[];
     desc: string[];
-    chosen_str?: string;
+    chosen_str: string;
 }
 
 export interface DanmuClusterOutput {
