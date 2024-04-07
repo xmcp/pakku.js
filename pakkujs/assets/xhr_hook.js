@@ -113,34 +113,36 @@
 
     XMLHttpRequest.prototype.pakku_send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(arg) {
-        if(this.pakku_url.indexOf('.xml') === -1 && this.pakku_url.indexOf('/dm/') === -1)
+        if(!this.pakku_url.includes('.xml') && !this.pakku_url.includes('/dm/'))
             return this.pakku_send(arg);
-        else {
-            //let cur_cid = get_cur_cid();
-            //if(cur_cid && this.pakku_url.indexOf('&oid=' + cur_cid + '&') === -1) {
-            //    console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
-            //    return this.pakku_send(arg);
-            //}
 
-            let link = document.createElement('a');
-            link.href = this.pakku_url;
-            this.pakku_url = link.href;
+        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // we are on homepage, skip processing thumbnail danmus
+            return this.pakku_send(arg);
 
-            this.pakku_load_callback = this.pakku_load_callback || [];
+        //let cur_cid = get_cur_cid();
+        //if(cur_cid && this.pakku_url.indexOf('&oid=' + cur_cid + '&') === -1) {
+        //    console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
+        //    return this.pakku_send(arg);
+        //}
 
-            if(this.onreadystatechange)
-                this.pakku_load_callback.push(this.onreadystatechange);
-            if(this.onload)
-                this.pakku_load_callback.push(this.onload);
-            if(this.onloadend)
-                this.pakku_load_callback.push(this.onloadend);
+        let link = document.createElement('a');
+        link.href = this.pakku_url;
+        this.pakku_url = link.href;
 
-            if(this.pakku_load_callback.length > 0) {
-                proxied_send(this, arg);
-            } else {
-                console.log('pakku ajax: ignoring request as no onload callback found', this.pakku_url);
-                return this.pakku_send(arg);
-            }
+        this.pakku_load_callback = this.pakku_load_callback || [];
+
+        if(this.onreadystatechange)
+            this.pakku_load_callback.push(this.onreadystatechange);
+        if(this.onload)
+            this.pakku_load_callback.push(this.onload);
+        if(this.onloadend)
+            this.pakku_load_callback.push(this.onloadend);
+
+        if(this.pakku_load_callback.length > 0) {
+            proxied_send(this, arg);
+        } else {
+            console.log('pakku ajax: ignoring request as no onload callback found', this.pakku_url);
+            return this.pakku_send(arg);
         }
     }
 
