@@ -76,8 +76,8 @@ export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk<DanmuO
         "weight": item.weight,
         "dmid": item.id,
         "attr": item.extra.proto_attr,
-        "action": item.extra.proto_action,
-        "animation": item.extra.proto_animation,
+        "action": item.extra.proto_action || null,
+        "animation": item.extra.proto_animation || null,
         "colorful": item.extra.proto_colorful,
         "oid": item.extra.proto_oid,
     }));
