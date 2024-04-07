@@ -95,11 +95,11 @@ interface DanmuObjectRepresentative extends DanmuObject {
     pakku: {
         peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
         desc: string[]; // 合并时的说明
-        disp_str: string; // 弹幕实际显示的内容，特殊弹幕（mode为7）的content为JSON、此值为实际显示的文本，其他情况两者相同
+        disp_str: string; // 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode为7）的content为JSON、此值为其中的文本
     };
 }
 interface DanmuChunk<ObjectType extends DanmuObject> {
-    objs: ObjectType[];
+    objs: ObjectType[]; // 此分片包含的弹幕
     extra: { // 协议中的附加字段
         proto_segidx?: int;
         proto_colorfulsrc?: AnyObject[];

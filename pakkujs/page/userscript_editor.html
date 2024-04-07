@@ -9,7 +9,8 @@
             }
             textarea {
                 width: 100%;
-                height: 300px;
+                box-sizing: border-box;
+                height: 400px;
             }
             .warning {
                 color: red;
@@ -30,6 +31,13 @@
     <body>
         <p>用户脚本是一段 JavaScript 代码，它将在 pakku 处理弹幕之前或之后运行。可以通过用户脚本来修改弹幕内容。在 GitHub 上查看 <a href="https://github.com/xmcp/pakku.js/blob/master/userscript_docs/README.md" target="_blank">编写 pakku 用户脚本的文档</a>。</p>
         <p class="warning">此功能面向高级用户。如果你对上述说明存在疑惑，请关闭此页面。使用来自他人的用户脚本可能导致隐私泄露。</p>
+
+        <textarea id="editor" class="code" placeholder="// tweak_before_pakku(chunk=>{});"></textarea>
+        <p>
+            <button type="button" id="save">...</button>
+            &nbsp;
+            <button type="button" id="clear">清除</button>
+        </p>
 
         <details>
             <summary>类型速查</summary>
@@ -63,11 +71,11 @@ interface DanmuObjectRepresentative extends DanmuObject {
     pakku: {
         peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
         desc: string[]; // 合并时的说明
-        disp_str: string; // 弹幕实际显示的内容，特殊弹幕（mode为7）的content为JSON、此值为实际显示的文本，其他情况两者相同
+        disp_str: string; // 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode为7）的content为JSON、此值为其中的文本
     };
 }
 interface DanmuChunk&lt;ObjectType extends DanmuObject> {
-    objs: ObjectType[];
+    objs: ObjectType[]; // 此分片包含的弹幕
     extra: { // 协议中的附加字段
         proto_segidx?: int;
         proto_colorfulsrc?: AnyObject[];
@@ -80,13 +88,6 @@ function tweak_before_pakku(callback: (chunk: DanmuChunk&lt;DanmuObject>) => voi
 function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresentative>) => void, timing: number = 0) {}
 </pre>
         </details>
-
-        <textarea id="editor" class="code" placeholder="// tweak_before_pakku(chunk=>{});"></textarea>
-        <p>
-            <button type="button" id="save">...</button>
-            &nbsp;
-            <button type="button" id="clear">清除</button>
-        </p>
 
         <iframe id="sandbox"></iframe>
 
