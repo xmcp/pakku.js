@@ -9,7 +9,7 @@ export const DEFAULT_CONFIG = {
     // 弹幕合并
     THRESHOLD: 20,
     MAX_DIST: 5,
-    MAX_COSINE: 60,
+    MAX_COSINE: 45,
     TRIM_PINYIN: true,
     TRIM_ENDING: true,
     TRIM_SPACE: true,
