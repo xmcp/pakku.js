@@ -22,7 +22,7 @@ function fluctlight_cleanup() {
         window.details_observer.disconnect();
 }
 
-function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_container_elem_for_v2: HTMLElement | null, D: DanmuObjectRepresentative[]) {
+function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_container_elem_for_v2: HTMLElement | null) {
     let HEIGHT = 350;
     let SEEKBAR_PADDING = _version === 1 ? 6 : 0;
     let WIDTH = bar_elem.clientWidth - SEEKBAR_PADDING;
@@ -109,7 +109,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             return;
         }
 
-        for(let d of D) {
+        for(let d of window.danmus) {
             if(!d.pakku.peers.length || d.pakku.peers[0].mode === 8/*code*/) return;
             apply_dispval(den_aft, d.time_ms)(d.pakku.peers[0]);
             d.pakku.peers.forEach(apply_dispval(den_bef));
@@ -270,7 +270,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     });
 }
 
-function inject_fluctlight_details(bar_elem: HTMLElement, _version: int, D: DanmuObjectRepresentative[]) {
+function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
     let MAX_FLUCT = 15;
 
     let fluct = document.createElement('div');
@@ -312,7 +312,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int, D: Danm
 
     function sort_danmus() {
         let danmus = [];
-        for(let d of D) {
+        for(let d of window.danmus) {
             if (d.pakku.peers.length && d.pakku.peers[0].mode !== 8/*code*/)
                 danmus.push(d);
         }
@@ -322,7 +322,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int, D: Danm
         return danmus;
     }
 
-    let D_tag = D; // handle D update
+    let D_tag = window.danmus; // handle D update
     let D_sorted = sort_danmus();
 
     function bisect_idx(time_ms: number) {
@@ -353,8 +353,8 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int, D: Danm
                 let time_ms = time * 1000 + 1000;
                 let danmus = [];
 
-                if (D !== D_tag) { // recalc D_sorted if D is changed
-                    D_tag = D;
+                if (window.danmus !== D_tag) { // recalc D_sorted if D is changed
+                    D_tag = window.danmus;
                     D_sorted = sort_danmus();
                 }
 
@@ -402,22 +402,22 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int, D: Danm
     detail_elem.insertBefore(fluct, detail_elem.firstChild);
 }
 
-export function inject_fluctlight(D: DanmuObjectRepresentative[]) {
+export function inject_fluctlight() {
     fluctlight_cleanup();
     wait_until_success(function () {
         let seekbar_v4_elem = window.root_elem.querySelector('.bpx-player-progress-wrap') as HTMLElement;
         if (seekbar_v4_elem) {
             console.log('pakku injector: seekbar v4_elem', seekbar_v4_elem);
-            inject_fluctlight_graph(seekbar_v4_elem, 4, null, D);
-            inject_fluctlight_details(seekbar_v4_elem, 4, D);
+            inject_fluctlight_graph(seekbar_v4_elem, 4, null);
+            inject_fluctlight_details(seekbar_v4_elem, 4);
             return true;
         }
 
         let seekbar_v3_elem = window.root_elem.querySelector('.squirtle-progress-wrap') as HTMLElement;
         if (seekbar_v3_elem) {
             console.log('pakku injector: seekbar v3_elem', seekbar_v3_elem);
-            inject_fluctlight_graph(seekbar_v3_elem, 3, null, D);
-            inject_fluctlight_details(seekbar_v3_elem, 3, D);
+            inject_fluctlight_graph(seekbar_v3_elem, 3, null);
+            inject_fluctlight_details(seekbar_v3_elem, 3);
             return true;
         }
 
@@ -425,15 +425,15 @@ export function inject_fluctlight(D: DanmuObjectRepresentative[]) {
         let seekbar_cvs_elem = window.root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller, .bpx-player-control-wrap .bpx-player-progress-wrap') as HTMLElement;
         if (seekbar_v2_elem && seekbar_cvs_elem) {
             console.log('pakku injector: seekbar v2_elem', seekbar_v2_elem, 'cvs_elem', seekbar_cvs_elem);
-            inject_fluctlight_graph(seekbar_v2_elem, 2, seekbar_cvs_elem, D);
-            inject_fluctlight_details(seekbar_v2_elem, 2, D);
+            inject_fluctlight_graph(seekbar_v2_elem, 2, seekbar_cvs_elem);
+            inject_fluctlight_details(seekbar_v2_elem, 2);
             return true;
         }
 
         if (seekbar_v2_elem) {
             console.log('pakku injector: seekbar v1_elem', seekbar_v2_elem);
-            inject_fluctlight_graph(seekbar_v2_elem, 1, null, D);
-            inject_fluctlight_details(seekbar_v2_elem, 1, D);
+            inject_fluctlight_graph(seekbar_v2_elem, 1, null);
+            inject_fluctlight_details(seekbar_v2_elem, 1);
             return true;
         }
 

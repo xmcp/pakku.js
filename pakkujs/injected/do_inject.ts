@@ -48,7 +48,7 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
             //   maybe an embedded player, just continue
         }
         
-        let D = combine_into_d(chunks);
+        window.danmus = combine_into_d(chunks);
 
         if(pakku_tag_elem.classList.contains('__pakku_injected')) {
             console.log('pakku injector: already injected');
@@ -60,7 +60,7 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
 
             // fluctlight need to be reinjected in case player is reloaded
             if(config.FLUCTLIGHT) {
-                inject_fluctlight(D);
+                inject_fluctlight();
             }
 
             return;
@@ -73,7 +73,7 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
             let player_elem = pakku_tag_elem;
             console.log('pakku injector: list_elem', list_elem, 'player_elem', player_elem);
             if(player_elem)
-                inject_panel(list_elem || document.createElement('div'), player_elem, D, config);
+                inject_panel(list_elem || document.createElement('div'), player_elem, config);
         }
         
         if(config.AUTO_DISABLE_DANMU) {
@@ -85,7 +85,7 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
         }
         
         if(config.FLUCTLIGHT) {
-            inject_fluctlight(D);
+            inject_fluctlight();
         }
 
         window.reload_danmu_magic = reload_danmu_magic;

@@ -123,7 +123,7 @@ async function query_uid(uidhash: string, logger_container: HTMLElement) {
     }
 }
 
-export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, D: DanmuObjectRepresentative[], config: Config) {
+export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, config: Config) {
     let panel_obj = document.createElement('div');
     panel_obj.style.display = 'none';
     panel_obj.appendChild(make_panel_dom());
@@ -174,13 +174,13 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, D
         // the list might be sorted in a wrong way, so let's guess the index
         if(
             typeof dminfo.index === 'number'
-            && D[dminfo.index]
-            && (dm_ultralong ? D[dminfo.index].pakku.disp_str.indexOf(dm_str) === 0 : D[dminfo.index].pakku.disp_str === dm_str)
+            && window.danmus[dminfo.index]
+            && (dm_ultralong ? window.danmus[dminfo.index].pakku.disp_str.indexOf(dm_str) === 0 : window.danmus[dminfo.index].pakku.disp_str === dm_str)
         ) {
             accurate_guess = true;
-            infos = [D[dminfo.index]];
+            infos = [window.danmus[dminfo.index]];
         } else {
-            for(let d of D)
+            for(let d of window.danmus)
                 if((dm_ultralong ? d.pakku.disp_str.indexOf(dm_str) === 0 : d.pakku.disp_str === dm_str))
                     infos.push(d);
         }
