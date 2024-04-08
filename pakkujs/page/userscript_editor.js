@@ -10,6 +10,8 @@ let $sandbox = document.querySelector('#sandbox');
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || 0);
 
 let use_sandbox = false;
+// we should have to use sandbox because csp won't allow us to create a blob worker,
+// but fortunately chrome allows us to bypass it for now: https://issues.chromium.org/issues/40945262
 (()=>{
     function do_use_sandbox(e) {
         $sandbox.src = 'https://www.bilibili.com/robots.txt?pakku_sandbox';
