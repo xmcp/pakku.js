@@ -1,16 +1,17 @@
 [![Chrome Web Store - Version](https://img.shields.io/chrome-web-store/v/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
-[![Chrome Web Store - Downloads](https://img.shields.io/chrome-web-store/d/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
 [![Chrome Web Store - Rating](https://img.shields.io/chrome-web-store/rating/jklfcpboamajpiikgkbjcnnnnooefbhh.svg?style=flat-square)](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)
 /
+[![Edge Add-on - Version](https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Flnfcfeidnipnphibahlkdhalpkpmccoc&style=flat-square)](https://microsoftedge.microsoft.com/addons/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/lnfcfeidnipnphibahlkdhalpkpmccoc)
+[![Edge Add-on - Rating](https://img.shields.io/badge/dynamic/json?label=rating&suffix=/5&color=&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Flnfcfeidnipnphibahlkdhalpkpmccoc&style=flat-square&color=4c1)](https://microsoftedge.microsoft.com/addons/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/lnfcfeidnipnphibahlkdhalpkpmccoc)
+/
 [![Mozilla Add-on - Version](https://img.shields.io/amo/v/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
-[![Mozilla Add-on - Downloads](https://img.shields.io/amo/users/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 [![Mozilla Add-on - Rating](https://img.shields.io/amo/rating/pakkujs.svg?style=flat-square)](https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs?src=external-shield)
 
-#### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_1) （支持 Chrome 和 Firefox）
+#### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_1) （支持 Chrome、Edge、Firefox）
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
-自动合并B站视频中刷屏弹幕的 WebExtension，让您免受各种带节奏弹幕的刷屏之苦
+自动合并B站视频中刷屏弹幕的浏览器插件，让您免受各种带节奏弹幕的刷屏之苦
 
 ↓ 《千绪的通学路》第5话
 
@@ -44,4 +45,4 @@
 
 -----
 
-#### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_2) （支持 Chrome 和 Firefox）
+#### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_2) （支持 Chrome、Edge、Firefox）
