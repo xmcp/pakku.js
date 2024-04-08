@@ -104,7 +104,7 @@ class Scheduler {
         try {
             res = await this.pool.exec([chunk as DanmuChunk<DanmuObject>, next_chunk_filtered as DanmuChunk<DanmuObject>, this.config as LocalizedConfig]);
         } catch(e) {
-            this.write_failing_stats(`合并分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
+            this.write_failing_stats(`合并分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
 
@@ -130,7 +130,7 @@ class Scheduler {
         try {
             chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats);
         } catch(e) {
-            this.write_failing_stats(`后处理分片 #${segidx} 时出错`, e as Error, BADGE_ERR_JS);
+            this.write_failing_stats(`后处理分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
 
@@ -139,7 +139,7 @@ class Scheduler {
                 chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
                 this.userscript.sancheck_output(chunk_out);
             } catch(e) {
-                this.write_failing_stats(`处理分片 #${segidx} 后执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
+                this.write_failing_stats(`处理分片 ${segidx} 后执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                 return;
             }
         }
@@ -219,7 +219,7 @@ class Scheduler {
                         chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
                         this.userscript.sancheck_output(chunk);
                     } catch(e) {
-                        this.write_failing_stats(`处理分片 #${idx} 前执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
+                        this.write_failing_stats(`处理分片 ${idx} 前执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                         return;
                     }
                 }
