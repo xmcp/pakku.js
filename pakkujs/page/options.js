@@ -132,6 +132,7 @@ if(!perms.origins?.includes('*://*.bilibili.com/*')) {
                 if(granted) {
                     id('fix-permission-hint').style.display = 'none';
                     void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
+                    void chrome.notifications.clear('//perm_hotfix');
                     chrome.permissions.getAll().then((p)=>{perms = p;});
                 }
             });
