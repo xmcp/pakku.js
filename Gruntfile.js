@@ -269,24 +269,22 @@ module.exports = function(grunt) {
         'copy:chrome_manifest',
     ]);
     grunt.registerTask('chrome', [
-        'clean:chrome',
-
         '_common',
         'rollup:chrome',
         'terser:production',
         'copy:chrome_manifest',
 
+        'clean:chrome',
         'move:chrome',
         'compress:chrome',
     ]);
     grunt.registerTask('firefox', [
-        'clean:firefox',
-
         '_common',
         'rollup:firefox',
         'terser:production',
         'copy:firefox_manifest',
 
+        'clean:firefox',
         'move:firefox',
         'compress:firefox',
     ]);
