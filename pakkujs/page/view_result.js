@@ -4,10 +4,18 @@ import {egress_debug} from '../protocol/interface_debug';
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid'));
 let $content = document.querySelector('#content');
 let $ingress = document.querySelector('#ingress');
+let $download = document.querySelector('#download');
 
 let options = {};
 for(let input of document.querySelectorAll('input[type=radio]:checked')) {
     options[input.name] = input.value;
+}
+
+function download(filename, text) {
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], {type: 'application/octet-stream; charset=utf-8'}));
+    a.download = filename;
+    a.click();
 }
 
 let dumped_result;
@@ -38,6 +46,12 @@ async function process() {
     if(typeof egress_res === 'symbol')
         egress_res = egress_res.description;
     $content.textContent = egress_res;
+
+    $download.onclick = ()=>{
+        let ext = options.egress==='xml' ? 'xml' : 'js';
+        let cid = dumped_result.ingress.cid || 'content';
+        download(`${cid}.${ext}`, egress_res);
+    };
 }
 
 process();
