@@ -12,15 +12,21 @@ function get_player_blacklist(): BlacklistItem[] {
             opened: boolean;
             id: int;
         }[];
+        dmSetting: {
+            status: boolean;
+        };
     };
     try {
-        let j = (JSON.parse(window.localStorage.getItem('bpx_player_profile')!) as BpxProfileType).blockList;
+        let j = JSON.parse(window.localStorage.getItem('bpx_player_profile')!) as BpxProfileType;
+        if(!j.dmSetting.status) // blacklist disabled
+            return [];
+
         let ret = (
-            j
-                .filter(item=>item.opened)
+            j.blockList
+                .filter(item=>item.opened && [0, 1].includes(item.type))
                 .map(item=>[item.type===1, item.filter] as BlacklistItem)
         );
-        console.log('pakku injected: got player blacklist', ret.length);
+        console.log('pakku injected: got player blacklist', ret);
         return ret;
     } catch(e) {
         console.error('pakku injected: cannot get player blacklist', e);
