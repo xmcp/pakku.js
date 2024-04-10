@@ -1,4 +1,4 @@
-import {egress_xml, ingress_xml, XmlEgress, XmlIngress} from "./interface_xml";
+import {egress_xml, ingress_xml, ingress_xml_content, XmlContentIngress, XmlEgress, XmlIngress} from "./interface_xml";
 import {
     egress_proto, ingress_proto_history,
     ingress_proto_seg,
@@ -6,10 +6,10 @@ import {
     ProtobufIngressHistory,
     ProtobufIngressSeg
 } from "./interface_protobuf";
-import {DebugEgress, egress_debug} from "./interface_debug";
+import {DebugContentIngress, DebugEgress, egress_debug, ingress_debug_content} from "./interface_debug";
 import {DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
-export type Ingress = XmlIngress | ProtobufIngressSeg | ProtobufIngressHistory;
+export type Ingress = XmlIngress | XmlContentIngress | ProtobufIngressSeg | ProtobufIngressHistory | DebugContentIngress;
 export type Egress = XmlEgress | ProtobufEgress | DebugEgress;
 
 function ts_assert_never(x: never): never {
@@ -19,10 +19,14 @@ function ts_assert_never(x: never): never {
 export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     if(ingress.type==='xml')
         return await ingress_xml(ingress, chunk_callback);
+    else if(ingress.type==='xml_content')
+        return await ingress_xml_content(ingress, chunk_callback);
     else if(ingress.type==='proto_seg')
         return await ingress_proto_seg(ingress, chunk_callback);
     else if(ingress.type==='proto_history')
         return await ingress_proto_history(ingress, chunk_callback);
+    else if(ingress.type==='debug_content')
+        return await ingress_debug_content(ingress, chunk_callback);
     else
         return ts_assert_never(ingress);
 }

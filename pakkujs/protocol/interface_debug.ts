@@ -1,8 +1,34 @@
 import {DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
+export interface DebugContentIngress {
+    type: 'debug_content';
+    content: string;
+}
+
 export interface DebugEgress {
     type: 'debug';
     show_peers: boolean;
+}
+
+function get_objects(content: string): DanmuObject[] {
+    let ret: DanmuObject[] = [];
+    for(let line of content.split('\n')) {
+        if(line.startsWith('  {') && line.endsWith(' ,')) {
+            try {
+                ret.push(JSON.parse(line.slice(2, -2)));
+            } catch(e) {
+                console.error('pakku ingress debug: failed to parse line', line);
+            }
+        } else {
+            console.log('pakku ingress debug: ignored line', line);
+        }
+    }
+    return ret;
+}
+
+export async function ingress_debug_content(ingress: DebugContentIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
+    let chunk = {objs: get_objects(ingress.content), extra: {}};
+    await chunk_callback(1, chunk);
 }
 
 export function egress_debug(egress: DebugEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {

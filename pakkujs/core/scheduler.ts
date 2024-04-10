@@ -182,7 +182,7 @@ class Scheduler {
         this.ongoing_stats.notify(this.tabid, this.config);
         this.stats = this.ongoing_stats;
 
-        if(this.config.GLOBAL_SWITCH) {
+        if(this.config.GLOBAL_SWITCH && !this.config.SKIP_INJECT) {
             setTimeout(()=>{
                 do_inject(this.chunks_out, this.config);
             }, 150); // delay ui injection to improve player responsiveness

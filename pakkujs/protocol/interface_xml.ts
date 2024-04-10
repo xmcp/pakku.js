@@ -5,6 +5,11 @@ export interface XmlIngress {
     url: string;
 }
 
+export interface XmlContentIngress {
+    type: 'xml_content';
+    content: string;
+}
+
 export interface XmlEgress {
     type: 'xml';
 }
@@ -21,8 +26,7 @@ function xml_to_chunk(xmlstr: string): DanmuChunk<DanmuObject> {
     let dom = parse_xml_magic(xmlstr);
     let res = [];
     let conf: AnyObject = {};
-    for(let elem_ of dom.childNodes[0].childNodes) {
-        let elem = elem_ as Element;
+    for(let elem of dom.children[0].children) {
         if(elem.tagName==='d') { // danmu
             let attr = elem.getAttribute('p')!.split(',');
             let str = elem.childNodes[0] ? (elem.childNodes[0] as Text).data : '';
@@ -93,6 +97,10 @@ export async function ingress_xml(ingress: XmlIngress, chunk_callback: (idx: int
     let res = await fetch(ingress.url, {credentials: 'include'});
     let txt = await res.text();
     await chunk_callback(1, xml_to_chunk(txt));
+}
+
+export async function ingress_xml_content(ingress: XmlContentIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
+    await chunk_callback(1, xml_to_chunk(ingress.content));
 }
 
 export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {

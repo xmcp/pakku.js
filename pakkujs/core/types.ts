@@ -177,4 +177,5 @@ export type BlacklistItem = [boolean, string];  // is_regexp, pattern
 export interface LocalizedConfig extends Config {
     BLACKLIST: BlacklistItem[];
     GLOBAL_SWITCH: boolean;
+    SKIP_INJECT: boolean;
 }

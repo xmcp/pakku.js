@@ -185,4 +185,7 @@ chrome.commands.onCommand.addListener(async function(name) {
             chrome.notifications.clear('//switch');
         }, 1500) as any;
     }
+    else if(name==='show-local') {
+        void chrome.tabs.create({url: chrome.runtime.getURL('/page/parse_local.html')});
+    }
 });

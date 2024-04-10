@@ -3,6 +3,7 @@ import {handle_task, last_scheduler} from "./scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {BlacklistItem, int, LocalizedConfig} from "./types";
+import {Egress, Ingress} from "../protocol/interface";
 
 function get_player_blacklist(): BlacklistItem[] {
     type BpxProfileType = {
@@ -37,7 +38,7 @@ function get_player_blacklist(): BlacklistItem[] {
 let tabid: null | int = null;
 let unreg_userscript = true;
 
-async function apply_local_config(config: Config): Promise<LocalizedConfig> {
+async function apply_local_config(config: Config, is_pure_env: boolean = false): Promise<LocalizedConfig> {
     let state = await get_state();
 
     let userscript = config.USERSCRIPT;
@@ -59,9 +60,10 @@ async function apply_local_config(config: Config): Promise<LocalizedConfig> {
 
     return {
         ...config,
-        BLACKLIST: get_player_blacklist(),
+        BLACKLIST: is_pure_env ? [] : get_player_blacklist(),
         GLOBAL_SWITCH: state.GLOBAL_SWITCH,
         USERSCRIPT: userscript,
+        SKIP_INJECT: is_pure_env,
     };
 }
 
@@ -105,7 +107,22 @@ function is_bilibili(origin: string): boolean {
     return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
 }
 
-window.addEventListener('message',async function(event) {
+declare global {
+    interface Window { pakku_process_local: any; }
+}
+
+window.pakku_process_local = async function(ingress: Ingress, egress: Egress) {
+    console.log('pakku: process local', ingress.type, egress);
+    let config = await apply_local_config(await get_config(), true);
+    let perform = function() {
+        return new Promise((resolve) => {
+            handle_task(ingress, egress, resolve, config, tabid as int);
+        });
+    };
+    return await perform();
+};
+
+window.addEventListener('message', async function(event) {
     if(is_bilibili(event.origin) && event.data.type && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: any) => {
