@@ -93,6 +93,7 @@ async function loadui() {
 
                     let col_name = document.createElement('td');
                     col_name.textContent = name;
+                    col_name.title = name;
                     row.appendChild(col_name);
 
                     let col_count = document.createElement('td');
