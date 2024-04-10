@@ -90,7 +90,7 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
 
 export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
-        return {objs: [], extra: {}};
+        return {objs: [], extra: input_chunk.extra};
 
     const THRESHOLD_MS =config.THRESHOLD * 1000;
     const FIRST_TIME_MS = input_chunk.objs[0].time_ms;
