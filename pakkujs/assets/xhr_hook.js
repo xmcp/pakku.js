@@ -61,7 +61,24 @@
         }, '*');
     }
 
-    function proxied_send(xhr, send_arg) {
+    function should_skip_url(url) {
+        if(!url.includes('.xml') && !url.includes('/dm/'))
+            return true;
+
+        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // hovering on thumbnails on homepage
+            return true;
+
+        let cur_cid = get_cur_cid();
+        let target_cid = parseInt(new URLSearchParams(url).get('oid'));
+        if(cur_cid && target_cid && cur_cid !== target_cid) { // hovering on thumbnails on video page
+            console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', url);
+            return true;
+        }
+
+        return false;
+    }
+
+    function proxied_xhr_send(xhr, send_arg) {
         send_msg_proxy(xhr.pakku_url, function(resp) {
             if(!resp || !resp.data) {
                 xhr.pakku_send(send_arg);
@@ -94,7 +111,7 @@
             xhr.status = 200;
             xhr.statusText = 'OK';
 
-            console.log('pakku ajax: got tampered response for', xhr.pakku_url, xhr.responseType);
+            console.log('pakku ajax: got tampered xhr response for', xhr.pakku_url, xhr.responseType);
             for(let i = 0; i < xhr.pakku_load_callback.length; i++)
                 xhr.pakku_load_callback[i].bind(xhr)();
         });
@@ -117,18 +134,8 @@
 
     XMLHttpRequest.prototype.pakku_send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(arg) {
-        if(!this.pakku_url.includes('.xml') && !this.pakku_url.includes('/dm/'))
+        if(should_skip_url(this.pakku_url))
             return this.pakku_send(arg);
-
-        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // hovering on thumbnails on homepage
-            return this.pakku_send(arg);
-
-        let cur_cid = get_cur_cid();
-        let target_cid = parseInt(new URLSearchParams(this.pakku_url).get('oid'));
-        if(cur_cid && target_cid && cur_cid !== target_cid) { // hovering on thumbnails on video page
-            console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', this.pakku_url);
-            return this.pakku_send(arg);
-        }
 
         let link = document.createElement('a');
         link.href = this.pakku_url;
@@ -144,11 +151,47 @@
             this.pakku_load_callback.push(this.onloadend);
 
         if(this.pakku_load_callback.length > 0) {
-            proxied_send(this, arg);
+            proxied_xhr_send(this, arg);
         } else {
-            console.log('pakku ajax: ignoring request as no onload callback found', this.pakku_url);
+            console.log('pakku ajax: ignoring xhr request as no onload callback found', this.pakku_url);
             return this.pakku_send(arg);
         }
+    }
+
+    function proxied_fetch(url, orig_req, orig_options) {
+        return new Promise((resolve, reject) => {
+            send_msg_proxy(url, function(resp) {
+                if(!resp || !resp.data) {
+                    resolve(orig_fetch(orig_req, orig_options));
+                    return;
+                }
+
+                console.log('pakku ajax: got tampered fetch response for', url);
+
+                let resp_data;
+                if(resp.data instanceof Uint8Array)
+                    resp_data = resp.data;
+                else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
+                    resp_data = byte_object_to_arraybuffer(resp.data);
+                else // maybe str
+                    resp_data = resp.data;
+
+                resolve(new Response(resp_data, {
+                    headers: {
+                        'X-Pakku': 'yay',
+                    },
+                }));
+            });
+        });
+    }
+
+    let orig_fetch = window.fetch;
+    window.fetch = function fetch(req, options={}) {
+        let url = (req instanceof Request) ? req.url : ''+req;
+        if(should_skip_url(url))
+            return orig_fetch(req, options);
+
+        return proxied_fetch(url, req, options);
     }
 
     console.log('pakku ajax: hook set');
