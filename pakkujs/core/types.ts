@@ -105,6 +105,7 @@ export class Stats {
     combined_cosine_distance= 0;
 
     deleted_blacklist= 0;
+    deleted_blacklist_each: {[k: string]: int} = {};
 
     ignored_whitelist= 0;
     ignored_script= 0;
@@ -163,6 +164,10 @@ export class Stats {
         ]) {
             // @ts-ignore
             this[k] = Math.max(this[k], x[k]);
+        }
+
+        for(let [k, v] of Object.entries(x.deleted_blacklist_each)) {
+            this.deleted_blacklist_each[k] = (this.deleted_blacklist_each[k] || 0) + v;
         }
     }
 }

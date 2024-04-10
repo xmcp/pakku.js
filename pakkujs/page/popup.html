@@ -8,7 +8,7 @@
             display: none;
         }
         body {
-            width: 300px;
+            width: 320px;
             background-color: #f7f7f7;
             font-size: 75%;
         }
@@ -86,9 +86,16 @@
             border-spacing: 0;
             margin-top: 1em;
             width: 100%;
+            table-layout: fixed;
         }
         tr:hover {
             background-color: #fcfcfc;
+        }
+        #result td:nth-child(1) {
+            width: 4em;
+        }
+        #result td:nth-child(3) {
+            width: 4em;
         }
         #result td, #result th {
             padding: 3px 0 3px 0;
@@ -184,9 +191,9 @@
                     <td id="status-combined_cosine_distance"></td>
                 </tr>
 
-                <tr class="status-header-deleted">
+                <tr class="status-header-deleted" id="blacklist-insertion-point">
                     <td></td>
-                    <td>命中黑名单</td>
+                    <td>命中黑名单：</td>
                     <td id="status-deleted_blacklist"></td>
                 </tr>
                 

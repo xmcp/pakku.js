@@ -97,9 +97,17 @@ function whitelisted_meta(config: LocalizedConfig): (text: string)=>boolean {
     return (text: string) => WHITELIST.some(re => re.test(text));
 }
 
-function blacklisted_meta(config: LocalizedConfig): (text: string)=>boolean {
+function blacklisted_meta(config: LocalizedConfig): (text: string)=>(string | null) {
     const BLACKLIST = config.BLACKLIST.map(x => x[0] ? new RegExp(x[1], 'i') : x[1]);
-    return (text: string) => BLACKLIST.some(pattern => (typeof pattern === 'string') ? text.includes(pattern) : pattern.test(text));
+    return (text: string) => {
+        for(let pattern of BLACKLIST) {
+            let matched = (typeof pattern === 'string') ? text.includes(pattern) : pattern.test(text);
+            if(matched) {
+                return (typeof pattern === 'string') ? ` ${pattern}` : ` /${pattern.source}/`;
+            }
+        }
+        return null;
+    }
 }
 
 function extract_special_danmu(text: string): string {
@@ -120,7 +128,7 @@ function trim_dispstr(text: string): string {
 let _fn_initialized = false;
 let detaolu: (text: string) => [boolean, string];
 let whitelisted: (text: string) => boolean;
-let blacklisted: (text: string) => boolean;
+let blacklisted: (text: string) => string | null;
 let similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
 
 function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): DanmuClusterOutput {
@@ -220,9 +228,15 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
 
                 let disp_str = trim_dispstr(obj.mode===7 ? extract_special_danmu(obj.content) : obj.content);
 
-                if(obj.mode!==8 && obj.mode!==9 && blacklisted(disp_str)) {
-                    if(s) s.deleted_blacklist++;
-                    return null;
+                if(obj.mode!==8 && obj.mode!==9) {
+                    let matched = blacklisted(disp_str);
+                    if(matched) {
+                        if(s) {
+                            s.deleted_blacklist++;
+                            s.deleted_blacklist_each[matched] = (s.deleted_blacklist_each[matched] || 0) + 1;
+                        }
+                        return null;
+                    }
                 }
                 if(whitelisted(disp_str)) {
                     if(s) {

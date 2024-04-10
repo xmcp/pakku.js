@@ -80,6 +80,27 @@ async function loadui() {
                     }
                     elem.textContent = (typeof r === 'number') ? Math.ceil(r) : r;
                 }
+
+            if(stats['deleted_blacklist_each']) {
+                let blacklist_matches = Object.entries(stats['deleted_blacklist_each']).sort((a, b) => a[1] - b[1]);
+                let blacklist_insertion_point = id('blacklist-insertion-point');
+                for(let [name, count] of blacklist_matches) {
+                    let row = document.createElement('tr');
+                    row.className = 'status-header-deleted';
+                    blacklist_insertion_point.insertAdjacentElement('afterend', row);
+
+                    row.appendChild(document.createElement('td'));
+
+                    let col_name = document.createElement('td');
+                    col_name.textContent = name;
+                    row.appendChild(col_name);
+
+                    let col_count = document.createElement('td');
+                    col_count.textContent = ''+count;
+                    row.appendChild(col_count);
+                }
+            }
+
             for(let category of ['combined', 'deleted', 'ignored', 'modified', 'info']) {
                 let rows = Array.from(document.querySelectorAll(`.status-header-${category}:not(.display-none)`));
                 for(let row of rows) {
