@@ -1,4 +1,4 @@
-import {AnyObject, DanmuChunk, DanmuObject, DanmuObjectRepresentative, int, MissingData} from "../core/types";
+import {AnyObject, DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
 export interface XmlIngress {
     type: 'xml';
