@@ -64,11 +64,25 @@ async function reset_badge() {
         await chrome.action.setBadgeTextColor({color: 'white'});
 }
 
+async function install_context_menu() {
+    chrome.contextMenus.create({
+        id: 'toggle-global-switch',
+        title: '切换工作状态',
+        contexts: ['action'],
+    });
+    chrome.contextMenus.create({
+        id: 'show-local',
+        title: '处理本地弹幕',
+        contexts: ['action'],
+    });
+}
+
 async function perform_init() {
     let is_init = await init_state();
     if(is_init) {
         await reset_badge();
         await check_fix_permission();
+        await install_context_menu();
     }
 }
 void perform_init();
@@ -168,8 +182,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 });
 
-let _clear_timeout: number | null = null;
-chrome.commands.onCommand.addListener(async function(name) {
+async function handle_command(name: string) {
     if(name==='toggle-global-switch') {
         let new_switch = await toggle_global_switch();
 
@@ -179,6 +192,7 @@ chrome.commands.onCommand.addListener(async function(name) {
             title: `[ ${new_switch ? 'ON' : 'OFF'} ]`,
             message: 'Pakku is ' + (new_switch ? 'ON' : 'OFF'),
         });
+
         if(_clear_timeout)
             clearTimeout(_clear_timeout);
         _clear_timeout = setTimeout(function() {
@@ -188,4 +202,13 @@ chrome.commands.onCommand.addListener(async function(name) {
     else if(name==='show-local') {
         void chrome.tabs.create({url: chrome.runtime.getURL('/page/parse_local.html')});
     }
+}
+
+let _clear_timeout: number | null = null;
+chrome.commands.onCommand.addListener(function(name) {
+    void handle_command(name);
+});
+
+chrome.contextMenus.onClicked.addListener(async function(info, tab) {
+    void handle_command(info.menuItemId as string);
 });

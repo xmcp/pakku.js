@@ -15,6 +15,7 @@
     "permissions": [
         "notifications",
         "storage",
+        "contextMenus",
         "declarativeNetRequestWithHostAccess"
     ],
     "host_permissions": [
