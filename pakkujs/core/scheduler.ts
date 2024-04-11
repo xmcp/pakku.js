@@ -1,5 +1,4 @@
 import {WorkerPool} from "./worker_pool";
-
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
 import {
     AjaxResponse,

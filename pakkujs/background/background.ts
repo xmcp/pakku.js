@@ -57,9 +57,12 @@ chrome.notifications.onButtonClicked.addListener(async function(notif_id,btn_idx
     }
 });
 
+const DEFAULT_BADGE_BGCOLOR = '#26c';
+
 async function reset_badge() {
     // reset badge options because options during the previous launch might not be cleared away
     await chrome.action.setBadgeText({text: ''});
+    await chrome.action.setBadgeBackgroundColor({color: DEFAULT_BADGE_BGCOLOR});
     if(chrome.action.setBadgeTextColor)
         await chrome.action.setBadgeTextColor({color: 'white'});
 }
@@ -137,13 +140,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse(sender.tab?.id);
     }
     else if(msg.type==='update_badge') {
+        if(!msg.tabid) {
+            console.error('pakku background: no tabid for update_badge');
+            return;
+        }
+
         void chrome.action.setBadgeText({
             tabId: msg.tabid,
-            text: ''+msg.text,
+            text: msg.text,
         });
         void chrome.action.setBadgeBackgroundColor({
             tabId: msg.tabid,
-            color: msg.bgcolor,
+            color: msg.bgcolor || DEFAULT_BADGE_BGCOLOR,
         });
         // refresh the popup
         chrome.runtime.sendMessage({type: 'reload_state'})

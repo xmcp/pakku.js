@@ -52,6 +52,7 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
                 void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
             else
                 void remove_state([`STATS_${tabid}`]);
+            void chrome.runtime.sendMessage({type: 'update_badge', tabid: tabid, text: null});
         };
     }
 
