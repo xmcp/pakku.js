@@ -37,7 +37,7 @@ $download_btn.onclick = function() {
 };
 $clear_btn.onclick = function() {
     for(let fin of $container.querySelectorAll('.finished')) {
-        (fin as HTMLElement).parentElement!.removeChild(fin);
+        (fin as HTMLElement).remove();
     }
     all_res = [];
 };

@@ -94,7 +94,7 @@ async function query_uid(uidhash: string, logger_container: HTMLElement) {
             let nickname, lv, exp, fans, sex;
 
             if(!res?.data?.card?.mid || !res?.data?.card?.level_info?.current_level) {
-                subitem.parentNode!.removeChild(subitem);
+                subitem.remove();
                 return;
             }
             try {

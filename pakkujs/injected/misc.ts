@@ -43,7 +43,7 @@ export function reload_danmu_magic() {
         trigger_mouse_event(elem, 'mouseup');
         trigger_mouse_event(elem, 'click');
 
-        date_picker.removeChild(elem);
+        elem.remove();
         _reload_danmu_id = (_reload_danmu_id + 1) % 3650;
     }
 

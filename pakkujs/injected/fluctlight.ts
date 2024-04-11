@@ -9,13 +9,10 @@ const GRAPH_DENSITY_DELTA = 1;
 const GRAPH_ALPHA = .6;
 
 function fluctlight_cleanup() {
-    let old_elems = Array.from(window.root_elem.querySelectorAll('.pakku-fluctlight'));
-    if(old_elems.length) {
-        console.log('pakku fluctlight: cleanup elems', old_elems);
-        old_elems.forEach(function (e) {
-            e.parentNode!.removeChild(e);
-        });
+    for(let elem of window.root_elem.querySelectorAll('.pakku-fluctlight')) {
+        elem.remove();
     }
+
     if(window.graph_observer)
         window.graph_observer.disconnect();
     if(window.details_observer)

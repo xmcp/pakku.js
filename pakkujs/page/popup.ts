@@ -34,9 +34,18 @@ async function loadui() {
     let config = await get_config();
     let state = await get_state();
     let enabled = state.GLOBAL_SWITCH;
+
     switch_btn.classList.add(enabled ? 'on' : 'off');
     switch_btn.classList.remove(enabled ? 'off' : 'on');
     switch_btn.textContent = enabled ? '工作中' : '休息中';
+
+    id('exception').classList.add('display-none');
+    id('result').classList.add('display-none');
+    id('userscript-btn').classList.add('display-none');
+    for(let row of document.querySelectorAll('.blacklist-each-row')) {
+        row.remove();
+    }
+
     chrome.tabs.query({active: true, currentWindow: true}, function(d) {
         let general = enabled ? '本页面没有发现B站播放器' : 'zzzzzzzzzz'
         let tabid = d[0]?.id;
@@ -71,7 +80,7 @@ async function loadui() {
                     let blacklist_insertion_point = id('blacklist-insertion-point');
                     for(let [name, count] of blacklist_matches) {
                         let row = document.createElement('tr');
-                        row.className = 'status-header-deleted';
+                        row.className = 'blacklist-each-row status-header-deleted';
                         blacklist_insertion_point.insertAdjacentElement('afterend', row);
 
                         row.appendChild(document.createElement('td'));

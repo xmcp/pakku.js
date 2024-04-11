@@ -45,7 +45,7 @@ function highlighter() {
     if(!el) return;
 
     let old = document.getElementById('highlighter');
-    if(old) old.parentNode!.removeChild(old);
+    if(old) old.remove();
 
     let hl = document.createElement('span');
     hl.id = 'highlighter';
@@ -200,8 +200,7 @@ async function reload(changed_dnr=false) {
     }, 100);
 
     let old = document.getElementById('highlighter');
-    if(old)
-        old.parentNode!.removeChild(old);
+    if(old) old.remove();
 
     if(changed_dnr)
         void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
