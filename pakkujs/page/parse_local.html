@@ -11,6 +11,9 @@
             background-color: #bbf;
             opacity: .15;
         }
+        #sandbox {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -55,7 +58,8 @@
         </p>
         <div id="result-container"></div>
     </fieldset>
-    <script src="/generated/content_script.js"></script>
+
+    <iframe id="sandbox" src="https://www.bilibili.com/robots.txt?pakku_sandbox"></iframe>
     <script src="/generated/parse_local.js"></script>
 </body>
 </html>

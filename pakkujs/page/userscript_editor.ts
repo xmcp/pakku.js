@@ -1,6 +1,5 @@
 import {get_config, save_config} from '../background/config';
 import {get_state, save_state, remove_state} from '../background/state';
-import {UserscriptWorker} from '../core/userscript';
 
 let $save = document.querySelector('#save') as HTMLButtonElement;
 let $clear = document.querySelector('#clear') as HTMLButtonElement;
@@ -9,34 +8,14 @@ let $sandbox = document.querySelector('#sandbox') as HTMLIFrameElement;
 
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || '0');
 
-let use_sandbox = false;
-// we should have to use sandbox because csp won't allow us to create a blob worker,
-// but fortunately chrome allows us to bypass it for now: https://issues.chromium.org/issues/40945262
-(()=>{
-    function do_use_sandbox(err: any) {
-        $sandbox.src = 'https://www.bilibili.com/robots.txt?pakku_sandbox';
-        use_sandbox = true;
-        console.log('using sandbox because cannot create worker', err);
-    }
-
-    try {
-        let w = new Worker(URL.createObjectURL(new Blob([''], {type: 'text/javascript'})));
-        w.onerror = (e)=>{
-            do_use_sandbox(e);
-        };
-    } catch(e) {
-        do_use_sandbox(e);
-    }
-})();
-
-function check_userscript_sandboxed(script: string) {
+function check_userscript(script: string) {
     return new Promise((resolve) => {
         window.onmessage = (e)=>{
-            if(e.data.type==='pakku_sandbox_result') {
-                if(e.data.error) {
-                    alert('脚本存在错误：\n' + e.data.error);
+            if(e.data.type==='pakku_userscript_sandbox_result') {
+                if(e.data.result.error) {
+                    alert('脚本存在错误：\n' + e.data.result.error);
                     resolve(false);
-                } else if(e.data.total===0) {
+                } else if(e.data.result.total===0) {
                     alert('没有注册任何函数，请使用 tweak_before_pakku 和 tweak_after_pakku 注册处理函数');
                     resolve(false);
                 } else {
@@ -44,29 +23,8 @@ function check_userscript_sandboxed(script: string) {
                 }
             }
         };
-        $sandbox.contentWindow!.postMessage({type: 'pakku_sandbox_request', script: script}, '*');
+        $sandbox.contentWindow!.postMessage({type: 'pakku_userscript_sandbox_request', script: script}, '*');
     });
-}
-
-async function check_userscript_direct(script: string) {
-    let w = new UserscriptWorker(script);
-    try {
-        let [n_before, n_after] = await w.init();
-        let tot = n_before + n_after;
-        w.worker.terminate();
-        if(tot===0) {
-            alert('没有注册任何函数，请使用 tweak_before_pakku 和 tweak_after_pakku 注册处理函数');
-            return false;
-        }
-        return true;
-    } catch(e: any) {
-        alert('脚本存在错误：\n' + e.message + '\n\n' + e.stack);
-        w.worker.terminate();
-    }
-}
-
-async function check_userscript(script: string) {
-    return await (use_sandbox ? check_userscript_sandboxed :check_userscript_direct)(script);
 }
 
 async function load() {

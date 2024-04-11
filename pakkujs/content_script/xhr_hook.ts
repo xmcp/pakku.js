@@ -1,4 +1,4 @@
-import {AjaxResponse} from "./types";
+import {AjaxResponse} from "../core/types";
 
 declare global {
     interface Window {

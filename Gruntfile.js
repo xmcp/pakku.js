@@ -69,9 +69,9 @@ module.exports = function(grunt) {
 
     const ROLLUP_FILES = {
         'dist/_/generated/background.js': 'pakkujs/background/background.ts',
-        'dist/_/generated/xhr_hook.js': 'pakkujs/core/xhr_hook.ts',
+        'dist/_/generated/xhr_hook.js': 'pakkujs/content_script/xhr_hook.ts',
+        'dist/_/generated/content_script.js': 'pakkujs/content_script/main.ts',
         'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
-        'dist/_/generated/content_script.js': 'pakkujs/core/main.ts',
         'dist/_/generated/injected.js': 'pakkujs/injected/do_inject.ts',
         'dist/_/generated/options.js': 'pakkujs/page/options.ts',
         'dist/_/generated/popup.js': 'pakkujs/page/popup.ts',
@@ -79,7 +79,6 @@ module.exports = function(grunt) {
         'dist/_/generated/view_result.js': 'pakkujs/page/view_result.ts',
         'dist/_/generated/parse_local.js': 'pakkujs/page/parse_local.ts',
         'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.ts',
-        'dist/_/generated/bili_worker_sandbox.js': 'pakkujs/page/bili_worker_sandbox.ts',
     };
 
     const TERSER_FILES = Object.fromEntries(Object.keys(ROLLUP_FILES).map(k => [k, [k]]));

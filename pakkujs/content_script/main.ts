@@ -1,9 +1,9 @@
 import {url_finder} from "../protocol/urls";
-import {handle_task, last_scheduler} from "./scheduler";
+import {handle_task, last_scheduler} from "../core/scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
-import {AjaxResponse, BlacklistItem, DumpResult, int, LocalizedConfig} from "./types";
-import {Egress, Ingress} from "../protocol/interface";
+import {AjaxResponse, BlacklistItem, DumpResult, int, LocalizedConfig} from "../core/types";
+import {process_local, userscript_sandbox} from "./sandboxed";
 
 function get_player_blacklist(): BlacklistItem[] {
     type BpxProfileType = {
@@ -108,23 +108,12 @@ function is_bilibili(origin: string): boolean {
     return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
 }
 
-declare global {
-    interface Window { pakku_process_local: any; }
-}
-
-window.pakku_process_local = async function(ingress: Ingress, egress: Egress) {
-    console.log('pakku: process local', ingress.type, egress);
-    let config = await apply_local_config(await get_config(), true);
-    let perform = function() {
-        return new Promise((resolve) => {
-            handle_task(ingress, egress, resolve, config, tabid as int);
-        });
-    };
-    return await perform();
-};
+let ext_domain = chrome.runtime.getURL('');
+if(ext_domain.endsWith('/'))
+    ext_domain = ext_domain.slice(0, -1);
 
 window.addEventListener('message', async function(event) {
-    if(is_bilibili(event.origin) && event.data.type && event.data.type=='pakku_ajax_request') {
+    if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: AjaxResponse) => {
             event.source!.postMessage({
@@ -159,5 +148,22 @@ window.addEventListener('message', async function(event) {
         }
 
         handle_task(url[0], url[1], sendResponse, local_config, tabid as int);
+    }
+    else if(event.origin===ext_domain && event.data.type==='pakku_userscript_sandbox_request') {
+        let res = await userscript_sandbox(event.data.script);
+        event.source!.postMessage({
+            type: 'pakku_userscript_sandbox_result',
+            result: res,
+        }, event.origin as any);
+    }
+    else if(event.origin===ext_domain && event.data.type==='pakku_process_local_request') {
+        let config = await apply_local_config(await get_config(), true);
+        config.GLOBAL_SWITCH = true;
+
+        let res = await process_local(event.data.ingress, event.data.egress, config, tabid as int);
+        event.source!.postMessage({
+            type: 'pakku_process_local_result',
+            result: res,
+        }, event.origin as any);
     }
 },false);
