@@ -1,0 +1,83 @@
+name: Bug 反馈
+description: 报告扩展的 bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请**完整**填写以下信息，信息不完整导致无法复现的 bug 反馈将直接标为 invalid 并关闭。
+        从 Edge 商店安装的用户注意：由于需要通过微软审核，Edge 商店的版本通常会落后 Chrome 和 Firefox 商店一到两周。如果遇到问题请尝试[从 Chrome 商店安装](https://chromewebstore.google.com/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/jklfcpboamajpiikgkbjcnnnnooefbhh)，或者 [下载 CRX 安装包](https://s.xmcp.ltd/pakkujs/latest.crx)。
+  - type: input
+    id: is_reproducible
+    attributes:
+      label: 是否可以稳定复现
+      description: 问题是否每次都出现？刷新网页、重启浏览器、更换网络环境、重装扩展之后是否问题还在？
+      placeholder: …
+    validations:
+      required: true
+  - type: textarea
+    id: step_to_reproduce
+    attributes:
+      label: 复现步骤
+      description: 请描述问题出现时的具体操作步骤，如果是特定视频有问题，请附链接。
+      placeholder: |
+        1. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: 预期行为
+      description: 进行上述操作以后，你觉得应该出现什么行为？
+      placeholder: …
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: 实际行为
+      description: 实际出现了什么行为？可附截图。
+      placeholder: …
+    validations:
+      required: true
+  - type: input
+    id: happens_after_disabling_pakku
+    attributes:
+      label: 禁用 pakku 后 bug 是否存在
+      description: |
+        请尝试在浏览器的扩展程序页面（chrome://extensions）禁用 pakku，并检查 bug 是否依然存在。
+        如果依然存在，说明 bug 与 pakku 无关，可能是其他插件或 B 站播放器自身的问题。
+      placeholder: …
+    validations:
+      required: true
+  - type: input
+    id: happend_after_disabling_others
+    attributes:
+      label: 是否与其他插件有关
+      description: |
+        请禁用全部其他扩展程序、油猴脚本（User Script）、浏览器特殊功能，仅启用 pakku，并检查 bug 是否依然存在。
+        如果全部禁用后 bug 就不存在，说明 bug 与其他插件有关，请指出具体哪个插件与 pakku 共存会导致 bug。
+      placeholder: …
+    validations:
+      required: true
+  - type: input
+    id: player_version
+    attributes:
+      label: B 站播放器版本号
+      description: 在视频上点击右键打开菜单，“更新历史” 文字后面就是播放器版本号（例如 3.8.6-8b9bf905）。
+      placeholder: …
+    validations:
+      required: true
+  - type: textarea
+    id: debug_info
+    attributes:
+      label: pakku 调试信息
+      description: |
+        请打开 pakku 的选项页面，点击版本号旁边的 “报告问题” 链接，将蓝色框中的调试信息全部粘贴在下面。
+      placeholder: <details>...</details>
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: 补充说明
+      description: 如果你大概清楚问题背后的原因可能是什么，或者有其他对解决问题有帮助的线索（比如 console 有报错），请写在下面，可附截图。

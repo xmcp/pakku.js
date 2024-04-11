@@ -1,0 +1,17 @@
+name: 功能建议
+description: 建议增加新功能或者改进现有功能
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        与 pakku 本身功能关联不大、适用范围不广的建议可能不会被考虑。
+        提交功能建议前请先尝试此功能是否可以利用 [用户脚本功能](https://github.com/xmcp/pakku.js/tree/master/userscript_docs) 实现。
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 功能内容
+      description: 请描述你建议的功能内容，以及它为什么需要由 pakku（而不是其他插件或者用户脚本）实现。
+      placeholder: …
+    validations:
+      required: true
