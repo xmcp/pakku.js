@@ -2,6 +2,7 @@ import {WorkerPool} from "./worker_pool";
 
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
 import {
+    AjaxResponse,
     DanmuChunk,
     DanmuClusterOutput,
     DanmuObject, DanmuObjectRepresentative,
@@ -31,7 +32,7 @@ function _filter_aslongas<T>(x: Array<T>, fn: (x: T)=>boolean): Array<T> {
 
 class Scheduler {
     ingress: Ingress;
-    egresses: Array<[Egress, (resp: any)=>void]>;
+    egresses: Array<[Egress, (resp: AjaxResponse)=>void]>;
     config: LocalizedConfig;
 
     stats: Stats | MessageStats;
@@ -77,7 +78,7 @@ class Scheduler {
         this.try_serve_egress();
     }
 
-    add_egress(egress: Egress, callback: (resp: any)=>void) {
+    add_egress(egress: Egress, callback: (resp: AjaxResponse)=>void) {
         console.log('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
         this.egresses.push([egress, callback]);
         this.try_serve_egress();
@@ -257,7 +258,7 @@ function ingress_equals(a: Ingress, b: Ingress): boolean {
     return Object.keys(a).every(k => a[k] === b[k]);
 }
 
-export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: any)=>void, config: LocalizedConfig, tabid: int) {
+export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: AjaxResponse)=>void, config: LocalizedConfig, tabid: int) {
     for(let scheduler of schedulers)
         if(ingress_equals(scheduler.ingress, ingress)) {
             scheduler.config = config;

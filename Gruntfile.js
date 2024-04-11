@@ -69,6 +69,7 @@ module.exports = function(grunt) {
 
     const ROLLUP_FILES = {
         'dist/_/generated/background.js': 'pakkujs/background/background.ts',
+        'dist/_/generated/xhr_hook.js': 'pakkujs/core/xhr_hook.ts',
         'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
         'dist/_/generated/content_script.js': 'pakkujs/core/main.ts',
         'dist/_/generated/injected.js': 'pakkujs/injected/do_inject.ts',

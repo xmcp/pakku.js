@@ -59,7 +59,7 @@
     "content_scripts": [
         {
             "matches": ["*://*.bilibili.com/*"],
-            "js": ["/assets/xhr_hook.js"],
+            "js": ["/generated/xhr_hook.js"],
             "css": ["/generated/injected.css"],
             "run_at": "document_start",
             "world": "MAIN",
@@ -87,7 +87,7 @@
         }]
     },
     "web_accessible_resources": [{
-        "resources": ["/generated/combine_worker.js", "/assets/xhr_hook.js"],
+        "resources": ["/generated/combine_worker.js", "/generated/xhr_hook.js"],
         "matches": ["*://*.bilibili.com/*"]
     }]
 }

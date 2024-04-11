@@ -30,14 +30,6 @@ export interface DanmuObject {
     };
 }
 
-export interface DumpResult {
-    error: null;
-    ingress: Ingress;
-    num_chunks: int;
-    chunks_in: {[idx: string]: DanmuChunk<DanmuObject>};
-    chunks_out: {[idx: string]: DanmuChunk<DanmuObjectRepresentative>};
-}
-
 export interface DanmuObjectPeer extends DanmuObject {
     pakku: {
         sim_reason: string;
@@ -187,4 +179,16 @@ export interface LocalizedConfig extends Config {
     BLACKLIST: BlacklistItem[];
     GLOBAL_SWITCH: boolean;
     SKIP_INJECT: boolean;
+}
+
+export interface DumpResult {
+    error: null;
+    ingress: Ingress;
+    num_chunks: int;
+    chunks_in: {[idx: string]: DanmuChunk<DanmuObject>};
+    chunks_out: {[idx: string]: DanmuChunk<DanmuObjectRepresentative>};
+}
+
+export type AjaxResponse = null | {
+    data: string | Uint8Array | {[k: int]: int}; // uint8arr object representation {0: ord, 1: ord, ...}
 }

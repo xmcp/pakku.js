@@ -1,12 +1,36 @@
+import {AjaxResponse} from "./types";
+
+declare global {
+    interface Window {
+        player: {
+            getManifest: ()=>{cid: number};
+        };
+    }
+    interface XMLHttpRequest {
+        pakku_url: string;
+        pakku_load_callback: ((...args: any)=>any)[];
+        pakku_open: typeof XMLHttpRequest.prototype.open;
+        pakku_addEventListener: typeof XMLHttpRequest.prototype.addEventListener;
+        pakku_send: typeof XMLHttpRequest.prototype.send;
+    }
+}
+
+// https://stackoverflow.com/questions/42999983/typescript-removing-readonly-modifier
+type Mutable<T> = {
+    -readonly [K in keyof T]: T[K]
+};
+type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
+
 (function() {
+    // @ts-ignore
     if(XMLHttpRequest.prototype.pakku_open) return;
 
-    function uint8array_to_arraybuffer(array) {
+    function uint8array_to_arraybuffer(array: Uint8Array) {
         // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
         return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
     }
 
-    function str_to_arraybuffer(str) {
+    function str_to_arraybuffer(str: string) {
         // https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
         let buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
         let bufView = new Uint16Array(buf);
@@ -16,14 +40,19 @@
         return buf;
     }
 
-    function byte_object_to_arraybuffer(obj) {
+    function byte_object_to_arraybuffer(obj: {[key: number]: number}) {
         let ks = Object.keys(obj);
         let buf = new ArrayBuffer(ks.length);
         let bufView = new Uint8Array(buf);
-        ks.forEach(function(i) {
-            bufView[i] = obj[i];
-        });
+        for(let i of ks) {
+            bufView[i as any] = obj[i as any];
+        }
         return buf;
+    }
+
+    function arraybuffer_to_string(buf: ArrayBuffer) {
+        let dec = new TextDecoder("utf-8");
+        return dec.decode(new Uint8Array(buf));
     }
 
     function get_cur_cid() {
@@ -34,34 +63,34 @@
         }
     }
 
-    function is_bilibili(origin) {
+    function is_bilibili(origin: string) {
         return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
     }
 
-    let callbacks = {};
+    let callbacks: {[url: string]: ((resp: AjaxResponse)=>void)[]} = {};
     window.addEventListener('message',function(event) {
         if(!is_bilibili(event.origin))
             return;
         if(event.data.type && event.data.type==='pakku_ajax_response') {
             let cbs = callbacks[event.data.url] || [];
             for(let cb of cbs)
-                cb(event.data.resp);
-            callbacks[event.data.url] = null;
+                cb(event.data.resp as AjaxResponse);
+            delete callbacks[event.data.url];
         }
     },false);
-    function send_msg_proxy(url, callback) {
+    function send_msg_proxy(url: string, callback: (resp: AjaxResponse)=>void) {
         if(!callbacks[url])
             callbacks[url] = [callback];
         else
             callbacks[url].push(callback);
 
-        window.top.postMessage({
+        window.top!.postMessage({
             type: 'pakku_ajax_request',
             url: url,
         }, '*');
     }
 
-    function should_skip_url(url) {
+    function should_skip_url(url: string) {
         if(!url.includes('.xml') && !url.includes('/dm/'))
             return true;
 
@@ -69,7 +98,7 @@
             return true;
 
         let cur_cid = get_cur_cid();
-        let target_cid = parseInt(new URLSearchParams(url).get('oid'));
+        let target_cid = parseInt(new URLSearchParams(url).get('oid') || '0');
         if(cur_cid && target_cid && cur_cid !== target_cid) { // hovering on thumbnails on video page
             console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', url);
             return true;
@@ -78,7 +107,8 @@
         return false;
     }
 
-    function proxied_xhr_send(xhr, send_arg) {
+    function proxied_xhr_send(xhr_: XMLHttpRequest, send_arg: any) {
+        let xhr = xhr_ as MutableXMLHttpRequest;
         send_msg_proxy(xhr.pakku_url, function(resp) {
             if(!resp || !resp.data) {
                 xhr.pakku_send(send_arg);
@@ -96,13 +126,19 @@
             if(xhr.responseType === 'arraybuffer') {
                 if(resp.data instanceof Uint8Array)
                     xhr.response = uint8array_to_arraybuffer(resp.data);
-                else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
+                else if(typeof resp.data === 'object')
                     xhr.response = byte_object_to_arraybuffer(resp.data);
-                else // maybe str
+                else // str
                     xhr.response = str_to_arraybuffer(resp.data);
-            } else {
-                xhr.response = xhr.responseText = resp.data;
+            } else { // xhr.responseType === 'string'
+                if(resp.data instanceof Uint8Array)
+                    xhr.response = xhr.responseText = arraybuffer_to_string(uint8array_to_arraybuffer(resp.data));
+                else if(typeof resp.data === 'object')
+                    xhr.response = xhr.responseText = arraybuffer_to_string(byte_object_to_arraybuffer(resp.data));
+                else // str
+                    xhr.response = xhr.responseText = resp.data;
             }
+
             xhr.getAllResponseHeaders = function() {
                 return "X-Pakku: yay\r\n";
             };
@@ -118,18 +154,22 @@
     }
 
     XMLHttpRequest.prototype.pakku_open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-        this.pakku_url = url;
+    XMLHttpRequest.prototype.open = function(method, url, async?: boolean, user?: string|null, password?: string|null) {
+        this.pakku_url = (typeof url === 'string') ? url : url.href;
         return this.pakku_open(method, url, async === undefined ? true : async, user, password);
     };
 
     XMLHttpRequest.prototype.pakku_addEventListener = XMLHttpRequest.prototype.addEventListener;
-    XMLHttpRequest.prototype.addEventListener = function(name, callback) {
+    XMLHttpRequest.prototype.addEventListener = function(name: string, callback: (...args: any)=>any, options?: any) {
         if(name === 'load' || name === 'readystatechange' || name === 'loadend') {
             this.pakku_load_callback = this.pakku_load_callback || [];
             this.pakku_load_callback.push(callback);
         }
-        return this.pakku_addEventListener(name, callback);
+
+        if(options===undefined)
+            return this.pakku_addEventListener(name, callback);
+        else
+            return this.pakku_addEventListener(name, callback, options);
     }
 
     XMLHttpRequest.prototype.pakku_send = XMLHttpRequest.prototype.send;
@@ -158,7 +198,7 @@
         }
     }
 
-    function proxied_fetch(url, orig_req, orig_options) {
+    function proxied_fetch(url: string, orig_req: URL|RequestInfo, orig_options: RequestInit): Promise<Response> {
         return new Promise((resolve, reject) => {
             send_msg_proxy(url, function(resp) {
                 if(!resp || !resp.data) {
@@ -171,9 +211,9 @@
                 let resp_data;
                 if(resp.data instanceof Uint8Array)
                     resp_data = resp.data;
-                else if(resp.data instanceof Object) // uint8arr object representation {0: ord, 1: ord, ...}
+                else if(typeof resp.data === 'object')
                     resp_data = byte_object_to_arraybuffer(resp.data);
-                else // maybe str
+                else // str
                     resp_data = resp.data;
 
                 resolve(new Response(resp_data, {
