@@ -145,14 +145,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             return;
         }
 
-        void chrome.action.setBadgeText({
+        // may throw error because the tabid may be closing
+        chrome.action.setBadgeText({
             tabId: msg.tabid,
             text: msg.text,
-        });
-        void chrome.action.setBadgeBackgroundColor({
+        }).catch(()=>{});
+        chrome.action.setBadgeBackgroundColor({
             tabId: msg.tabid,
             color: msg.bgcolor || DEFAULT_BADGE_BGCOLOR,
-        });
+        }).catch(()=>{});
+
         // refresh the popup
         chrome.runtime.sendMessage({type: 'reload_state'})
             .catch(()=>{});

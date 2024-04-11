@@ -85,13 +85,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 error: '当前标签没有弹幕处理结果',
             });
         } else {
-            sendResponse({
-                error: null,
-                ingress: s.ingress,
-                num_chunks: s.num_chunks,
-                chunks_in: Object.fromEntries(s.chunks_in),
-                chunks_out: Object.fromEntries(s.chunks_out),
-            } as DumpResult);
+            try {
+                sendResponse({
+                    error: null,
+                    ingress: s.ingress,
+                    num_chunks: s.num_chunks,
+                    chunks_in: Object.fromEntries(s.chunks_in),
+                    chunks_out: Object.fromEntries(s.chunks_out),
+                } as DumpResult);
+            } catch(e) {
+                alert(`无法传输弹幕处理结果：\n${(e as Error).message}`);
+            }
         }
     }
     else if(msg.type==='reload_danmu') {
