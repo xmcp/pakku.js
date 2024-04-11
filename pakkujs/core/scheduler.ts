@@ -254,7 +254,7 @@ export let last_scheduler: null | Scheduler = null;
 
 function ingress_equals(a: Ingress, b: Ingress): boolean {
     // @ts-ignore
-    return Object.keys(a).every(k => a[k] === b[k]);
+    return Object.keys(a).filter(k => k!=='is_magicreload').every(k => a[k] === b[k]);
 }
 
 export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: AjaxResponse)=>void, config: LocalizedConfig, tabid: int) {
