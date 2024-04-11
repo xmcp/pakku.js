@@ -2,21 +2,21 @@ import {get_config, save_config} from '../background/config';
 import {get_state, save_state, remove_state} from '../background/state';
 import {UserscriptWorker} from '../core/userscript';
 
-let $save = document.querySelector('#save');
-let $clear = document.querySelector('#clear');
-let $editor = document.querySelector('#editor');
-let $sandbox = document.querySelector('#sandbox');
+let $save = document.querySelector('#save') as HTMLButtonElement;
+let $clear = document.querySelector('#clear') as HTMLButtonElement;
+let $editor = document.querySelector('#editor') as HTMLTextAreaElement;
+let $sandbox = document.querySelector('#sandbox') as HTMLIFrameElement;
 
-let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || 0);
+let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || '0');
 
 let use_sandbox = false;
 // we should have to use sandbox because csp won't allow us to create a blob worker,
 // but fortunately chrome allows us to bypass it for now: https://issues.chromium.org/issues/40945262
 (()=>{
-    function do_use_sandbox(e) {
+    function do_use_sandbox(err: any) {
         $sandbox.src = 'https://www.bilibili.com/robots.txt?pakku_sandbox';
         use_sandbox = true;
-        console.log('using sandbox because cannot create worker', e);
+        console.log('using sandbox because cannot create worker', err);
     }
 
     try {
@@ -29,7 +29,7 @@ let use_sandbox = false;
     }
 })();
 
-function check_userscript_sandboxed(script) {
+function check_userscript_sandboxed(script: string) {
     return new Promise((resolve) => {
         window.onmessage = (e)=>{
             if(e.data.type==='pakku_sandbox_result') {
@@ -44,11 +44,11 @@ function check_userscript_sandboxed(script) {
                 }
             }
         };
-        $sandbox.contentWindow.postMessage({type: 'pakku_sandbox_request', script: script}, '*');
+        $sandbox.contentWindow!.postMessage({type: 'pakku_sandbox_request', script: script}, '*');
     });
 }
 
-async function check_userscript_direct(script) {
+async function check_userscript_direct(script: string) {
     let w = new UserscriptWorker(script);
     try {
         let [n_before, n_after] = await w.init();
@@ -59,13 +59,13 @@ async function check_userscript_direct(script) {
             return false;
         }
         return true;
-    } catch(e) {
+    } catch(e: any) {
         alert('脚本存在错误：\n' + e.message + '\n\n' + e.stack);
         w.worker.terminate();
     }
 }
 
-async function check_userscript(script) {
+async function check_userscript(script: string) {
     return await (use_sandbox ? check_userscript_sandboxed :check_userscript_direct)(script);
 }
 
@@ -86,7 +86,7 @@ async function load() {
                     await chrome.tabs.sendMessage(tabid, {type: 'refresh'});
                     alert('保存成功');
                 } catch(e) {
-                    alert('保存失败：' + e.message);
+                    alert('保存失败：' + (e as Error).message);
                 }
             }
             $save.disabled = false;

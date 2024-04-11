@@ -3,26 +3,26 @@ import {get_config, save_config} from '../background/config';
 const IS_FIREFOX = process.env.PAKKU_CHANNEL === 'firefox';
 const IS_EDG = process.env.PAKKU_CHANNEL === 'chrome' && navigator.userAgent.indexOf('Edg/') !== -1;
 
-if(!IS_FIREFOX && navigator.userAgent.indexOf('Firefox/') !== -1 && window.InstallTrigger) {
+if(!IS_FIREFOX && navigator.userAgent.indexOf('Firefox/') !== -1 && (window as any).InstallTrigger) {
     if(confirm('您正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请卸载当前版本，然后在 Firefox 附加组件中心下载 pakku。\n\n现在前往下载吗？'))
         location.href = 'https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/';
 }
 
-function id(x) {
+function id(x: string): any {
     return document.getElementById(x);
 }
 
-function try_regexp(x) {
+function try_regexp(x: string) {
     try {
         new RegExp(x);
         return x;
     } catch(e) {
-        alert('正则表达式语法有误：\n\n' + e.message)
+        alert('正则表达式语法有误：\n\n' + (e as Error).message)
         throw e;
     }
 }
 
-function regexp_wrap(src) {
+function regexp_wrap(src: string) {
     if(src.indexOf('^') !== 0)
         src = '^.*' + src;
     if(src.indexOf('$') !== src.length - 1)
@@ -31,7 +31,7 @@ function regexp_wrap(src) {
 }
 
 let version = 'v' + chrome.runtime.getManifest().version;
-let img_btns = document.querySelectorAll('[data-name]');
+let img_btns: NodeListOf<HTMLElement> = document.querySelectorAll('[data-name]');
 id('version').textContent = version + '_' + (IS_FIREFOX ? 'F' : 'C');
 
 function highlighter() {
@@ -45,7 +45,7 @@ function highlighter() {
     if(!el) return;
 
     let old = document.getElementById('highlighter');
-    if(old) old.parentNode.removeChild(old);
+    if(old) old.parentNode!.removeChild(old);
 
     let hl = document.createElement('span');
     hl.id = 'highlighter';
@@ -140,7 +140,7 @@ if(!perms.origins?.includes('*://*.bilibili.com/*')) {
 }
 
 function get_ws_permission_and_reload() {
-    function done(granted) {
+    function done(granted: boolean) {
         if(!granted) {
             config.BREAK_UPDATE = false;
             // noinspection ES6MissingAwait
@@ -179,13 +179,13 @@ async function backup_restore_prompt() {
                 location.reload();
             }, 200);
         } catch(e) {
-            alert('导入失败。\n\n' + e.message);
+            alert('导入失败。\n\n' + (e as Error).message);
             throw e;
         }
     }
 }
 
-id('version').addEventListener('click', async function(event) {
+id('version').addEventListener('click', async function(event: MouseEvent) {
     if(event.altKey && event.ctrlKey)
         await backup_restore_prompt();
 });
@@ -201,7 +201,7 @@ async function reload(changed_dnr=false) {
 
     let old = document.getElementById('highlighter');
     if(old)
-        old.parentNode.removeChild(old);
+        old.parentNode!.removeChild(old);
 
     if(changed_dnr)
         void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
@@ -256,8 +256,8 @@ function loadconfig() {
     // FORCELIST
     let forcelist = id('forcelist');
     forcelist.textContent = '';
-    for(let i in config.FORCELIST) {
-        i = parseInt(i);
+    for(let i_str in config.FORCELIST) {
+        let i = parseInt(i_str);
 
         let container = document.createElement('li'),
             code1 = document.createElement('code'),
@@ -285,8 +285,8 @@ function loadconfig() {
             await reload();
         });
         savebtn.addEventListener('click', async function() {
-            config.FORCELIST[i][0] = try_regexp(code1.textContent);
-            config.FORCELIST[i][1] = code2.textContent;
+            config.FORCELIST[i][0] = try_regexp(code1.textContent!);
+            config.FORCELIST[i][1] = code2.textContent!;
             await reload();
         });
         cancelbtn.addEventListener('click', loadconfig);
@@ -312,8 +312,8 @@ function loadconfig() {
     // WHITELIST
     let whitelist = id('whitelist');
     whitelist.textContent = '';
-    for(let i in config.WHITELIST) {
-        i = parseInt(i);
+    for(let i_str in config.WHITELIST) {
+        let i = parseInt(i_str);
 
         let container = document.createElement('li'),
             code1 = document.createElement('code'),
@@ -336,7 +336,7 @@ function loadconfig() {
             await reload();
         });
         savebtn.addEventListener('click', async function() {
-            config.WHITELIST[i][0] = try_regexp(code1.textContent);
+            config.WHITELIST[i][0] = try_regexp(code1.textContent!);
             await reload();
         });
         cancelbtn.addEventListener('click', loadconfig);
@@ -355,7 +355,7 @@ function loadconfig() {
         whitelist.appendChild(container);
     }
 
-    function stringify(s) {
+    function stringify(s: string | boolean) {
         if(typeof s === 'boolean')
             return s ? 'on' : 'off';
         else
@@ -363,14 +363,14 @@ function loadconfig() {
     }
 
     for(let elem of img_btns) {
-        if(stringify(config[elem.dataset['name']]) === elem.dataset['value'])
+        if(stringify((config as any)[elem.dataset['name']!]) === elem.dataset['value'])
             elem.className = 'img-active';
         else
             elem.className = 'img-inactive';
         }
 }
 
-id('newforcelist-form').addEventListener('submit', function(e) {
+id('newforcelist-form').addEventListener('submit', function(e: Event) {
     e.preventDefault();
     config.FORCELIST.push([
         try_regexp(regexp_wrap(id('newforcelist-pattern').value)),
@@ -380,7 +380,7 @@ id('newforcelist-form').addEventListener('submit', function(e) {
     id('newforcelist-pattern').value = '';
     id('newforcelist-name').value = '';
 });
-id('newwhitelist-form').addEventListener('submit', function(e) {
+id('newwhitelist-form').addEventListener('submit', function(e: Event) {
     e.preventDefault();
     config.WHITELIST.push([
         try_regexp(id('newwhitelist-pattern').value),
@@ -391,12 +391,12 @@ id('newwhitelist-form').addEventListener('submit', function(e) {
 });
 for(let elem of img_btns) {
     elem.addEventListener('click', function() {
-        config[elem.dataset['name']] = elem.dataset['value'];
+        (config as any)[elem.dataset['name']!] = elem.dataset['value'];
         void reload();
     });
 }
 
-function update() {
+function update(this: HTMLInputElement) {
     config.ADVANCED_USER = id('show-advanced').checked;
     // 弹幕合并
     config.THRESHOLD = parseInt(id('threshold').value, 10) > -2 ? parseInt(id('threshold').value, 10) : 20;

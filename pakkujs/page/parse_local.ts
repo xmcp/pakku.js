@@ -1,17 +1,19 @@
+import {Egress, Ingress} from "../protocol/interface";
+
 (()=>{ // wrap in iife to avoid name conflict with content_script.js
 
-    let $container = document.querySelector('#result-container');
-    let $download_btn = document.querySelector('#download-btn');
-    let $clear_btn = document.querySelector('#clear-btn');
+    let $container = document.querySelector('#result-container') as HTMLElement;
+    let $download_btn = document.querySelector('#download-btn') as HTMLElement;
+    let $clear_btn = document.querySelector('#clear-btn') as HTMLElement;
 
-    function download(filename, text) {
+    function download(filename: string, text: string) {
         let a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([text], {type: 'application/octet-stream; charset=utf-8'}));
         a.download = filename;
         a.click();
     }
 
-    let all_res = [];
+    let all_res: [string, string][] = [];
 
     $download_btn.onclick = function() {
         for(let [filename, res] of all_res) {
@@ -20,12 +22,12 @@
     };
     $clear_btn.onclick = function() {
         for(let fin of $container.querySelectorAll('.finished')) {
-            fin.parentElement.removeChild(fin);
+            (fin as HTMLElement).parentElement!.removeChild(fin);
         }
         all_res = [];
     };
 
-    async function do_process(filename, ext, ingress, egress) {
+    async function do_process(filename: string, ext: string, ingress: Ingress, egress: Egress) {
         let row = document.createElement('p');
         row.textContent = `${filename}：处理中…`;
         $container.appendChild(row);
@@ -37,7 +39,7 @@
         row.textContent = `${filename}：处理完成（${ingress.type} → ${egress.type} ${(res.data.length/1024).toFixed(0)} KB）`;
     }
 
-    function read_file(file) {
+    function read_file(file: File) {
         return new Promise((resolve, reject) => {
             let fr = new FileReader();
             fr.onload = function() {
@@ -47,37 +49,38 @@
         });
     }
 
-    document.body.addEventListener('dragenter', function() {
-        window.drag_count++;
+    let drag_count = 0;
+    document.addEventListener('dragenter', function() {
+        drag_count++;
         document.body.classList.add('dragged');
     });
-    document.body.addEventListener('dragleave', function() {
-        if(--window.drag_count === 0)
+    document.addEventListener('dragleave', function() {
+        if(--drag_count === 0)
             document.body.classList.remove('dragged');
     });
-    document.body.addEventListener('dragover', function(e) {
+    document.addEventListener('dragover', function(e) {
         e.preventDefault();
     });
-    document.body.addEventListener('drop', function(e) {
+    document.addEventListener('drop', function(e) {
         e.preventDefault();
-        window.drag_count = 0;
+        drag_count = 0;
         document.body.classList.remove('dragged');
 
-        let options = {};
-        for(let input of document.querySelectorAll('input[type=radio]:checked')) {
+        let options: {[k: string]: string} = {};
+        for(let input of document.querySelectorAll('input[type=radio]:checked') as NodeListOf<HTMLInputElement>) {
             options[input.name] = input.value;
         }
 
         let ingress_type = options.ingress;
-        let egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
+        let egress: Egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
         let ext = options.egress==='xml' ? 'xml' : 'js';
 
-        let files = e.dataTransfer.files;
+        let files = e.dataTransfer!.files;
 
         let perform = async function() {
             for(let file of files) {
                 let content = await read_file(file);
-                await do_process(file.name, ext, {type: ingress_type, content: content}, egress);
+                await do_process(file.name, ext, {type: ingress_type, content: content} as Ingress, egress);
             }
         };
 

@@ -4,10 +4,10 @@ import {WorkerMaker} from '../core/worker_pool';
 
 let channel = process.env.PAKKU_CHANNEL;
 
-let debug = document.getElementById('debug');
-let error = document.getElementById('error');
+let debug = document.getElementById('debug')!;
+let error = document.getElementById('error')!;
 
-function stringify_error(e) {
+function stringify_error(e: any) {
     return (e instanceof Error) ? (`${e.message} (${JSON.stringify(e.stack)})`) : JSON.stringify(e);
 }
 

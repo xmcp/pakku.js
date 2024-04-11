@@ -1,5 +1,6 @@
 import {Config} from "../background/config";
 import {save_state} from "../background/state";
+import {Ingress} from "../protocol/interface";
 
 export type int = number;
 export type float = number;
@@ -27,6 +28,14 @@ export interface DanmuObject {
         proto_colorful?: int | null;
         proto_oid?: int | null;
     };
+}
+
+export interface DumpResult {
+    error: null;
+    ingress: Ingress;
+    num_chunks: int;
+    chunks_in: {[idx: string]: DanmuChunk<DanmuObject>};
+    chunks_out: {[idx: string]: DanmuChunk<DanmuObjectRepresentative>};
 }
 
 export interface DanmuObjectPeer extends DanmuObject {
@@ -95,7 +104,7 @@ export class MessageStats {
 }
 
 export class Stats {
-    type = 'done';
+    type: 'done' = 'done';
     download_time_ms = 0;
     parse_time_ms = 0;
 

@@ -1,15 +1,15 @@
 import {get_state} from '../background/state';
 import {get_config} from '../background/config';
 
-function id(x) {
-    return document.getElementById(x);
+function id(x: string) {
+    return document.getElementById(x) as HTMLElement;
 }
 
 let options_href = chrome.runtime.getURL('/page/options.html');
-id('pakku-logo').href = options_href;
+(id('pakku-logo') as HTMLAnchorElement).href = options_href;
 id('version').textContent = chrome.runtime.getManifest().version;
 
-for(let elem of document.querySelectorAll('a[data-options-link]')) {
+for(let elem of document.querySelectorAll('a[data-options-link]') as NodeListOf<HTMLAnchorElement>) {
     elem.target = '_blank';
     elem.href = options_href + '#' + elem.dataset.optionsLink;
     elem.title = '调整相关设置';
@@ -22,7 +22,7 @@ chrome.commands.getAll(function(cmds) {
     cmds.forEach(function(cmd) {
         let elem = id('command-' + cmd.name);
         if(elem) {
-            elem.textContent = cmd.shortcut;
+            elem.textContent = cmd.shortcut || '';
             elem.onclick = function() {
                 void chrome.tabs.create({url: 'chrome://extensions/shortcuts'});
             };
@@ -48,7 +48,7 @@ async function loadui() {
                 };
             }
 
-            let stats = state['STATS_'+tabid];
+            let stats = state[`STATS_${tabid}`];
             if(!stats) {
                 hint_text.textContent = general;
                 return;
@@ -64,12 +64,33 @@ async function loadui() {
             else if(stats.type==='done') {
                 id('pakku-title').style.display = 'none';
                 id('result').classList.remove('display-none');
-                id('link-danmu-count').href = chrome.runtime.getURL(`/page/view_result.html?tabid=${tabid}`);
+                (id('link-danmu-count') as HTMLAnchorElement).href = chrome.runtime.getURL(`/page/view_result.html?tabid=${tabid}`);
+
+                if(stats['deleted_blacklist_each']) {
+                    let blacklist_matches = Object.entries(stats['deleted_blacklist_each']).sort((a, b) => a[1] - b[1]);
+                    let blacklist_insertion_point = id('blacklist-insertion-point');
+                    for(let [name, count] of blacklist_matches) {
+                        let row = document.createElement('tr');
+                        row.className = 'status-header-deleted';
+                        blacklist_insertion_point.insertAdjacentElement('afterend', row);
+
+                        row.appendChild(document.createElement('td'));
+
+                        let col_name = document.createElement('td');
+                        col_name.textContent = name;
+                        col_name.title = name;
+                        row.appendChild(col_name);
+
+                        let col_count = document.createElement('td');
+                        col_count.textContent = ''+count;
+                        row.appendChild(col_count);
+                    }
+                }
             }
 
             for(let name in stats)
                 if(id('status-' + name)) {
-                    let r = stats[name];
+                    let r = (stats as any)[name];
                     let elem = id('status-' + name);
                     let row = elem.closest('tr');
                     if(row) {
@@ -80,27 +101,6 @@ async function loadui() {
                     }
                     elem.textContent = (typeof r === 'number') ? Math.ceil(r) : r;
                 }
-
-            if(stats['deleted_blacklist_each']) {
-                let blacklist_matches = Object.entries(stats['deleted_blacklist_each']).sort((a, b) => a[1] - b[1]);
-                let blacklist_insertion_point = id('blacklist-insertion-point');
-                for(let [name, count] of blacklist_matches) {
-                    let row = document.createElement('tr');
-                    row.className = 'status-header-deleted';
-                    blacklist_insertion_point.insertAdjacentElement('afterend', row);
-
-                    row.appendChild(document.createElement('td'));
-
-                    let col_name = document.createElement('td');
-                    col_name.textContent = name;
-                    col_name.title = name;
-                    row.appendChild(col_name);
-
-                    let col_count = document.createElement('td');
-                    col_count.textContent = ''+count;
-                    row.appendChild(col_count);
-                }
-            }
 
             for(let category of ['combined', 'deleted', 'ignored', 'modified', 'info']) {
                 let rows = Array.from(document.querySelectorAll(`.status-header-${category}:not(.display-none)`));

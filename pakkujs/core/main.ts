@@ -2,7 +2,7 @@ import {url_finder} from "../protocol/urls";
 import {handle_task, last_scheduler} from "./scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
-import {BlacklistItem, int, LocalizedConfig} from "./types";
+import {BlacklistItem, DumpResult, int, LocalizedConfig} from "./types";
 import {Egress, Ingress} from "../protocol/interface";
 
 function get_player_blacklist(): BlacklistItem[] {
@@ -90,7 +90,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 num_chunks: s.num_chunks,
                 chunks_in: Object.fromEntries(s.chunks_in),
                 chunks_out: Object.fromEntries(s.chunks_out),
-            });
+            } as DumpResult);
         }
     }
     else if(msg.type==='reload_danmu') {
@@ -99,7 +99,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             window.reload_danmu_magic();
     }
     else {
-        console.error('pakku injected: unknown chrome message', msg);
+        console.log('pakku injected: unknown chrome message', msg.type);
     }
 });
 

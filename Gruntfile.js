@@ -72,12 +72,12 @@ module.exports = function(grunt) {
         'dist/_/generated/combine_worker.js': 'pakkujs/core/combine_worker.ts',
         'dist/_/generated/content_script.js': 'pakkujs/core/main.ts',
         'dist/_/generated/injected.js': 'pakkujs/injected/do_inject.ts',
-        'dist/_/generated/options.js': 'pakkujs/page/options.js',
-        'dist/_/generated/popup.js': 'pakkujs/page/popup.js',
-        'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.js',
-        'dist/_/generated/view_result.js': 'pakkujs/page/view_result.js',
-        'dist/_/generated/parse_local.js': 'pakkujs/page/parse_local.js',
-        'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.js',
+        'dist/_/generated/options.js': 'pakkujs/page/options.ts',
+        'dist/_/generated/popup.js': 'pakkujs/page/popup.ts',
+        'dist/_/generated/troubleshooting.js': 'pakkujs/page/troubleshooting.ts',
+        'dist/_/generated/view_result.js': 'pakkujs/page/view_result.ts',
+        'dist/_/generated/parse_local.js': 'pakkujs/page/parse_local.ts',
+        'dist/_/generated/userscript_editor.js': 'pakkujs/page/userscript_editor.ts',
         'dist/_/generated/bili_worker_sandbox.js': 'pakkujs/page/bili_worker_sandbox.ts',
     };
 

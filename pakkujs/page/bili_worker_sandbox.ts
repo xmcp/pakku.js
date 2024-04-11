@@ -23,8 +23,8 @@ import {UserscriptWorker} from "../core/userscript";
                         w = new UserscriptWorker(e.data.script);
                         let res = await w.init();
                         window.parent.postMessage({type: 'pakku_sandbox_result', error: null, total: res[0]+res[1]}, ext_domain);
-                    } catch(e) {
-                        window.parent.postMessage({type: 'pakku_sandbox_result', error: `${(e as Error).message || '未知错误'}\n\n${(e as Error).stack}`}, ext_domain);
+                    } catch(e: any) {
+                        window.parent.postMessage({type: 'pakku_sandbox_result', error: `${e.message || '未知错误'}\n\n${e.stack}`}, ext_domain);
                     }
                     if(w)
                         w.worker.terminate();
