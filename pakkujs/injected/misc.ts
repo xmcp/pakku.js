@@ -53,6 +53,11 @@ export function reload_danmu_magic() {
         proceed(date_picker);
     else {
         let history_btn = window.root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bpx-player-dm-btn-history, .bilibili-player-danmaku-btn-history') as HTMLElement;
+        if(!history_btn) {
+            console.log('pakku reload danmu: IGNORE request because danmu list not found');
+            return;
+        }
+
         console.log('pakku reload danmu: activating date picker with', history_btn);
         history_btn.click();
         history_btn.click();
