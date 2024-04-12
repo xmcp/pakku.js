@@ -1,7 +1,7 @@
 {
-  "name": "pakku-x",
+  "name": "pakku-build",
   "private": true,
-  "version": "2024.3.1",
+  "version": "1.0",
   "scripts": {
     "dev": "grunt dev",
     "watch": "grunt watch",
