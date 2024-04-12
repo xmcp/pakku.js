@@ -18,6 +18,9 @@ function download(filename: string, text: string) {
 }
 
 async function process() {
+    $ingress.textContent = 'loading...';
+    $content.textContent = 'loading...';
+
     let egress: Egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
 
     let dumped_result = await chrome.tabs.sendMessage(tabid, {

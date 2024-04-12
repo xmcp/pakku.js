@@ -101,11 +101,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                         error: `处理结果为 ${resp}`,
                     });
                 else if(typeof resp.data === 'string')
-                    sendResponse({
-                        error: null,
-                        text: resp.data,
-                        ingress: s!.ingress,
-                    });
+                    try {
+                        sendResponse({
+                            error: null,
+                            text: resp.data,
+                            ingress: s!.ingress,
+                        });
+                    } catch(e) {
+                        alert(`无法传输弹幕处理结果：\n${(e as Error).message}`);
+                    }
                 else
                     sendResponse({
                         error: `处理结果为 ${resp.data.constructor.name}`,
