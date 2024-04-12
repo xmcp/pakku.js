@@ -1,4 +1,4 @@
-import {get_config, save_config} from '../background/config';
+import {get_config, migrate_config, save_config} from '../background/config';
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL === 'firefox';
 const IS_EDG = process.env.PAKKU_CHANNEL === 'chrome' && navigator.userAgent.includes('Edg/');
@@ -170,10 +170,16 @@ async function backup_restore_prompt() {
         try {
             config = JSON.parse(inp);
             config._CONFIG_VER = config._CONFIG_VER || 0;
+            config = migrate_config(config);
+
             await save_config(config);
             loadconfig();
+
             if(config.BREAK_UPDATE)
                 get_ws_permission_and_reload();
+            else
+                void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
+
             alert('导入成功。');
             setTimeout(()=>{
                 location.reload();
