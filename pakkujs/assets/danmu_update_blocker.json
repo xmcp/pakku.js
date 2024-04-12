@@ -6,7 +6,7 @@
         },
         "condition": {
             "requestDomains": [
-                "chat.bilibili.com",
+                "chat.bilibili.com"
             ],
             "excludedInitiatorDomains": [
                 "live.bilibili.com"

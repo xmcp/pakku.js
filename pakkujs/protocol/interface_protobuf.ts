@@ -136,6 +136,14 @@ async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promi
     let buffer = await view_response;
     let arr = new Uint8Array(buffer);
 
+    if(process.env.PAKKU_CHANNEL==='firefox') {
+        // have to clone this uint8array otherwise `arr instanceof Uint8Array` will be false
+        // https://medium.com/@simonwarta/limitations-of-the-instanceof-operator-f4bcdbe7a400
+        let arr2 = new Uint8Array(arr.byteLength);
+        arr2.set(arr);
+        arr = arr2;
+    }
+
     let d = proto_view.decode(arr);
     console.log('pakku protobuf api: got view', d);
 
