@@ -104,6 +104,7 @@ export class Stats {
     combined_pinyin_distance= 0;
     combined_cosine_distance= 0;
 
+    deleted_dispval = 0;
     deleted_blacklist= 0;
     deleted_blacklist_each: {[k: string]: int} = {};
 
@@ -145,6 +146,7 @@ export class Stats {
             'combined_edit_distance',
             'combined_pinyin_distance',
             'combined_cosine_distance',
+            'deleted_dispval',
             'deleted_blacklist',
             'ignored_whitelist',
             'ignored_type',

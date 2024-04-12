@@ -86,7 +86,7 @@ async function loadui() {
                         row.appendChild(document.createElement('td'));
 
                         let col_name = document.createElement('td');
-                        col_name.textContent = name;
+                        col_name.textContent = '▸' + name;
                         col_name.title = name;
                         row.appendChild(col_name);
 

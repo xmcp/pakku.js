@@ -94,11 +94,19 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
 
 function whitelisted_meta(config: LocalizedConfig): (text: string)=>boolean {
     const WHITELIST = config.WHITELIST.map(x => new RegExp(x[0], 'i'));
+
+    if(WHITELIST.length===0)
+        return () => false;
+
     return (text: string) => WHITELIST.some(re => re.test(text));
 }
 
 function blacklisted_meta(config: LocalizedConfig): (text: string)=>(string | null) {
     const BLACKLIST = config.BLACKLIST.map(x => x[0] ? new RegExp(x[1]) : x[1].toLowerCase());
+
+    if(BLACKLIST.length===0)
+        return () => null;
+
     return (text: string) => {
         let lower = text.toLowerCase();
         for(let pattern of BLACKLIST) {

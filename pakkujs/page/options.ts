@@ -41,7 +41,13 @@ function highlighter() {
     if(!el) return;
 
     let adv_obj = el.closest('.advanced');
-    if(adv_obj) adv_obj.classList.add('js-show-this');
+    if(adv_obj) {
+        adv_obj.classList.add('js-show-this');
+        let next_warning = adv_obj.nextElementSibling;
+        if(next_warning && next_warning.classList.contains('advanced') && next_warning.classList.contains('warning'))
+            next_warning.classList.add('js-show-this');
+    }
+
     el = el.closest('p');
     if(!el) return;
 
@@ -243,7 +249,8 @@ function loadconfig() {
     id('mark-threshold').value = config.MARK_THRESHOLD;
     id('danmu-subscript').checked = config.DANMU_SUBSCRIPT;
     id('enlarge').checked = config.ENLARGE;
-    id('shrink').checked = config.SHRINK;
+    id('shrink-threshold').value = config.SHRINK_THRESHOLD;
+    id('drop-threshold').value = config.DROP_THRESHOLD;
     id('mode-elevation').checked = config.MODE_ELEVATION;
     id('representative-percent').value = config.REPRESENTATIVE_PERCENT;
     // 播放器增强
@@ -258,6 +265,7 @@ function loadconfig() {
     // 其他
     id('popup-badge').value = config.POPUP_BADGE;
     id('combine-threads').value = config.COMBINE_THREADS;
+    id('read-player-blacklist').checked = config.READ_PLAYER_BLACKLIST;
 
     // advanced options
     if(id('show-advanced').checked) document.body.classList.add('i-am-advanced');
@@ -430,7 +438,8 @@ function update(this: HTMLInputElement) {
     config.MARK_THRESHOLD = parseInt(id('mark-threshold').value) > 0 ? parseInt(id('mark-threshold').value) : 1;
     config.DANMU_SUBSCRIPT = id('danmu-subscript').checked ;
     config.ENLARGE = id('enlarge').checked;
-    config.SHRINK = id('shrink').checked;
+    config.SHRINK_THRESHOLD = id('shrink-threshold').value;
+    config.DROP_THRESHOLD = id('drop-threshold').value;
     config.MODE_ELEVATION = id('mode-elevation').checked;
     config.REPRESENTATIVE_PERCENT = id('representative-percent').value;
     // 播放器增强
@@ -445,6 +454,7 @@ function update(this: HTMLInputElement) {
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
     config.COMBINE_THREADS = parseInt(id('combine-threads').value) >= 1 ? parseInt(id('combine-threads').value) : 1;
+    config.READ_PLAYER_BLACKLIST = id('read-player-blacklist').checked;
 
     if(this.id === 'break-update') {
         if(this.checked)
@@ -466,13 +476,13 @@ for(let elem of [
     // 例外设置
     'cross-mode', 'ignore-type7', 'ignore-type4', 'ignore-pool1',
     // 显示设置
-    'mark-threshold', 'danmu-mark', 'danmu-subscript', 'enlarge', 'shrink', 'mode-elevation', 'representative-percent',
+    'mark-threshold', 'danmu-mark', 'danmu-subscript', 'enlarge', 'shrink-threshold', 'drop-threshold', 'mode-elevation', 'representative-percent',
     // 播放器增强
     'tooltip', 'tooltip-keybinding', 'auto-disable-danmu', 'auto-danmu-list', 'fluctlight',
     // 实验室
     'break-update', 'scroll-threshold',
     // 其他
-    'popup-badge', 'combine-threads',
+    'popup-badge', 'combine-threads', 'read-player-blacklist',
 ]) {
     id(elem).addEventListener('change', update);
 }

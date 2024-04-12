@@ -381,23 +381,40 @@
                     </p>
                     <p>
                         <input id="enlarge" type="checkbox">
-                        <label for="enlarge">弹幕合并后增大字号 <span class="icon-image"></span>：</label>
-                        <span>超过5条弹幕合并后字号将相应变大，避免内容被忽略</span>
+                        <label for="enlarge">动态增大字号 <span class="icon-image"></span>：</label>
+                        <span>超过 5 条弹幕被合并后字号将相应变大，避免内容被忽略</span>
                         <span class="img-panel">
                             <img src="img/enlarge-bef.png" height="200" width="400" data-name="ENLARGE" data-value="off">
                             <img src="img/enlarge-aft.png" height="200" width="400" data-name="ENLARGE" data-value="on">
                         </span>
                     </p>
                     <p>
-                        <input id="shrink" type="checkbox">
-                        <label for="shrink">弹幕密度过大时减小字号 <span class="icon-image"></span>：</label>
-                        <span>如果视频中瞬时弹幕密度过大，将动态减小字号，避免遮挡画面</span>
+                        <label for="shrink-threshold">动态减小字号 <span class="icon-image"></span></label>
+                        <select id="shrink-threshold">
+                            <option value="0">禁用</option>
+                            <option value="70">轻微 (>70)</option>
+                            <option value="50">中等 (>50)</option>
+                            <option value="40">强力 (>40)</option>
+                        </select>
+                        <label for="max-dist">：</label>
+                        <span>瞬时弹幕密度大于阈值时，按比例减小字号以避免遮挡画面</span>
                         <span class="img-panel">
                             <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
                             <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
                         </span>
                     </p>
                     <p>
+                        <label for="drop-threshold">动态删除低质量弹幕</label>
+                        <select id="drop-threshold">
+                            <option value="0">禁用</option>
+                            <option value="280">轻微 (>280)</option>
+                            <option value="200">中等 (>200)</option>
+                            <option value="140">强力 (>140)</option>
+                        </select>
+                        <label for="drop-threshold">：</label>
+                        <span>瞬时弹幕密度大于阈值时，按比例删除云屏蔽权重低的未合并弹幕</span>
+                    </p>
+                    <p class="advanced">
                         <label for="representative-percent">合并后的弹幕显示于 </label>
                         <select id="representative-percent">
                             <option value="0">最先出现的时间点</option>
@@ -486,6 +503,15 @@
                 <td></td>
                 <td>其他设置</td>
                 <td>
+                    <p>
+                        <label for="combine-threads">并行处理：</label>
+                        使用
+                        <input id="combine-threads" type="number" min="1" step="1" max="6">
+                        个线程
+                    </p>
+                    <p class="warning">
+                        * 对于时间长、弹幕多的视频（如番剧和电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间
+                    </p>
                     <p class="advanced">
                         <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
                         <select id="popup-badge">
@@ -502,16 +528,15 @@
                         </span>
                     </p>
                     <p class="warning advanced">
-                        * Tips: 在视频页面点击 pakku 图标可以查看过滤弹幕的详细信息
+                        * Tips: 在视频页面点击 pakku 图标可以查看弹幕过滤的统计信息
                     </p>
-                    <p>
-                        <label for="combine-threads">并行处理：</label>
-                        使用
-                        <input id="combine-threads" type="number" min="1" step="1" max="6">
-                        个线程
+                    <p class="advanced">
+                        <input id="read-player-blacklist" type="checkbox">
+                        <label for="read-player-blacklist">读取播放器屏蔽词：</label>
+                        <span>在合并弹幕前按播放器的屏蔽词过滤弹幕</span>
                     </p>
-                    <p class="warning">
-                        * 对于时间长、弹幕多的视频（如番剧和电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间
+                    <p class="advanced warning">
+                        * 使数量标记和弹幕密度计算更准确，并避免数量标记影响屏蔽词匹配，但将无法在弹幕列表中看到被屏蔽的弹幕
                     </p>
                     <p>
                         （有一些 <a href="#show-advanced">复杂的设置</a>
@@ -552,7 +577,8 @@
                         <a href="https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/reviews/" target="_blank">
                             <span class="icon-firefox"></span>
                             Firefox 用户点我评分
-                        </a> 。
+                        </a>
+                        。
                     </p>
                     <p>
                         <strong>想要更多功能？</strong>
@@ -561,6 +587,7 @@
                             或者
                         </span>
                         <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">在 GitHub 上提出</a>
+                        。
                     </p>
                     <p>
                         全部运算都在本地进行，我们不会收集你的B站账号信息和观看历史。

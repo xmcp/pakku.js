@@ -76,7 +76,7 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
 
     return {
         ...config,
-        BLACKLIST: is_pure_env ? [] : get_player_blacklist(),
+        BLACKLIST: (config.READ_PLAYER_BLACKLIST && !is_pure_env) ? get_player_blacklist() : [],
         GLOBAL_SWITCH: state.GLOBAL_SWITCH,
         USERSCRIPT: userscript,
         SKIP_INJECT: is_pure_env,
