@@ -85,7 +85,6 @@ async function perform_init() {
     if(is_init) {
         await reset_badge();
         await check_fix_permission();
-        await install_context_menu();
     }
 }
 void perform_init();
@@ -122,6 +121,7 @@ chrome.runtime.onStartup.addListener(async ()=>{
 
 chrome.runtime.onInstalled.addListener(async (details)=>{
     await reset_dnr_status();
+    await install_context_menu();
 
     if(details.reason==='install') {
         await chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
