@@ -7,7 +7,9 @@
         "condition": {
             "requestDomains": [
                 "chat.bilibili.com",
-                "broadcast.chat.bilibili.com"
+            ],
+            "excludedInitiatorDomains": [
+                "live.bilibili.com"
             ],
             "resourceTypes": [
                 "websocket"
