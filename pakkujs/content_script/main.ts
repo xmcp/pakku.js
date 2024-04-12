@@ -2,7 +2,7 @@ import {url_finder} from "../protocol/urls";
 import {handle_proto_view, handle_task, last_scheduler} from "../core/scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
-import {AjaxResponse, BlacklistItem, DumpResult, int, LocalizedConfig} from "../core/types";
+import {AjaxResponse, BlacklistItem, int, LocalizedConfig} from "../core/types";
 import {process_local, userscript_sandbox} from "./sandboxed";
 
 function get_player_blacklist(): BlacklistItem[] {
@@ -52,7 +52,10 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
                 void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
             else
                 void remove_state([`STATS_${tabid}`]);
-            void chrome.runtime.sendMessage({type: 'update_badge', tabid: tabid, text: null});
+
+            // in case of page refresh: clear the badge
+            chrome.runtime.sendMessage({type: 'update_badge', tabid: tabid, text: null})
+                .catch(()=>{});
         };
     }
 
@@ -85,17 +88,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 error: '当前标签没有弹幕处理结果',
             });
         } else {
-            try {
-                sendResponse({
-                    error: null,
-                    ingress: s.ingress,
-                    num_chunks: s.num_chunks,
-                    chunks_in: Object.fromEntries(s.chunks_in),
-                    chunks_out: Object.fromEntries(s.chunks_out),
-                } as DumpResult);
-            } catch(e) {
-                alert(`无法传输弹幕处理结果：\n${(e as Error).message}`);
-            }
+            s.config = {
+                ...s.config,
+                GLOBAL_SWITCH: msg.switch,
+            };
+
+            s.add_egress(msg.egress, (resp)=>{
+                if(!resp)
+                    sendResponse({
+                        error: `处理结果为 ${resp}`,
+                    });
+                else if(typeof resp.data === 'string')
+                    sendResponse({
+                        error: null,
+                        text: resp.data,
+                        ingress: s!.ingress,
+                    });
+                else
+                    sendResponse({
+                        error: `处理结果为 ${resp.data.constructor.name}`,
+                    });
+            });
         }
     }
     else if(msg.type==='reload_danmu') {

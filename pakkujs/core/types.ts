@@ -1,6 +1,5 @@
 import {Config} from "../background/config";
 import {save_state} from "../background/state";
-import {Ingress} from "../protocol/interface";
 
 export type int = number;
 export type float = number;
@@ -179,14 +178,6 @@ export interface LocalizedConfig extends Config {
     BLACKLIST: BlacklistItem[];
     GLOBAL_SWITCH: boolean;
     SKIP_INJECT: boolean;
-}
-
-export interface DumpResult {
-    error: null;
-    ingress: Ingress;
-    num_chunks: int;
-    chunks_in: {[idx: string]: DanmuChunk<DanmuObject>};
-    chunks_out: {[idx: string]: DanmuChunk<DanmuObjectRepresentative>};
 }
 
 export type AjaxResponse = null | {
