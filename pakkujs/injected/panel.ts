@@ -175,13 +175,13 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
         if(
             typeof dminfo.index === 'number'
             && window.danmus[dminfo.index]
-            && (dm_ultralong ? window.danmus[dminfo.index].pakku.disp_str.indexOf(dm_str) === 0 : window.danmus[dminfo.index].pakku.disp_str === dm_str)
+            && (dm_ultralong ? window.danmus[dminfo.index].pakku.disp_str.startsWith(dm_str) : window.danmus[dminfo.index].pakku.disp_str === dm_str)
         ) {
             accurate_guess = true;
             infos = [window.danmus[dminfo.index]];
         } else {
             for(let d of window.danmus)
-                if((dm_ultralong ? d.pakku.disp_str.indexOf(dm_str) === 0 : d.pakku.disp_str === dm_str))
+                if((dm_ultralong ? d.pakku.disp_str.startsWith(dm_str) : d.pakku.disp_str === dm_str))
                     infos.push(d);
         }
 

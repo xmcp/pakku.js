@@ -13,7 +13,7 @@ class DanmuUrlFinder {
     _cid_to_pid: AnyObject = {};
 
     find(url: string): [Ingress, Egress] | null {
-        if(url.indexOf('//comment.bilibili.com/')!==-1) {
+        if(url.includes('//comment.bilibili.com/')) {
             let res = TRAD_DANMU_URL_RE.exec(url);
             if(res)
                 return [{
@@ -22,7 +22,7 @@ class DanmuUrlFinder {
                 }, {
                     type: 'xml',
                 }];
-        } else if(url.indexOf('/list.so?')!==-1) {
+        } else if(url.includes('/list.so?')) {
             let res = NEW_DANMU_NORMAL_URL_RE.exec(url);
             if(res)
                 return [{
@@ -31,7 +31,7 @@ class DanmuUrlFinder {
                 }, {
                     type: 'xml',
                 }];
-        } else if(url.indexOf('/history/seg.so?')!==-1) {
+        } else if(url.includes('/history/seg.so?')) {
             let res = PROTO_DANMU_HISTORY_URL_RE.exec(url);
             if(res) {
                 let date = res[3];
@@ -60,7 +60,7 @@ class DanmuUrlFinder {
                         pe: null,
                     }];
             }
-        } else if(url.indexOf('/seg.so')!==-1) {
+        } else if(url.includes('/seg.so?')) {
             let res = PROTO_DANMU_SEG_URL_RE.exec(url);
             if(res) {
                 this._cid_to_pid[res[2]] = res[3];
