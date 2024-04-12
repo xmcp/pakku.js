@@ -292,7 +292,7 @@ export function handle_proto_view(ingress: Ingress, view_url: string, config: Lo
             scheduler.config = config;
 
             if(!scheduler.view_req)
-                scheduler.view_req = (ret = fetch(view_url).then(r=>r.arrayBuffer()));
+                ret = scheduler.view_req = fetch(view_url).then(r=>r.arrayBuffer());
             else
                 ret = scheduler.view_req;
 
@@ -302,7 +302,7 @@ export function handle_proto_view(ingress: Ingress, view_url: string, config: Lo
     let scheduler = new Scheduler(ingress, config, tabid);
     last_scheduler = scheduler;
 
-    scheduler.view_req = (ret = fetch(view_url).then(r=>r.arrayBuffer()));
+    ret = scheduler.view_req = fetch(view_url).then(r=>r.arrayBuffer());
     void scheduler.start();
 
     schedulers.push(scheduler);

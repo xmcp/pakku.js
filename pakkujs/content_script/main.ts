@@ -54,8 +54,10 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
                 void remove_state([`STATS_${tabid}`]);
 
             // in case of page refresh: clear the badge
-            chrome.runtime.sendMessage({type: 'update_badge', tabid: tabid, text: null})
-                .catch(()=>{});
+            try {
+                chrome.runtime.sendMessage({type: 'update_badge', tabid: tabid, text: null})
+                    .catch(()=>{});
+            } catch(e) {}
         };
     }
 
