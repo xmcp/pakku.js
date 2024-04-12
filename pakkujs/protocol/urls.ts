@@ -1,8 +1,10 @@
 import {Egress, Ingress} from "./interface";
 import {AnyObject} from "../core/types";
+import {ProtobufView} from "./interface_protobuf";
 
 const TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?$/;
 const NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list\.so\?oid=(\d+)$/;
+const PROTO_DANMU_VIEW_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/(?:wbi\/)?(?:web|h5)\/view\?.*?oid=(\d+)&pid=(\d+).*?$/;
 const PROTO_DANMU_SEG_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/(?:wbi\/)?(?:web|h5)\/seg\.so\?.*?oid=(\d+)&pid=(\d+).*?$/;
 const PROTO_DANMU_HISTORY_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v2\/dm\/web\/history\/seg\.so\?type=\d+&oid=(\d+)&date=([\d\-]+)$/;
 
@@ -12,7 +14,7 @@ class DanmuUrlFinder {
 
     _cid_to_pid: AnyObject = {};
 
-    find(url: string): [Ingress, Egress] | null {
+    find(url: string): [Ingress, Egress | ProtobufView] | null {
         if(url.includes('//comment.bilibili.com/')) {
             let res = TRAD_DANMU_URL_RE.exec(url);
             if(res)
@@ -22,7 +24,8 @@ class DanmuUrlFinder {
                 }, {
                     type: 'xml',
                 }];
-        } else if(url.includes('/list.so?')) {
+        }
+        else if(url.includes('/list.so?')) {
             let res = NEW_DANMU_NORMAL_URL_RE.exec(url);
             if(res)
                 return [{
@@ -31,7 +34,8 @@ class DanmuUrlFinder {
                 }, {
                     type: 'xml',
                 }];
-        } else if(url.includes('/history/seg.so?')) {
+        }
+        else if(url.includes('/history/seg.so?')) {
             let res = PROTO_DANMU_HISTORY_URL_RE.exec(url);
             if(res) {
                 let date = res[3];
@@ -44,7 +48,7 @@ class DanmuUrlFinder {
                         static_img_url: this.protoapi_img_url,
                         static_sub_url: this.protoapi_sub_url,
                     }, {
-                        type: 'proto',
+                        type: 'proto_seg',
                         segidx: null,
                         ps: null,
                         pe: null,
@@ -54,13 +58,14 @@ class DanmuUrlFinder {
                         type: 'proto_history',
                         url: url,
                     }, {
-                        type: 'proto',
+                        type: 'proto_seg',
                         segidx: null,
                         ps: null,
                         pe: null,
                     }];
             }
-        } else if(url.includes('/seg.so?')) {
+        }
+        else if(url.includes('/seg.so?')) {
             let res = PROTO_DANMU_SEG_URL_RE.exec(url);
             if(res) {
                 this._cid_to_pid[res[2]] = res[3];
@@ -79,10 +84,27 @@ class DanmuUrlFinder {
                     static_img_url: this.protoapi_img_url,
                     static_sub_url: this.protoapi_sub_url,
                 }, {
-                    type: 'proto',
+                    type: 'proto_seg',
                     segidx: segidx,
                     ps: ps_str ? parseInt(ps_str) : null,
                     pe: pe_str ? parseInt(pe_str) : null,
+                }];
+            }
+        }
+        else if(url.includes('/view?')) {
+            let res = PROTO_DANMU_VIEW_URL_RE.exec(url);
+            if(res) {
+                this._cid_to_pid[res[2]] = res[3];
+
+                return [{
+                    type: 'proto_seg',
+                    is_magicreload: false,
+                    cid: res[2],
+                    pid: res[3],
+                    static_img_url: this.protoapi_img_url,
+                    static_sub_url: this.protoapi_sub_url,
+                }, {
+                    type: 'proto_view',
                 }];
             }
         }

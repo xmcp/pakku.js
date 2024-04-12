@@ -49,6 +49,8 @@ class Scheduler {
     pool: WorkerPool;
     userscript: UserscriptWorker | null;
 
+    view_req: Promise<ArrayBuffer> | null;
+
     constructor(ingress: Ingress, config: LocalizedConfig, tabid: int) {
         this.ingress = ingress;
         this.egresses = [];
@@ -65,6 +67,7 @@ class Scheduler {
         this.failed = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
         this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
+        this.view_req = null;
     }
 
     write_failing_stats(prompt: string, e: Error, badge: string) {
@@ -230,7 +233,7 @@ class Scheduler {
 
                 void this.try_start_combine(idx-1);
                 void this.try_start_combine(idx);
-            });
+            }, this.view_req);
         } catch(e) {
             this.write_failing_stats('下载弹幕时出错', e as Error, BADGE_ERR_NET);
             return;
@@ -260,10 +263,11 @@ function ingress_equals(a: Ingress, b: Ingress): boolean {
 export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: AjaxResponse)=>void, config: LocalizedConfig, tabid: int) {
     for(let scheduler of schedulers)
         if(ingress_equals(scheduler.ingress, ingress)) {
+            last_scheduler = scheduler;
+
             scheduler.config = config;
             scheduler.add_egress(egress, callback);
 
-            last_scheduler = scheduler;
             return;
         }
 
@@ -276,4 +280,34 @@ export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: A
     schedulers.push(scheduler);
     if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
         schedulers.shift();
+}
+
+export function handle_proto_view(ingress: Ingress, view_url: string, config: LocalizedConfig, tabid: int): Promise<ArrayBuffer> {
+    let ret;
+
+    for(let scheduler of schedulers)
+        if(ingress_equals(scheduler.ingress, ingress)) {
+            last_scheduler = scheduler;
+
+            scheduler.config = config;
+
+            if(!scheduler.view_req)
+                scheduler.view_req = (ret = fetch(view_url).then(r=>r.arrayBuffer()));
+            else
+                ret = scheduler.view_req;
+
+            return ret;
+        }
+
+    let scheduler = new Scheduler(ingress, config, tabid);
+    last_scheduler = scheduler;
+
+    scheduler.view_req = (ret = fetch(view_url).then(r=>r.arrayBuffer()));
+    void scheduler.start();
+
+    schedulers.push(scheduler);
+    if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
+        schedulers.shift();
+
+    return ret;
 }

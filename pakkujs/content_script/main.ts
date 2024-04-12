@@ -1,5 +1,5 @@
 import {url_finder} from "../protocol/urls";
-import {handle_task, last_scheduler} from "../core/scheduler";
+import {handle_proto_view, handle_task, last_scheduler} from "../core/scheduler";
 import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {AjaxResponse, BlacklistItem, DumpResult, int, LocalizedConfig} from "../core/types";
@@ -148,6 +148,16 @@ window.addEventListener('message', async function(event) {
         ) {
             console.log('pakku injected: SKIPPED because global switch off');
             sendResponse(null);
+            return;
+        }
+
+        if(url[1].type==='proto_view') {
+            handle_proto_view(url[0], event.data.url, local_config, tabid as int)
+                .then((ab)=>{
+                    sendResponse({
+                        data: new Uint8Array(ab),
+                    });
+                });
             return;
         }
 

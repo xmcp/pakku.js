@@ -21,11 +21,15 @@ export interface ProtobufIngressSeg {
     static_sub_url: string | null;
 }
 
-export interface ProtobufEgress {
-    type: 'proto';
+export interface ProtobufEgressSeg {
+    type: 'proto_seg';
     segidx: number | null;
     ps: number | null;
     pe: number | null;
+}
+
+export interface ProtobufView {
+    type: 'proto_view';
 }
 
 export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<DanmuObject> {
@@ -56,7 +60,7 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
     };
 }
 
-export function obj_to_protobuf(egress: ProtobufEgress, chunk: DanmuChunk<DanmuObject>): Uint8Array {
+export function obj_to_protobuf(egress: ProtobufEgressSeg, chunk: DanmuChunk<DanmuObject>): Uint8Array {
     let objs = chunk.objs;
 
     if(egress.ps || egress.pe) {
@@ -118,21 +122,19 @@ function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoa
     });
 }
 
-async function protoapi_get_segcount(ingress: ProtobufIngressSeg): Promise<int | null> {
+async function protoapi_view_api(ingress: ProtobufIngressSeg): Promise<ArrayBuffer> {
+    console.log('pakku protobuf api: request view api', ingress);
+
     let res = await fetch(
         `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${encodeURIComponent(ingress.cid)}&pid=${encodeURIComponent(ingress.pid)}`,
         {credentials: 'include'}
     );
-    let buffer = await res.arrayBuffer();
-    let arr = new Uint8Array(buffer)
+    return await res.arrayBuffer();
+}
 
-    if(process.env.PAKKU_CHANNEL==='firefox') {
-        // have to clone this uint8array otherwise `arr instanceof Uint8Array` will be false
-        // https://medium.com/@simonwarta/limitations-of-the-instanceof-operator-f4bcdbe7a400
-        let arr2 = new Uint8Array(arr.byteLength);
-        arr2.set(arr);
-        arr = arr2;
-    }
+async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promise<int | null> {
+    let buffer = await view_response;
+    let arr = new Uint8Array(buffer);
 
     let d = proto_view.decode(arr);
     console.log('pakku protobuf api: got view', d);
@@ -181,7 +183,7 @@ export async function ingress_proto_history(ingress: ProtobufIngressHistory, chu
     await chunk_callback(1, protobuf_to_obj(1, d));
 }
 
-export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>, view_req: Promise<ArrayBuffer>|null): Promise<void> {
     async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
         await chunk_callback(idx, protobuf_to_obj(idx, await resp));
     }
@@ -189,7 +191,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
     // preload first 2 chunks to increase responsiveness
     let chunk_1_req = protoapi_get_seg(ingress, 1);
     let chunk_2_req = protoapi_get_seg(ingress, 2);
-    let pages = await protoapi_get_segcount(ingress);
+    let pages = await protoapi_get_segcount(view_req ? view_req : protoapi_view_api(ingress));
 
     if(pages) {
         if(pages<=1) {
@@ -231,7 +233,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
     }
 }
 
-export function egress_proto(egress: ProtobufEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): Uint8Array | typeof MissingData {
+export function egress_proto(egress: ProtobufEgressSeg, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): Uint8Array | typeof MissingData {
     if(egress.segidx===null) { // want all chunks
         if(!num_chunks || num_chunks!==chunks.size)
             return MissingData; // not finished
