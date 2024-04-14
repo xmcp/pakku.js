@@ -111,6 +111,9 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.COMBINE_THREADS = DEFAULT_CONFIG.COMBINE_THREADS;
 
         delete config._ADVANCED_USER;
+        delete config.HIDE_THRESHOLD;
+        delete config.BLACKLIST;
+        delete config.CLOUD_SYNC;
     }
 
     if(config._CONFIG_VER < 2) {
@@ -135,7 +138,13 @@ export async function get_config(): Promise<Config> {
     return migrate_config(remote);
 }
 
-export function hotfix_on_update(config: Config) {
-    // 2024.3.1 may leave null in FORCELIST
-    config.FORCELIST = config.FORCELIST.filter(x => x!==null);
+export function hotfix_on_update(config: any) {
+    // 2024.3.1: may leave null in FORCELIST
+    config.FORCELIST = config.FORCELIST.filter((x: any) => x!==null);
+
+    // 2024.3.1 - 2024.4.5: mv2 config keys not removed
+    delete config._ADVANCED_USER;
+    delete config.HIDE_THRESHOLD;
+    delete config.BLACKLIST;
+    delete config.CLOUD_SYNC;
 }
