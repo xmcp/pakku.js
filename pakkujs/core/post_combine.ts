@@ -73,7 +73,7 @@ let make_mark: (text: string, cnt: int) => string;
 function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     let cnt = c.peers.length;
     let dumped = null;
-    if(rep_dm.mode===7)
+    if(rep_dm.mode===7  && rep_dm.content[0]==='[')
         try {
             dumped = JSON.parse(rep_dm.content);
         } catch(e) {}

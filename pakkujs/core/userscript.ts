@@ -24,7 +24,7 @@ function tweak_after_pakku(callback, timing=0) {
 function fix_dispstr(chunk) {
     for(let obj of chunk.objs) {
         let text = obj.content;
-        if(obj.mode===7) {
+        if(obj.mode===7 && obj.content[0]==='[') {
             try {
                 text = JSON.parse(obj.content)[4];
             } catch(e) {}

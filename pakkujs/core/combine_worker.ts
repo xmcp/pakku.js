@@ -226,7 +226,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
                     return null;
                 }
 
-                let disp_str = trim_dispstr(obj.mode===7 ? extract_special_danmu(obj.content) : obj.content);
+                let disp_str = trim_dispstr((obj.mode===7 && obj.content[0]==='[') ? extract_special_danmu(obj.content) : obj.content);
 
                 if(obj.mode!==8 && obj.mode!==9) {
                     let matched = blacklisted(disp_str);
