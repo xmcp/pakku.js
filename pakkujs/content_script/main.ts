@@ -8,7 +8,7 @@ import {process_local, userscript_sandbox} from "./sandboxed";
 function get_player_blacklist(): BlacklistItem[] {
     type BpxProfileType = {
         blockList: {
-            type: 0 | 1; // is_regexp
+            type: 0 | 1 | 2; // 0 text (case insensitive), 1 regexp (case sensitive), 2 user
             filter: string;
             opened: boolean;
             id: int;

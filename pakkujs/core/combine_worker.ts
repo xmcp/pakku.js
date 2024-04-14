@@ -98,10 +98,11 @@ function whitelisted_meta(config: LocalizedConfig): (text: string)=>boolean {
 }
 
 function blacklisted_meta(config: LocalizedConfig): (text: string)=>(string | null) {
-    const BLACKLIST = config.BLACKLIST.map(x => x[0] ? new RegExp(x[1], 'i') : x[1]);
+    const BLACKLIST = config.BLACKLIST.map(x => x[0] ? new RegExp(x[1]) : x[1].toLowerCase());
     return (text: string) => {
+        let lower = text.toLowerCase();
         for(let pattern of BLACKLIST) {
-            let matched = (typeof pattern === 'string') ? text.includes(pattern) : pattern.test(text);
+            let matched = (typeof pattern === 'string') ? lower.includes(pattern) : pattern.test(text);
             if(matched) {
                 return (typeof pattern === 'string') ? ` ${pattern}` : ` /${pattern.source}/`;
             }
