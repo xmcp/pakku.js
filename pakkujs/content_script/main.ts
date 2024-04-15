@@ -26,6 +26,16 @@ function get_player_blacklist(): BlacklistItem[] {
             j.blockList
                 .filter(item=>item.opened && [0, 1].includes(item.type))
                 .map(item=>[item.type===1, item.filter] as BlacklistItem)
+                .filter(item=>{
+                    if(item[0]) {
+                        try {
+                            new RegExp(item[1]);
+                        } catch(e) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
         );
         console.log('pakku injected: got player blacklist', ret);
         return ret;
