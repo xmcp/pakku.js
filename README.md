@@ -11,7 +11,8 @@
 
 ![logo](https://cloud.githubusercontent.com/assets/6646473/17503651/20b41376-5e24-11e6-8829-6b8a0ccd47a9.png)
 # pakku.js
-自动合并B站视频中刷屏弹幕的浏览器插件，让您免受各种带节奏弹幕的刷屏之苦
+
+自动合并B站视频中刷屏弹幕的浏览器插件，让您免受各种带节奏弹幕的刷屏之苦。
 
 ↓ 《千绪的通学路》第5话
 
@@ -35,14 +36,18 @@
 
 ### 用户脚本
 
-可以通过 JavaScript 代码来深度自定义 pakku 的功能，详见 [README](userscript_docs/README.md)。
+可以通过 JavaScript 代码来修改弹幕内容，实现深度自定义 pakku 的功能或者临时调整弹幕样式。
 
------
+详见 [用户脚本文档](userscript_docs/README.md)。
+
+### 浏览器兼容性
+
+目前版本兼容 Chrome 和 Edge 版本 ≥99，以及 Firefox 版本 ≥113。
+
+未来的浏览器兼容性目标为 Chrome 和 Edge 最近 24 个版本，Firefox 最近 12 个版本。
 
 ### License
 
 [GPLv3](LICENSE.txt)
-
------
 
 #### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_2) （支持 Chrome、Edge、Firefox）
