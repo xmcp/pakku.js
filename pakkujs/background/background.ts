@@ -147,12 +147,12 @@ chrome.runtime.onStartup.addListener(async ()=>{
 });
 
 chrome.runtime.onInstalled.addListener(async (details)=>{
-    await reset_dnr_status();
-    await install_context_menu();
-    await install_content_script();
+    void reset_dnr_status();
+    void install_context_menu();
+    void install_content_script();
 
     if(details.reason==='install') {
-        await chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
+        void chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
     }
 
     if(details.reason==='update') {
