@@ -16,6 +16,7 @@
         "notifications",
         "storage",
         "contextMenus",
+        "scripting",
         "declarativeNetRequestWithHostAccess"
     ],
     "host_permissions": [
@@ -57,15 +58,6 @@
         "service_worker": "generated/background.js"
     },
     "content_scripts": [
-        {
-            "matches": ["*://*.bilibili.com/*"],
-            "exclude_matches": ["https://www.bilibili.com/robots.txt?pakku_sandbox"],
-            "js": ["/generated/xhr_hook.js"],
-            "css": ["/generated/injected.css"],
-            "run_at": "document_start",
-            "world": "MAIN",
-            "all_frames": true
-        },
         {
             "matches": ["*://*.bilibili.com/*"],
             "exclude_matches": ["https://www.bilibili.com/robots.txt?pakku_sandbox"],

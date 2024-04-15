@@ -80,6 +80,33 @@ async function install_context_menu() {
     });
 }
 
+async function install_content_script() {
+    let shared = {
+        id: 'pakku-ajax',
+        allFrames: true,
+        matches: ['*://*.bilibili.com/*'],
+        excludeMatches: ['https://www.bilibili.com/robots.txt?pakku_sandbox'],
+        css: ['/generated/injected.css'],
+        runAt: 'document_start' as 'document_start',
+    };
+
+    try {
+        await chrome.scripting.registerContentScripts([{
+            ...shared,
+            js: ['/generated/xhr_hook.js'],
+            world: 'MAIN',
+        }]);
+        console.log('pakku ajax: installed content script');
+    } catch(e) { // no `world` arg for firefox and chrome <102
+        await chrome.scripting.registerContentScripts([{
+            ...shared,
+            js: ['/assets/xhr_hook_injector.js'],
+        }]);
+        console.log('pakku ajax: installed content script (FALLBACK)');
+    }
+
+}
+
 async function perform_init() {
     let is_init = await init_state();
     if(is_init) {
@@ -122,6 +149,7 @@ chrome.runtime.onStartup.addListener(async ()=>{
 chrome.runtime.onInstalled.addListener(async (details)=>{
     await reset_dnr_status();
     await install_context_menu();
+    await install_content_script();
 
     if(details.reason==='install') {
         await chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
@@ -149,11 +177,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         chrome.action.setBadgeText({
             tabId: msg.tabid,
             text: msg.text,
-        }).catch(()=>{});
-        chrome.action.setBadgeBackgroundColor({
-            tabId: msg.tabid,
-            color: msg.bgcolor || DEFAULT_BADGE_BGCOLOR,
-        }).catch(()=>{});
+        }) // will fail in earlier chrome versions if text is null: https://issues.chromium.org/issues/40858508
+            .then(()=>
+                chrome.action.setBadgeBackgroundColor({
+                    tabId: msg.tabid,
+                    color: msg.bgcolor || DEFAULT_BADGE_BGCOLOR,
+                })
+            )
+            .catch(()=>{});
 
         // refresh the popup
         chrome.runtime.sendMessage({type: 'reload_state'})

@@ -10,13 +10,6 @@ function firefox_manifest(src, path) {
         obj.background.scripts = [obj.background.service_worker];
         delete obj.background.service_worker;
 
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=1736575
-        for(let s of obj.content_scripts)
-            if(s.world==='MAIN') {
-                s.js = ['/assets/xhr_hook_injector.js'];
-                delete s.world;
-            }
-
         obj.browser_specific_settings = {
             gecko: {
                 id: '{646d57f4-d65c-4f0d-8e80-5800b92cfdaa}',
