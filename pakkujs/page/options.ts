@@ -463,7 +463,7 @@ function update(this: HTMLInputElement) {
     config.SCROLL_THRESHOLD = safe_int(id('scroll-threshold').value, 0, null, DEFAULT_CONFIG.SCROLL_THRESHOLD);
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
-    config.COMBINE_THREADS = safe_int(id('combine-threads').value, 1, null, DEFAULT_CONFIG.COMBINE_THREADS);
+    config.COMBINE_THREADS = safe_int(id('combine-threads').value, 0, null, DEFAULT_CONFIG.COMBINE_THREADS);
     config.READ_PLAYER_BLACKLIST = id('read-player-blacklist').checked;
 
     if(this.id === 'break-update') {

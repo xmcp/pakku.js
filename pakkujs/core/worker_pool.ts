@@ -106,8 +106,10 @@ export class WorkerPool {
         console.log('pakku worker pool: spawn', this.pool_size, 'workers');
 
         let maker = new WorkerMaker();
-        if(this.pool_size===1)
+        if(this.pool_size===0) {
             maker.use_simulated = true;
+            this.pool_size = 1;
+        }
 
         for(let i = 0; i < this.pool_size; i++) {
             let w = await maker.spawn();

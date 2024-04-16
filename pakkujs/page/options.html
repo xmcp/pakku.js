@@ -506,11 +506,11 @@
                     <p>
                         <label for="combine-threads">并行处理：</label>
                         使用
-                        <input id="combine-threads" type="number" min="1" step="1" max="6">
-                        个线程
+                        <input id="combine-threads" type="number" min="0" step="1" max="6">
+                        个后台线程
                     </p>
                     <p class="warning">
-                        * 对于长视频（如电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间
+                        * 对于长视频（如电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间；设置为 0 来完全禁用后台线程（处理弹幕时将阻塞页面）
                     </p>
                     <p class="advanced">
                         <label for="popup-badge">扩展程序角标 <span class="icon-image"></span> </label>
