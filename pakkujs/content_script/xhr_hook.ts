@@ -96,11 +96,16 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             return true;
 
         // hovering on thumbnails on homepage
-        if(window.location.pathname==='/' && !window.location.search.includes('=BV'))
+        if((window.location.hostname==='www.bilibili.com' || window.location.hostname==='bilibili.com') &&  window.location.pathname==='/' && !window.location.search.includes('=BV'))
             return true;
 
         // hovering on thumbnails on search result
         if(window.location.hostname==='search.bilibili.com')
+            return true;
+
+        // hovering on thumbnails on user homepage
+        // currently they are using https://api.bilibili.com/x/v2/dm/ajax?aid=BVxxx but we just want to be future-proof
+        if(window.location.hostname==='space.bilibili.com')
             return true;
 
         // hovering on other thumbnails on video page
