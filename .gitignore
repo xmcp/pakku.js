@@ -4,4 +4,4 @@ node_modules/
 package-lock.json
 /dist/
 *.log
-TODO
+TODO.*
