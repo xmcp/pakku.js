@@ -91,15 +91,22 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     }
 
     function should_skip_url(url: string) {
+        // obviously not danmu url
         if(!url.includes('.xml') && !url.includes('/dm/'))
             return true;
 
-        if(window.location.pathname==='/' && !window.location.search.includes('=BV')) // hovering on thumbnails on homepage
+        // hovering on thumbnails on homepage
+        if(window.location.pathname==='/' && !window.location.search.includes('=BV'))
             return true;
 
+        // hovering on thumbnails on search result
+        if(window.location.hostname==='search.bilibili.com')
+            return true;
+
+        // hovering on other thumbnails on video page
         let cur_cid = get_cur_cid();
         let target_cid = parseInt(new URLSearchParams(url).get('oid') || '0');
-        if(cur_cid && target_cid && cur_cid !== target_cid) { // hovering on thumbnails on video page
+        if(cur_cid && target_cid && cur_cid !== target_cid) {
             console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', url);
             return true;
         }
