@@ -138,13 +138,31 @@ export async function get_config(): Promise<Config> {
     return migrate_config(remote);
 }
 
+function _to_int(config: AnyObject, k: (keyof Config)) {
+    let v = config[k];
+    if(typeof v === 'string') {
+        v = parseInt(v, 10);
+        if(isNaN(v))
+            config[k] = DEFAULT_CONFIG[k];
+        else
+            config[k] = v;
+        console.log('pakku hotfix: convert', k, v, config[k]);
+    }
+}
+
 export function hotfix_on_update(config: any) {
-    // 2024.3.1: may leave null in FORCELIST
+    // [2024.3.1, 2024.4.1): may leave null in FORCELIST
     config.FORCELIST = config.FORCELIST.filter((x: any) => x!==null);
 
-    // 2024.3.1 - 2024.4.5: mv2 config keys not removed
+    // [2024.3.1 - 2024.5.1): mv2 config keys not removed
     delete config._ADVANCED_USER;
     delete config.HIDE_THRESHOLD;
     delete config.BLACKLIST;
     delete config.CLOUD_SYNC;
+
+    // [2024.3.1 - 2024.5.1): some options keys may be string or nan
+    _to_int(config, 'MAX_COSINE');
+    _to_int(config, 'SHRINK_THRESHOLD');
+    _to_int(config, 'DROP_THRESHOLD');
+    _to_int(config, 'REPRESENTATIVE_PERCENT');
 }

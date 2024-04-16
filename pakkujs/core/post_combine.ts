@@ -216,7 +216,6 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                 onscreen_dispval -= dispval_cache.get(out_danmus[onscreen_l].id) || 0;
                 onscreen_l++;
             }
-            stats.num_max_dispval = Math.max(stats.num_max_dispval, onscreen_dispval);
 
             // check drop
 
@@ -246,7 +245,9 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                 stats.modified_shrink++;
             }
 
-            // debug dispval
+            // update stats
+
+            stats.num_max_dispval = Math.max(stats.num_max_dispval, onscreen_dispval);
 
             //dm.content = `${onscreen_dispval.toFixed(0)}:${dm.content}`;
         }

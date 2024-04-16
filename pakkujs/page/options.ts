@@ -1,4 +1,4 @@
-import {get_config, migrate_config, save_config} from '../background/config';
+import {DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../background/config';
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
 const IS_EDG = process.env.PAKKU_CHANNEL==='chrome' && navigator.userAgent.includes('Edg/');
@@ -418,12 +418,22 @@ for(let elem of img_btns) {
     });
 }
 
+function safe_int(x: string, min: number | null, max: number | null, fallback: number) {
+    let v = parseInt(x, 10);
+    if(isNaN(v) || (min!==null && v<min) || (max!==null && v>max)) {
+        console.log('safe int: invalid value', x, ', falling back to', fallback);
+        return fallback;
+    }
+    else
+        return v;
+}
+
 function update(this: HTMLInputElement) {
     config.ADVANCED_USER = id('show-advanced').checked;
     // 弹幕合并
-    config.THRESHOLD = parseInt(id('threshold').value, 10) > -2 ? parseInt(id('threshold').value, 10) : 20;
-    config.MAX_DIST = parseInt(id('max-dist').value);
-    config.MAX_COSINE = parseInt(id('max-cosine').value);
+    config.THRESHOLD = safe_int(id('threshold').value, -1, 180, DEFAULT_CONFIG.THRESHOLD);
+    config.MAX_DIST = safe_int(id('max-dist').value, 0, null, DEFAULT_CONFIG.MAX_DIST);
+    config.MAX_COSINE = safe_int(id('max-cosine').value, 0, null, DEFAULT_CONFIG.MAX_COSINE);
     config.TRIM_PINYIN = id('trim-pinyin').checked;
     config.TRIM_ENDING = id('trim-ending').checked;
     config.TRIM_SPACE = id('trim-space').checked;
@@ -435,13 +445,13 @@ function update(this: HTMLInputElement) {
     config.PROC_POOL1 = !id('ignore-pool1').checked;
     // 显示设置
     config.DANMU_MARK = id('danmu-mark').value;
-    config.MARK_THRESHOLD = parseInt(id('mark-threshold').value) > 0 ? parseInt(id('mark-threshold').value) : 1;
-    config.DANMU_SUBSCRIPT = id('danmu-subscript').checked ;
+    config.MARK_THRESHOLD = safe_int(id('mark-threshold').value, 1, null, DEFAULT_CONFIG.MARK_THRESHOLD);
+    config.DANMU_SUBSCRIPT = id('danmu-subscript').checked;
     config.ENLARGE = id('enlarge').checked;
-    config.SHRINK_THRESHOLD = id('shrink-threshold').value;
-    config.DROP_THRESHOLD = id('drop-threshold').value;
+    config.SHRINK_THRESHOLD = safe_int(id('shrink-threshold').value, 0, null, DEFAULT_CONFIG.SHRINK_THRESHOLD);
+    config.DROP_THRESHOLD = safe_int(id('drop-threshold').value, 0, null, DEFAULT_CONFIG.DROP_THRESHOLD);
     config.MODE_ELEVATION = id('mode-elevation').checked;
-    config.REPRESENTATIVE_PERCENT = id('representative-percent').value;
+    config.REPRESENTATIVE_PERCENT = safe_int(id('representative-percent').value, 0, 100, DEFAULT_CONFIG.REPRESENTATIVE_PERCENT);
     // 播放器增强
     config.TOOLTIP = id('tooltip').checked;
     config.TOOLTIP_KEYBINDING = id('tooltip-keybinding').checked;
@@ -450,10 +460,10 @@ function update(this: HTMLInputElement) {
     config.FLUCTLIGHT = id('fluctlight').checked;
     // 实验室
     config.BREAK_UPDATE = id('break-update').checked;
-    config.SCROLL_THRESHOLD = parseInt(id('scroll-threshold').value) >= 0 ? parseInt(id('scroll-threshold').value) : 0;
+    config.SCROLL_THRESHOLD = safe_int(id('scroll-threshold').value, 0, null, DEFAULT_CONFIG.SCROLL_THRESHOLD);
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
-    config.COMBINE_THREADS = parseInt(id('combine-threads').value) >= 1 ? parseInt(id('combine-threads').value) : 1;
+    config.COMBINE_THREADS = safe_int(id('combine-threads').value, 1, null, DEFAULT_CONFIG.COMBINE_THREADS);
     config.READ_PLAYER_BLACKLIST = id('read-player-blacklist').checked;
 
     if(this.id === 'break-update') {
