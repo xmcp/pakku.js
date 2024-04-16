@@ -14,7 +14,7 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-const SHRINK_TIME_THRESHOLD = 2250, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
+const SHRINK_TIME_THRESHOLD = 4500, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
 const WEIGHT_DROPPED = -114514;
 
 const _cvs = document.createElement('canvas');
@@ -205,13 +205,11 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         if(need_dispval) {
             // update dispval
 
-            while(onscreen_r<out_danmus.length && out_danmus[onscreen_r].time_ms - dm.time_ms < SHRINK_TIME_THRESHOLD) {
-                let dmr = out_danmus[onscreen_r];
-                let dv = dispval(dmr);
-                dispval_cache.set(dmr.id, dv);
-                onscreen_dispval += dv;
-                onscreen_r++;
-            }
+            let dv = dispval(dm);
+            dispval_cache.set(dm.id, dv);
+            onscreen_dispval += dv;
+            onscreen_r++;
+
             while(dm.time_ms - out_danmus[onscreen_l].time_ms > SHRINK_TIME_THRESHOLD) {
                 onscreen_dispval -= dispval_cache.get(out_danmus[onscreen_l].id) || 0;
                 onscreen_l++;
@@ -225,12 +223,8 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                     if(Math.random() < drop_rate) {
                         stats.deleted_dispval++;
                         dm.weight = WEIGHT_DROPPED;
-
-                        let cur_dispval = dispval_cache.get(dm.id);
-                        if(cur_dispval) {
-                            dispval_cache.delete(dm.id);
-                            onscreen_dispval -= cur_dispval;
-                        }
+                        dispval_cache.delete(dm.id);
+                        onscreen_dispval -= dv;
                         continue;
                     }
                 }
@@ -249,7 +243,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
             stats.num_max_dispval = Math.max(stats.num_max_dispval, onscreen_dispval);
 
-            //dm.content = `${onscreen_dispval.toFixed(0)}:${dm.content}`;
+            //dm.content = `[${onscreen_l}~${onscreen_r} dv=${dv} tot=${onscreen_dispval.toFixed(0)}]${dm.content}`;
         }
 
         if(config.SCROLL_THRESHOLD) {
