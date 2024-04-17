@@ -8,6 +8,7 @@ import {
     LocalizedConfig,
     Stats
 } from "./types";
+import {Queue} from "./queue";
 
 const MATH_LOG5 = Math.log(5);
 function calc_enlarge_rate(count: int): number {
@@ -63,8 +64,8 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
-function dispval(d: DanmuObjectRepresentative) {
-    return Math.sqrt(d.pakku.disp_str.length) * Math.pow(Math.min(d.fontsize/25, 2.5), 1.5);
+function dispval(d: DanmuObject) {
+    return Math.sqrt((d as DanmuObjectRepresentative).pakku?.disp_str?.length || d.content.length) * Math.pow(Math.max(Math.min(d.fontsize/25, 2.5), .7), 1.5);
 }
 
 let _last_config: null | LocalizedConfig = null;
@@ -195,24 +196,50 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
     let need_dispval = config.SHRINK_THRESHOLD>0 || config.DROP_THRESHOLD>0;
     const dispval_base = Math.pow(config.SHRINK_THRESHOLD, DISPVAL_POWER);
 
-    if(need_dispval)
+    let dispval_subtract: Queue<[number, number]> | null = null;
+    let onscreen_dispval = 0;
+
+    if(need_dispval) {
         out_danmus.sort((a, b) => a.time_ms - b.time_ms);
 
-    let onscreen_l = 0, onscreen_r = 0, onscreen_dispval = 0;
+        let dispval_preload: [number, number][] = [];
+        for(let i = prev_input.clusters.length-1; i >= 0; i--) {
+            let c = prev_input.clusters[i];
+            if (c.peers[0].time_ms < FIRST_TIME_MS - SHRINK_TIME_THRESHOLD)
+                break;
 
-    let dispval_cache: Map<string, number> = new Map();
+            // may be dropped
+            if(config.DROP_THRESHOLD>0 && onscreen_dispval>config.DROP_THRESHOLD) {
+                if(c.peers.length===1 && c.peers[0].weight===1) {
+                    let drop_rate = (onscreen_dispval - config.DROP_THRESHOLD) / config.DROP_THRESHOLD;
+                    if (Math.random() < drop_rate)
+                        continue;
+                }
+            }
+
+            let dv = dispval(c.peers[0]);
+            onscreen_dispval += dv;
+            dispval_preload.push([c.peers[0].time_ms + SHRINK_TIME_THRESHOLD, dv]);
+        }
+
+        dispval_preload.reverse();
+        dispval_subtract = new Queue<[number, number]>(dispval_preload);
+    }
+
     for(let dm of out_danmus) {
         if(need_dispval) {
             // update dispval
 
             let dv = dispval(dm);
-            dispval_cache.set(dm.id, dv);
-            onscreen_dispval += dv;
-            onscreen_r++;
 
-            while(dm.time_ms - out_danmus[onscreen_l].time_ms > SHRINK_TIME_THRESHOLD) {
-                onscreen_dispval -= dispval_cache.get(out_danmus[onscreen_l].id) || 0;
-                onscreen_l++;
+            while(true) {
+                let to_subtract = dispval_subtract!.peek();
+                if(to_subtract && dm.time_ms > to_subtract[0]) {
+                    onscreen_dispval -= to_subtract[1];
+                    dispval_subtract!.pop();
+                } else {
+                    break;
+                }
             }
 
             // check drop
@@ -223,12 +250,13 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                     if(Math.random() < drop_rate) {
                         stats.deleted_dispval++;
                         dm.weight = WEIGHT_DROPPED;
-                        dispval_cache.delete(dm.id);
-                        onscreen_dispval -= dv;
                         continue;
                     }
                 }
             }
+
+            onscreen_dispval += dv;
+            dispval_subtract!.push([dm.time_ms + SHRINK_TIME_THRESHOLD, dv]);
 
             // check shrink
 
@@ -243,7 +271,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
             stats.num_max_dispval = Math.max(stats.num_max_dispval, onscreen_dispval);
 
-            //dm.content = `[${onscreen_l}~${onscreen_r} dv=${dv} tot=${onscreen_dispval.toFixed(0)}]${dm.content}`;
+            //dm.content = `[${onscreen_dispval.toFixed(0)}]${dm.content}`;
         }
 
         if(config.SCROLL_THRESHOLD) {
