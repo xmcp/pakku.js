@@ -111,8 +111,8 @@ export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, 
         objs: [],
         extra: chunks.get(1)!.extra,
     };
-    for(let chunk of chunks.values()) {
-        c.objs.push(...chunk.objs);
+    for(let idx of [...chunks.keys()].sort((a, b) => a - b)) {
+        c.objs.push(...chunks.get(idx)!.objs);
     }
 
     return chunk_to_xml(c);
