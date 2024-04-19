@@ -68,20 +68,28 @@ async function reset_badge() {
 }
 
 async function install_context_menu() {
-    chrome.contextMenus.create({
-        id: 'toggle-global-switch',
-        title: '切换工作状态',
-        contexts: ['action'],
-    });
-    chrome.contextMenus.create({
-        id: 'show-local',
-        title: '处理本地弹幕',
-        contexts: ['action'],
+    chrome.contextMenus.removeAll(()=>{
+        chrome.contextMenus.create({
+            id: 'toggle-global-switch',
+            title: '切换工作状态',
+            contexts: ['action'],
+        });
+        chrome.contextMenus.create({
+            id: 'show-local',
+            title: '处理本地弹幕',
+            contexts: ['action'],
+        });
     });
 }
 
 async function install_content_script() {
-    let shared = {
+    let installed = await chrome.scripting.getRegisteredContentScripts({
+        ids: ['pakku-ajax'],
+    });
+    if(installed.length>0)
+        return;
+
+    let shared_args = {
         id: 'pakku-ajax',
         allFrames: true,
         matches: ['*://*.bilibili.com/*'],
@@ -92,14 +100,14 @@ async function install_content_script() {
 
     try {
         await chrome.scripting.registerContentScripts([{
-            ...shared,
+            ...shared_args,
             js: ['/generated/xhr_hook.js'],
             world: 'MAIN',
         }]);
         console.log('pakku ajax: installed content script');
     } catch(e) { // no `world` arg for firefox and chrome <102
         await chrome.scripting.registerContentScripts([{
-            ...shared,
+            ...shared_args,
             js: ['/assets/xhr_hook_injector.js'],
         }]);
         console.log('pakku ajax: installed content script (FALLBACK)');
@@ -138,19 +146,27 @@ async function toggle_global_switch() {
     return new_switch;
 }
 
+function install_declarative_stuff() {
+    // best practice to re-install all declarative stuff on every startup
+    // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/ZM0Vzb_vuIs/m/Nm4gK-X0AQAJ
+
+    void reset_dnr_status();
+    void install_context_menu();
+    void install_content_script();
+}
+
 chrome.runtime.onStartup.addListener(async ()=>{
     if(!HAS_SESSION_STORAGE) {
         console.error('pakku state: EMULATING session storage');
         await chrome.storage.local.clear();
+        // redo the init since the state is reset
         await perform_init();
     }
+
+    install_declarative_stuff();
 });
 
 chrome.runtime.onInstalled.addListener(async (details)=>{
-    void reset_dnr_status();
-    void install_context_menu();
-    void install_content_script();
-
     if(details.reason==='install') {
         void chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
     }
@@ -161,6 +177,8 @@ chrome.runtime.onInstalled.addListener(async (details)=>{
         hotfix_on_update(config);
         await save_config(config);
     }
+
+    install_declarative_stuff();
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

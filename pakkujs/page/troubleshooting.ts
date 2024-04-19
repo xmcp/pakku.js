@@ -29,6 +29,10 @@ chrome.permissions.getAll(function(perms) {
     debug.textContent += '\n\n**Permissions:** `' + JSON.stringify(perms) + '`';
 });
 
+chrome.scripting.getRegisteredContentScripts(function(scripts) {
+    debug.textContent += '\n\n**Content Scripts:** `' + JSON.stringify(scripts) + '`';
+});
+
 debug.textContent += '\n\n**localStorage:** `' + JSON.stringify(localStorage) + '`';
 get_config().then((config)=>{
     debug.textContent += '\n\n**Config:** `' + JSON.stringify(config) + '`';
