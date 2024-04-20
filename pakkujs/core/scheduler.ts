@@ -29,6 +29,23 @@ function _filter_aslongas<T>(x: Array<T>, fn: (x: T)=>boolean): Array<T> {
     return x.slice(0, i);
 }
 
+let _throttle_timer: null | ReturnType<typeof setTimeout> = null;
+let _throttle_fn: null | (()=>void) = null;
+function perform_throttle(fn: ()=>void) {
+    if(_throttle_timer)
+        _throttle_fn = fn;
+    else {
+        fn();
+        _throttle_timer = setTimeout(()=>{
+            _throttle_timer = null;
+            if(_throttle_fn) {
+                _throttle_fn();
+                _throttle_fn = null;
+            }
+        }, 100);
+    }
+}
+
 class Scheduler {
     ingress: Ingress;
     egresses: Array<[Egress, (resp: AjaxResponse)=>void]>;
@@ -55,7 +72,7 @@ class Scheduler {
         this.ingress = ingress;
         this.egresses = [];
         this.config = config;
-        this.stats = new MessageStats('message', BADGE_DOWNLOADING, '正在下载弹幕文件').notify(tabid);
+        this.stats = new MessageStats('message', '', '');
         this.ongoing_stats = new Stats();
         this.tabid = tabid;
         this.start_ts = 0;
@@ -78,6 +95,24 @@ class Scheduler {
 
         this.failed = true;
         this.try_serve_egress();
+    }
+
+    write_cur_message_stats() {
+        const throttled = ()=>{
+            if(this.stats.type==='message') { // skip if error or done
+                let status_line = this.num_chunks ? '正在处理弹幕' : '正在下载弹幕';
+                let num_finished = this.chunks_out.size;
+                let num_combine_started = this.combine_started.size;
+                let num_downloaded = this.chunks_in.size;
+
+                let badge = this.num_chunks ? BADGE_PROCESSING : BADGE_DOWNLOADING;
+                let prompt = `${status_line}（${num_finished}/${num_combine_started}/${num_downloaded}）`;
+
+                this.stats = new MessageStats('message', badge, prompt).notify(this.tabid);
+            }
+        };
+
+        perform_throttle(throttled);
     }
 
     add_egress(egress: Egress, callback: (resp: AjaxResponse)=>void) {
@@ -147,8 +182,10 @@ class Scheduler {
             }
         }
 
-        console.log('pakku scheduler: got chunks out', segidx, chunk_out.objs.length);
         this.chunks_out.set(segidx, chunk_out);
+
+        console.log('pakku scheduler: got chunks out', segidx, chunk_out.objs.length);
+        this.write_cur_message_stats();
 
         this.try_serve_egress();
     }
@@ -201,6 +238,7 @@ class Scheduler {
     }
 
     async start() {
+        this.write_cur_message_stats();
         await this.pool.spawn();
 
         if(this.userscript) {
@@ -229,7 +267,9 @@ class Scheduler {
 
                 chunk.objs.sort((a, b) => a.time_ms - b.time_ms);
                 this.chunks_in.set(idx, chunk);
+
                 this.ongoing_stats.num_total_danmu += chunk.objs.length;
+                this.write_cur_message_stats();
 
                 void this.try_start_combine(idx-1);
                 void this.try_start_combine(idx);
@@ -243,8 +283,7 @@ class Scheduler {
 
         this.ongoing_stats.download_time_ms = +new Date() - this.start_ts;
         console.log('pakku scheduler: download finished, total chunks =', this.num_chunks);
-        if(this.stats.type!=='error')
-            this.stats = new MessageStats('message', BADGE_PROCESSING, '正在处理弹幕').notify(this.tabid);
+        this.write_cur_message_stats();
 
         void this.try_start_combine(this.num_chunks);
 
