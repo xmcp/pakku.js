@@ -33,6 +33,10 @@ chrome.scripting.getRegisteredContentScripts(function(scripts) {
     debug.textContent += '\n\n**Content Scripts:** `' + JSON.stringify(scripts) + '`';
 });
 
+chrome.declarativeNetRequest.getDynamicRules(function(rules) {
+    debug.textContent += '\n\n**DNR Rules:** `' + JSON.stringify(rules) + '`';
+});
+
 debug.textContent += '\n\n**localStorage:** `' + JSON.stringify(localStorage) + '`';
 get_config().then((config)=>{
     debug.textContent += '\n\n**Config:** `' + JSON.stringify(config) + '`';
