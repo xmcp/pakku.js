@@ -122,6 +122,8 @@ class Scheduler {
     }
 
     async try_start_combine(segidx: int) {
+        if(this.failed)
+            return;
         if(this.combine_started.has(segidx))
             return; // working or finished
 
@@ -155,6 +157,8 @@ class Scheduler {
     }
 
     async try_start_postproc(segidx: int) {
+        if(this.failed)
+            return;
         if(this.chunks_out.has(segidx))
             return; // finished
 
