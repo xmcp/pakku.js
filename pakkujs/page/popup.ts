@@ -49,6 +49,7 @@ async function loadui() {
     switch_btn.classList.remove(enabled ? 'off' : 'on');
     switch_btn.textContent = enabled ? '工作中' : '休息中';
 
+    id('pakku-title').classList.remove('display-none');
     id('exception').classList.add('display-none');
     id('result').classList.add('display-none');
     id('userscript-btn').classList.add('display-none');
@@ -80,11 +81,11 @@ async function loadui() {
         hint_text.textContent = stats.message;
     }
     else if(stats.type==='error') {
-        id('pakku-title').style.display = 'none';
+        id('pakku-title').classList.add('display-none');
         id('exception').classList.remove('display-none');
     }
     else if(stats.type==='done') {
-        id('pakku-title').style.display = 'none';
+        id('pakku-title').classList.add('display-none');
         id('result').classList.remove('display-none');
         (id('link-danmu-count') as HTMLAnchorElement).href = chrome.runtime.getURL(`/page/view_result.html?tabid=${tabid}`);
 
