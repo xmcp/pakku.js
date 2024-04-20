@@ -15,25 +15,19 @@ const REMOVE_LAST_COMMA_RE = /,\s*]\s*$/g;
 
 function get_objects(content: string): DanmuObject[] {
     content = content.replace(REMOVE_COMMENTS_RE, '').replace(REMOVE_LAST_COMMA_RE, ']');
+    let obj = JSON.parse(content);
 
-    try {
-        let obj = JSON.parse(content);
+    if(!Array.isArray(obj))
+        throw new Error('pakku ingress debug: content is not an array');
 
-        if(!Array.isArray(obj))
-            throw new Error('pakku ingress debug: content is not an array');
-
-        for(let o of obj) {
-            if(typeof o !== 'object')
-                throw new Error('pakku ingress debug: array item is not object');
-            if(!o.extra)
-                throw new Error('pakku ingress debug: array item is not danmu object');
-        }
-
-        return obj;
-    } catch(e) {
-        console.error('pakku ingress debug: failed to parse content', e);
-        return [];
+    for(let o of obj) {
+        if(typeof o !== 'object')
+            throw new Error('pakku ingress debug: array item is not object');
+        if(!o.extra)
+            throw new Error('pakku ingress debug: array item is not danmu object');
     }
+
+    return obj;
 }
 
 export async function ingress_debug_content(ingress: DebugContentIngress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {

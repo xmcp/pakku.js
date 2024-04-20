@@ -26,8 +26,12 @@ function xml_to_chunk(xmlstr: string): DanmuChunk<DanmuObject> {
     let dom = parse_xml_magic(xmlstr);
     let res = [];
     let conf: AnyObject = {};
-    for(let elem of dom.children[0].children) {
-        if(elem.tagName==='d') { // danmu
+    let root_elem = dom.children[0];
+    if(root_elem.tagName.toLowerCase()!=='i')
+        throw new Error('root_elem tagname is not i');
+
+    for(let elem of root_elem.children) {
+        if(elem.tagName.toLowerCase()==='d') { // danmu
             let attr = elem.getAttribute('p')!.split(',');
             let str = elem.childNodes[0] ? (elem.childNodes[0] as Text).data : '';
             res.push({
@@ -44,7 +48,7 @@ function xml_to_chunk(xmlstr: string): DanmuChunk<DanmuObject> {
                 "extra": {},
             });
         } else { // conf
-            conf['xml_'+elem.tagName] = (elem.childNodes[0] as Text).data;
+            conf['xml_'+elem.tagName.toLowerCase()] = (elem.childNodes[0] as Text).data;
         }
     }
     return {
