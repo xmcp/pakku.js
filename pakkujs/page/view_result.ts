@@ -21,7 +21,13 @@ async function process() {
     $ingress.textContent = 'loading...';
     $content.textContent = 'loading...';
 
-    let egress: Egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
+    let egress: Egress = (
+        options.egress==='xml' ?
+            {type: 'xml'} :
+        options.egress==='debug' ?
+            {type: 'debug', show_peers: false, wait_finished: false} :
+            {type: 'debug', show_peers: true, wait_finished: false}
+    );
 
     let dumped_result = await chrome.tabs.sendMessage(tabid, {
         type: 'dump_result',

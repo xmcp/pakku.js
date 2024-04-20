@@ -101,7 +101,13 @@ document.addEventListener('drop', function(e) {
     }
 
     let ingress_type = options.ingress;
-    let egress: Egress = options.egress==='xml' ? {type: 'xml'} : options.egress==='debug' ? {type: 'debug', show_peers: false} : {type: 'debug', show_peers: true};
+    let egress: Egress = (
+        options.egress==='xml' ?
+            {type: 'xml'} :
+        options.egress==='debug' ?
+            {type: 'debug', show_peers: false, wait_finished: true} :
+            {type: 'debug', show_peers: true, wait_finished: true}
+    );
     let ext = options.egress==='xml' ? 'xml' : 'js';
 
     let files = e.dataTransfer!.files;

@@ -8,6 +8,7 @@ export interface DebugContentIngress {
 export interface DebugEgress {
     type: 'debug';
     show_peers: boolean;
+    wait_finished: boolean;
 }
 
 const REMOVE_COMMENTS_RE = /^\s*\/\/.*$/gm;
@@ -36,6 +37,9 @@ export async function ingress_debug_content(ingress: DebugContentIngress, chunk_
 }
 
 export function egress_debug(egress: DebugEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {
+    if(egress.wait_finished && (!num_chunks || num_chunks!==chunks.size))
+        return MissingData; // not finished
+
     let ret = [];
     ret.push(`// num_chunks: ${chunks.size} / ${num_chunks}`);
     ret.push('[');
