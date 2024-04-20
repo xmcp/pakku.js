@@ -4,7 +4,7 @@ import {
     ingress_proto_seg,
     ProtobufEgressSeg,
     ProtobufIngressHistory,
-    ProtobufIngressSeg
+    ProtobufIngressSeg, ProtobufPrefetchObj
 } from "./interface_protobuf";
 import {DebugContentIngress, DebugEgress, egress_debug, ingress_debug_content} from "./interface_debug";
 import {DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
@@ -16,13 +16,13 @@ function ts_assert_never(x: never): never {
     throw new Error('Unexpected object: '+x);
 }
 
-export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>, view_req: Promise<ArrayBuffer>|null = null): Promise<void> {
+export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>, prefetch: ProtobufPrefetchObj|null = null): Promise<void> {
     if(ingress.type==='xml')
         return await ingress_xml(ingress, chunk_callback);
     else if(ingress.type==='xml_content')
         return await ingress_xml_content(ingress, chunk_callback);
     else if(ingress.type==='proto_seg')
-        return await ingress_proto_seg(ingress, chunk_callback, view_req);
+        return await ingress_proto_seg(ingress, chunk_callback, prefetch);
     else if(ingress.type==='proto_history')
         return await ingress_proto_history(ingress, chunk_callback);
     else if(ingress.type==='debug_content')

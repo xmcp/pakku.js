@@ -4,6 +4,7 @@ import {Config, get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {AjaxResponse, BlacklistItem, int, LocalizedConfig} from "../core/types";
 import {process_local, userscript_sandbox} from "./sandboxed";
+import {ProtobufIngressSeg, ProtobufView} from "../protocol/interface_protobuf";
 
 function get_player_blacklist(): BlacklistItem[] {
     type BpxProfileType = {
@@ -145,6 +146,11 @@ let ext_domain = chrome.runtime.getURL('');
 if(ext_domain.endsWith('/'))
     ext_domain = ext_domain.slice(0, -1);
 
+function is_proto_view(x: any): x is [ProtobufIngressSeg, ProtobufView] {
+    // ts is too weak to inference this, let's add a type guard to teach it
+    return x[1].type==='proto_view';
+}
+
 window.addEventListener('message', async function(event) {
     if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
@@ -180,7 +186,7 @@ window.addEventListener('message', async function(event) {
             return;
         }
 
-        if(url[1].type==='proto_view') {
+        if(is_proto_view(url)) {
             handle_proto_view(url[0], event.data.url, local_config, tabid as int)
                 .then((ab)=>{
                     sendResponse({

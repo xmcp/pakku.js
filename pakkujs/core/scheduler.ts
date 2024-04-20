@@ -14,6 +14,7 @@ import {
 import {post_combine} from "./post_combine";
 import {UserscriptWorker} from "./userscript";
 import {do_inject} from "../injected/do_inject";
+import {protoapi_get_prefetch, ProtobufIngressSeg, ProtobufPrefetchObj} from "../protocol/interface_protobuf";
 
 const MAX_SCHEDULERS_PER_PAGE = 3;
 
@@ -66,7 +67,7 @@ class Scheduler {
     pool: WorkerPool;
     userscript: UserscriptWorker | null;
 
-    view_req: Promise<ArrayBuffer> | null;
+    prefetch_data: ProtobufPrefetchObj | null;
 
     constructor(ingress: Ingress, config: LocalizedConfig, tabid: int) {
         this.ingress = ingress;
@@ -84,7 +85,7 @@ class Scheduler {
         this.failed = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
         this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
-        this.view_req = null;
+        this.prefetch_data = null;
     }
 
     write_failing_stats(prompt: string, e: Error, badge: string) {
@@ -196,7 +197,7 @@ class Scheduler {
 
     try_serve_egress() {
         if(this.failed) {
-            for(let [efress, callback] of this.egresses) {
+            for(let [egress, callback] of this.egresses) {
                 callback(null);
             }
             this.egresses = [];
@@ -277,7 +278,7 @@ class Scheduler {
 
                 void this.try_start_combine(idx-1);
                 void this.try_start_combine(idx);
-            }, this.view_req);
+            }, this.prefetch_data);
         } catch(e) {
             this.write_failing_stats('下载弹幕时出错', e as Error, BADGE_ERR_NET);
             return;
@@ -325,32 +326,28 @@ export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: A
         schedulers.shift();
 }
 
-export function handle_proto_view(ingress: Ingress, view_url: string, config: LocalizedConfig, tabid: int): Promise<ArrayBuffer> {
-    let ret;
-
+export function handle_proto_view(ingress: ProtobufIngressSeg, view_url: string, config: LocalizedConfig, tabid: int): Promise<ArrayBuffer> {
     for(let scheduler of schedulers)
         if(ingress_equals(scheduler.ingress, ingress)) {
             last_scheduler = scheduler;
 
             scheduler.config = config;
 
-            if(!scheduler.view_req)
-                ret = scheduler.view_req = fetch(view_url).then(r=>r.arrayBuffer());
-            else
-                ret = scheduler.view_req;
+            if(!scheduler.prefetch_data)
+                scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
 
-            return ret;
+            return scheduler.prefetch_data.view;
         }
 
     let scheduler = new Scheduler(ingress, config, tabid);
     last_scheduler = scheduler;
 
-    ret = scheduler.view_req = fetch(view_url).then(r=>r.arrayBuffer());
+    scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
     void scheduler.start();
 
     schedulers.push(scheduler);
     if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
         schedulers.shift();
 
-    return ret;
+    return scheduler.prefetch_data.view;
 }

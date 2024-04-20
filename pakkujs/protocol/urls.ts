@@ -1,6 +1,6 @@
 import {Egress, Ingress} from "./interface";
 import {AnyObject} from "../core/types";
-import {ProtobufView} from "./interface_protobuf";
+import {ProtobufIngressSeg, ProtobufView} from "./interface_protobuf";
 
 const TRAD_DANMU_URL_RE=/(.+):\/\/comment\.bilibili\.com\/(?:rc\/)?(?:dmroll,[\d\-]+,)?(\d+)(?:\.xml)?$/;
 const NEW_DANMU_NORMAL_URL_RE=/(.+):\/\/api\.bilibili\.com\/x\/v1\/dm\/list\.so\?oid=(\d+)$/;
@@ -14,7 +14,7 @@ class DanmuUrlFinder {
 
     _cid_to_pid: AnyObject = {};
 
-    find(url: string): [Ingress, Egress | ProtobufView] | null {
+    find(url: string): [Ingress, Egress] | [ProtobufIngressSeg, ProtobufView] | null {
         if(url.includes('//comment.bilibili.com/')) {
             let res = TRAD_DANMU_URL_RE.exec(url);
             if(res)

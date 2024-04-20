@@ -32,6 +32,12 @@ export interface ProtobufView {
     type: 'proto_view';
 }
 
+export interface ProtobufPrefetchObj {
+    view: Promise<ArrayBuffer>;
+    chunk_1: Promise<proto_seg>;
+    chunk_2: Promise<proto_seg>;
+}
+
 export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<DanmuObject> {
     return {
         objs: chunk.elems.map((item): DanmuObject =>({
@@ -186,20 +192,30 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
     return await protoapi_get_url('https://api.bilibili.com/x/v2/dm/wbi/web/seg.so?'+param_str);
 }
 
+export function protoapi_get_prefetch(ingress: ProtobufIngressSeg, view_url: string): ProtobufPrefetchObj {
+    return {
+        view: fetch(view_url).then(r=>r.arrayBuffer()),
+        chunk_1: protoapi_get_seg(ingress, 1),
+        chunk_2: protoapi_get_seg(ingress, 2),
+    };
+}
+
 export async function ingress_proto_history(ingress: ProtobufIngressHistory, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>): Promise<void> {
     let d = await protoapi_get_url(ingress.url);
     await chunk_callback(1, protobuf_to_obj(1, d));
 }
 
-export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>, view_req: Promise<ArrayBuffer>|null): Promise<void> {
+export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callback: (idx: int, chunk: DanmuChunk<DanmuObject>)=>Promise<void>, prefetch: ProtobufPrefetchObj|null): Promise<void> {
     async function return_from_resp(idx: int, resp: Promise<proto_seg>): Promise<void> {
         await chunk_callback(idx, protobuf_to_obj(idx, await resp));
     }
 
-    // preload first 2 chunks to increase responsiveness
-    let chunk_1_req = protoapi_get_seg(ingress, 1);
-    let chunk_2_req = protoapi_get_seg(ingress, 2);
-    let pages = await protoapi_get_segcount(view_req ? view_req : protoapi_view_api(ingress));
+    // noinspection ES6MissingAwait
+    let chunk_1_req = prefetch ? prefetch.chunk_1 : protoapi_get_seg(ingress, 1);
+    // noinspection ES6MissingAwait
+    let chunk_2_req = prefetch ? prefetch.chunk_2 : protoapi_get_seg(ingress, 2);
+
+    let pages = await protoapi_get_segcount(prefetch ? prefetch.view : protoapi_view_api(ingress));
 
     if(pages) {
         if(pages<=1) {
