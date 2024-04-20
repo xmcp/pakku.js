@@ -143,13 +143,25 @@ class Scheduler {
 
         let res: DanmuClusterOutput;
         try {
-            res = await this.pool.exec([chunk as DanmuChunk<DanmuObject>, next_chunk_filtered as DanmuChunk<DanmuObject>, this.config as LocalizedConfig]);
+            if(chunk.objs.length) {
+                res = await this.pool.exec([
+                    chunk as DanmuChunk<DanmuObject>,
+                    next_chunk_filtered as DanmuChunk<DanmuObject>,
+                    this.config as LocalizedConfig,
+                ]);
+                console.log('pakku scheduler: got combine result', segidx, res.clusters.length);
+            } else {
+                res = {
+                    clusters: [],
+                    stats: new Stats(),
+                };
+                console.log('pakku scheduler: got combine result', segidx, '(skipped)');
+            }
         } catch(e) {
             this.write_failing_stats(`合并分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
 
-        console.log('pakku scheduler: got combine result', segidx, res.clusters.length);
         this.clusters.set(segidx, res);
         this.ongoing_stats.update_from(res.stats);
 
