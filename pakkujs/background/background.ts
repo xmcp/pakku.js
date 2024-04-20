@@ -134,7 +134,7 @@ async function toggle_global_switch() {
     });
 
     // notify popup and content scripts
-    chrome.runtime.sendMessage({type: 'reload_state'})
+    chrome.runtime.sendMessage({type: 'reload_popup_state', tabid: null})
         .catch(()=>{});
     for(let tab of await chrome.tabs.query({})) {
         let url = tab.url;
@@ -205,7 +205,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             .catch(()=>{});
 
         // refresh the popup
-        chrome.runtime.sendMessage({type: 'reload_state'})
+        chrome.runtime.sendMessage({type: 'reload_popup_state', tabid: msg.tabid})
             .catch(()=>{});
     }
     else if(msg.type==='toggle_switch') {
