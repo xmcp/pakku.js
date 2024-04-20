@@ -2,6 +2,8 @@ function firefox_manifest(src, path) {
     if(path.endsWith('manifest.json')) {
         let obj = JSON.parse(src);
 
+        delete obj.minimum_chrome_version;
+
         // https://github.com/w3c/webextensions/issues/119
         obj.host_permissions = obj.host_permissions.concat(obj.optional_host_permissions);
         delete obj.optional_host_permissions;
