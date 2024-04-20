@@ -11,7 +11,7 @@
     "author": "xmcp",
     
     "manifest_version": 3,
-    "minimum_chrome_version": "99",
+    "minimum_chrome_version": "94",
     
     "permissions": [
         "notifications",
@@ -74,13 +74,6 @@
         }
     ],
 
-    "declarative_net_request": {
-        "rule_resources": [{
-            "id": "danmu-update-blocker",
-            "enabled": false,
-            "path": "assets/danmu_update_blocker.json"
-        }]
-    },
     "web_accessible_resources": [{
         "resources": ["/generated/combine_worker.js", "/generated/xhr_hook.js"],
         "matches": ["*://*.bilibili.com/*"]

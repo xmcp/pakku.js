@@ -49,13 +49,19 @@ function get_player_blacklist(): BlacklistItem[] {
 let tabid: null | int = null;
 let unreg_userscript = true;
 
+function get_tabid() {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage({type: 'get_tabid'}, resolve);
+    });
+}
+
 async function apply_local_config(config: Config, is_pure_env: boolean = false): Promise<LocalizedConfig> {
     let state = await get_state();
 
     let userscript = config.USERSCRIPT;
 
     if(!tabid) {
-        tabid = await chrome.runtime.sendMessage({type: 'get_tabid'}) as int;
+        tabid = await get_tabid() as int;
 
         // storage cleanup
         window.onunload = function() {

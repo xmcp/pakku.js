@@ -1,4 +1,4 @@
-import {MessageStats, Stats, int, AnyObject} from "../core/types";
+import {MessageStats, Stats, AnyObject} from "../core/types";
 
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/session#browser_compatibility
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/setAccessLevel#browser_compatibility
@@ -22,11 +22,18 @@ export type State = typeof DEFAULT_STATE & {
 
 export async function init_state(): Promise<boolean> {
     let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
-    let {_INITIALIZED} = await store.get(['_INITIALIZED']);
+    let _INITIALIZED = false;
+    try {
+        _INITIALIZED = (await store.get(['_INITIALIZED']))._INITIALIZED;
+    } catch(e) {}
+
     if(!_INITIALIZED) {
         console.log('pakku state: init state');
+
+        // maybe no permission
         if(store.setAccessLevel)
             await store.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+
         await store.set(DEFAULT_STATE);
         return true;
     }
@@ -43,11 +50,13 @@ export async function remove_state(keys: (keyof State)[]) {
     await store.remove(keys);
 }
 
-export async function get_state(): Promise<State> {
-    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
-    let state = await store.get() as State;
-
-    if(!state._INITIALIZED)
-        return DEFAULT_STATE;
-    return state;
+export function get_state(): Promise<State> {
+    return new Promise((resolve)=>{
+        let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+        store.get((state: State)=>{
+            if(!state._INITIALIZED)
+                resolve(DEFAULT_STATE);
+            resolve(state);
+        });
+    });
 }

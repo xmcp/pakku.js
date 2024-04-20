@@ -1,4 +1,4 @@
-import {reset_dnr_status} from "./danmu_update_blocker";
+import {install_dnr_rule} from "./danmu_update_blocker";
 import {get_config, hotfix_on_update, save_config} from "./config";
 import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
 
@@ -150,23 +150,25 @@ function install_declarative_stuff() {
     // best practice to re-install all declarative stuff on every startup
     // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/ZM0Vzb_vuIs/m/Nm4gK-X0AQAJ
 
-    void reset_dnr_status();
+    void install_dnr_rule();
     void install_context_menu();
     void install_content_script();
 }
 
 chrome.runtime.onStartup.addListener(async ()=>{
+    install_declarative_stuff();
+
     if(!HAS_SESSION_STORAGE) {
         console.error('pakku state: EMULATING session storage');
         await chrome.storage.local.clear();
         // redo the init since the state is reset
         await perform_init();
     }
-
-    install_declarative_stuff();
 });
 
 chrome.runtime.onInstalled.addListener(async (details)=>{
+    install_declarative_stuff();
+
     if(details.reason==='install') {
         void chrome.tabs.create({url: chrome.runtime.getURL('page/options.html')});
     }
@@ -177,8 +179,6 @@ chrome.runtime.onInstalled.addListener(async (details)=>{
         hotfix_on_update(config);
         await save_config(config);
     }
-
-    install_declarative_stuff();
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -217,7 +217,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return true;
     }
     else if(msg.type==='reset_dnr_status') {
-        void reset_dnr_status();
+        void install_dnr_rule();
     }
     else if(msg.type==='xhr_proxy') {
         let perform = async ()=>{

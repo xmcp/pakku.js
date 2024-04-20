@@ -133,9 +133,12 @@ export async function save_config<SomeConfig extends Partial<Config>>(config: So
     await chrome.storage.sync.set(config);
 }
 
-export async function get_config(): Promise<Config> {
-    let remote = await chrome.storage.sync.get();
-    return migrate_config(remote);
+export function get_config(): Promise<Config> {
+    return new Promise((resolve)=>{
+        chrome.storage.sync.get((config: AnyObject)=>{
+            resolve(migrate_config(config));
+        });
+    });
 }
 
 function _to_int(config: AnyObject, k: (keyof Config)) {

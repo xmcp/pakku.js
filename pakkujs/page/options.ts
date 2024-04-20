@@ -1,4 +1,5 @@
 import {DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../background/config';
+import Permissions = chrome.permissions.Permissions;
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
 const IS_EDG = process.env.PAKKU_CHANNEL==='chrome' && navigator.userAgent.includes('Edg/');
@@ -95,7 +96,7 @@ async function ver_check() {
     if(process.env.PAKKU_CHANNEL==='chrome' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
         note.style.display = 'initial';
         note.href = 'https://www.google.cn/chrome/';
-        note.textContent = `你的浏览器内核版本不受支持（实为 ${chrome_ver}，需要 ${MIN_CHROME_VERSION} 以上）。请更新浏览器。`;
+        note.textContent = `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`;
     }
 
     if(IS_EDG) {
@@ -133,8 +134,14 @@ for(let elem of document.querySelectorAll('.donate')) {
     });
 }
 
+function get_perms(): Promise<Permissions> {
+    return new Promise((resolve)=>{
+        chrome.permissions.getAll(resolve);
+    });
+}
+
 let config = await get_config();
-let perms = await chrome.permissions.getAll();
+let perms = await get_perms();
 
 if(!perms.origins?.includes('*://*.bilibili.com/*')) {
     id('fix-permission-hint').style.display = 'initial';
