@@ -194,7 +194,7 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
 
 export function protoapi_get_prefetch(ingress: ProtobufIngressSeg, view_url: string): ProtobufPrefetchObj {
     return {
-        view: fetch(view_url).then(r=>r.arrayBuffer()),
+        view: fetch(view_url, {credentials: 'include'}).then(r=>r.arrayBuffer()),
         chunk_1: protoapi_get_seg(ingress, 1),
         chunk_2: protoapi_get_seg(ingress, 2),
     };
