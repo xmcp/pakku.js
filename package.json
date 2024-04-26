@@ -32,6 +32,7 @@
     "load-grunt-tasks": "^4.0.0",
     "md5": "^2.3.0",
     "protobufjs-cli": "^1.1.2",
+    "rollup-pluginutils": "^2.8.2",
     "tslib": "^2.6.2",
     "typescript": "^4.9.3"
   }

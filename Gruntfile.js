@@ -1,3 +1,27 @@
+const { createFilter } = require("rollup-pluginutils");
+
+// based on https://github.com/TrySound/rollup-plugin-string
+function templating(opts = {}) {
+    function minify(code) {
+        return code
+            .replace(/^\s+/mg, '') // remove indentations
+            .replace(/[\r\n]/g, ''); // remove linebreaks
+    }
+
+    const filter = createFilter('**/*.template.js', null);
+    return {
+        name: "templating",
+        transform(code, id) {
+            if(filter(id)) {
+                return {
+                    code: `export default ${JSON.stringify(minify(code))};`,
+                    map: {mappings: ""},
+                };
+            }
+        },
+    };
+}
+
 function firefox_manifest(src, path) {
     if(path.endsWith('manifest.json')) {
         let obj = JSON.parse(src);
@@ -80,6 +104,7 @@ module.exports = function(grunt) {
 
     function ROLLUP_PLUGINS(channel) {
         return [
+            templating(),
             typescript(),
             nodeResolve({
                 browser: true,

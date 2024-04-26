@@ -1,4 +1,6 @@
 import {AnyObject, DanmuChunk, DanmuObject, DanmuObjectRepresentative, int} from "./types";
+// @ts-ignore
+import userscript_template from "./userscript.template.js";
 
 type ArgType = (
     {type: 'init'}
@@ -7,65 +9,7 @@ type ArgType = (
 );
 type RetType = AnyObject;
 
-const USERSCRIPT_TEMPLATE = `
-(()=>{
-let callbacks_before = [];
-let callbacks_after = [];
-function tweak_before_pakku(callback, timing=0) {
-    if(typeof callback !== 'function')
-        throw new Error('callback to tweak_before_pakku is not a function');
-    callbacks_before.push([timing, callback]);
-}
-function tweak_after_pakku(callback, timing=0) {
-    if(typeof callback !== 'function')
-        throw new Error('callback to tweak_after_pakku is not a function');
-    callbacks_after.push([timing, callback]);
-}
-function fix_dispstr(chunk) {
-    for(let obj of chunk.objs) {
-        let text = obj.content;
-        if(obj.mode===7 && obj.content[0]==='[') {
-            try {
-                text = JSON.parse(obj.content)[4];
-            } catch(e) {}
-        }
-        obj.pakku.disp_str = text.replace(/([\\r\\n\\t])/g,'').trim();
-    }
-}
-onmessage = (e) => {
-    try {
-        if(e.data.type==='init') {
-            install_callbacks(tweak_before_pakku, tweak_after_pakku);
-            callbacks_before = callbacks_before.sort((a, b) => a[0] - b[0]);
-            callbacks_after = callbacks_after.sort((a, b) => a[0] - b[0]);
-            postMessage({
-                error: null,
-                output: {
-                    n_before: callbacks_before.length,
-                    n_after: callbacks_after.length,
-                },
-            });
-        } if(e.data.type==='pakku_before') {
-            let chunk = e.data.chunk;
-            for(let [timing, callback] of callbacks_before)
-                callback(chunk);
-            postMessage({error: null, output: chunk});
-        } else if(e.data.type==='pakku_after') {
-            let chunk = e.data.chunk;
-            for(let [timing, callback] of callbacks_after)
-                callback(chunk);
-            fix_dispstr(chunk);
-            postMessage({error: null, output: chunk});
-        }
-    } catch(err) {
-        postMessage({error: err});
-    }
-};
-})();
-function install_callbacks(tweak_before_pakku, tweak_after_pakku) {
-    /* MAIN */
-}
-`;
+const USERSCRIPT_TEMPLATE = userscript_template;
 
 export class UserscriptWorker {
     script: string;
