@@ -1,5 +1,6 @@
 import {Egress} from "../protocol/interface";
 import {AnyObject} from "../core/types";
+import {ingress_debug_content} from "../protocol/interface_debug";
 
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || '0');
 let $content = document.querySelector('#content') as HTMLElement;
@@ -43,8 +44,6 @@ async function process() {
         throw e;
     }
 
-    console.log(dumped_result);
-
     if(typeof dumped_result.error === 'string') {
         $ingress.textContent = 'error!';
         $content.textContent = dumped_result.error;
@@ -59,6 +58,16 @@ async function process() {
         let cid = (dumped_result as any).ingress.cid || 'content';
         download(`${cid}.${ext}`, dumped_result.text);
     };
+
+    if(egress.type==='debug') {
+        void ingress_debug_content({
+            type: 'debug_content',
+            content: dumped_result.text,
+        }, async (idx, chunk)=>{
+            console.log('danmu object dumped to `D` global variable:', chunk.objs.length);
+            (window as any).D = chunk.objs;
+        });
+    }
 }
 
 void process();
