@@ -1,4 +1,5 @@
 import {Egress} from "../protocol/interface";
+import {AnyObject} from "../core/types";
 
 let tabid = parseInt(new URLSearchParams(location.search).get('tabid') || '0');
 let $content = document.querySelector('#content') as HTMLElement;
@@ -29,14 +30,23 @@ async function process() {
             {type: 'debug', show_peers: true, wait_finished: false}
     );
 
-    let dumped_result = await chrome.tabs.sendMessage(tabid, {
-        type: 'dump_result',
-        egress: egress,
-        switch: options.step==='output',
-    });
+    let dumped_result: AnyObject;
+    try {
+        dumped_result = await chrome.tabs.sendMessage(tabid, {
+            type: 'dump_result',
+            egress: egress,
+            switch: options.step==='output',
+        });
+    } catch(e: any) {
+        $ingress.textContent = 'error!';
+        $content.textContent = e.message;
+        throw e;
+    }
+
     console.log(dumped_result);
 
     if(typeof dumped_result.error === 'string') {
+        $ingress.textContent = 'error!';
         $content.textContent = dumped_result.error;
         return;
     }
