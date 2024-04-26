@@ -114,6 +114,12 @@ module.exports = function(grunt) {
                     plugins: ROLLUP_PLUGINS('chrome'),
                 },
             },
+            edg: {
+                files: ROLLUP_FILES,
+                options: {
+                    plugins: ROLLUP_PLUGINS('edg'),
+                },
+            },
             firefox: {
                 files: ROLLUP_FILES,
                 options: {
@@ -125,8 +131,9 @@ module.exports = function(grunt) {
         clean: {
             tmp: ['dist/tmp/'],
             dist: ['dist/_/'],
-            firefox: ['dist/F/'],
             chrome: ['dist/C/'],
+            edg: ['dist/E/'],
+            firefox: ['dist/F/'],
         },
 
 
@@ -152,13 +159,17 @@ module.exports = function(grunt) {
         },
 
         move: {
-            firefox: {
-                src: ['dist/_/'],
-                dest: 'dist/F',
-            },
             chrome: {
                 src: ['dist/_/'],
                 dest: 'dist/C',
+            },
+            edg: {
+                src: ['dist/_/'],
+                dest: 'dist/E',
+            },
+            firefox: {
+                src: ['dist/_/'],
+                dest: 'dist/F',
             },
         },
 
@@ -209,18 +220,6 @@ module.exports = function(grunt) {
                 level: 9,
             },
 
-            firefox: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'dist/F/',
-                        src: ['**/*'],
-                    },
-                ],
-                options: {
-                    archive: 'dist/Firefox-pakku.zip',
-                },
-            },
             chrome: {
                 files: [
                     {
@@ -231,6 +230,30 @@ module.exports = function(grunt) {
                 ],
                 options: {
                     archive: 'dist/Chrome-pakku.zip',
+                },
+            },
+            edg: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/E/',
+                        src: ['**/*'],
+                    },
+                ],
+                options: {
+                    archive: 'dist/Edg-pakku.zip',
+                },
+            },
+            firefox: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/F/',
+                        src: ['**/*'],
+                    },
+                ],
+                options: {
+                    archive: 'dist/Firefox-pakku.zip',
                 },
             },
             src: {
@@ -273,6 +296,16 @@ module.exports = function(grunt) {
         'clean:chrome',
         'move:chrome',
         'compress:chrome',
+    ]);
+    grunt.registerTask('edg', [
+        '_common',
+        'rollup:edg',
+        'terser:production',
+        'copy:chrome_manifest',
+
+        'clean:edg',
+        'move:edg',
+        'compress:edg',
     ]);
     grunt.registerTask('firefox', [
         '_common',

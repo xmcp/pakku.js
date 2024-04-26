@@ -2,10 +2,10 @@ import {DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../backgr
 import Permissions = chrome.permissions.Permissions;
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
-const IS_EDG = process.env.PAKKU_CHANNEL==='chrome' && navigator.userAgent.includes('Edg/');
+const IS_EDG = process.env.PAKKU_CHANNEL==='edg';
 const MIN_CHROME_VERSION = 99; // callback for chrome.runtime.sendMessage
 
-if(!IS_FIREFOX && navigator.userAgent.includes('Firefox/') && (window as any).InstallTrigger) {
+if(!IS_FIREFOX && navigator.userAgent.includes('Firefox/')) {
     if(confirm('您正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请卸载当前版本，然后在 Firefox 附加组件中心下载 pakku。\n\n现在前往下载吗？'))
         location.href = 'https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/';
 }
@@ -34,7 +34,7 @@ function regexp_wrap(src: string) {
 
 let version = 'v' + chrome.runtime.getManifest().version;
 let img_btns: NodeListOf<HTMLElement> = document.querySelectorAll('[data-name]');
-id('version').textContent = version + '_' + (IS_FIREFOX ? 'F' : 'C');
+id('version').textContent = version + '_' + (IS_FIREFOX ? 'F' : IS_EDG ? 'E' : 'C');
 
 function highlighter() {
     if(!location.hash) return;
@@ -93,7 +93,7 @@ async function ver_check() {
     let chrome_ver_match = navigator.userAgent.match(/Chrome\/(\d+)/);
     let chrome_ver = chrome_ver_match ? parseInt(chrome_ver_match[1]) : null;
 
-    if(process.env.PAKKU_CHANNEL==='chrome' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
+    if(process.env.PAKKU_CHANNEL!=='firefox' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
         note.style.display = 'initial';
         note.href = 'https://www.google.cn/chrome/';
         note.textContent = `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`;
@@ -101,7 +101,6 @@ async function ver_check() {
 
     if(IS_EDG) {
         console.log('version checking disabled for edg');
-        id('version-checker').textContent = '(Edge)';
         return;
     }
 
