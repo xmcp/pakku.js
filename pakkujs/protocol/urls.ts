@@ -70,7 +70,7 @@ class DanmuUrlFinder {
             if(res) {
                 this._cid_to_pid[res[2]] = res[3];
 
-                let url_param=new URLSearchParams(url.split('?')[1]);
+                let url_param=new URLSearchParams(url.split('?')[1] || '');
 
                 let segidx = parseInt(url_param.get('segment_index') || '1');
                 let ps_str = url_param.get('ps');

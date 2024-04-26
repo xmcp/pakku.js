@@ -110,7 +110,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
         // hovering on other thumbnails on video page
         let cur_cid = get_cur_cid();
-        let target_cid = parseInt(new URLSearchParams(url).get('oid') || '0');
+        let target_cid = parseInt(new URLSearchParams(url.split('?')[1] || '').get('oid') || '0');
         if(cur_cid && target_cid && cur_cid !== target_cid) {
             console.log('pakku ajax: ignoring request as current cid is', cur_cid, ':', url);
             return true;
