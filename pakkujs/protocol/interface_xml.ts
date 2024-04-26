@@ -42,7 +42,7 @@ function xml_to_chunk(xmlstr: string): DanmuChunk<DanmuObject> {
                 "sender_hash": attr[6],
                 "content": str,
                 "sendtime": parseInt(attr[4]),
-                "weight": 10, // not present in xml so fake max weight
+                "weight": 10, // not present in official xml api so fake max weight
                 "id": attr[7],
                 "pool": parseInt(attr[5]),
                 "extra": {},
@@ -84,6 +84,7 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
             d.pool, // 5
             d.sender_hash, // 6
             d.id, // 7
+            d.weight, // 8
         ];
         elem.appendChild(tn);
         elem.setAttribute('p',attr.join(','));
