@@ -256,6 +256,9 @@ class Scheduler {
 
     async start() {
         this.write_cur_message_stats();
+
+        if(this.prefetch_data && this.prefetch_data.guessed_chunks && this.prefetch_data.guessed_chunks<this.pool.pool_size)
+            this.pool.pool_size = this.prefetch_data.guessed_chunks;
         await this.pool.spawn();
 
         if(this.userscript) {

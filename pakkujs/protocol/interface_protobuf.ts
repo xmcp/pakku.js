@@ -34,8 +34,9 @@ export interface ProtobufView {
 
 export interface ProtobufPrefetchObj {
     view: Promise<ArrayBuffer>;
-    chunk_1: Promise<proto_seg>;
-    chunk_2: Promise<proto_seg>;
+    chunk_1: Promise<proto_seg> | null;
+    chunk_2: Promise<proto_seg> | null;
+    guessed_chunks: int | null;
 }
 
 export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<DanmuObject> {
@@ -193,10 +194,14 @@ async function protoapi_get_seg(ingress: ProtobufIngressSeg, segidx: int): Promi
 }
 
 export function protoapi_get_prefetch(ingress: ProtobufIngressSeg, view_url: string): ProtobufPrefetchObj {
+    let duration = parseInt(new URLSearchParams(view_url.split('?')[1] || '').get('duration') || '0');
+    let guessed_chunks = duration ? Math.ceil((1+duration)/360) : null;
+
     return {
         view: fetch(view_url, {credentials: 'include'}).then(r=>r.arrayBuffer()),
         chunk_1: protoapi_get_seg(ingress, 1),
-        chunk_2: protoapi_get_seg(ingress, 2),
+        chunk_2: (guessed_chunks && guessed_chunks>1) ? protoapi_get_seg(ingress, 2) : null,
+        guessed_chunks: guessed_chunks,
     };
 }
 
@@ -211,9 +216,9 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
     }
 
     // noinspection ES6MissingAwait
-    let chunk_1_req = prefetch ? prefetch.chunk_1 : protoapi_get_seg(ingress, 1);
+    let chunk_1_req = (prefetch && prefetch.chunk_1) ? prefetch.chunk_1 : protoapi_get_seg(ingress, 1);
     // noinspection ES6MissingAwait
-    let chunk_2_req = prefetch ? prefetch.chunk_2 : protoapi_get_seg(ingress, 2);
+    let chunk_2_req = (prefetch && prefetch.chunk_2) ? prefetch.chunk_2 : protoapi_get_seg(ingress, 2);
 
     let pages = await protoapi_get_segcount(prefetch ? prefetch.view : protoapi_view_api(ingress));
 
