@@ -5,4 +5,3 @@ package-lock.json
 /dist/
 *.log
 TODO.*
-tsconfig.tsbuildinfo

@@ -1,4 +1,5 @@
 const { createFilter } = require("rollup-pluginutils");
+const alias = require('@rollup/plugin-alias');
 
 // based on https://github.com/TrySound/rollup-plugin-string
 function templating(opts = {}) {
@@ -52,6 +53,7 @@ module.exports = function(grunt) {
     let typescript = require('@rollup/plugin-typescript');
     let commonjs = require('@rollup/plugin-commonjs');
     let {nodeResolve} = require('@rollup/plugin-node-resolve');
+    let alias = require('@rollup/plugin-alias');
     let replace = require('@rollup/plugin-replace');
 
     const NORMAL_DIR = [
@@ -112,6 +114,11 @@ module.exports = function(grunt) {
             nodeResolve({
                 browser: true,
             }),
+            alias({
+                entries: [
+                    {find: 'protobufjs/minimal', replacement: 'protobufjs/dist/minimal/protobuf.min.js'},
+                ],
+            }),
             commonjs(),
             replace({
                 preventAssignment: true,
@@ -163,7 +170,6 @@ module.exports = function(grunt) {
             edg: ['dist/E/'],
             firefox: ['dist/F/'],
         },
-
 
         copy: {
             options: {

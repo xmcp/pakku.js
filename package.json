@@ -12,6 +12,7 @@
     "build:proto": "proto_translation\\transform_to_module.bat"
   },
   "dependencies": {
+    "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",

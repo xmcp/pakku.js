@@ -13,6 +13,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmitOnError": true,
+    "sourceMap": false,
+    "tsBuildInfoFile": "dist/ts_cache/tsconfig.tsbuildinfo",
     "incremental": true
   },
   "include": ["pakkujs"]
