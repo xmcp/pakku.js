@@ -12,7 +12,8 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "incremental": true
   },
   "include": ["pakkujs"]
 }

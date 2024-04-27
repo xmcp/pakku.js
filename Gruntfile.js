@@ -105,7 +105,10 @@ module.exports = function(grunt) {
     function ROLLUP_PLUGINS(channel) {
         return [
             templating(),
-            typescript(),
+            typescript({
+                cacheDir: 'dist/ts_cache',
+                outputToFilesystem: true,
+            }),
             nodeResolve({
                 browser: true,
             }),
