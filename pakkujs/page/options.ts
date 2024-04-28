@@ -1,4 +1,4 @@
-import {DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../background/config';
+import {Config, DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../background/config';
 import Permissions = chrome.permissions.Permissions;
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
@@ -86,17 +86,25 @@ id('reset').addEventListener('click', function() {
 if(IS_EDG)
     id('ask-review-line').style.display = 'none';
 
+function show_note(text: string, link: string | null) {
+    let note = id('note-banner');
+
+    note.style.display = 'initial';
+    note.style.pointerEvents = link ? 'auto' : 'none';
+    note.href = link || '#';
+    note.textContent = text;
+}
+
 // version check
 async function ver_check() {
-    let note = id('update-note');
-
     let chrome_ver_match = navigator.userAgent.match(/Chrome\/(\d+)/);
     let chrome_ver = chrome_ver_match ? parseInt(chrome_ver_match[1]) : null;
 
     if(process.env.PAKKU_CHANNEL!=='firefox' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
-        note.style.display = 'initial';
-        note.href = 'https://www.google.cn/chrome/';
-        note.textContent = `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`;
+        show_note(
+            `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`,
+            'https://www.google.cn/chrome/',
+        );
     }
 
     if(IS_EDG) {
@@ -114,9 +122,10 @@ async function ver_check() {
     console.log('latest version ', latest_ver);
     if(latest_ver.value.charAt(0) === 'v') {
         if(latest_ver.value !== version) {
-            note.style.display = 'initial';
-            note.href = 'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version);
-            note.textContent = '你正在使用 pakku ' + version + '，' + latest_ver.name + ' 中的最新版是 ' + latest_ver.value + '。点击此处下载新版本。';
+            show_note(
+                `你正在使用 pakku ${version}，${latest_ver.name} 中的最新版是 ${latest_ver.value}。点击此处下载新版本。`,
+                'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version),
+            );
         }  else {
             id('version-checker').textContent = '✓ 是最新版本';
         }
@@ -181,6 +190,17 @@ function get_ws_permission_and_reload() {
     }
 }
 
+async function try_save_config(config: Config) {
+    let succ = await save_config(config);
+
+    if(!succ) {
+        show_note(
+            '无法保存设置，因为云端设置版本高于本地。请尝试更新 pakku 或者重置所有设置。',
+            null,
+        );
+    }
+}
+
 async function backup_restore_prompt() {
     let inp = prompt('直接按回车来导出设置；将设置粘贴到此处来导入设置。');
     if(inp === null) return;
@@ -193,7 +213,7 @@ async function backup_restore_prompt() {
             config._CONFIG_VER = config._CONFIG_VER || 0;
             config = migrate_config(config);
 
-            await save_config(config);
+            await try_save_config(config);
             loadconfig();
 
             if(config.BREAK_UPDATE)
@@ -219,7 +239,7 @@ id('version').addEventListener('click', async function(event: MouseEvent) {
 id('backup-restore').addEventListener('click', backup_restore_prompt);
 
 async function reload(changed_dnr=false) {
-    await save_config(config);
+    await try_save_config(config);
 
     id('saved-alert').classList.remove('saved-hidden');
     setTimeout(function() {

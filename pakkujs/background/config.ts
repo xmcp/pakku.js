@@ -143,9 +143,15 @@ export function migrate_config(remote_config: AnyObject): Config {
     return config;
 }
 
-export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig) {
+export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig): Promise<boolean> {
+    if(config._CONFIG_VER!==undefined && config._CONFIG_VER > DEFAULT_CONFIG._CONFIG_VER) {
+        console.error('pakku config: refuse to save config with version', config._CONFIG_VER, 'which is higher than', DEFAULT_CONFIG._CONFIG_VER);
+        return false;
+    }
+
     config._LAST_UPDATE_TIME = +new Date();
     await chrome.storage.sync.set(config);
+    return true;
 }
 
 export function get_config(): Promise<Config> {
@@ -164,7 +170,7 @@ function _to_int(config: AnyObject, k: (keyof Config)) {
             config[k] = DEFAULT_CONFIG[k];
         else
             config[k] = v;
-        console.log('pakku hotfix: convert', k, v, config[k]);
+        console.log('pakku config: hotfix convert', k, v, config[k]);
     }
 }
 
