@@ -61,6 +61,16 @@ function try_json(s: string, fallback: any): any {
     }
 }
 
+function safe_int(x: string, min: number | null, max: number | null, fallback: number) {
+    let v = parseInt(x, 10);
+    if(isNaN(v) || (min!==null && v<min) || (max!==null && v>max)) {
+        console.log('safe int: invalid value', x, ', falling back to', fallback);
+        return fallback;
+    }
+    else
+        return v;
+}
+
 export function migrate_config(remote_config: AnyObject): Config {
     if(remote_config._CONFIG_VER === DEFAULT_CONFIG._CONFIG_VER)
         return remote_config as Config;
@@ -79,9 +89,9 @@ export function migrate_config(remote_config: AnyObject): Config {
         config._CONFIG_VER = 1;
 
         config.ADVANCED_USER = config._ADVANCED_USER==='on';
-        config.THRESHOLD = parseInt(config.THRESHOLD);
-        config.MAX_DIST = parseInt(config.MAX_DIST);
-        config.MAX_COSINE = parseInt(config.MAX_COSINE);
+        config.THRESHOLD = safe_int(config.THRESHOLD, -1, 180, DEFAULT_CONFIG.THRESHOLD);
+        config.MAX_DIST = safe_int(config.MAX_DIST, 0, null, DEFAULT_CONFIG.MAX_DIST);
+        config.MAX_COSINE = safe_int(config.MAX_COSINE, 0, null, DEFAULT_CONFIG.MAX_COSINE);
         config.TRIM_PINYIN = config.TRIM_PINYIN==='on';
         config.TRIM_ENDING = config.TRIM_ENDING==='on';
         config.TRIM_SPACE = config.TRIM_SPACE==='on';
@@ -93,19 +103,19 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.PROC_TYPE4 = config.PROC_TYPE4==='on';
         config.PROC_POOL1 = config.PROC_POOL1==='on';
         //config.DANMU_MARK = config.DANMU_MARK;
-        config.MARK_THRESHOLD = parseInt(config.MARK_THRESHOLD);
+        config.MARK_THRESHOLD = safe_int(config.MARK_THRESHOLD, 1, null, DEFAULT_CONFIG.MARK_THRESHOLD);
         config.DANMU_SUBSCRIPT = config.DANMU_SUBSCRIPT==='on';
         config.ENLARGE = config.ENLARGE==='on';
         config.SHRINK = config.SHRINK==='on';
         config.MODE_ELEVATION = config.MODE_ELEVATION==='on';
-        config.REPRESENTATIVE_PERCENT = parseInt(config.REPRESENTATIVE_PERCENT);
+        config.REPRESENTATIVE_PERCENT = safe_int(config.REPRESENTATIVE_PERCENT, 0, 100, DEFAULT_CONFIG.REPRESENTATIVE_PERCENT);
         config.TOOLTIP = config.TOOLTIP==='on';
         config.TOOLTIP_KEYBINDING = config.TOOLTIP_KEYBINDING==='on';
         config.AUTO_DISABLE_DANMU = config.AUTO_DISABLE_DANMU==='on';
         config.AUTO_DANMU_LIST = config.AUTO_DANMU_LIST==='on';
         config.FLUCTLIGHT = config.FLUCTLIGHT==='on';
         config.BREAK_UPDATE = config.BREAK_UPDATE==='on';
-        config.SCROLL_THRESHOLD = parseInt(config.SCROLL_THRESHOLD);
+        config.SCROLL_THRESHOLD = safe_int(config.SCROLL_THRESHOLD, 0, null, DEFAULT_CONFIG.SCROLL_THRESHOLD);
         config.USERSCRIPT = DEFAULT_CONFIG.USERSCRIPT;
         //config.POPUP_BADGE = config.POPUP_BADGE;
         config.COMBINE_THREADS = DEFAULT_CONFIG.COMBINE_THREADS;
@@ -114,6 +124,11 @@ export function migrate_config(remote_config: AnyObject): Config {
         delete config.HIDE_THRESHOLD;
         delete config.BLACKLIST;
         delete config.CLOUD_SYNC;
+        delete config.FOOLBAR;
+        delete config.FLASH_NOTIF;
+        delete config.AUTO_PREVENT_SHADE;
+        delete config.REMOVE_SEEK;
+        delete config.TAOLUS;
     }
 
     if(config._CONFIG_VER < 2) {
@@ -154,14 +169,16 @@ function _to_int(config: AnyObject, k: (keyof Config)) {
 }
 
 export function hotfix_on_update(config: any) {
-    // [2024.3.1, 2024.4.1): may leave null in FORCELIST
+    // [2024.3.1 - 2024.4.1): may leave null in FORCELIST
     config.FORCELIST = config.FORCELIST.filter((x: any) => x!==null);
 
-    // [2024.3.1 - 2024.5.1): mv2 config keys not removed
-    delete config._ADVANCED_USER;
-    delete config.HIDE_THRESHOLD;
-    delete config.BLACKLIST;
-    delete config.CLOUD_SYNC;
+    // [2024.3.1 - 2024.5.3): mv2 config keys not removed
+    let old_keys = [
+        '_ADVANCED_USER', 'HIDE_THRESHOLD', 'BLACKLIST', 'CLOUD_SYNC', 'FOOLBAR', 'FLASH_NOTIF', 'AUTO_PREVENT_SHADE', 'REMOVE_SEEK', 'TAOLUS',
+    ].filter(k => k in config);
+    for(let k of old_keys)
+        delete config[k];
+    void chrome.storage.sync.remove(old_keys);
 
     // [2024.3.1 - 2024.5.1): some options keys may be string or nan
     _to_int(config, 'MAX_COSINE');
