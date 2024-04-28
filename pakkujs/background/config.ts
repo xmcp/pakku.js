@@ -137,6 +137,7 @@ export function migrate_config(remote_config: AnyObject): Config {
         delete config.TAOLUS;
     }
 
+    // 1 -> 2
     if(config._CONFIG_VER < 2) {
         config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 2;
@@ -147,6 +148,20 @@ export function migrate_config(remote_config: AnyObject): Config {
     }
 
     return config;
+}
+
+export function fix_missing_keys(config: AnyObject) { // may be due to invalid imported config
+    for(let k_ in DEFAULT_CONFIG) {
+        let k = k_ as keyof Config;
+
+        if(
+            !(k in config) ||
+            (typeof config[k] === 'string' && typeof DEFAULT_CONFIG[k] !== 'string')
+        ) {
+            console.log('pakku config: restored missing key to default:', k, config[k]);
+            config[k] = DEFAULT_CONFIG[k];
+        }
+    }
 }
 
 export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig): Promise<boolean> {
@@ -198,7 +213,8 @@ export function hotfix_on_update(config: any) {
         delete config[k];
     void chrome.storage.sync.remove(old_keys);
 
-    // [2024.3.1 - 2024.5.3): config may be overridden by mv2 version
+    // [2024.3.1 - 2024.5.3): config may be broken by mv2 version
+    fix_missing_keys(config);
     if(config._LAST_UPDATE_TIME && config._LAST_UPDATE_TIME < UPDATE_TS_OFFSET) {
         config._LAST_UPDATE_TIME = gen_timestamp();
     }

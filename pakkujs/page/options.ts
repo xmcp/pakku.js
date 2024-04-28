@@ -1,4 +1,4 @@
-import {Config, DEFAULT_CONFIG, get_config, migrate_config, save_config} from '../background/config';
+import {Config, DEFAULT_CONFIG, fix_missing_keys, get_config, migrate_config, save_config} from '../background/config';
 import Permissions = chrome.permissions.Permissions;
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
@@ -212,6 +212,7 @@ async function backup_restore_prompt() {
             config = JSON.parse(inp);
             config._CONFIG_VER = config._CONFIG_VER || 0;
             config = migrate_config(config);
+            fix_missing_keys(config);
 
             await try_save_config(config);
             loadconfig();
