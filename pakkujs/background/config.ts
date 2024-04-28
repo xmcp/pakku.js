@@ -78,8 +78,10 @@ function safe_int(x: string, min: number | null, max: number | null, fallback: n
 }
 
 export function migrate_config(remote_config: AnyObject): Config {
-    if(remote_config._CONFIG_VER === DEFAULT_CONFIG._CONFIG_VER)
-        return remote_config as Config;
+    if(remote_config._CONFIG_VER === DEFAULT_CONFIG._CONFIG_VER) {
+        // we can skip migration, but we still merge it to the default config to deal with possibly missing keys
+        return {...DEFAULT_CONFIG, ...remote_config};
+    }
 
     let config = JSON.parse(JSON.stringify(remote_config));
     config._CONFIG_VER = config._CONFIG_VER || 0;
@@ -147,10 +149,10 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.READ_PLAYER_BLACKLIST = DEFAULT_CONFIG.READ_PLAYER_BLACKLIST;
     }
 
-    return config;
+    return {...DEFAULT_CONFIG, ...config};
 }
 
-export function fix_missing_keys(config: AnyObject) { // may be due to invalid imported config
+export function fix_invalid_keys(config: AnyObject) { // may be due to invalid imported config
     for(let k_ in DEFAULT_CONFIG) {
         let k = k_ as keyof Config;
 
@@ -214,7 +216,7 @@ export function hotfix_on_update(config: any) {
     void chrome.storage.sync.remove(old_keys);
 
     // [2024.3.1 - 2024.5.3): config may be broken by mv2 version
-    fix_missing_keys(config);
+    fix_invalid_keys(config);
     if(config._LAST_UPDATE_TIME && config._LAST_UPDATE_TIME < UPDATE_TS_OFFSET) {
         config._LAST_UPDATE_TIME = gen_timestamp();
     }
