@@ -51,6 +51,12 @@ export const DEFAULT_CONFIG = {
     READ_PLAYER_BLACKLIST: true,
 }
 
+const UPDATE_TS_OFFSET = 1e13;
+function gen_timestamp() {
+    // add a huge offset to avoid the mv2 version overriding our config
+    return UPDATE_TS_OFFSET + (+new Date());
+}
+
 export type Config = typeof DEFAULT_CONFIG;
 
 function try_json(s: string, fallback: any): any {
@@ -85,7 +91,7 @@ export function migrate_config(remote_config: AnyObject): Config {
 
     // 0 -> 1
     if(config._CONFIG_VER < 1) {
-        config._LAST_UPDATE_TIME = +new Date();
+        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 1;
 
         config.ADVANCED_USER = config._ADVANCED_USER==='on';
@@ -132,7 +138,7 @@ export function migrate_config(remote_config: AnyObject): Config {
     }
 
     if(config._CONFIG_VER < 2) {
-        config._LAST_UPDATE_TIME = +new Date();
+        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 2;
 
         config.SHRINK_THRESHOLD = config.SHRINK ? 50 : 0;
@@ -149,7 +155,7 @@ export async function save_config<SomeConfig extends Partial<Config>>(config: So
         return false;
     }
 
-    config._LAST_UPDATE_TIME = +new Date();
+    config._LAST_UPDATE_TIME = gen_timestamp();
     await chrome.storage.sync.set(config);
     return true;
 }
@@ -178,6 +184,12 @@ export function hotfix_on_update(config: any) {
     // [2024.3.1 - 2024.4.1): may leave null in FORCELIST
     config.FORCELIST = config.FORCELIST.filter((x: any) => x!==null);
 
+    // [2024.3.1 - 2024.5.1): some options keys may be string or nan
+    _to_int(config, 'MAX_COSINE');
+    _to_int(config, 'SHRINK_THRESHOLD');
+    _to_int(config, 'DROP_THRESHOLD');
+    _to_int(config, 'REPRESENTATIVE_PERCENT');
+
     // [2024.3.1 - 2024.5.3): mv2 config keys not removed
     let old_keys = [
         '_ADVANCED_USER', 'HIDE_THRESHOLD', 'BLACKLIST', 'CLOUD_SYNC', 'FOOLBAR', 'FLASH_NOTIF', 'AUTO_PREVENT_SHADE', 'REMOVE_SEEK', 'TAOLUS',
@@ -186,9 +198,8 @@ export function hotfix_on_update(config: any) {
         delete config[k];
     void chrome.storage.sync.remove(old_keys);
 
-    // [2024.3.1 - 2024.5.1): some options keys may be string or nan
-    _to_int(config, 'MAX_COSINE');
-    _to_int(config, 'SHRINK_THRESHOLD');
-    _to_int(config, 'DROP_THRESHOLD');
-    _to_int(config, 'REPRESENTATIVE_PERCENT');
+    // [2024.3.1 - 2024.5.3): config may be overridden by mv2 version
+    if(config._LAST_UPDATE_TIME && config._LAST_UPDATE_TIME < UPDATE_TS_OFFSET) {
+        config._LAST_UPDATE_TIME = gen_timestamp();
+    }
 }
