@@ -20,6 +20,8 @@
 
 ![screenshot](userscript_in_options.png)
 
+[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度不能超过 8KB。
+
 ## 添加临时用户脚本
 
 临时用户脚本仅针对特定标签页中的视频生效，关闭标签页或刷新后即失效，适合对个别视频的一次性调整。
