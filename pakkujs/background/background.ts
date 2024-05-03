@@ -139,7 +139,7 @@ async function toggle_global_switch() {
     for(let tab of await chrome.tabs.query({})) {
         let url = tab.url;
         if(url?.includes('bilibili.com/'))
-            chrome.tabs.sendMessage(tab.id!, {type: 'reload_danmu'})
+            chrome.tabs.sendMessage(tab.id!, {type: 'reload_danmu', key: new_switch ? 2 : 1})
                 .catch(()=>{});
     }
 

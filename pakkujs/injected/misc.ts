@@ -1,3 +1,5 @@
+import {int} from "../core/types";
+
 export function show_danmu_list() {
     let list_switch_elem = window.root_elem.querySelector('.danmaku-box .bui-collapse-wrap-folded .bui-collapse-header, #danmukuBox .bui-collapse-wrap-folded .bui-collapse-header') as HTMLElement;
     console.log('pakku injector: list_switch_elem', list_switch_elem);
@@ -22,19 +24,17 @@ export function disable_danmu() {
     }
 }
 
-let _reload_danmu_id = 1;
-
 function trigger_mouse_event(node: HTMLElement, eventType: string) {
     let e = new MouseEvent(eventType, {bubbles: true, cancelable: true});
     node.dispatchEvent(e);
 }
 
-export function reload_danmu_magic() {
+export function reload_danmu_magic(key: int) {
     function proceed(date_picker: HTMLElement) {
         let elem = document.createElement('span');
         elem.className = 'js-action __pakku_injected';
         elem.dataset['action'] = 'changeDay';
-        elem.dataset['timestamp'] = '' + (86400 + _reload_danmu_id * 86400);
+        elem.dataset['timestamp'] = '' + (86400 + key * 86400);
         elem.style.display = 'none';
         date_picker.appendChild(elem);
 
@@ -44,7 +44,6 @@ export function reload_danmu_magic() {
         trigger_mouse_event(elem, 'click');
 
         elem.remove();
-        _reload_danmu_id = (_reload_danmu_id + 1) % 3650;
     }
 
     let date_picker = window.root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content') as HTMLElement;
