@@ -26,7 +26,7 @@ export class UserscriptWorker {
     constructor(script: string | null) {
         this.script = script || '';
         this.worker = new Worker(URL.createObjectURL(new Blob([
-            USERSCRIPT_TEMPLATE.replace('/* MAIN */', this.script),
+            USERSCRIPT_TEMPLATE.replace('/* MAIN */', this.script+'\n'),
         ], {type: 'text/javascript'})));
         this.resolve = null;
         this.reject = null;
