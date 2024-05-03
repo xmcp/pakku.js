@@ -77,6 +77,7 @@ id('reset').addEventListener('click', function() {
                 alert('设置清空失败');
             }
 
+            void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
             alert('重置完成');
             location.reload();
         });
