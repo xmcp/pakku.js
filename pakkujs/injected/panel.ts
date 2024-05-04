@@ -145,7 +145,12 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             if(sub.className.endsWith('text')) // e.g. b-danmaku-high-text
                 return sub.textContent!;
         }
-        return elem.textContent!;
+
+        // try to select only text node to avoid things like `<span class="bili-up-tip" style="font-size:15px;">UP主</span>`
+        let textnodes = [...elem.childNodes].filter(ch => ch.nodeType===Node.TEXT_NODE);
+        let text = textnodes.map(node => node.textContent).join('');
+
+        return text ? text : elem.textContent!;
     }
 
     function show_panel(dminfo: {str: string, index?: int}, floating: boolean = false) {
