@@ -70,17 +70,21 @@ async function load() {
         $save.onclick = async ()=>{
             $save.disabled = true;
             if(await check_userscript($editor.value)) {
-                await save_config({['USERSCRIPT']: $editor.value});
-                alert('保存成功');
+                let err = await save_config({['USERSCRIPT']: $editor.value});
+                alert(err || '保存成功');
             }
             $save.disabled = false;
         };
 
         $clear.onclick = async ()=>{
             if(confirm(`清除全局用户脚本？`)) {
-                await save_config({USERSCRIPT: null});
-                alert('清除成功');
-                location.reload();
+                let err = await save_config({USERSCRIPT: null});
+                if(err) {
+                    alert(err);
+                } else {
+                    alert('清除成功');
+                    location.reload();
+                }
             }
         };
     }

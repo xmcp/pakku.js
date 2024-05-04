@@ -166,15 +166,20 @@ export function fix_invalid_keys(config: AnyObject) { // may be due to invalid i
     }
 }
 
-export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig): Promise<boolean> {
+export async function save_config<SomeConfig extends Partial<Config>>(config: SomeConfig): Promise<string|null> {
     if(config._CONFIG_VER!==undefined && config._CONFIG_VER > DEFAULT_CONFIG._CONFIG_VER) {
         console.error('pakku config: refuse to save config with version', config._CONFIG_VER, 'which is higher than', DEFAULT_CONFIG._CONFIG_VER);
-        return false;
+        return '无法保存设置，因为云端设置版本高于本地。请尝试更新 pakku 或者重置所有设置。';
     }
 
     config._LAST_UPDATE_TIME = gen_timestamp();
-    await chrome.storage.sync.set(config);
-    return true;
+    try {
+        await chrome.storage.sync.set(config);
+    } catch(e: any) {
+        console.error(e);
+        return '无法保存设置：' + (e.message || e);
+    }
+    return null;
 }
 
 export function get_config(): Promise<Config> {

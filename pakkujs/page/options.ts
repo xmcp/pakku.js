@@ -192,14 +192,12 @@ function get_ws_permission_and_reload() {
 }
 
 async function try_save_config(config: Config) {
-    let succ = await save_config(config);
+    let error_msg = await save_config(config);
 
-    if(!succ) {
-        show_note(
-            '无法保存设置，因为云端设置版本高于本地。请尝试更新 pakku 或者重置所有设置。',
-            null,
-        );
+    if(error_msg) {
+        show_note(error_msg, null);
     }
+    return error_msg;
 }
 
 async function backup_restore_prompt() {
@@ -215,7 +213,7 @@ async function backup_restore_prompt() {
             config = migrate_config(config);
             fix_invalid_keys(config);
 
-            await try_save_config(config);
+            let err = await try_save_config(config);
             loadconfig();
 
             if(config.BREAK_UPDATE)
@@ -223,7 +221,7 @@ async function backup_restore_prompt() {
             else
                 void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
 
-            alert('导入成功。');
+            alert(err || '导入成功。');
             setTimeout(()=>{
                 location.reload();
             }, 200);
@@ -241,12 +239,14 @@ id('version').addEventListener('click', async function(event: MouseEvent) {
 id('backup-restore').addEventListener('click', backup_restore_prompt);
 
 async function reload(changed_dnr=false) {
-    await try_save_config(config);
+    let err = await try_save_config(config);
 
-    id('saved-alert').classList.remove('saved-hidden');
-    setTimeout(function() {
-        id('saved-alert').classList.add('saved-hidden');
-    }, 100);
+    if(!err) {
+        id('saved-alert').classList.remove('saved-hidden');
+        setTimeout(function() {
+            id('saved-alert').classList.add('saved-hidden');
+        }, 100);
+    }
 
     let old = document.getElementById('highlighter');
     if(old) old.remove();
