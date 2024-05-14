@@ -1,18 +1,18 @@
 (()=>{
-
 let fn_before = [];
 let fn_after = [];
+let fn_view = [];
 
-function tweak_before_pakku(callback, timing=0) {
-    if(typeof callback !== 'function')
-        throw new Error('callback to tweak_before_pakku is not a function');
-    fn_before.push([timing, callback]);
+function reg_tweak_fn(list) {
+    return (callback, timing=0) => {
+        if(typeof callback !== 'function')
+            throw new Error('callback argument is not a function');
+        list.push([timing, callback]);
+    };
 }
-function tweak_after_pakku(callback, timing=0) {
-    if(typeof callback !== 'function')
-        throw new Error('callback to tweak_after_pakku is not a function');
-    fn_after.push([timing, callback]);
-}
+const tweak_before_pakku = reg_tweak_fn(fn_before);
+const tweak_after_pakku = reg_tweak_fn(fn_after);
+const tweak_proto_view = reg_tweak_fn(fn_view);
 
 function fix_dispstr(chunk) {
     for(let obj of chunk.objs) {
@@ -29,14 +29,16 @@ function fix_dispstr(chunk) {
 onmessage = (e) => {
     try {
         if(e.data.type==='init') {
-            install_callbacks(tweak_before_pakku, tweak_after_pakku);
+            install_callbacks(tweak_before_pakku, tweak_after_pakku, tweak_proto_view);
             fn_before = fn_before.sort((a, b) => a[0] - b[0]);
             fn_after = fn_after.sort((a, b) => a[0] - b[0]);
+            fn_view = fn_view.sort((a, b) => a[0] - b[0]);
             postMessage({
                 error: null,
                 output: {
                     n_before: fn_before.length,
                     n_after: fn_after.length,
+                    n_view: fn_view.length,
                 },
             });
         }
@@ -53,6 +55,12 @@ onmessage = (e) => {
             fix_dispstr(chunk);
             postMessage({error: null, output: chunk});
         }
+        else if(e.data.type==='proto_view') {
+            let view = e.data.view;
+            for(let [timing, fn] of fn_view)
+                fn(view);
+            postMessage({error: null, output: view});
+        }
         else {
             postMessage({error: 'unknown type '+e.data.type});
         }
@@ -60,9 +68,8 @@ onmessage = (e) => {
         postMessage({error: err});
     }
 };
-
 })();
 
-function install_callbacks(tweak_before_pakku, tweak_after_pakku) {
+function install_callbacks(tweak_before_pakku, tweak_after_pakku, tweak_proto_view) {
     /* MAIN */
 }

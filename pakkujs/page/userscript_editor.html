@@ -86,6 +86,7 @@ interface DanmuChunk&lt;ObjectType extends DanmuObject> {
 
 function tweak_before_pakku(callback: (chunk: DanmuChunk&lt;DanmuObject>) => void, timing: number = 0) {}
 function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresentative>) => void, timing: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
 </pre>
         </details>
 

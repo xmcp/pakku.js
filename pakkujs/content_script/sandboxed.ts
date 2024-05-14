@@ -16,8 +16,8 @@ export async function userscript_sandbox(script: string): Promise<{error: string
     let w = null;
     try {
         w = new UserscriptWorker(script);
-        let res = await w.init();
-        return {error: null, total: res[0]+res[1]};
+        let tot_number = await w.init();
+        return {error: null, total: tot_number};
     } catch(e: any) {
         return {error: `${e.message || '未知错误'}\n\n${e.stack}`};
     } finally {

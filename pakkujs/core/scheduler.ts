@@ -1,7 +1,7 @@
 import {WorkerPool} from "./worker_pool";
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
 import {
-    AjaxResponse,
+    AjaxResponse, AnyObject,
     DanmuChunk,
     DanmuClusterOutput,
     DanmuObject, DanmuObjectRepresentative,
@@ -14,7 +14,13 @@ import {
 import {post_combine} from "./post_combine";
 import {UserscriptWorker} from "./userscript";
 import {do_inject} from "../injected/do_inject";
-import {protoapi_get_prefetch, ProtobufIngressSeg, ProtobufPrefetchObj} from "../protocol/interface_protobuf";
+import {
+    protoapi_encode_view,
+    protoapi_get_prefetch,
+    protoapi_get_view,
+    ProtobufIngressSeg,
+    ProtobufPrefetchObj
+} from "../protocol/interface_protobuf";
 
 const MAX_SCHEDULERS_PER_PAGE = 3;
 
@@ -66,6 +72,7 @@ class Scheduler {
     failed: boolean;
     pool: WorkerPool;
     userscript: UserscriptWorker | null;
+    userscript_init: Promise<void> | null;
 
     prefetch_data: ProtobufPrefetchObj | null;
 
@@ -85,6 +92,7 @@ class Scheduler {
         this.failed = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
         this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
+        this.userscript_init = null;
         this.prefetch_data = null;
     }
 
@@ -192,7 +200,7 @@ class Scheduler {
         if(this.userscript && this.userscript.n_after) {
             try {
                 chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
-                this.userscript.sancheck_output(chunk_out);
+                this.userscript.sancheck_chunk_output(chunk_out);
             } catch(e) {
                 this.write_failing_stats(`处理分片 ${segidx} 后执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                 return;
@@ -250,8 +258,31 @@ class Scheduler {
         if(this.stats.type==='message') {
             this.finish();
         }
+
         this.pool.terminate();
+        if(this.userscript)
+            this.userscript.terminate();
+
         this.clusters.clear(); // to free some RAM
+    }
+
+    async init_userscript() {
+        if(!this.userscript)
+            return;
+
+        let fn = async () => {
+            try {
+                this.ongoing_stats.num_userscript = await this.userscript!.init();
+            } catch(e) {
+                this.write_failing_stats('初始化用户脚本时出错', e as Error, BADGE_ERR_JS);
+                return;
+            }
+        };
+
+        if(!this.userscript_init)
+            this.userscript_init = fn();
+
+        return this.userscript_init;
     }
 
     async start() {
@@ -259,16 +290,11 @@ class Scheduler {
 
         if(this.prefetch_data && this.prefetch_data.guessed_chunks && this.prefetch_data.guessed_chunks<this.pool.pool_size)
             this.pool.pool_size = this.prefetch_data.guessed_chunks;
-        await this.pool.spawn();
 
-        if(this.userscript) {
-            try {
-                await this.userscript.init();
-            } catch(e) {
-                this.write_failing_stats('初始化用户脚本时出错', e as Error, BADGE_ERR_JS);
-                return;
-            }
-        }
+        await Promise.all([
+            this.pool.spawn(),
+            this.init_userscript(),
+        ]);
 
         this.start_ts = +new Date();
         try {
@@ -278,7 +304,7 @@ class Scheduler {
                 if(this.userscript && this.userscript.n_before) {
                     try {
                         chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
-                        this.userscript.sancheck_output(chunk);
+                        this.userscript.sancheck_chunk_output(chunk);
                     } catch(e) {
                         this.write_failing_stats(`处理分片 ${idx} 前执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                         return;
@@ -309,6 +335,39 @@ class Scheduler {
 
         this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
         void this.try_start_postproc(1);
+    }
+
+    async modify_proto_view(): Promise<ArrayBuffer> {
+        await this.init_userscript();
+
+        let view_req = this.prefetch_data!.view;
+
+        if(this.userscript && this.userscript.n_view) {
+            let view: AnyObject;
+
+            try {
+                view = await protoapi_get_view(view_req);
+            } catch(e) {
+                this.write_failing_stats('下载 view 时出错', e as Error, BADGE_ERR_NET);
+                return view_req;
+            }
+
+            try {
+                view = await this.userscript.exec({type: 'proto_view', view: view});
+                let view_ab = protoapi_encode_view(view).buffer;
+
+                // cache the result so it will be available even if this.userscript has been cleaned up
+                this.prefetch_data!.view = new Promise((resolve) => resolve(view_ab));
+                this.userscript.n_view = 0;
+
+                return view_ab;
+            } catch(e) {
+                this.write_failing_stats(`执行 view 用户脚本时出错`, e as Error, BADGE_ERR_JS);
+                return view_req;
+            }
+        } else {
+            return view_req;
+        }
     }
 }
 let schedulers: Array<Scheduler> = [];
@@ -351,7 +410,7 @@ export function handle_proto_view(ingress: ProtobufIngressSeg, view_url: string,
             if(!scheduler.prefetch_data)
                 scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
 
-            return scheduler.prefetch_data.view;
+            return scheduler.modify_proto_view();
         }
 
     let scheduler = new Scheduler(ingress, config, tabid);
@@ -364,5 +423,5 @@ export function handle_proto_view(ingress: ProtobufIngressSeg, view_url: string,
     if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
         schedulers.shift();
 
-    return scheduler.prefetch_data.view;
+    return scheduler.modify_proto_view();
 }

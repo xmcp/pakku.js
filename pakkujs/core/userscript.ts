@@ -6,6 +6,7 @@ type ArgType = (
     {type: 'init'}
     | {type: 'pakku_before', chunk: DanmuChunk<DanmuObject>}
     | {type: 'pakku_after', chunk: DanmuChunk<DanmuObjectRepresentative>}
+    | {type: 'proto_view', view: AnyObject}
 );
 type RetType = AnyObject;
 
@@ -22,6 +23,7 @@ export class UserscriptWorker {
 
     n_before: int;
     n_after: int;
+    n_view: int;
 
     constructor(script: string | null) {
         this.script = script || '';
@@ -33,6 +35,7 @@ export class UserscriptWorker {
         this.queue = [];
         this.n_before = 0;
         this.n_after = 0;
+        this.n_view = 0;
 
         this.worker.onerror = (e: ErrorEvent) => {
             console.error('pakku userscript: INIT ERROR', e);
@@ -82,14 +85,19 @@ export class UserscriptWorker {
         });
     }
 
-    async init(): Promise<[int, int]> {
-        let {n_before, n_after} = await this.exec({type: 'init'});
-        this.n_before = n_before;
-        this.n_after = n_after;
-        return [n_before, n_after];
+    terminate() {
+        this.worker.terminate();
     }
 
-    sancheck_output(chunk: any) {
+    async init(): Promise<int> {
+        let {n_before, n_after, n_view} = await this.exec({type: 'init'});
+        this.n_before = n_before;
+        this.n_after = n_after;
+        this.n_view = n_view;
+        return n_before + n_after + n_view;
+    }
+
+    sancheck_chunk_output(chunk: any) {
         if(
             !chunk
             || !chunk.objs

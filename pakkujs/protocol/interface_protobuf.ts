@@ -3,6 +3,7 @@ import md5 from "md5";
 import {AnyObject, DanmuChunk, DanmuObject, int, MissingData} from "../core/types";
 
 type proto_seg = protogen.bilibili.community.service.dm.v1.DmSegMobileReply;
+type proto_view = protogen.bilibili.community.service.dm.v1.DmWebViewReply;
 
 let proto_seg = protogen.bilibili.community.service.dm.v1.DmSegMobileReply;
 let proto_view = protogen.bilibili.community.service.dm.v1.DmWebViewReply;
@@ -139,7 +140,7 @@ async function protoapi_view_api(ingress: ProtobufIngressSeg): Promise<ArrayBuff
     return await res.arrayBuffer();
 }
 
-async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promise<int | null> {
+export async function protoapi_get_view(view_response: Promise<ArrayBuffer>): Promise<proto_view> {
     let buffer = await view_response;
     let arr = new Uint8Array(buffer);
 
@@ -151,7 +152,15 @@ async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promi
         arr = arr2;
     }
 
-    let d = proto_view.decode(arr);
+    return proto_view.decode(arr);
+}
+
+export function protoapi_encode_view(view: AnyObject): Uint8Array {
+    return proto_view.encode(view).finish();
+}
+
+async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promise<int | null> {
+    let d = await protoapi_get_view(view_response);
     console.log('pakku protobuf api: got view', d);
 
     if(d.dmSge && d.dmSge.total && d.dmSge.total < 200)
