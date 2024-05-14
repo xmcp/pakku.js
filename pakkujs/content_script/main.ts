@@ -1,6 +1,6 @@
 import {url_finder} from "../protocol/urls";
 import {handle_proto_view, handle_task, last_scheduler} from "../core/scheduler";
-import {Config, get_config} from "../background/config";
+import {get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {AjaxResponse, BlacklistItem, int, LocalizedConfig} from "../core/types";
 import {process_local, userscript_sandbox} from "./sandboxed";
@@ -55,11 +55,7 @@ function get_tabid() {
     });
 }
 
-async function apply_local_config(config: Config, is_pure_env: boolean = false): Promise<LocalizedConfig> {
-    let state = await get_state();
-
-    let userscript = config.USERSCRIPT;
-
+async function get_local_config(is_pure_env: boolean = false): Promise<LocalizedConfig> {
     if(!tabid) {
         tabid = await get_tabid() as int;
 
@@ -78,6 +74,11 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
         };
     }
 
+    let config = await get_config();
+    let state = await get_state();
+
+    let userscript = config.USERSCRIPT;
+
     if(state[`USERSCRIPT_${tabid}`])
         userscript = (userscript || '') + '\n\n' + state[`USERSCRIPT_${tabid}`];
 
@@ -91,10 +92,13 @@ async function apply_local_config(config: Config, is_pure_env: boolean = false):
 }
 
 let local_config: null | LocalizedConfig = null;
+get_local_config().then((c)=>{
+    local_config = c;
+});
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if(msg.type==='reload_state') {
-        local_config = null; // will trigger reload later
+    if(msg.type==='ping') {
+        sendResponse({error: null});
     }
     else if(msg.type==='refresh') {
         unreg_userscript = false;
@@ -178,10 +182,8 @@ window.addEventListener('message', async function(event) {
             return;
         }
 
-        if(!local_config) {
-            let config = await get_config();
-            local_config = await apply_local_config(config);
-        }
+        if(!local_config)
+            local_config = await get_local_config();
 
         if(
             !local_config.GLOBAL_SWITCH &&
@@ -212,7 +214,7 @@ window.addEventListener('message', async function(event) {
         }, event.origin as any);
     }
     else if(event.origin===ext_domain && event.data.type==='pakku_process_local_request') {
-        let config = await apply_local_config(await get_config(), true);
+        let config = await get_local_config(true);
         config.GLOBAL_SWITCH = true;
 
         let res = await process_local(event.data.ingress, event.data.egress, config, tabid as int);

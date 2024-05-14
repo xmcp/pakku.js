@@ -111,7 +111,7 @@ export class WorkerPool {
             this.pool_size = 1;
         }
 
-        for(let i = 0; i < this.pool_size; i++) {
+        let spawn_single_worker = async () => {
             let w = await maker.spawn();
             let config = {
                 worker: w,
@@ -139,8 +139,12 @@ export class WorkerPool {
 
                 this._try_perform_work();
             };
-            this.workers.push(config);
+            return config;
         }
+
+        this.workers = await Promise.all(
+            new Array(this.pool_size).fill(0).map(spawn_single_worker)
+        );
     }
 
     _try_perform_work() {

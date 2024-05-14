@@ -39,7 +39,7 @@ async function load() {
             $save.disabled = true;
             if(await check_userscript($editor.value)) {
                 try {
-                    await chrome.tabs.sendMessage(tabid, {type: 'reload_state'}); // make sure the tab (still) exists
+                    await chrome.tabs.sendMessage(tabid, {type: 'ping'}); // make sure the tab (still) exists
                     await save_state({[`USERSCRIPT_${tabid}`]: $editor.value});
                     await chrome.tabs.sendMessage(tabid, {type: 'refresh'});
                     alert('保存成功');
