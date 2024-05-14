@@ -257,12 +257,42 @@ async function reload(changed_dnr=false) {
     loadconfig();
 }
 
+function _other_onchange(e: Event) {
+    let elem = e.target as HTMLSelectElement;
+    if(elem.value === '_other') {
+        let more_opt: HTMLOptionElement = elem.querySelector('option.other')!;
+
+        let val = prompt('输入自定义数值：') || '';
+        more_opt.value = val;
+        elem.value = val;
+    }
+}
+
+function set_select_value(elem: HTMLSelectElement, value: number, ui_pfx = '', ui_sfx = '') {
+    value = Math.round(value);
+
+    let exact_opt: HTMLOptionElement|null = elem.querySelector(`option:not(.other)[value="${value}"]`);
+    let more_opt: HTMLOptionElement = elem.querySelector('option.other')!;
+
+    if(exact_opt) {
+        more_opt.value = '_other';
+        more_opt.textContent = '自定义…';
+        elem.addEventListener('change', _other_onchange, {capture: true});
+    } else {
+        more_opt.value = ''+value;
+        more_opt.textContent = `自定义 (${ui_pfx}${value}${ui_sfx})`;
+        elem.removeEventListener('change', _other_onchange, {capture: true});
+    }
+
+    elem.value = ''+value;
+}
+
 function loadconfig() {
     id('show-advanced').checked = config.ADVANCED_USER;
     // 弹幕合并
     id('threshold').value = config.THRESHOLD;
-    id('max-dist').value = config.MAX_DIST;
-    id('max-cosine').value = config.MAX_COSINE;
+    set_select_value(id('max-dist'), config.MAX_DIST, '≤', '');
+    set_select_value(id('max-cosine'), config.MAX_COSINE, '', '%');
     id('trim-pinyin').checked = config.TRIM_PINYIN;
     id('trim-ending').checked = config.TRIM_ENDING;
     id('trim-space').checked = config.TRIM_SPACE;
@@ -277,10 +307,10 @@ function loadconfig() {
     id('mark-threshold').value = config.MARK_THRESHOLD;
     id('danmu-subscript').checked = config.DANMU_SUBSCRIPT;
     id('enlarge').checked = config.ENLARGE;
-    id('shrink-threshold').value = config.SHRINK_THRESHOLD;
-    id('drop-threshold').value = config.DROP_THRESHOLD;
+    set_select_value(id('shrink-threshold'), config.SHRINK_THRESHOLD, '>', '');
+    set_select_value(id('drop-threshold'), config.DROP_THRESHOLD, '>', '');
     id('mode-elevation').checked = config.MODE_ELEVATION;
-    id('representative-percent').value = config.REPRESENTATIVE_PERCENT;
+    set_select_value(id('representative-percent'), config.REPRESENTATIVE_PERCENT, '', '%');
     // 播放器增强
     id('tooltip').checked = config.TOOLTIP;
     id('tooltip-keybinding').checked = config.TOOLTIP_KEYBINDING;
@@ -449,7 +479,7 @@ for(let elem of img_btns) {
 function safe_int(x: string, min: number | null, max: number | null, fallback: number) {
     let v = parseInt(x, 10);
     if(isNaN(v) || (min!==null && v<min) || (max!==null && v>max)) {
-        console.log('safe int: invalid value', x, ', falling back to', fallback);
+        alert(`数值无效（${x}），已恢复为默认`);
         return fallback;
     }
     else

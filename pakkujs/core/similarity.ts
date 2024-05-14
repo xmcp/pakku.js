@@ -5,8 +5,6 @@ let ed_a = new Int16Array(0x10ffff);
 let ed_b = new Int16Array(0x10ffff);
 let ed_counts = ed_a; // to save memory
 
-let MIN_DANMU_SIZE = 10;
-
 function edit_distance(P: string, Q: string): int {
     // this is NOT the real edit_distance as in a textbook because it would be too slow
     // actually this is O(n) time
@@ -81,6 +79,7 @@ function cosine_distance(Pgram: int[], Qgram: int[], Plen: int, Qlen: int) {
 export function similar_meta(config: LocalizedConfig) {
     const MAX_DIST = config.MAX_DIST;
     const MAX_COSINE = config.MAX_COSINE;
+    const MIN_DANMU_SIZE = Math.max(1, MAX_DIST * 2);
 
     return function (P: string, Q: string, Pgram: int[] | null, Qgram: int[] | null, Ppinyin: string | null, Qpinyin: string | null, S: Stats): string | null {
         if(P===Q) {

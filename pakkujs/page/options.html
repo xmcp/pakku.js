@@ -254,12 +254,13 @@
                         * 超长（大概 60 秒以上？）的阈值可能会导致程序运行缓慢
                     </p>
                     <p class="advanced">
-                        <label for="max-dist">编辑距离合并强度</label>
+                        <label for="max-dist">编辑距离合并阈值</label>
                         <select id="max-dist">
-                            <option value="0">禁用 (≤0)</option>
+                            <option value="0">禁用</option>
                             <option value="3">轻微 (≤3)</option>
                             <option value="5">中等 (≤5)</option>
                             <option value="8">强力 (≤8)</option>
+                            <option class="other"></option>
                         </select>
                         <label for="max-dist">：</label>
                         <span>
@@ -271,12 +272,13 @@
                         感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
                     </p>
                     <p class="advanced">
-                        <label for="max-cosine">词频向量合并强度</label>
+                        <label for="max-cosine">词频向量合并阈值</label>
                         <select id="max-cosine">
-                            <option value="1000">禁用 (+∞%)</option>
+                            <option value="1000">禁用</option>
                             <option value="60">轻微 (60%)</option>
                             <option value="45">中等 (45%)</option>
                             <option value="30">强力 (30%)</option>
+                            <option class="other"></option>
                         </select>
                         <label for="max-cosine">：</label>
                         <span>
@@ -400,6 +402,7 @@
                             <option value="70">轻微 (>70)</option>
                             <option value="50">中等 (>50)</option>
                             <option value="40">强力 (>40)</option>
+                            <option class="other"></option>
                         </select>
                         <label for="max-dist">：</label>
                         <span>瞬时弹幕密度大于阈值时，按比例减小字号以避免遮挡画面</span>
@@ -415,6 +418,7 @@
                             <option value="240">轻微 (>240)</option>
                             <option value="160">中等 (>160)</option>
                             <option value="100">强力 (>100)</option>
+                            <option class="other"></option>
                         </select>
                         <label for="drop-threshold">：</label>
                         <span>瞬时弹幕密度大于阈值时，按比例删除云屏蔽权重低的未合并弹幕</span>
@@ -422,10 +426,12 @@
                     <p class="advanced">
                         <label for="representative-percent">合并后的弹幕显示于 </label>
                         <select id="representative-percent">
-                            <option value="0">最先出现的时间点</option>
-                            <option value="20">其中 20% 弹幕出现的时间点</option>
-                            <option value="50">其中 50% 弹幕出现的时间点</option>
+                            <option value="0">0%</option>
+                            <option value="20">20%</option>
+                            <option value="50">50%</option>
+                            <option class="other"></option>
                         </select>
+                        <label for="representative-percent"> 百分位弹幕的时间点</label>
                     </p>
                     <p class="advanced">
                         <input id="mode-elevation" type="checkbox">
