@@ -259,11 +259,13 @@ class Scheduler {
             this.finish();
         }
 
-        this.pool.terminate();
-        if(this.userscript)
-            this.userscript.terminate();
-
         this.clusters.clear(); // to free some RAM
+
+        setTimeout(()=>{
+            this.pool.terminate();
+            if(this.userscript)
+                this.userscript.terminate();
+        }, 1000); // delay destroying web workers to fix view req race and improve performance
     }
 
     async init_userscript() {

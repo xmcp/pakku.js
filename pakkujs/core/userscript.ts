@@ -16,6 +16,7 @@ export class UserscriptWorker {
     script: string;
     worker: Worker;
     init_error: null | ErrorEvent = null;
+    terminated: boolean;
 
     resolve: null | ((res: RetType)=>void);
     reject: null | ((e: any)=>void);
@@ -30,6 +31,7 @@ export class UserscriptWorker {
         this.worker = new Worker(URL.createObjectURL(new Blob([
             USERSCRIPT_TEMPLATE.replace('/* MAIN */', this.script+'\n'),
         ], {type: 'text/javascript'})));
+        this.terminated = false;
         this.resolve = null;
         this.reject = null;
         this.queue = [];
@@ -61,8 +63,11 @@ export class UserscriptWorker {
     }
 
     _try_perform_work() {
-        if(this.queue.length===0)
+        if(this.queue.length===0) {
+            if(this.terminated)
+                this.worker.terminate();
             return;
+        }
 
         if(this.resolve===null) { // idle
             let [arg, resolve, reject] = this.queue.shift()!;
@@ -86,7 +91,14 @@ export class UserscriptWorker {
     }
 
     terminate() {
-        this.worker.terminate();
+        if(this.terminated)
+            return;
+
+        this.terminated = true;
+
+        if(this.queue.length===0)
+            this.worker.terminate();
+        // else terminate until all tasks are done in _try_perform_work
     }
 
     async init(): Promise<int> {
