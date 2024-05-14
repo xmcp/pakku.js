@@ -32,7 +32,7 @@
 
 如果没有显示这个按钮，请先在选项页面勾选【我是高级用户】。
 
-## 编写用户脚本
+## 通过用户脚本来修改弹幕内容
 
 你需要编写一个回调函数，通过参数接收一个弹幕分片（即6分钟以内的弹幕列表），然后直接修改这个分片。
 
@@ -112,7 +112,21 @@ interface DanmuChunk<ObjectType extends DanmuObject> {
 
 function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>) => void, timing: number = 0) {}
 function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>) => void, timing: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
 ```
+
+## 通过用户脚本来修改弹幕元信息
+
+从 2024.6.1 版本起，用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应。
+
+弹幕元信息是 B 站播放器的私有 API，因此 pakku 不保证此接口的稳定性，也无法解释每个字段的准确含义。完整的字段列表参见 [Protobuf 定义](../proto_translation/bili-proto.json) 中的 `DmWebViewReply` 类型。
+
+以下是部分功能已知的字段：
+
+- `activityMetas`：播放器内嵌广告，例如视频开头偶尔出现的 “云视听小电视” 贴片广告
+- `commandDms`：视频中的互动控件，例如相关视频、投票、打分、引导关注等
+- `specialDms`：视频中的特殊弹幕，B 站不会把特殊弹幕混在正常弹幕池中，而是单独上传到 CDN 然后在这个字段中指示特殊弹幕的 URL
+- `dmSetting`：播放器的弹幕设置，默认会从 B 站账号同步
 
 ## 示例
 
@@ -189,6 +203,23 @@ tweak_after_pakku(chunk=>{
         }
     });
     chunk.objs.push(...extracted);
+});
+```
+
+去除投票等互动控件和贴片广告：
+
+```javascript
+tweak_proto_view(view=>{
+    view.commandDms = [];
+    view.activityMetas = [];
+});
+```
+
+非硬核会员启用 “硬核会员弹幕模式” 选项：
+
+```javascript
+tweak_proto_view(view=>{
+    view.dmSetting.seniorModeSwitch = 2;
 });
 ```
 
