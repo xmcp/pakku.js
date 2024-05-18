@@ -66,6 +66,7 @@ class Scheduler {
     chunks_in: Map<int, DanmuChunk<DanmuObject>>;
     clusters: Map<int, DanmuClusterOutput>;
     chunks_out: Map<int, DanmuChunk<DanmuObjectRepresentative>>;
+    chunks_deleted: Map<int, DanmuChunk<DanmuObject>>;
 
     num_chunks: int;
     combine_started: Set<int>;
@@ -87,6 +88,7 @@ class Scheduler {
         this.chunks_in = new Map();
         this.clusters = new Map();
         this.chunks_out = new Map();
+        this.chunks_deleted = new Map();
         this.num_chunks = 0;
         this.combine_started = new Set();
         this.failed = false;
@@ -247,10 +249,38 @@ class Scheduler {
         this.ongoing_stats.notify(this.tabid, this.config);
         this.stats = this.ongoing_stats;
 
-        if(this.config.GLOBAL_SWITCH && !this.config.SKIP_INJECT) {
-            setTimeout(()=>{
-                do_inject(this.chunks_out, this.config);
-            }, 150); // delay ui injection to improve player responsiveness
+        setTimeout(()=>{
+            this.calc_chunk_deleted();
+            if(this.config.GLOBAL_SWITCH && !this.config.SKIP_INJECT) {
+                do_inject(this.chunks_out, this.chunks_deleted, this.config);
+            }
+        }, 300); // delay ui injection to improve player responsiveness
+    }
+
+    calc_chunk_deleted() {
+        let out_danmu_ids = new Set();
+        for(let chunk of this.chunks_out.values()) {
+            for(let dr of chunk.objs) {
+                out_danmu_ids.add(dr.id);
+                for(let dp of dr.pakku.peers)
+                    out_danmu_ids.add(dp.id);
+            }
+        }
+
+        this.chunks_deleted.clear();
+
+        for(let [idx, chunk_in] of this.chunks_in) {
+            let chunk_del = {
+                objs: [] as DanmuObject[],
+                extra: chunk_in.extra,
+            };
+
+            for(let d of chunk_in.objs) {
+                if(!out_danmu_ids.has(d.id))
+                    chunk_del.objs.push(d);
+            }
+
+            this.chunks_deleted.set(idx, chunk_del);
         }
     }
 
@@ -265,7 +295,7 @@ class Scheduler {
             this.pool.terminate();
             if(this.userscript)
                 this.userscript.terminate();
-        }, 1000); // delay destroying web workers to fix view req race and improve performance
+        }, 1500); // delay destroying web workers to fix view req race and improve performance
     }
 
     async init_userscript() {

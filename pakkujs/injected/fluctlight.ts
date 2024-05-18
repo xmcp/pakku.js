@@ -5,8 +5,16 @@ import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
 const GRAPH_DENSITY_POWER = .8;
 const GRAPH_DENSITY_SCALE = .6;
-const GRAPH_DENSITY_DELTA = 1;
+const GRAPH_DENSITY_DELTA = 2;
 const GRAPH_ALPHA = .6;
+
+const COLOR_FILL_WITHDEL = '#ff8888';
+const COLOR_FILL_BEF = '#ffbb88';
+const COLOR_FILL_AFT = '#aa99ff';
+
+const COLOR_LINE_WITHDEL = '#bb0000';
+const COLOR_LINE_BEF = '#995500';
+const COLOR_LINE_AFT = '#0000cc';
 
 function fluctlight_cleanup() {
     for(let elem of window.root_elem.querySelectorAll('.pakku-fluctlight')) {
@@ -20,7 +28,7 @@ function fluctlight_cleanup() {
 }
 
 function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_container_elem_for_v2: HTMLElement | null) {
-    let HEIGHT = 350;
+    let HEIGHT = 300;
     let SEEKBAR_PADDING = _version === 1 ? 6 : 0;
     let WIDTH = bar_elem.clientWidth - SEEKBAR_PADDING;
 
@@ -73,7 +81,8 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         return d <= .001 ? 0 : GRAPH_DENSITY_DELTA + Math.pow(d, GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
     }
 
-    let den_bef: number[] = [], den_aft: number[] = [], graph_img: HTMLCanvasElement | null = null;
+    let den_withdel: number[] = [], den_bef: number[] = [], den_aft: number[] = [];
+    let graph_img: HTMLCanvasElement | null = null;
 
     function block(time: number) {
         return Math.round(time * WIDTH / DURATION);
@@ -84,15 +93,16 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         bar_elem.dataset['pakku_cache_width'] = ''+WIDTH;
         console.log('pakku fluctlight: recalc dispval graph with WIDTH =', WIDTH);
 
-        function apply_dispval(arr: number[], time_ms_override?: number) {
+        function apply_dispval(arr: number[]) {
             return function (p: DanmuObject) {
                 let dispv = dispval(p);
-                let time_ms = time_ms_override === undefined ? p.time_ms : time_ms_override;
+                let time_ms = p.time_ms;
                 arr[Math.max(0, block(time_ms))] += dispv;
                 arr[block(time_ms + DISPVAL_TIME_THRESHOLD) + 1] -= dispv;
             }
         }
 
+        den_withdel = zero_array(WIDTH);
         den_bef = zero_array(WIDTH);
         den_aft = zero_array(WIDTH);
 
@@ -104,13 +114,20 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
         for(let d of window.danmus) {
             if(!d.pakku.peers.length || d.pakku.peers[0].mode === 8/*code*/) return;
-            apply_dispval(den_aft, d.time_ms)(d.pakku.peers[0]);
+            apply_dispval(den_aft)(d);
             d.pakku.peers.forEach(apply_dispval(den_bef));
+        }
+        for(let d of window.danmus_del) {
+            apply_dispval(den_withdel)(d);
         }
 
         for(let w = 1; w < WIDTH; w++) {
+            den_withdel[w] += den_withdel[w - 1];
             den_bef[w] += den_bef[w - 1];
             den_aft[w] += den_aft[w - 1];
+        }
+        for(let w = 0; w < WIDTH; w++) {
+            den_withdel[w] += den_bef[w];
         }
 
         // now draw the canvas
@@ -120,17 +137,40 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         offscreen_canvas.height = HEIGHT;
         let ctx = offscreen_canvas.getContext('2d')!;
 
+
+        ctx.beginPath();
+        ctx.moveTo(0, HEIGHT);
+        for(let w = 0; w < WIDTH; w++)
+            ctx.lineTo(w, HEIGHT - density_transform(den_withdel[w]));
+        ctx.lineTo(WIDTH - 1, HEIGHT);
+        ctx.closePath();
+        // withdel
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = GRAPH_ALPHA;
+        ctx.strokeStyle = COLOR_LINE_WITHDEL;
+        ctx.fillStyle = COLOR_FILL_WITHDEL;
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.stroke();
+
         ctx.beginPath();
         ctx.moveTo(0, HEIGHT);
         for(let w = 0; w < WIDTH; w++)
             ctx.lineTo(w, HEIGHT - density_transform(den_bef[w]));
         ctx.lineTo(WIDTH - 1, HEIGHT);
         ctx.closePath();
+        // clear
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = 1;
+        ctx.fill();
         // before
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = GRAPH_ALPHA;
-        ctx.fillStyle = '#ff4444';
+        ctx.strokeStyle = COLOR_LINE_BEF;
+        ctx.fillStyle = COLOR_FILL_BEF;
         ctx.fill();
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.stroke();
 
         ctx.beginPath();
         ctx.moveTo(0, HEIGHT);
@@ -144,12 +184,26 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.fill();
         // after
         ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = '#7744ff';
+        ctx.strokeStyle = COLOR_LINE_AFT;
+        ctx.fillStyle = COLOR_FILL_AFT;
+        ctx.globalAlpha = GRAPH_ALPHA;
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.stroke();
+
+        // clear bottom line
+        ctx.beginPath();
+        ctx.moveTo(0, HEIGHT);
+        ctx.lineTo(0, HEIGHT-2);
+        ctx.lineTo(WIDTH - 1, HEIGHT-2);
+        ctx.lineTo(WIDTH - 1, HEIGHT);
+        ctx.closePath();
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.fillStyle = COLOR_FILL_AFT;
         ctx.globalAlpha = GRAPH_ALPHA;
         ctx.fill();
 
         graph_img = offscreen_canvas;
-
         return true;
     }
 
@@ -184,8 +238,9 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
             // highlight current time
             ctx.globalCompositeOperation = 'source-over';
-            drawline(curblock, Math.pow(den_bef[curblock], GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE, 2, '#cc0000', 1);
-            drawline(curblock, Math.pow(den_aft[curblock], GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE, 2, '#0000cc', 1);
+            drawline(curblock, density_transform(den_withdel[curblock]), 2, COLOR_LINE_WITHDEL, 1);
+            drawline(curblock, density_transform(den_bef[curblock]), 2, COLOR_LINE_BEF, 1);
+            drawline(curblock, density_transform(den_aft[curblock]), 2, COLOR_LINE_AFT, 1);
         }
 
         ctx.restore();
@@ -366,7 +421,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                     fluct.appendChild(to_dom(danmu));
                 });
 
-                let container_height = (danmus.length ? 4 + 14 * danmus.length : 0);
+                let container_height = (danmus.length ? 4 + 16 * danmus.length : 0);
 
                 fluct.style.height = container_height + 'px';
                 if (_version === 3 || _version === 4) {

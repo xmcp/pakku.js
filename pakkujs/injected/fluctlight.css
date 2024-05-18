@@ -10,7 +10,7 @@
     text-align: left;
     padding: 2px;
     box-sizing: border-box;
-    background-color: rgba(205,205,205,.8);
+    background-color: rgba(229, 229, 229, .8);
     color: black !important;
 }
 .pakku-fluctlight-fluct:empty {
@@ -18,9 +18,9 @@
 }
 .pakku-fluctlight-fluct p {
     white-space: nowrap;
-    height: 14px;
+    height: 16px;
     font-size: 12px;
-    line-height: 14px;
+    line-height: 16px;
     margin: 0;
 }
 

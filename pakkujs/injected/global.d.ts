@@ -6,4 +6,5 @@ interface Window {
     root_elem: HTMLElement;
     reload_danmu_magic: (key: int) => void;
     danmus: import('../core/types').DanmuObjectRepresentative[];
+    danmus_del: import('../core/types').DanmuObject[];
 }

@@ -1,18 +1,18 @@
-import {DanmuChunk, DanmuObjectRepresentative, int} from "../core/types";
+import {DanmuChunk, DanmuObject, DanmuObjectRepresentative, int} from "../core/types";
 import {Config} from "../background/config";
 import {inject_fluctlight} from "./fluctlight";
 import {inject_panel} from "./panel";
 import {disable_danmu, reload_danmu_magic, show_danmu_list} from "./misc";
 
-function combine_into_d(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>>): DanmuObjectRepresentative[] {
-    let D: DanmuObjectRepresentative[] = [];
+function combine_into_d<ObjectType extends DanmuObject>(chunks: Map<int, DanmuChunk<ObjectType>>): ObjectType[] {
+    let D: ObjectType[] = [];
     let keys_sorted = Array.from(chunks.keys()).sort((a, b)=>a-b);
     for(let k of keys_sorted)
         D.push(...chunks.get(k)!.objs);
     return D;
 }
 
-export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>>, config: Config) {
+export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>>, chunks_del: Map<int, DanmuChunk<DanmuObject>>, config: Config) {
     let try_left = 50;
 
     function try_inject() {
@@ -49,6 +49,7 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
         }
         
         window.danmus = combine_into_d(chunks);
+        window.danmus_del = combine_into_d(chunks_del);
 
         if(pakku_tag_elem.classList.contains('__pakku_injected')) {
             console.log('pakku injector: already injected');
