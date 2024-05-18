@@ -147,6 +147,8 @@ export function migrate_config(remote_config: AnyObject): Config {
         config.SHRINK_THRESHOLD = config.SHRINK ? 50 : 0;
         config.DROP_THRESHOLD = DEFAULT_CONFIG.DROP_THRESHOLD;
         config.READ_PLAYER_BLACKLIST = DEFAULT_CONFIG.READ_PLAYER_BLACKLIST;
+
+        delete config.SHRINK;
     }
 
     return {...DEFAULT_CONFIG, ...config};
@@ -212,9 +214,9 @@ export function hotfix_on_update(config: any) {
     _to_int(config, 'DROP_THRESHOLD');
     _to_int(config, 'REPRESENTATIVE_PERCENT');
 
-    // [2024.3.1 - 2024.5.3): mv2 config keys not removed
+    // [2024.3.1 - 2024.6.1): old config keys not removed
     let old_keys = [
-        '_ADVANCED_USER', 'HIDE_THRESHOLD', 'BLACKLIST', 'CLOUD_SYNC', 'FOOLBAR', 'FLASH_NOTIF', 'AUTO_PREVENT_SHADE', 'REMOVE_SEEK', 'TAOLUS',
+        '_ADVANCED_USER', 'HIDE_THRESHOLD', 'BLACKLIST', 'CLOUD_SYNC', 'FOOLBAR', 'FLASH_NOTIF', 'AUTO_PREVENT_SHADE', 'REMOVE_SEEK', 'TAOLUS', 'SHRINK',
     ].filter(k => k in config);
     for(let k of old_keys)
         delete config[k];

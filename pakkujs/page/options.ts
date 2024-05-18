@@ -435,15 +435,23 @@ function loadconfig() {
         whitelist.appendChild(container);
     }
 
-    function stringify(s: string | boolean) {
+    function stringify(s: string | number | boolean) {
         if(typeof s === 'boolean')
             return s ? 'on' : 'off';
         else
-            return s;
+            return '' + s;
     }
 
     for(let elem of img_btns) {
-        if(stringify((config as any)[elem.dataset['name']!]) === elem.dataset['value'])
+        let v = elem.dataset['value']!;
+        let negated = false;
+        if(v.startsWith('!')) {
+            v = v.slice(1);
+            negated = true;
+        }
+
+        let target = stringify((config as any)[elem.dataset['name']!]);
+        if(negated ? (target !== v) : (target === v))
             elem.className = 'img-active';
         else
             elem.className = 'img-inactive';

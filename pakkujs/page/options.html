@@ -407,8 +407,8 @@
                         <label for="max-dist">：</label>
                         <span>瞬时弹幕密度大于阈值时，按比例减小字号以避免遮挡画面</span>
                         <span class="img-panel">
-                            <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK" data-value="off">
-                            <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK" data-value="on">
+                            <img src="img/shrink-bef.png" height="200" width="400" data-name="SHRINK_THRESHOLD" data-value="0">
+                            <img src="img/shrink-aft.png" height="200" width="400" data-name="SHRINK_THRESHOLD" data-value="!0">
                         </span>
                     </p>
                     <p>
@@ -473,11 +473,14 @@
                     <p id="fluctlight-panel">
                         <input id="fluctlight" type="checkbox">
                         <label for="fluctlight">弹幕密度分析图 <span class="icon-image"></span>：</label>
-                        <span>在进度条上方显示弹幕密度（仅当鼠标移过时显示）</span>
+                        <span>鼠标移过进度条时可视化弹幕密度</span>
                         <span class="img-panel">
                             <img src="img/fluctlight.png" height="300" width="600" data-name="FLUCTLIGHT" data-value="on">
                         </span>
                     </p>
+                <p class="warning">
+                    * 蓝色、黄色、红色分别表示实际显示的、被合并的、被删除的弹幕密度
+                </p>
 
             </td>
             <td></td>
