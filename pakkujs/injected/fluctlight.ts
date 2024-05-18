@@ -1,10 +1,10 @@
 import {DanmuObject, DanmuObjectRepresentative, int} from "../core/types";
 import {make_p, parse_time, wait_until_success, zero_array} from "./utils";
+import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
-const GRAPH_MAX_TIMEDELTA_MS = 5 * 1000;
-const GRAPH_DENSITY_POWER = .75;
-const GRAPH_DENSITY_SCALE = .375;
+const GRAPH_DENSITY_POWER = .8;
+const GRAPH_DENSITY_SCALE = .6;
 const GRAPH_DENSITY_DELTA = 1;
 const GRAPH_ALPHA = .6;
 
@@ -84,16 +84,12 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         bar_elem.dataset['pakku_cache_width'] = ''+WIDTH;
         console.log('pakku fluctlight: recalc dispval graph with WIDTH =', WIDTH);
 
-        function dispval(str: string) {
-            return Math.max(Math.sqrt(str.length), 10);
-        }
-
         function apply_dispval(arr: number[], time_ms_override?: number) {
             return function (p: DanmuObject) {
-                let dispv = dispval(p.content);
+                let dispv = dispval(p);
                 let time_ms = time_ms_override === undefined ? p.time_ms : time_ms_override;
                 arr[Math.max(0, block(time_ms))] += dispv;
-                arr[block(time_ms + GRAPH_MAX_TIMEDELTA_MS) + 1] -= dispv;
+                arr[block(time_ms + DISPVAL_TIME_THRESHOLD) + 1] -= dispv;
             }
         }
 
@@ -116,9 +112,6 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             den_bef[w] += den_bef[w - 1];
             den_aft[w] += den_aft[w - 1];
         }
-        // make the peak 1px wider to increase visibility
-        for(let w = WIDTH; w > 0; w--)
-            den_bef[w] = Math.max(den_bef[w], den_bef[w - 1]);
 
         // now draw the canvas
 

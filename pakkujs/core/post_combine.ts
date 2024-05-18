@@ -15,7 +15,8 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-const SHRINK_TIME_THRESHOLD = 4500, DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
+export const DISPVAL_TIME_THRESHOLD = 4500;
+const DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
 const WEIGHT_DROPPED = -114514;
 
 const _cvs = document.createElement('canvas');
@@ -64,7 +65,7 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
-function dispval(d: DanmuObject) {
+export function dispval(d: DanmuObject) {
     return Math.sqrt((d as DanmuObjectRepresentative).pakku?.disp_str?.length || d.content.length) * Math.pow(Math.max(Math.min(d.fontsize/25, 2.5), .7), 1.5);
 }
 
@@ -205,7 +206,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         let dispval_preload: [number, number][] = [];
         for(let i = prev_input.clusters.length-1; i >= 0; i--) {
             let c = prev_input.clusters[i];
-            if (c.peers[0].time_ms < FIRST_TIME_MS - SHRINK_TIME_THRESHOLD)
+            if (c.peers[0].time_ms < FIRST_TIME_MS - DISPVAL_TIME_THRESHOLD)
                 break;
 
             // may be dropped
@@ -219,7 +220,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
             let dv = dispval(c.peers[0]);
             onscreen_dispval += dv;
-            dispval_preload.push([c.peers[0].time_ms + SHRINK_TIME_THRESHOLD, dv]);
+            dispval_preload.push([c.peers[0].time_ms + DISPVAL_TIME_THRESHOLD, dv]);
         }
 
         dispval_preload.reverse();
@@ -256,7 +257,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             }
 
             onscreen_dispval += dv;
-            dispval_subtract!.push([dm.time_ms + SHRINK_TIME_THRESHOLD, dv]);
+            dispval_subtract!.push([dm.time_ms + DISPVAL_TIME_THRESHOLD, dv]);
 
             // check shrink
 
