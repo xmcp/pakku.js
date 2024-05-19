@@ -20,6 +20,8 @@ function get_player_blacklist(): BlacklistItem[] {
     };
     try {
         let j = JSON.parse(window.localStorage.getItem('bpx_player_profile')!) as BpxProfileType;
+        if(!j) // possibly in another domain
+            return [];
         if(!j.dmSetting.status) // blacklist disabled
             return [];
 
