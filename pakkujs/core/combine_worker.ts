@@ -163,7 +163,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
             ret.clusters.push({
                 peers: [irs[0].obj],
                 desc: [],
-                chosen_str: irs[0].str,
+                chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
             });
         } else {
             let text_cnts = new Map(), most_text = irs[0].str, most_cnt = 1;
