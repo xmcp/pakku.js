@@ -5,7 +5,6 @@ import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
 const GRAPH_DENSITY_POWER = .8;
 const GRAPH_DENSITY_SCALE = .6;
-const GRAPH_DENSITY_DELTA = 2;
 const GRAPH_ALPHA = .6;
 
 const COLOR_FILL_WITHDEL = '#ff8888';
@@ -28,8 +27,8 @@ function fluctlight_cleanup() {
 }
 
 function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_container_elem_for_v2: HTMLElement | null) {
-    let HEIGHT = 300;
-    let SEEKBAR_PADDING = _version === 1 ? 6 : 0;
+    const HEIGHT = 300;
+    const SEEKBAR_PADDING = _version === 1 ? 6 : 0;
     let WIDTH = bar_elem.clientWidth - SEEKBAR_PADDING;
 
     bar_elem.dataset['pakku_cache_width'] = '-1';
@@ -78,7 +77,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     }
 
     function density_transform(d: number) {
-        return d <= .001 ? 0 : GRAPH_DENSITY_DELTA + Math.pow(d, GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
+        return d <= .001 ? -2 : 1 + Math.pow(d, GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
     }
 
     let den_withdel: number[] = [], den_bef: number[] = [], den_aft: number[] = [];
@@ -86,6 +85,15 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
     function block(time: number) {
         return Math.round(time * WIDTH / DURATION);
+    }
+
+    function fix_line_visibility(arr_above: number[], arr_below: number[], idx: int) {
+        let delta = arr_above[idx] - arr_below[idx];
+
+        // slightly adjust the graph to make sure the line is visible
+        if(delta>.05 && delta<2) {
+            arr_above[idx] = arr_below[idx] + 2;
+        }
     }
 
     function recalc() {
@@ -113,7 +121,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         }
 
         for(let d of window.danmus) {
-            if(!d.pakku.peers.length || d.pakku.peers[0].mode === 8/*code*/) return;
+            if(!d.pakku.peers.length) return;
             apply_dispval(den_aft)(d);
             d.pakku.peers.forEach(apply_dispval(den_bef));
         }
@@ -128,21 +136,28 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         }
         for(let w = 0; w < WIDTH; w++) {
             den_withdel[w] += den_bef[w];
+
+            den_withdel[w] = density_transform(den_withdel[w]);
+            den_bef[w] = density_transform(den_bef[w]);
+            den_aft[w] = density_transform(den_aft[w]);
+
+            fix_line_visibility(den_bef, den_aft, w);
+            fix_line_visibility(den_withdel, den_bef, w);
         }
 
         // now draw the canvas
 
         let offscreen_canvas = document.createElement('canvas');
         offscreen_canvas.width = WIDTH;
-        offscreen_canvas.height = HEIGHT;
+        offscreen_canvas.height = HEIGHT+2; // +2px to make the bottom line invisible
+
         let ctx = offscreen_canvas.getContext('2d')!;
 
-
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT);
+        ctx.moveTo(0, HEIGHT+2);
         for(let w = 0; w < WIDTH; w++)
-            ctx.lineTo(w, HEIGHT - density_transform(den_withdel[w]));
-        ctx.lineTo(WIDTH - 1, HEIGHT);
+            ctx.lineTo(w, HEIGHT - den_withdel[w]);
+        ctx.lineTo(WIDTH - 1, HEIGHT+2);
         ctx.closePath();
         // withdel
         ctx.globalCompositeOperation = 'source-over';
@@ -150,14 +165,13 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.strokeStyle = COLOR_LINE_WITHDEL;
         ctx.fillStyle = COLOR_FILL_WITHDEL;
         ctx.fill();
-        ctx.globalCompositeOperation = 'source-atop';
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT);
+        ctx.moveTo(0, HEIGHT+2);
         for(let w = 0; w < WIDTH; w++)
-            ctx.lineTo(w, HEIGHT - density_transform(den_bef[w]));
-        ctx.lineTo(WIDTH - 1, HEIGHT);
+            ctx.lineTo(w, HEIGHT - den_bef[w]);
+        ctx.lineTo(WIDTH - 1, HEIGHT+2);
         ctx.closePath();
         // clear
         ctx.globalCompositeOperation = 'destination-out';
@@ -169,14 +183,13 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.strokeStyle = COLOR_LINE_BEF;
         ctx.fillStyle = COLOR_FILL_BEF;
         ctx.fill();
-        ctx.globalCompositeOperation = 'source-atop';
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT);
+        ctx.moveTo(0, HEIGHT+2);
         for(let w = 0; w < WIDTH; w++)
-            ctx.lineTo(w, HEIGHT - density_transform(den_aft[w]));
-        ctx.lineTo(WIDTH - 1, HEIGHT);
+            ctx.lineTo(w, HEIGHT - den_aft[w]);
+        ctx.lineTo(WIDTH - 1, HEIGHT+2);
         ctx.closePath();
         // clear
         ctx.globalCompositeOperation = 'destination-out';
@@ -188,20 +201,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.fillStyle = COLOR_FILL_AFT;
         ctx.globalAlpha = GRAPH_ALPHA;
         ctx.fill();
-        ctx.globalCompositeOperation = 'source-atop';
         ctx.stroke();
-
-        // clear bottom line
-        ctx.beginPath();
-        ctx.moveTo(0, HEIGHT);
-        ctx.lineTo(0, HEIGHT-2);
-        ctx.lineTo(WIDTH - 1, HEIGHT-2);
-        ctx.lineTo(WIDTH - 1, HEIGHT);
-        ctx.closePath();
-        ctx.globalCompositeOperation = 'source-atop';
-        ctx.fillStyle = COLOR_FILL_AFT;
-        ctx.globalAlpha = GRAPH_ALPHA;
-        ctx.fill();
 
         graph_img = offscreen_canvas;
         return true;
@@ -212,7 +212,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
         canvas_elem.width = WIDTH;
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
-        ctx.drawImage(graph_img!, 0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(graph_img!, 0, 0, WIDTH, HEIGHT+2);
 
         ctx.save();
 
@@ -238,9 +238,9 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
             // highlight current time
             ctx.globalCompositeOperation = 'source-over';
-            drawline(curblock, density_transform(den_withdel[curblock]), 2, COLOR_LINE_WITHDEL, 1);
-            drawline(curblock, density_transform(den_bef[curblock]), 2, COLOR_LINE_BEF, 1);
-            drawline(curblock, density_transform(den_aft[curblock]), 2, COLOR_LINE_AFT, 1);
+            drawline(curblock, den_withdel[curblock], 2, COLOR_LINE_WITHDEL, 1);
+            drawline(curblock, den_bef[curblock], 2, COLOR_LINE_BEF, 1);
+            drawline(curblock, den_aft[curblock], 2, COLOR_LINE_AFT, 1);
         }
 
         ctx.restore();
