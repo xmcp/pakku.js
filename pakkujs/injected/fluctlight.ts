@@ -7,13 +7,13 @@ const GRAPH_DENSITY_POWER = .8;
 const GRAPH_DENSITY_SCALE = .6;
 const GRAPH_ALPHA = .6;
 
-const COLOR_FILL_WITHDEL = '#ff8888';
-const COLOR_FILL_BEF = '#ffbb88';
-const COLOR_FILL_AFT = '#aa99ff';
+const COLOR_FILL_WITHDEL = '#ff9999';
+const COLOR_FILL_BEF = '#ffbbaa';
+const COLOR_FILL_AFT = '#bbaaff';
 
-const COLOR_LINE_WITHDEL = '#bb0000';
-const COLOR_LINE_BEF = '#995500';
-const COLOR_LINE_AFT = '#0000cc';
+const COLOR_LINE_WITHDEL = '#cc0000';
+const COLOR_LINE_BEF = '#774400';
+const COLOR_LINE_AFT = '#1111cc';
 
 function fluctlight_cleanup() {
     for(let elem of window.root_elem.querySelectorAll('.pakku-fluctlight')) {
