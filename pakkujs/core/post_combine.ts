@@ -65,8 +65,27 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
+function count_small_chars(s: string) {
+    const SMALL_CHARS = new Set('₍₀₁₂₃₄₅₆₇₈₉₎↓↑');
+    let ret = 0;
+    for(let c of s)
+        if(SMALL_CHARS.has(c))
+            ret++;
+    return ret;
+}
 export function dispval(d: DanmuObject) {
-    return Math.sqrt((d as DanmuObjectRepresentative).pakku?.disp_str?.length || d.content.length) * Math.pow(Math.max(Math.min(d.fontsize/25, 2.5), .7), 1.5);
+    let text_length;
+    if((d as DanmuObjectRepresentative).pakku?.disp_str) {
+        // a representative value, check for small chars
+        let dr = d as DanmuObjectRepresentative;
+        let str = dr.pakku.disp_str;
+        text_length = str.length - (dr.pakku.peers.length>1 ? (count_small_chars(str) * .7) : 0);
+        //text_length = str.length;
+    } else {
+        // a peer value
+        text_length = d.content.length;
+    }
+    return Math.sqrt(text_length) * Math.pow(Math.max(Math.min(d.fontsize/25, 2.5), .7), 1.5);
 }
 
 let _last_config: null | LocalizedConfig = null;
