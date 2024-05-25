@@ -4,7 +4,7 @@ import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
 const GRAPH_DENSITY_POWER = .8;
-const GRAPH_DENSITY_SCALE = .6;
+const GRAPH_DENSITY_SCALE = .667;
 const GRAPH_ALPHA = .6;
 
 const COLOR_FILL_WITHDEL = '#ff9999';
@@ -14,6 +14,8 @@ const COLOR_FILL_AFT = '#bbaaff';
 const COLOR_LINE_WITHDEL = '#cc0000';
 const COLOR_LINE_BEF = '#774400';
 const COLOR_LINE_AFT = '#1111cc';
+
+let MAX_FLUCT_LINES = 16;
 
 function fluctlight_cleanup() {
     for(let elem of window.root_elem.querySelectorAll('.pakku-fluctlight')) {
@@ -152,12 +154,15 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         offscreen_canvas.height = HEIGHT+2; // +2px to make the bottom line invisible
 
         let ctx = offscreen_canvas.getContext('2d')!;
+        ctx.lineWidth = .75;
 
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT+2);
+        ctx.moveTo(-2, HEIGHT+2);
+        ctx.lineTo(-2, HEIGHT - den_withdel[0]);
         for(let w = 0; w < WIDTH; w++)
             ctx.lineTo(w, HEIGHT - den_withdel[w]);
-        ctx.lineTo(WIDTH - 1, HEIGHT+2);
+        ctx.lineTo(WIDTH+2, HEIGHT - den_withdel[WIDTH-1]);
+        ctx.lineTo(WIDTH+2, HEIGHT+2);
         ctx.closePath();
         // withdel
         ctx.globalCompositeOperation = 'source-over';
@@ -168,10 +173,12 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT+2);
+        ctx.moveTo(-2, HEIGHT+2);
+        ctx.lineTo(-2, HEIGHT - den_bef[0]);
         for(let w = 0; w < WIDTH; w++)
             ctx.lineTo(w, HEIGHT - den_bef[w]);
-        ctx.lineTo(WIDTH - 1, HEIGHT+2);
+        ctx.lineTo(WIDTH+2, HEIGHT - den_bef[WIDTH-1]);
+        ctx.lineTo(WIDTH+2, HEIGHT+2);
         ctx.closePath();
         // clear
         ctx.globalCompositeOperation = 'destination-out';
@@ -186,10 +193,12 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(0, HEIGHT+2);
+        ctx.moveTo(-2, HEIGHT+2);
+        ctx.lineTo(-2, HEIGHT - den_aft[0]);
         for(let w = 0; w < WIDTH; w++)
             ctx.lineTo(w, HEIGHT - den_aft[w]);
-        ctx.lineTo(WIDTH - 1, HEIGHT+2);
+        ctx.lineTo(WIDTH+2, HEIGHT - den_aft[WIDTH-1]);
+        ctx.lineTo(WIDTH+2, HEIGHT+2);
         ctx.closePath();
         // clear
         ctx.globalCompositeOperation = 'destination-out';
@@ -316,8 +325,6 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 }
 
 function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
-    let MAX_FLUCT = 15;
-
     let fluct = document.createElement('div');
     fluct.className = 'pakku-fluctlight pakku-fluctlight-fluct';
     let time_elem = bar_elem.querySelector('.bilibili-player-video-progress-detail-time, .squirtle-progress-time, .bpx-player-progress-preview-time') as HTMLElement;
@@ -416,7 +423,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                         mode_prio(b.pakku.peers[0].mode) - mode_prio(a.pakku.peers[0].mode) ||
                         a.time_ms - b.time_ms
                     );
-                }).slice(-MAX_FLUCT);
+                }).slice(-MAX_FLUCT_LINES);
                 danmus.forEach(function (danmu) {
                     fluct.appendChild(to_dom(danmu));
                 });
