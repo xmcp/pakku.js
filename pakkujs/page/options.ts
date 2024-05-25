@@ -277,10 +277,12 @@ function set_select_value(elem: HTMLSelectElement, value: number, ui_pfx = '', u
     if(exact_opt) {
         more_opt.value = '_other';
         more_opt.textContent = '自定义…';
+        more_opt.style.display = config.ADVANCED_USER ? 'initial' : 'none';
         elem.addEventListener('change', _other_onchange, {capture: true});
     } else {
         more_opt.value = ''+value;
         more_opt.textContent = `自定义 (${ui_pfx}${value}${ui_sfx})`;
+        more_opt.style.display = 'initial';
         elem.removeEventListener('change', _other_onchange, {capture: true});
     }
 
