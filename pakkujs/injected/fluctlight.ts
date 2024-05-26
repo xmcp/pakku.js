@@ -5,14 +5,14 @@ import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
 const GRAPH_DENSITY_POWER = .8;
 const GRAPH_DENSITY_SCALE = .667;
-const GRAPH_ALPHA = .6;
+const GRAPH_ALPHA = .7;
 
 const COLOR_FILL_WITHDEL = '#ff9999';
 const COLOR_FILL_BEF = '#ffbbaa';
 const COLOR_FILL_AFT = '#bbaaff';
 
 const COLOR_LINE_WITHDEL = '#cc0000';
-const COLOR_LINE_BEF = '#774400';
+const COLOR_LINE_BEF = '#664400';
 const COLOR_LINE_AFT = '#1111cc';
 
 let MAX_FLUCT_LINES = 16;
@@ -241,7 +241,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             gra.addColorStop(.9, 'rgba(255,255,255,1)');
             gra.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.globalAlpha = .4;
+            ctx.globalAlpha = .5;
             ctx.fillStyle = gra;
             ctx.fillRect(hlblock - GRALENGTH, 0, GRALENGTH * 2, HEIGHT);
 
