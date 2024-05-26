@@ -232,7 +232,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             if(config.DROP_THRESHOLD>0 && onscreen_dispval>config.DROP_THRESHOLD) {
                 if(c.peers.length===1 && c.peers[0].weight===1) {
                     let drop_rate = (onscreen_dispval - config.DROP_THRESHOLD) / config.DROP_THRESHOLD;
-                    if (Math.random() < drop_rate)
+                    if (drop_rate>1 || Math.random()<drop_rate)
                         continue;
                 }
             }
@@ -267,7 +267,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             if(config.DROP_THRESHOLD>0 && onscreen_dispval>config.DROP_THRESHOLD) {
                 if(dm.pakku.peers.length<=1 && dm.weight===1) {
                     let drop_rate = (onscreen_dispval - config.DROP_THRESHOLD) / config.DROP_THRESHOLD;
-                    if(Math.random() < drop_rate) {
+                    if(drop_rate>1 || Math.random()<drop_rate) {
                         stats.deleted_dispval++;
                         dm.weight = WEIGHT_DROPPED;
                         continue;
