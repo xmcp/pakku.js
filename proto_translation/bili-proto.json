@@ -87,7 +87,69 @@
                                                         "qoe": {
                                                             "type": "QoeInfo",
                                                             "id": 17
+                                                        },
+                                                        "maskWalls": {
+                                                            "rule": "repeated",
+                                                            "type": "DmMaskWall",
+                                                            "id": 18
                                                         }
+                                                    }
+                                                },
+                                                "DmMaskWall": {
+                                                    "fields": {
+                                                        "start": {
+                                                            "type": "int64",
+                                                            "id": 1
+                                                        },
+                                                        "end": {
+                                                            "type": "int64",
+                                                            "id": 2
+                                                        },
+                                                        "content": {
+                                                            "type": "string",
+                                                            "id": 3
+                                                        },
+                                                        "contentType": {
+                                                            "type": "DmMaskWallContentType",
+                                                            "id": 4
+                                                        },
+                                                        "bizType": {
+                                                            "type": "DmMaskWallBizType",
+                                                            "id": 5
+                                                        },
+                                                        "contents": {
+                                                            "rule": "repeated",
+                                                            "type": "DmMaskWallContent",
+                                                            "id": 6
+                                                        }
+                                                    }
+                                                },
+                                                "DmMaskWallBizType": {
+                                                    "values": {
+                                                        "DmMaskWallBizTypeUnknown": 0,
+                                                        "DmMaskWallBizTypeOGV": 1,
+                                                        "DmMaskWallBizTypeBizPic": 2,
+                                                        "DmMaskWallBizTypeMute": 3,
+                                                        "DmMaskWallBizTypeRecord": 4
+                                                    }
+                                                },
+                                                "DmMaskWallContent": {
+                                                    "fields": {
+                                                        "type": {
+                                                            "type": "DmMaskWallContentType",
+                                                            "id": 1
+                                                        },
+                                                        "content": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        }
+                                                    }
+                                                },
+                                                "DmMaskWallContentType": {
+                                                    "values": {
+                                                        "DmMaskWallContentTypeUnknown": 0,
+                                                        "DmMaskWallContentTypeText": 1,
+                                                        "DmMaskWallContentTypePic": 2
                                                     }
                                                 },
                                                 "QoeInfo": {

@@ -68,6 +68,9 @@ export namespace bilibili {
 
                         /** DmWebViewReply qoe */
                         qoe?: (bilibili.community.service.dm.v1.IQoeInfo|null);
+
+                        /** DmWebViewReply maskWalls */
+                        maskWalls?: (bilibili.community.service.dm.v1.IDmMaskWall[]|null);
                     }
 
                     /** Represents a DmWebViewReply. */
@@ -130,6 +133,9 @@ export namespace bilibili {
                         /** DmWebViewReply qoe. */
                         public qoe?: (bilibili.community.service.dm.v1.IQoeInfo|null);
 
+                        /** DmWebViewReply maskWalls. */
+                        public maskWalls: bilibili.community.service.dm.v1.IDmMaskWall[];
+
                         /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @param message DmWebViewReply message or plain object to encode
@@ -154,6 +160,148 @@ export namespace bilibili {
                          * @returns The default type url
                          */
                         public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a DmMaskWall. */
+                    interface IDmMaskWall {
+
+                        /** DmMaskWall start */
+                        start?: (number|null);
+
+                        /** DmMaskWall end */
+                        end?: (number|null);
+
+                        /** DmMaskWall content */
+                        content?: (string|null);
+
+                        /** DmMaskWall contentType */
+                        contentType?: (bilibili.community.service.dm.v1.DmMaskWallContentType|null);
+
+                        /** DmMaskWall bizType */
+                        bizType?: (bilibili.community.service.dm.v1.DmMaskWallBizType|null);
+
+                        /** DmMaskWall contents */
+                        contents?: (bilibili.community.service.dm.v1.IDmMaskWallContent[]|null);
+                    }
+
+                    /** Represents a DmMaskWall. */
+                    class DmMaskWall implements IDmMaskWall {
+
+                        /**
+                         * Constructs a new DmMaskWall.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IDmMaskWall);
+
+                        /** DmMaskWall start. */
+                        public start: number;
+
+                        /** DmMaskWall end. */
+                        public end: number;
+
+                        /** DmMaskWall content. */
+                        public content: string;
+
+                        /** DmMaskWall contentType. */
+                        public contentType: bilibili.community.service.dm.v1.DmMaskWallContentType;
+
+                        /** DmMaskWall bizType. */
+                        public bizType: bilibili.community.service.dm.v1.DmMaskWallBizType;
+
+                        /** DmMaskWall contents. */
+                        public contents: bilibili.community.service.dm.v1.IDmMaskWallContent[];
+
+                        /**
+                         * Encodes the specified DmMaskWall message. Does not implicitly {@link bilibili.community.service.dm.v1.DmMaskWall.verify|verify} messages.
+                         * @param message DmMaskWall message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IDmMaskWall, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a DmMaskWall message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns DmMaskWall
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmMaskWall;
+
+                        /**
+                         * Gets the default type url for DmMaskWall
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** DmMaskWallBizType enum. */
+                    enum DmMaskWallBizType {
+                        DmMaskWallBizTypeUnknown = 0,
+                        DmMaskWallBizTypeOGV = 1,
+                        DmMaskWallBizTypeBizPic = 2,
+                        DmMaskWallBizTypeMute = 3,
+                        DmMaskWallBizTypeRecord = 4
+                    }
+
+                    /** Properties of a DmMaskWallContent. */
+                    interface IDmMaskWallContent {
+
+                        /** DmMaskWallContent type */
+                        type?: (bilibili.community.service.dm.v1.DmMaskWallContentType|null);
+
+                        /** DmMaskWallContent content */
+                        content?: (string|null);
+                    }
+
+                    /** Represents a DmMaskWallContent. */
+                    class DmMaskWallContent implements IDmMaskWallContent {
+
+                        /**
+                         * Constructs a new DmMaskWallContent.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IDmMaskWallContent);
+
+                        /** DmMaskWallContent type. */
+                        public type: bilibili.community.service.dm.v1.DmMaskWallContentType;
+
+                        /** DmMaskWallContent content. */
+                        public content: string;
+
+                        /**
+                         * Encodes the specified DmMaskWallContent message. Does not implicitly {@link bilibili.community.service.dm.v1.DmMaskWallContent.verify|verify} messages.
+                         * @param message DmMaskWallContent message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IDmMaskWallContent, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a DmMaskWallContent message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns DmMaskWallContent
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DmMaskWallContent;
+
+                        /**
+                         * Gets the default type url for DmMaskWallContent
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** DmMaskWallContentType enum. */
+                    enum DmMaskWallContentType {
+                        DmMaskWallContentTypeUnknown = 0,
+                        DmMaskWallContentTypeText = 1,
+                        DmMaskWallContentTypePic = 2
                     }
 
                     /** Properties of a QoeInfo. */

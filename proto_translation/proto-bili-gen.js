@@ -75,6 +75,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {Array.<bilibili.community.service.dm.v1.IPostPanelV2>|null} [postPanelV2] DmWebViewReply postPanelV2
                          * @property {Array.<bilibili.community.service.dm.v1.IDmSubView>|null} [subViews] DmWebViewReply subViews
                          * @property {bilibili.community.service.dm.v1.IQoeInfo|null} [qoe] DmWebViewReply qoe
+                         * @property {Array.<bilibili.community.service.dm.v1.IDmMaskWall>|null} [maskWalls] DmWebViewReply maskWalls
                          */
 
                         /**
@@ -94,6 +95,7 @@ export const bilibili = $root.bilibili = (() => {
                             this.activityMetas = [];
                             this.postPanelV2 = [];
                             this.subViews = [];
+                            this.maskWalls = [];
                             if (properties)
                                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                     if (properties[keys[i]] != null)
@@ -237,6 +239,14 @@ export const bilibili = $root.bilibili = (() => {
                         DmWebViewReply.prototype.qoe = null;
 
                         /**
+                         * DmWebViewReply maskWalls.
+                         * @member {Array.<bilibili.community.service.dm.v1.IDmMaskWall>} maskWalls
+                         * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                         * @instance
+                         */
+                        DmWebViewReply.prototype.maskWalls = $util.emptyArray;
+
+                        /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @function encode
                          * @memberof bilibili.community.service.dm.v1.DmWebViewReply
@@ -290,6 +300,9 @@ export const bilibili = $root.bilibili = (() => {
                                     $root.bilibili.community.service.dm.v1.DmSubView.encode(message.subViews[i], writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
                             if (message.qoe != null && Object.hasOwnProperty.call(message, "qoe"))
                                 $root.bilibili.community.service.dm.v1.QoeInfo.encode(message.qoe, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
+                            if (message.maskWalls != null && message.maskWalls.length)
+                                for (let i = 0; i < message.maskWalls.length; ++i)
+                                    $root.bilibili.community.service.dm.v1.DmMaskWall.encode(message.maskWalls[i], writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
                             return writer;
                         };
 
@@ -395,6 +408,12 @@ export const bilibili = $root.bilibili = (() => {
                                         message.qoe = $root.bilibili.community.service.dm.v1.QoeInfo.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 18: {
+                                        if (!(message.maskWalls && message.maskWalls.length))
+                                            message.maskWalls = [];
+                                        message.maskWalls.push($root.bilibili.community.service.dm.v1.DmMaskWall.decode(reader, reader.uint32()));
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -419,6 +438,330 @@ export const bilibili = $root.bilibili = (() => {
                         };
 
                         return DmWebViewReply;
+                    })();
+
+                    v1.DmMaskWall = (function() {
+
+                        /**
+                         * Properties of a DmMaskWall.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IDmMaskWall
+                         * @property {number|null} [start] DmMaskWall start
+                         * @property {number|null} [end] DmMaskWall end
+                         * @property {string|null} [content] DmMaskWall content
+                         * @property {bilibili.community.service.dm.v1.DmMaskWallContentType|null} [contentType] DmMaskWall contentType
+                         * @property {bilibili.community.service.dm.v1.DmMaskWallBizType|null} [bizType] DmMaskWall bizType
+                         * @property {Array.<bilibili.community.service.dm.v1.IDmMaskWallContent>|null} [contents] DmMaskWall contents
+                         */
+
+                        /**
+                         * Constructs a new DmMaskWall.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a DmMaskWall.
+                         * @implements IDmMaskWall
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IDmMaskWall=} [properties] Properties to set
+                         */
+                        function DmMaskWall(properties) {
+                            this.contents = [];
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * DmMaskWall start.
+                         * @member {number} start
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.start = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * DmMaskWall end.
+                         * @member {number} end
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.end = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * DmMaskWall content.
+                         * @member {string} content
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.content = "";
+
+                        /**
+                         * DmMaskWall contentType.
+                         * @member {bilibili.community.service.dm.v1.DmMaskWallContentType} contentType
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.contentType = 0;
+
+                        /**
+                         * DmMaskWall bizType.
+                         * @member {bilibili.community.service.dm.v1.DmMaskWallBizType} bizType
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.bizType = 0;
+
+                        /**
+                         * DmMaskWall contents.
+                         * @member {Array.<bilibili.community.service.dm.v1.IDmMaskWallContent>} contents
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @instance
+                         */
+                        DmMaskWall.prototype.contents = $util.emptyArray;
+
+                        /**
+                         * Encodes the specified DmMaskWall message. Does not implicitly {@link bilibili.community.service.dm.v1.DmMaskWall.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IDmMaskWall} message DmMaskWall message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DmMaskWall.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.start != null && Object.hasOwnProperty.call(message, "start"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.start);
+                            if (message.end != null && Object.hasOwnProperty.call(message, "end"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.end);
+                            if (message.content != null && Object.hasOwnProperty.call(message, "content"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.content);
+                            if (message.contentType != null && Object.hasOwnProperty.call(message, "contentType"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.contentType);
+                            if (message.bizType != null && Object.hasOwnProperty.call(message, "bizType"))
+                                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bizType);
+                            if (message.contents != null && message.contents.length)
+                                for (let i = 0; i < message.contents.length; ++i)
+                                    $root.bilibili.community.service.dm.v1.DmMaskWallContent.encode(message.contents[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a DmMaskWall message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.DmMaskWall} DmMaskWall
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DmMaskWall.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DmMaskWall();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.start = reader.int64();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.end = reader.int64();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.content = reader.string();
+                                        break;
+                                    }
+                                case 4: {
+                                        message.contentType = reader.int32();
+                                        break;
+                                    }
+                                case 5: {
+                                        message.bizType = reader.int32();
+                                        break;
+                                    }
+                                case 6: {
+                                        if (!(message.contents && message.contents.length))
+                                            message.contents = [];
+                                        message.contents.push($root.bilibili.community.service.dm.v1.DmMaskWallContent.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for DmMaskWall
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWall
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        DmMaskWall.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.DmMaskWall";
+                        };
+
+                        return DmMaskWall;
+                    })();
+
+                    /**
+                     * DmMaskWallBizType enum.
+                     * @name bilibili.community.service.dm.v1.DmMaskWallBizType
+                     * @enum {number}
+                     * @property {number} DmMaskWallBizTypeUnknown=0 DmMaskWallBizTypeUnknown value
+                     * @property {number} DmMaskWallBizTypeOGV=1 DmMaskWallBizTypeOGV value
+                     * @property {number} DmMaskWallBizTypeBizPic=2 DmMaskWallBizTypeBizPic value
+                     * @property {number} DmMaskWallBizTypeMute=3 DmMaskWallBizTypeMute value
+                     * @property {number} DmMaskWallBizTypeRecord=4 DmMaskWallBizTypeRecord value
+                     */
+                    v1.DmMaskWallBizType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "DmMaskWallBizTypeUnknown"] = 0;
+                        values[valuesById[1] = "DmMaskWallBizTypeOGV"] = 1;
+                        values[valuesById[2] = "DmMaskWallBizTypeBizPic"] = 2;
+                        values[valuesById[3] = "DmMaskWallBizTypeMute"] = 3;
+                        values[valuesById[4] = "DmMaskWallBizTypeRecord"] = 4;
+                        return values;
+                    })();
+
+                    v1.DmMaskWallContent = (function() {
+
+                        /**
+                         * Properties of a DmMaskWallContent.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IDmMaskWallContent
+                         * @property {bilibili.community.service.dm.v1.DmMaskWallContentType|null} [type] DmMaskWallContent type
+                         * @property {string|null} [content] DmMaskWallContent content
+                         */
+
+                        /**
+                         * Constructs a new DmMaskWallContent.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a DmMaskWallContent.
+                         * @implements IDmMaskWallContent
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IDmMaskWallContent=} [properties] Properties to set
+                         */
+                        function DmMaskWallContent(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * DmMaskWallContent type.
+                         * @member {bilibili.community.service.dm.v1.DmMaskWallContentType} type
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWallContent
+                         * @instance
+                         */
+                        DmMaskWallContent.prototype.type = 0;
+
+                        /**
+                         * DmMaskWallContent content.
+                         * @member {string} content
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWallContent
+                         * @instance
+                         */
+                        DmMaskWallContent.prototype.content = "";
+
+                        /**
+                         * Encodes the specified DmMaskWallContent message. Does not implicitly {@link bilibili.community.service.dm.v1.DmMaskWallContent.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWallContent
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IDmMaskWallContent} message DmMaskWallContent message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DmMaskWallContent.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+                            if (message.content != null && Object.hasOwnProperty.call(message, "content"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.content);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a DmMaskWallContent message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWallContent
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.DmMaskWallContent} DmMaskWallContent
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DmMaskWallContent.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DmMaskWallContent();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.type = reader.int32();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.content = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for DmMaskWallContent
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.DmMaskWallContent
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        DmMaskWallContent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.DmMaskWallContent";
+                        };
+
+                        return DmMaskWallContent;
+                    })();
+
+                    /**
+                     * DmMaskWallContentType enum.
+                     * @name bilibili.community.service.dm.v1.DmMaskWallContentType
+                     * @enum {number}
+                     * @property {number} DmMaskWallContentTypeUnknown=0 DmMaskWallContentTypeUnknown value
+                     * @property {number} DmMaskWallContentTypeText=1 DmMaskWallContentTypeText value
+                     * @property {number} DmMaskWallContentTypePic=2 DmMaskWallContentTypePic value
+                     */
+                    v1.DmMaskWallContentType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "DmMaskWallContentTypeUnknown"] = 0;
+                        values[valuesById[1] = "DmMaskWallContentTypeText"] = 1;
+                        values[valuesById[2] = "DmMaskWallContentTypePic"] = 2;
+                        return values;
                     })();
 
                     v1.QoeInfo = (function() {
