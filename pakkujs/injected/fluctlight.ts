@@ -22,10 +22,16 @@ function fluctlight_cleanup() {
         elem.remove();
     }
 
-    if(window.graph_observer)
+    if(window.graph_observer) {
         window.graph_observer.disconnect();
-    if(window.details_observer)
+        window.graph_observer = null;
+    }
+    if(window.details_observer) {
         window.details_observer.disconnect();
+        window.details_observer = null;
+    }
+
+    window.fluctlight_highlight = null;
 }
 
 function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_container_elem_for_v2: HTMLElement | null) {
@@ -98,8 +104,15 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         }
     }
 
-    function recalc() {
-        if(bar_elem.dataset['pakku_cache_width'] === ''+WIDTH) return true;
+    function recalc(): boolean {
+        if(bar_elem.dataset['pakku_cache_width'] === ''+WIDTH)
+            return true;
+
+        if(WIDTH <= 0) { // maybe the dom is not fully initialized yet
+            console.log('pakku fluctlight: got invalid WIDTH =', WIDTH);
+            return false;
+        }
+
         bar_elem.dataset['pakku_cache_width'] = ''+WIDTH;
         console.log('pakku fluctlight: recalc dispval graph with WIDTH =', WIDTH);
 
@@ -119,13 +132,14 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         getduration();
         if(!DURATION) {
             console.log('pakku fluctlight: failed to get video duration');
-            return;
+            return false;
         }
 
         for(let d of window.danmus) {
-            if(!d.pakku.peers.length) return;
-            apply_dispval(den_aft)(d);
-            d.pakku.peers.forEach(apply_dispval(den_bef));
+            if(d.pakku.peers.length) {
+                apply_dispval(den_aft)(d);
+                d.pakku.peers.forEach(apply_dispval(den_bef));
+            }
         }
         for(let d of window.danmus_del) {
             apply_dispval(den_withdel)(d);
@@ -217,7 +231,11 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     }
 
     function redraw(hltime?: number) {
-        if(!recalc()) return;
+        if(!recalc()) {
+            canvas_elem.width = WIDTH;
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            return;
+        }
 
         canvas_elem.width = WIDTH;
         ctx.clearRect(0, 0, WIDTH, HEIGHT);

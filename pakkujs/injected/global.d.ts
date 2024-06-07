@@ -1,8 +1,8 @@
 interface Window {
     panel_listener: (e: any) => void;
-    graph_observer: MutationObserver,
-    details_observer: MutationObserver,
-    fluctlight_highlight: (hltime?: number) => void;
+    graph_observer: MutationObserver | null,
+    details_observer: MutationObserver | null,
+    fluctlight_highlight: ((hltime?: number) => void) | null;
     root_elem: HTMLElement;
     reload_danmu_magic: (key: int) => void;
     danmus: import('../core/types').DanmuObjectRepresentative[];
