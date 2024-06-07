@@ -402,8 +402,7 @@ class Scheduler {
         }
     }
 }
-let schedulers: Array<Scheduler> = [];
-export let last_scheduler: null | Scheduler = null;
+export let scheduler: null | Scheduler = null;
 
 function ingress_equals(a: Ingress, b: Ingress): boolean {
     // @ts-ignore
@@ -411,49 +410,26 @@ function ingress_equals(a: Ingress, b: Ingress): boolean {
 }
 
 export function handle_task(ingress: Ingress, egress: Egress, callback: (resp: AjaxResponse)=>void, config: LocalizedConfig, tabid: int) {
-    for(let scheduler of schedulers)
-        if(ingress_equals(scheduler.ingress, ingress)) {
-            last_scheduler = scheduler;
-
-            scheduler.config = config;
-            scheduler.add_egress(egress, callback);
-
-            return;
-        }
-
-    let scheduler = new Scheduler(ingress, config, tabid);
-    last_scheduler = scheduler;
-
-    scheduler.add_egress(egress, callback);
-    void scheduler.start();
-
-    schedulers.push(scheduler);
-    if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
-        schedulers.shift();
+    if(scheduler && ingress_equals(scheduler.ingress, ingress)) {
+        scheduler.config = config;
+        scheduler.add_egress(egress, callback);
+    } else {
+        scheduler = new Scheduler(ingress, config, tabid);
+        scheduler.add_egress(egress, callback);
+        void scheduler.start();
+    }
 }
 
 export function handle_proto_view(ingress: ProtobufIngressSeg, view_url: string, config: LocalizedConfig, tabid: int): Promise<ArrayBuffer> {
-    for(let scheduler of schedulers)
-        if(ingress_equals(scheduler.ingress, ingress)) {
-            last_scheduler = scheduler;
-
-            scheduler.config = config;
-
-            if(!scheduler.prefetch_data)
-                scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
-
-            return scheduler.modify_proto_view();
-        }
-
-    let scheduler = new Scheduler(ingress, config, tabid);
-    last_scheduler = scheduler;
-
-    scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
-    void scheduler.start();
-
-    schedulers.push(scheduler);
-    if(schedulers.length>MAX_SCHEDULERS_PER_PAGE)
-        schedulers.shift();
+    if(scheduler && ingress_equals(scheduler.ingress, ingress)) {
+        scheduler.config = config;
+        if(!scheduler.prefetch_data)
+            scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
+    } else {
+        scheduler = new Scheduler(ingress, config, tabid);
+        scheduler.prefetch_data = protoapi_get_prefetch(ingress, view_url);
+        void scheduler.start();
+    }
 
     return scheduler.modify_proto_view();
 }

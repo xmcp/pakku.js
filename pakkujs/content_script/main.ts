@@ -1,5 +1,5 @@
 import {url_finder} from "../protocol/urls";
-import {handle_proto_view, handle_task, last_scheduler} from "../core/scheduler";
+import {handle_proto_view, handle_task, scheduler} from "../core/scheduler";
 import {get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
 import {AjaxResponse, BlacklistItem, int, LocalizedConfig} from "../core/types";
@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         window.location.reload();
     }
     else if(msg.type==='dump_result') {
-        let s = last_scheduler;
+        let s = scheduler;
         if(!s) {
             sendResponse({
                 error: '当前标签没有弹幕处理结果',
