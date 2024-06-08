@@ -84,8 +84,15 @@ id('reset').addEventListener('click', function() {
     }
 });
 
-if(IS_EDG)
-    id('ask-review-line').style.display = 'none';
+let ask_review_link = id('ask-review-link');
+if(IS_FIREFOX) {
+    ask_review_link.href = 'https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/reviews/';
+    ask_review_link.textContent = 'Mozilla Add-ons 网站';
+}
+if(IS_EDG) {
+    ask_review_link.href = 'https://microsoftedge.microsoft.com/addons/detail/pakku%EF%BC%9A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%BC%B9%E5%B9%95%E8%BF%87%E6%BB%A4%E5%99%A8/lnfcfeidnipnphibahlkdhalpkpmccoc';
+    ask_review_link.textContent = 'Microsoft Edge 加载项网站';
+}
 
 function show_note(text: string, link: string | null) {
     let note = id('note-banner');
