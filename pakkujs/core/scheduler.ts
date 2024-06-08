@@ -22,8 +22,6 @@ import {
     ProtobufPrefetchObj
 } from "../protocol/interface_protobuf";
 
-const MAX_SCHEDULERS_PER_PAGE = 3;
-
 const BADGE_DOWNLOADING = '↓';
 const BADGE_PROCESSING = '...';
 const BADGE_ERR_NET = 'NET!';
