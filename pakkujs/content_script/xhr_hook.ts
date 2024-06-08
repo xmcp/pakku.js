@@ -25,6 +25,30 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     // @ts-ignore
     if(XMLHttpRequest.prototype.pakku_open) return;
 
+    function is_bilibili(origin: string) {
+        return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
+    }
+
+    let worker_ready = true;
+    try {
+        window.top!.location.href;
+    } catch(e) {
+        console.log('pakku ajax: top frame cross domain, confirming worker');
+        worker_ready = false;
+
+        window.top!.postMessage({
+            type: 'pakku_ping',
+        }, '*');
+        window.addEventListener('message', function(event) {
+            if (!is_bilibili(event.origin))
+                return;
+            if (event.data.type && event.data.type === 'pakku_pong') {
+                console.log('pakku ajax: confirmed worker available');
+                worker_ready = true;
+            }
+        });
+    }
+
     function uint8array_to_arraybuffer(array: Uint8Array) {
         // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
         return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
@@ -63,10 +87,6 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
         }
     }
 
-    function is_bilibili(origin: string) {
-        return origin.endsWith('.bilibili.com') || origin.endsWith('//bilibili.com');
-    }
-
     let callbacks: {[url: string]: ((resp: AjaxResponse)=>void)[]} = {};
     window.addEventListener('message',function(event) {
         if(!is_bilibili(event.origin))
@@ -79,6 +99,11 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
         }
     },false);
     function send_msg_proxy(url: string, callback: (resp: AjaxResponse)=>void) {
+        if(!worker_ready) {
+            callback(null);
+            return;
+        }
+
         if(!callbacks[url])
             callbacks[url] = [callback];
         else

@@ -164,13 +164,18 @@ function is_proto_view(x: any): x is [ProtobufIngressSeg, ProtobufView] {
 }
 
 window.addEventListener('message', async function(event) {
-    if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
+    if(is_bilibili(event.origin) && event.data.type=='pakku_ping') {
+        event.source!.postMessage({
+            type: 'pakku_pong',
+        }, event.origin as any);
+    }
+    else if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: AjaxResponse) => {
             event.source!.postMessage({
                 type: 'pakku_ajax_response',
                 url: event.data.url,
-                resp: resp
+                resp: resp,
             }, event.origin as any);
         };
 

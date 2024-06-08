@@ -93,7 +93,10 @@ async function install_content_script() {
         id: 'pakku-ajax',
         allFrames: true,
         matches: ['*://*.bilibili.com/*'],
-        excludeMatches: ['https://www.bilibili.com/robots.txt?pakku_sandbox'],
+        excludeMatches: [
+            'https://www.bilibili.com/robots.txt?pakku_sandbox', // no need and may cause var name conflict
+            'https://message.bilibili.com/*', // no need and may reduce performance due to iframes in the player page
+        ],
         css: ['/generated/injected.css'],
         runAt: 'document_start' as 'document_start',
     };
