@@ -275,7 +275,10 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
     if(danmaku_stage && config.TOOLTIP_KEYBINDING) {
         let hover_counter = 0;
         danmaku_stage.addEventListener('mouseover', function (e) {
+            if(!player_elem.classList.contains('__pakku_pointer_event'))
+                return;
             hover_counter++;
+
             let target = (e.target as HTMLElement).closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide), .bili-dm') as HTMLElement;
             if(target) {
                 show_panel({str: extract_danmaku_text(target)}, true);
@@ -288,6 +291,9 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
                 panel_obj.style.display = 'none';
         });
         danmaku_stage.addEventListener('click', function (e) {
+            if(!player_elem.classList.contains('__pakku_pointer_event'))
+                return;
+
             let target = (e.target as HTMLElement).closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide), .bili-dm') as HTMLElement;
             if(target) {
                 show_panel({str: extract_danmaku_text(target)});
@@ -317,6 +323,6 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
         // after the webpage lost focus, `keyup` event might not be dispatched
         window.root_elem.ownerDocument.defaultView!.addEventListener('blur', function () {
             player_elem.classList.remove('__pakku_pointer_event');
-        })
+        });
     }
 }
