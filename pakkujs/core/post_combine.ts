@@ -283,7 +283,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
             if(config.SHRINK_THRESHOLD>0 && onscreen_dispval>config.SHRINK_THRESHOLD) {
                 let shrink_rate = Math.min(Math.pow(onscreen_dispval, DISPVAL_POWER)/dispval_base, SHRINK_MAX_RATE);
                 dm.fontsize /= shrink_rate;
-                dm.pakku.desc.push(`已缩小 ${shrink_rate.toFixed(2)} 倍：弹幕密度为 ${onscreen_dispval.toFixed(1)}`);
+                dm.pakku.desc.push(`已缩小 ${shrink_rate.toFixed(2)} 倍：原弹幕密度为 ${onscreen_dispval.toFixed(1)}`);
                 stats.modified_shrink++;
             }
 
