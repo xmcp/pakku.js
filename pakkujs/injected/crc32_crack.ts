@@ -115,9 +115,9 @@ function make_crc32_cracker() {
                 for(let prefix = first_prefix; prefix < last_prefix; prefix++) {
                     let rem = (maincrc ^ basecrc ^ rainbow_1[prefix]) >>> 0;
                     let items = lookup(rem);
-                    items.forEach(function(z) {
+                    for(let z of items) {
                         results.push(prefix * 100000 + z);
-                    })
+                    }
                 }
             }
         }

@@ -19,7 +19,7 @@ let switch_btn = id('switch');
 let hint_text = id('hint-text');
 
 chrome.commands.getAll(function(cmds) {
-    cmds.forEach(function(cmd) {
+    for(let cmd of cmds) {
         let elem = id('command-' + cmd.name);
         if(elem) {
             elem.textContent = cmd.shortcut || '';
@@ -27,7 +27,7 @@ chrome.commands.getAll(function(cmds) {
                 void chrome.tabs.create({url: 'chrome://extensions/shortcuts'});
             };
         }
-    });
+    }
 });
 
 let tabid = 0;

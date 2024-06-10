@@ -409,7 +409,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
 
     // time
     window.details_observer = new MutationObserver(function (muts) {
-        muts.forEach(function (mut) {
+        for(let mut of muts) {
             if (mut.addedNodes) {
                 let time_str = mut.addedNodes[0].textContent!;
                 //console.log('pakku fluctlight: details', time_str);
@@ -442,9 +442,9 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                         a.time_ms - b.time_ms
                     );
                 }).slice(-MAX_FLUCT_LINES);
-                danmus.forEach(function (danmu) {
+                for(let danmu of danmus) {
                     fluct.appendChild(to_dom(danmu));
-                });
+                }
 
                 let container_height = (danmus.length ? 4 + 16 * danmus.length : 0);
 
@@ -461,7 +461,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                 if (window.fluctlight_highlight)
                     window.fluctlight_highlight(time);
             }
-        });
+        }
     });
     window.details_observer.observe(time_elem, {
         childList: true
