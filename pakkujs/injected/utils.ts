@@ -84,10 +84,10 @@ export function zero_array(len: int): number[] {
     return x;
 }
 
-export function parse_time(time: string) { // HH:MM:SS or MMMMMM:SS -> seconds
-    let res = /^(?:(\d+)\:)?(\d+)\:(\d{2})$/.exec(time);
+export function parse_time<T>(time: string, fallback: T): number|T { // HH:MM:SS or MMMMMM:SS -> seconds
+    let res = /^(?:(\d+):)?(\d+):(\d{2})$/.exec(time);
     if(!res)
-        return 0;
+        return fallback;
 
     if(res[1])
         return parseInt(res[1]) * 3600 + parseInt(res[2]) * 60 + parseInt(res[3]);

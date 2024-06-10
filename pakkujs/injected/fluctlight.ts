@@ -66,10 +66,10 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
     function getduration() {
         let total_time_elem = window.root_elem.querySelector('.bilibili-player-video-time-total, .squirtle-video-time-total, .bpx-player-ctrl-time-duration');
-        DURATION = (total_time_elem ? parse_time(total_time_elem.textContent!) : 0);
+        DURATION = total_time_elem ? parse_time(total_time_elem.textContent!, 0) : 0;
         if(!DURATION) {
             let video_elem = window.root_elem.querySelector('video');
-            DURATION = (video_elem ? video_elem.duration : 0)
+            DURATION = video_elem ? video_elem.duration : 0;
         }
 
         if(DURATION > 0)
@@ -301,6 +301,8 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     else if (_version === 1)
         bar_elem.appendChild(canvas_elem);
 
+    let time_elem = bar_elem.querySelector('.bilibili-player-video-progress-detail-time, .squirtle-progress-time, .bpx-player-progress-preview-time') as HTMLElement;
+
     // show or hide
     window.graph_observer = new MutationObserver(function (muts) {
         let bar_opened = (
@@ -329,8 +331,8 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             let width = bar_elem.clientWidth - SEEKBAR_PADDING;
             if (width && width !== WIDTH) {
                 WIDTH = width;
-                redraw();
             }
+            redraw(time_elem ? parse_time(time_elem.textContent!, undefined) : undefined);
         } else if (!bar_opened && canvas_elem.style.display !== 'none') {
             canvas_elem.style.display = 'none';
             canvas_elem.width = 0;
@@ -419,7 +421,10 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
 
                 fluct.style.height = '0';
                 fluct.textContent = '';
-                let time = parse_time(time_str);
+                let time = parse_time(time_str, null);
+                if(time===null)
+                    return;
+
                 let time_ms = time * 1000 + 1000;
                 let danmus = [];
 
