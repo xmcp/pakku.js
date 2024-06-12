@@ -81,17 +81,48 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
     getduration();
 
-    function draw_line_and_label(w: number, h: number, color: string, show_label: boolean) {
-        let h_t = density_transform(h);
-        let len = 1.5 * DPI;
+    const LINE_WIDTH = 1.5 * DPI;
+    const LABEL_FONT_SIZE = 9 * DPI;
+    const MIN_LABEL_SEP = LABEL_FONT_SIZE / 2;
 
-        ctx.fillStyle = color;
-        ctx.strokeRect(w, HEIGHT - h_t, len, h);
-        ctx.fillRect(w, HEIGHT - h_t, len, h);
+    function draw_line_and_label(w: number, labels: [number, string][]) { // labels from top to bottom
+        ctx.font = `bold ${LABEL_FONT_SIZE}px consolas, monospace`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = .75 * DPI;
 
-        if(show_label) {
-            ctx.strokeText(''+Math.ceil(h), w+6, HEIGHT - h_t);
-            ctx.fillText(''+Math.ceil(h), w+6, HEIGHT - h_t);
+        // draw lines
+
+        for(let [h, color] of labels) {
+            let h_d = HEIGHT - density_transform(h);
+            ctx.fillStyle = color;
+            ctx.strokeRect(w, h_d, LINE_WIDTH, h);
+            ctx.fillRect(w, h_d, LINE_WIDTH, h);
+        }
+
+        // draw labels
+
+        let labels_to_draw: [number, string, string][] = [[0, '', '']]
+
+        ctx.lineWidth = DPI;
+
+        labels.reverse(); // calc from bottom to top
+        for(let [h, color] of labels) {
+            let h_t = density_transform(h);
+
+            if(h_t - labels_to_draw[labels_to_draw.length-1][0] > MIN_LABEL_SEP)
+                labels_to_draw.push([h_t, ''+Math.ceil(h), color]);
+        }
+
+        labels_to_draw.reverse(); // draw from top to bottom
+        for(let [h_t, label, color] of labels_to_draw) {
+            if(label) {
+                let h_d = HEIGHT - h_t + DPI;
+                ctx.fillStyle = color;
+                ctx.strokeText(label, w+6, h_d);
+                ctx.fillText(label, w+6, h_d);
+            }
         }
     }
 
@@ -253,18 +284,13 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             // highlight current time
 
             ctx.globalCompositeOperation = 'source-over';
-            ctx.globalAlpha = 1;
+            ctx.globalAlpha = .8;
 
-            ctx.font = `bold ${9*DPI}px consolas, monospace`;
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = .75*DPI;
-
-            draw_line_and_label(curblock, den_withdel[curblock], COLOR_LINE_WITHDEL, den_withdel[curblock]-den_bef[curblock]>10);
-            draw_line_and_label(curblock, den_bef[curblock], COLOR_LINE_BEF, den_bef[curblock]-den_aft[curblock]>10);
-            draw_line_and_label(curblock, den_aft[curblock], COLOR_LINE_AFT, den_aft[curblock]>10);
+            draw_line_and_label(curblock, [
+                [den_withdel[curblock], COLOR_LINE_WITHDEL],
+                [den_bef[curblock], COLOR_LINE_BEF],
+                [den_aft[curblock], COLOR_LINE_AFT],
+            ]);
         }
 
         ctx.restore();
@@ -450,7 +476,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                     fluct.appendChild(to_dom(danmu));
                 }
 
-                let container_height = (danmus.length ? 4 + 16 * danmus.length : 0);
+                let container_height = (danmus.length ? 6 + 16 * danmus.length : 0);
 
                 fluct.style.height = container_height + 'px';
                 if (_version === 3 || _version === 4) {
