@@ -127,7 +127,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     }
 
     function density_transform(d: number) {
-        return d <= .001 ? -2 : 1 + Math.pow(d, GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE;
+        return d <= .001 ? -2 : DPI * (1 + Math.pow(d, GRAPH_DENSITY_POWER) * GRAPH_DENSITY_SCALE);
     }
 
     let den_withdel: number[] = [], den_bef: number[] = [], den_aft: number[] = [];
