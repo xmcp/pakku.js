@@ -110,10 +110,10 @@
     display: none;
 }
 .pakku-panel .pakku-panel-peers>div:first-child {
-    padding-top: 3px;
+    padding-top: .4em;
 }
 .pakku-panel .pakku-panel-peers>div:last-child {
-    padding-bottom: 3px;
+    padding-bottom: .4em;
 }
 .pakku-panel .pakku-panel-peers>div {
     overflow: hidden;
