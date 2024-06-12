@@ -86,6 +86,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     const MIN_LABEL_SEP = LABEL_FONT_SIZE / 2;
 
     function draw_line_and_label(w: number, labels: [number, string][]) { // labels from top to bottom
+        ctx.globalAlpha = .85;
         ctx.font = `bold ${LABEL_FONT_SIZE}px consolas, monospace`;
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
@@ -284,7 +285,6 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             // highlight current time
 
             ctx.globalCompositeOperation = 'source-over';
-            ctx.globalAlpha = .8;
 
             draw_line_and_label(curblock, [
                 [den_withdel[curblock], COLOR_LINE_WITHDEL],
