@@ -25,7 +25,7 @@ import {
 const BADGE_DOWNLOADING = '↓';
 const BADGE_PROCESSING = '...';
 const BADGE_ERR_NET = 'NET!';
-const BADGE_ERR_JS = 'JS!';
+export const BADGE_ERR_JS = 'JS!';
 
 function _filter_aslongas<T>(x: Array<T>, fn: (x: T)=>boolean): Array<T> {
     let i = 0;

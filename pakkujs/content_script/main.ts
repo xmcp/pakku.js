@@ -1,8 +1,8 @@
 import {url_finder} from "../protocol/urls";
-import {handle_proto_view, handle_task, scheduler} from "../core/scheduler";
+import {BADGE_ERR_JS, handle_proto_view, handle_task, scheduler} from "../core/scheduler";
 import {get_config} from "../background/config";
 import {get_state, remove_state} from "../background/state";
-import {AjaxResponse, BlacklistItem, int, LocalizedConfig} from "../core/types";
+import {AjaxResponse, BlacklistItem, int, LocalizedConfig, MessageStats} from "../core/types";
 import {process_local, userscript_sandbox} from "./sandboxed";
 import {ProtobufIngressSeg, ProtobufView} from "../protocol/interface_protobuf";
 
@@ -189,8 +189,20 @@ window.addEventListener('message', async function(event) {
             return;
         }
 
-        if(!local_config)
-            local_config = await get_local_config();
+        if(!local_config) {
+            try {
+                local_config = await get_local_config();
+            } catch(e: any) {
+                console.error('pakku injected: cannot get local config', e);
+                if(tabid) {
+                    let msg = `读取配置时出错\n${e.message || e}\n\nStacktrace:\n${e.stack || '(null)'}\n\nIngress:\n${JSON.stringify(url[0])}`;
+                    new MessageStats('error', BADGE_ERR_JS, msg).notify(tabid);
+                }
+
+                sendResponse(null);
+                return;
+            }
+        }
 
         if(
             !local_config.GLOBAL_SWITCH &&

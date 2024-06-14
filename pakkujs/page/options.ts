@@ -156,7 +156,14 @@ function get_perms(): Promise<Permissions> {
     });
 }
 
-let config = await get_config();
+let config: Config;
+try {
+    config = await get_config();
+} catch(e: any) {
+    alert(`无法读取配置：\n${e.message || e}`);
+    throw e;
+}
+
 let perms = await get_perms();
 
 if(!perms.origins?.includes('*://*.bilibili.com/*')) {

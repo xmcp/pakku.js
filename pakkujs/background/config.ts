@@ -185,9 +185,12 @@ export async function save_config<SomeConfig extends Partial<Config>>(config: So
 }
 
 export function get_config(): Promise<Config> {
-    return new Promise((resolve)=>{
+    return new Promise((resolve, reject)=>{
         chrome.storage.sync.get((config: AnyObject)=>{
-            resolve(migrate_config(config));
+            if(chrome.runtime.lastError)
+                reject(chrome.runtime.lastError);
+            else
+                resolve(migrate_config(config));
         });
     });
 }

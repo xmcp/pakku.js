@@ -51,12 +51,16 @@ export async function remove_state(keys: (keyof State)[]) {
 }
 
 export function get_state(): Promise<State> {
-    return new Promise((resolve)=>{
+    return new Promise((resolve, reject)=>{
         let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
         store.get((state: State)=>{
-            if(!state._INITIALIZED)
-                resolve(DEFAULT_STATE);
-            resolve(state);
+            if(chrome.runtime.lastError)
+                reject(chrome.runtime.lastError);
+            else {
+                if(!state._INITIALIZED)
+                    resolve(DEFAULT_STATE);
+                resolve(state);
+            }
         });
     });
 }

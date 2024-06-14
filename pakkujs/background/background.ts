@@ -115,7 +115,6 @@ async function install_content_script() {
         }]);
         console.log('pakku ajax: installed content script (FALLBACK)');
     }
-
 }
 
 async function perform_init() {
