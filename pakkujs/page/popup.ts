@@ -41,7 +41,6 @@ function get_tabid_and_loadui() {
 }
 
 async function loadui() {
-    let config = await get_config();
     let state = await get_state();
     let enabled = state.GLOBAL_SWITCH;
 
@@ -62,13 +61,6 @@ async function loadui() {
     if(!tabid) {
         hint_text.textContent = general;
         return;
-    }
-
-    if(config.ADVANCED_USER) {
-        id('userscript-btn').classList.remove('display-none');
-        id('userscript-btn').onclick = function() {
-            void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript_editor.html?tabid='+tabid)});
-        };
     }
 
     let stats = state[`STATS_${tabid}`];
@@ -134,6 +126,14 @@ async function loadui() {
         }
         if(rows.length)
             rows[0].classList.add('first-item');
+    }
+
+    let config = await get_config();
+    if(config.ADVANCED_USER) {
+        id('userscript-btn').classList.remove('display-none');
+        id('userscript-btn').onclick = function() {
+            void chrome.tabs.create({url: chrome.runtime.getURL('/page/userscript_editor.html?tabid='+tabid)});
+        };
     }
 }
 
