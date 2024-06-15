@@ -5,10 +5,37 @@ const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
 const IS_EDG = process.env.PAKKU_CHANNEL==='edg';
 const MIN_CHROME_VERSION = 99; // callback for chrome.runtime.sendMessage
 
-if(!IS_FIREFOX && navigator.userAgent.includes('Firefox/')) {
-    if(confirm('您正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请卸载当前版本，然后在 Firefox 附加组件中心下载 pakku。\n\n现在前往下载吗？'))
-        location.href = 'https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/';
+let note_container = id('note-banner-container');
+function show_note(key: string, text: string | null, link: string | (()=>void) | null) {
+    let old_note = id('note-'+key);
+    if(old_note)
+        old_note.remove();
+
+    if(text===null)
+        return;
+
+    let note = document.createElement('a');
+    note.id = 'note-' + key;
+    note.textContent = text;
+
+    if(typeof link === 'function') {
+        note.addEventListener('click', link);
+        note.href = '#';
+    } else if(typeof link === 'string') {
+        note.href = link;
+        note.target = '_blank';
+        note.rel = 'noopener';
+    }
+
+    note_container.appendChild(note);
 }
+
+if(!IS_FIREFOX && navigator.userAgent.includes('Firefox/'))
+    show_note(
+        'wrong_channel',
+        '你正在使用 Chrome 分支的 pakku，它在 Firefox 中无法正常工作。\nFirefox 用户请点击前往 Firefox 附加组件中心下载 pakku，然后卸载此版本。',
+        'https://addons.mozilla.org/zh-CN/firefox/addon/pakkujs/',
+    );
 
 function id(x: string): any {
     return document.getElementById(x);
@@ -94,15 +121,6 @@ if(IS_EDG) {
     ask_review_link.textContent = 'Microsoft Edge 加载项网站';
 }
 
-function show_note(text: string, link: string | null) {
-    let note = id('note-banner');
-
-    note.style.display = 'initial';
-    note.style.pointerEvents = link ? 'auto' : 'none';
-    note.href = link || '#';
-    note.textContent = text;
-}
-
 // version check
 async function ver_check() {
     let chrome_ver_match = navigator.userAgent.match(/Chrome\/(\d+)/);
@@ -110,6 +128,7 @@ async function ver_check() {
 
     if(process.env.PAKKU_CHANNEL!=='firefox' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
         show_note(
+            'browser_version',
             `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`,
             'https://www.google.cn/chrome/',
         );
@@ -131,6 +150,7 @@ async function ver_check() {
     if(latest_ver.value.charAt(0) === 'v') {
         if(latest_ver.value !== version) {
             show_note(
+                'pakku_version',
                 `你正在使用 pakku ${version}，${latest_ver.name} 中的最新版是 ${latest_ver.value}。点击此处下载新版本。`,
                 'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version),
             );
@@ -160,28 +180,35 @@ let config: Config;
 try {
     config = await get_config();
 } catch(e: any) {
-    alert(`无法读取配置：\n${e.message || e}`);
+    show_note(
+        'get_config',
+        `无法读取配置：\n${e.message || e}`,
+        null,
+    );
     throw e;
 }
 
 let perms = await get_perms();
 
 if(!perms.origins?.includes('*://*.bilibili.com/*')) {
-    id('fix-permission-hint').style.display = 'initial';
-    id('fix-permission-btn').addEventListener('click', function() {
-        /// xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
-        chrome.permissions.request({
-            origins: ['*://*.bilibili.com/*', 'ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
-        })
-            .then((granted)=>{
-                if(granted) {
-                    id('fix-permission-hint').style.display = 'none';
-                    void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
-                    void chrome.notifications.clear('//perm_hotfix');
-                    chrome.permissions.getAll().then((p)=>{perms = p;});
-                }
-            });
-    });
+    show_note(
+        'permission',
+        '需要授权 pakku 访问 bilibili.com 才能正常工作，点击授予权限。',
+        function() {
+            // xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
+            chrome.permissions.request({
+                origins: ['*://*.bilibili.com/*', 'ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
+            })
+                .then((granted)=>{
+                    if(granted) {
+                        show_note('permission', null, null);
+                        void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
+                        void chrome.notifications.clear('//perm_hotfix');
+                        chrome.permissions.getAll().then((p)=>{perms = p;});
+                    }
+                });
+        },
+    );
 }
 
 function get_ws_permission_and_reload() {
@@ -209,7 +236,7 @@ async function try_save_config(config: Config) {
     let error_msg = await save_config(config);
 
     if(error_msg) {
-        show_note(error_msg, null);
+        show_note('save_config', error_msg, null);
     }
     return error_msg;
 }
