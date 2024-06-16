@@ -149,11 +149,25 @@ async function ver_check() {
     console.log('latest version ', latest_ver);
     if(latest_ver.value.charAt(0) === 'v') {
         if(latest_ver.value !== version) {
+            let update_url = 'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version);
             show_note(
                 'pakku_version',
                 `你正在使用 pakku ${version}，${latest_ver.name} 中的最新版是 ${latest_ver.value}。点击此处下载新版本。`,
-                'https://s.xmcp.ltd/pakkujs/?src=update_banner&from_version=' + encodeURIComponent(version),
+                update_url,
             );
+
+            // let the browser to auto update
+            if(chrome.runtime.requestUpdateCheck) {
+                chrome.runtime.requestUpdateCheck((status, details)=>{
+                    console.log('request update check ', status, details);
+                    if(status === 'update_available')
+                        show_note(
+                            'pakku_version',
+                            `你正在使用 pakku ${version}。重启浏览器来自动更新到 ${details?.version || '新版本'}，或者点击此处手动下载。`,
+                            update_url,
+                        );
+                });
+            }
         }  else {
             id('version-checker').textContent = '✓ 是最新版本';
         }
@@ -182,7 +196,7 @@ try {
 } catch(e: any) {
     show_note(
         'get_config',
-        `无法读取配置：\n${e.message || e}`,
+        `无法读取配置，浏览器存在故障：${e.message || e}`,
         null,
     );
     throw e;
