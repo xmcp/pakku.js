@@ -76,9 +76,6 @@
     overflow: hidden;
     margin: 3px 0 6px 6px;
 }
-.pakku-panel-title, .pakku-panel-desc, .pakku-panel-footer {
-    text-shadow: 0 0 1px white;
-}
 .pakku-panel * {
     user-select: text !important; /* to override ".bilibili-player *" */
     font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace !important;
