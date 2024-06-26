@@ -168,7 +168,7 @@ export function fix_invalid_keys(config: AnyObject) { // may be due to invalid i
 
         if(
             !(k in config) ||
-            (typeof config[k] === 'string' && typeof DEFAULT_CONFIG[k] !== 'string')
+            (typeof config[k] === 'string' && DEFAULT_CONFIG[k]!==null && typeof DEFAULT_CONFIG[k] !== 'string')
         ) {
             console.log('pakku config: restored missing key to default:', k, config[k]);
             config[k] = DEFAULT_CONFIG[k];
