@@ -171,6 +171,18 @@ function extract_insight(s: string): HTMLButtonElement[] {
     return ret;
 }
 
+function guess_current_info_idx(infos: DanmuObjectRepresentative[]) {
+    if(infos.length<=1)
+        return 0;
+
+    let cur_time_elem = window.root_elem.querySelector('.bpx-player-ctrl-time-current') as HTMLElement;
+    let cur_time_ms = 1000 * (cur_time_elem ? parse_time(cur_time_elem.textContent!, 0) : 0);
+
+    let item = infos.map((info, idx) => [idx, info.time_ms]);
+    item.sort((a, b) => Math.abs(a[1] - cur_time_ms) - Math.abs(b[1] - cur_time_ms));
+    return item[0][0];
+}
+
 export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, config: Config) {
     let panel_obj = document.createElement('div');
     panel_obj.style.display = 'none';
@@ -291,7 +303,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
         }
 
         if(infos.length) {
-            redraw_ui(0);
+            redraw_ui(guess_current_info_idx(infos));
         } else {
             text_container.textContent = dminfo.str;
             desc_container.appendChild(make_p('找不到弹幕详情'));
