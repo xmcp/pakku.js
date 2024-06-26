@@ -103,7 +103,7 @@ let base85 = (function () {
 })();
 
 // below: deflate compression
-// borrowedf from https://evanhahn.com/javascript-compression-streams-api-with-strings/
+// borrowed from https://evanhahn.com/javascript-compression-streams-api-with-strings/
 
 async function concat_u8_array(arrays: Uint8Array[]): Promise<Uint8Array> {
     let ab = await new Blob(arrays).arrayBuffer();
@@ -148,9 +148,13 @@ async function decompress_str(s: string): Promise<string> {
     );
 }
 
-// below: original stuff
+// below: compressed object signature
 
 async function compress(o: any): Promise<any> {
+    // small data do not need compression
+    if(o===null || typeof o === 'boolean' || typeof o === 'number' || (typeof o === 'string' && o.length<=COMPRESS_THRESHOLD/4))
+        return o;
+
     let encoded = new TextEncoder().encode(JSON.stringify(o));
     if(encoded.length<=COMPRESS_THRESHOLD)
         return o;
