@@ -433,9 +433,17 @@ function loadconfig() {
             savebtn.classList.remove('hidden');
             cancelbtn.classList.remove('hidden');
         };
+        let handle_enter = (e: KeyboardEvent)=>{
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                savebtn.click();
+            }
+        };
 
         code1.addEventListener('input', show_btn);
         code2.addEventListener('input', show_btn);
+        code1.addEventListener('keypress', handle_enter);
+        code2.addEventListener('keypress', handle_enter);
 
         container.appendChild(code1);
         container.appendChild(spliter);
