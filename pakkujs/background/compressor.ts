@@ -110,31 +110,42 @@ async function concat_u8_array(arrays: Uint8Array[]): Promise<Uint8Array> {
     return new Uint8Array(ab);
 }
 
-async function compress_str(s: Uint8Array): Promise<string> {
-    let stream = new Blob([s]).stream();
-    let compressed_stream = stream.pipeThrough(
-        new CompressionStream('deflate')
-    );
+async function flow_through(stream: TransformStream, input: Uint8Array): Promise<Uint8Array> {
+    // cannot use for-await until chrome 124!
+    // https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
+
+    let writer = stream.writable.getWriter();
+    void writer.write(input);
+    void writer.close();
+
     let chunks = [];
-    for await (const chunk of (compressed_stream as any)) {
-        chunks.push(chunk);
+    let reader = stream.readable.getReader();
+    while(true) {
+        let {done, value} = await reader.read();
+        if(done)
+            break;
+        chunks.push(value);
     }
-    let compresed_u8 = await concat_u8_array(chunks);
-    return base85.encode(compresed_u8);
+
+    return await concat_u8_array(chunks);
+}
+
+async function compress_str(s: Uint8Array): Promise<string> {
+    return base85.encode(
+        await flow_through(
+            new CompressionStream('deflate'),
+            s,
+        )
+    );
 }
 
 async function decompress_str(s: string): Promise<string> {
-    let compresed_u8 = base85.decode(s);
-    let stream = new Blob([compresed_u8]).stream();
-    let decompressed_stream = stream.pipeThrough(
-        new DecompressionStream('deflate')
+    return new TextDecoder().decode(
+        await flow_through(
+            new DecompressionStream('deflate'),
+            base85.decode(s),
+        )
     );
-    let chunks = [];
-    for await (const chunk of (decompressed_stream as any)) {
-        chunks.push(chunk);
-    }
-    let decompresed_ab = await concat_u8_array(chunks);
-    return new TextDecoder().decode(decompresed_ab);
 }
 
 // below: original stuff

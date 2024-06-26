@@ -1,6 +1,7 @@
 import {install_dnr_rule} from "./danmu_update_blocker";
 import {get_config, hotfix_on_update, save_config} from "./config";
 import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
+import {LocalizedConfig} from "../core/types";
 
 async function check_fix_permission() {
     let perms = await chrome.permissions.getAll();
@@ -184,8 +185,34 @@ chrome.runtime.onInstalled.addListener(async (details)=>{
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if(msg.type==='get_tabid') {
-        sendResponse(sender.tab?.id);
+    if(msg.type==='get_local_config') {
+        async function worker() {
+            let is_pure_env = msg.is_pure_env;
+
+            let tabid = sender.tab?.id;
+            let config = await get_config();
+            let state = await get_state();
+
+            let userscript = config.USERSCRIPT;
+            if(state[`USERSCRIPT_${tabid}`])
+                userscript = (userscript || '') + '\n\n' + state[`USERSCRIPT_${tabid}`];
+
+            let local_config: LocalizedConfig = {
+                ...config,
+                BLACKLIST: (config.READ_PLAYER_BLACKLIST && !is_pure_env) ? [[true, '']] : [],
+                GLOBAL_SWITCH: state.GLOBAL_SWITCH,
+                USERSCRIPT: userscript,
+                SKIP_INJECT: is_pure_env,
+            };
+
+            sendResponse({
+                tabid: sender.tab?.id,
+                local_config: local_config,
+            });
+        }
+
+        void worker();
+        return true;
     }
     else if(msg.type==='update_badge') {
         if(!msg.tabid) {

@@ -1,7 +1,6 @@
 import {url_finder} from "../protocol/urls";
 import {BADGE_ERR_JS, handle_proto_view, handle_task, scheduler} from "../core/scheduler";
-import {get_config} from "../background/config";
-import {get_state, remove_state} from "../background/state";
+import {remove_state} from "../background/state";
 import {AjaxResponse, BlacklistItem, int, LocalizedConfig, MessageStats} from "../core/types";
 import {process_local, userscript_sandbox} from "./sandboxed";
 import {ProtobufIngressSeg, ProtobufView} from "../protocol/interface_protobuf";
@@ -49,20 +48,25 @@ function get_player_blacklist(): BlacklistItem[] {
 }
 
 let tabid: null | int = null;
+let local_config: null | LocalizedConfig = null;
 let unreg_userscript = true;
 
-function get_tabid() {
+function _really_get_local_config(is_pure_env: boolean): Promise<{tabid: int, local_config: LocalizedConfig}> {
     return new Promise((resolve) => {
-        chrome.runtime.sendMessage({type: 'get_tabid'}, resolve);
+        chrome.runtime.sendMessage({
+            type: 'get_local_config',
+            is_pure_env: is_pure_env,
+        }, resolve);
     });
 }
 
 async function get_local_config(is_pure_env: boolean = false): Promise<LocalizedConfig> {
-    if(!tabid) {
-        tabid = await get_tabid() as int;
+    if(!local_config) {
+        ({tabid, local_config} = await _really_get_local_config(is_pure_env));
+        local_config.BLACKLIST = local_config.BLACKLIST.length ? get_player_blacklist() : [];
 
         // storage cleanup
-        window.onunload = function() {
+        window.onbeforeunload = function() {
             if(unreg_userscript)
                 void remove_state([`STATS_${tabid}`, `USERSCRIPT_${tabid}`]);
             else
@@ -75,28 +79,10 @@ async function get_local_config(is_pure_env: boolean = false): Promise<Localized
             } catch(e) {}
         };
     }
-
-    let config = await get_config();
-    let state = await get_state();
-
-    let userscript = config.USERSCRIPT;
-
-    if(state[`USERSCRIPT_${tabid}`])
-        userscript = (userscript || '') + '\n\n' + state[`USERSCRIPT_${tabid}`];
-
-    return {
-        ...config,
-        BLACKLIST: (config.READ_PLAYER_BLACKLIST && !is_pure_env) ? get_player_blacklist() : [],
-        GLOBAL_SWITCH: state.GLOBAL_SWITCH,
-        USERSCRIPT: userscript,
-        SKIP_INJECT: is_pure_env,
-    };
+    return local_config;
 }
 
-let local_config: null | LocalizedConfig = null;
-get_local_config().then((c)=>{
-    local_config = c;
-});
+void get_local_config();
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if(msg.type==='ping') {
@@ -214,7 +200,7 @@ window.addEventListener('message', async function(event) {
         }
 
         if(is_proto_view(url)) {
-            handle_proto_view(url[0], event.data.url, local_config, tabid as int)
+            handle_proto_view(url[0], event.data.url, local_config, tabid!)
                 .then((ab)=>{
                     sendResponse({
                         data: new Uint8Array(ab),
@@ -223,7 +209,7 @@ window.addEventListener('message', async function(event) {
             return;
         }
 
-        handle_task(url[0], url[1], sendResponse, local_config, tabid as int);
+        handle_task(url[0], url[1], sendResponse, local_config, tabid!);
     }
     else if(event.origin===ext_domain && event.data.type==='pakku_userscript_sandbox_request') {
         let res = await userscript_sandbox(event.data.script);
@@ -236,7 +222,7 @@ window.addEventListener('message', async function(event) {
         let config = await get_local_config(true);
         config.GLOBAL_SWITCH = true;
 
-        let res = await process_local(event.data.ingress, event.data.egress, config, tabid as int);
+        let res = await process_local(event.data.ingress, event.data.egress, config, tabid!);
         event.source!.postMessage({
             type: 'pakku_process_local_result',
             result: res,
