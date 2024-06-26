@@ -98,6 +98,7 @@ export class Stats {
     type: 'done' = 'done';
     download_time_ms = 0;
     parse_time_ms = 0;
+    userscript_time_ms = 0;
 
     combined_identical= 0;
     combined_edit_distance= 0;
@@ -156,7 +157,6 @@ export class Stats {
             'modified_shrink',
             'modified_scroll',
             'num_taolu_matched',
-            'num_userscript',
         ]) {
             // @ts-ignore
             this[k] += x[k];

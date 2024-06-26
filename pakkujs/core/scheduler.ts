@@ -199,8 +199,13 @@ class Scheduler {
 
         if(this.userscript && this.userscript.n_after) {
             try {
+                let t1 = +new Date();
+
                 chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
                 this.userscript.sancheck_chunk_output(chunk_out);
+
+                let t2 = +new Date();
+                this.ongoing_stats.userscript_time_ms += Math.ceil(t2 - t1);
             } catch(e) {
                 this.write_failing_stats(`处理分片 ${segidx} 后执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                 return;
@@ -333,8 +338,13 @@ class Scheduler {
 
                 if(this.userscript && this.userscript.n_before) {
                     try {
+                        let t1 = +new Date();
+
                         chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
                         this.userscript.sancheck_chunk_output(chunk);
+
+                        let t2 = +new Date();
+                        this.ongoing_stats.userscript_time_ms += Math.ceil(t2 - t1)
                     } catch(e) {
                         this.write_failing_stats(`处理分片 ${idx} 前执行用户脚本时出错`, e as Error, BADGE_ERR_JS);
                         return;
@@ -383,8 +393,13 @@ class Scheduler {
             }
 
             try {
+                let t1 = +new Date();
+
                 view = await this.userscript.exec({type: 'proto_view', view: view});
                 let view_ab = protoapi_encode_view(view).buffer;
+
+                let t2 = +new Date();
+                this.ongoing_stats.userscript_time_ms += Math.ceil(t2 - t1)
 
                 // cache the result so it will be available even if this.userscript has been cleaned up
                 this.prefetch_data!.view = new Promise((resolve) => resolve(view_ab));
