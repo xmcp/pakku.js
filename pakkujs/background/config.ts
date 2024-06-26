@@ -153,8 +153,12 @@ export function migrate_config(remote_config: AnyObject): Config {
     }
 
     // 2 -> 3
-    if(config._CONFIG_VER < 2) {
+    if(config._CONFIG_VER < 3) {
+        config._LAST_UPDATE_TIME = gen_timestamp();
+        config._CONFIG_VER = 3;
+
         // no changes needed here.
+
         // v3 adds config compression.
         // bumped the version to make sure old clients won't override the config in new format.
     }
