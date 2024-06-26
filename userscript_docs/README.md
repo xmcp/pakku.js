@@ -20,7 +20,7 @@
 
 ![screenshot](userscript_in_options.png)
 
-[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度不能超过 8KB。
+[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度不能超过 8KB。可以利用 [`importScripts`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#importing_scripts_and_libraries) 函数通过 URL 引入较大的外部文件，此时请合理设置 HTTP 缓存来避免拖慢弹幕加载速度。
 
 ## 添加临时用户脚本
 
@@ -203,6 +203,21 @@ tweak_after_pakku(chunk=>{
         }
     });
     chunk.objs.push(...extracted);
+});
+```
+
+[根据大量黑名单屏蔽弹幕](https://github.com/xmcp/pakku.js/issues/288)：
+
+```javascript
+importScripts('https://s.xmcp.ltd/sample/large_data.js');
+// ↑ const LARGE_DATA = ['hello', 'world'];
+
+let regexps = LARGE_DATA.map(s => new RegExp(s, 'i'));
+
+tweak_before_pakku(chunk=>{
+  chunk.objs = chunk.objs.filter(d=>
+    !regexps.some(r => r.test(d.content))
+  );
 });
 ```
 
