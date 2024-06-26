@@ -35,6 +35,6 @@
     "protobufjs-cli": "^1.1.2",
     "rollup-pluginutils": "^2.8.2",
     "tslib": "^2.6.2",
-    "typescript": "^4.9.3"
+    "typescript": "^5.5.2"
   }
 }

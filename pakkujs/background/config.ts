@@ -1,8 +1,9 @@
 import {AnyObject} from "../core/types";
+import {compress_all, decompress_all} from "./compressor";
 
 export const DEFAULT_CONFIG = {
     _LAST_UPDATE_TIME: 0,
-    _CONFIG_VER: 2,
+    _CONFIG_VER: 3,
 
     ADVANCED_USER: false,
 
@@ -151,6 +152,13 @@ export function migrate_config(remote_config: AnyObject): Config {
         delete config.SHRINK;
     }
 
+    // 2 -> 3
+    if(config._CONFIG_VER < 2) {
+        // no changes needed here.
+        // v3 adds config compression.
+        // bumped the version to make sure old clients won't override the config in new format.
+    }
+
     return {...DEFAULT_CONFIG, ...config};
 }
 
@@ -176,7 +184,7 @@ export async function save_config<SomeConfig extends Partial<Config>>(config: So
 
     config._LAST_UPDATE_TIME = gen_timestamp();
     try {
-        await chrome.storage.sync.set(config);
+        await chrome.storage.sync.set(await compress_all(config));
     } catch(e: any) {
         console.error(e);
         return '无法保存设置：' + (e.message || e);
@@ -189,8 +197,13 @@ export function get_config(): Promise<Config> {
         chrome.storage.sync.get((config: AnyObject)=>{
             if(chrome.runtime.lastError)
                 reject(chrome.runtime.lastError);
-            else
-                resolve(migrate_config(config));
+            else {
+                decompress_all(config)
+                    .then(config=>{
+                        resolve(migrate_config(config));
+                    })
+                    .catch(reject);
+            }
         });
     });
 }
