@@ -4,6 +4,7 @@ declare global {
     interface Window {
         player: {
             getManifest: ()=>{cid: number};
+            seek: (time: number)=>void;
         };
     }
     interface XMLHttpRequest {
@@ -39,14 +40,16 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
         window.top!.postMessage({
             type: 'pakku_ping',
         }, '*');
-        window.addEventListener('message', function(event) {
+        function top_waiter(event: MessageEvent) {
             if (!is_bilibili(event.origin))
                 return;
             if (event.data.type && event.data.type === 'pakku_pong') {
                 console.log('pakku ajax: confirmed worker available');
                 worker_ready = true;
+                window.removeEventListener('message', top_waiter);
             }
-        });
+        }
+        window.addEventListener('message', top_waiter);
     }
 
     function uint8array_to_arraybuffer(array: Uint8Array) {
@@ -270,6 +273,16 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
         return proxied_fetch(url, req, options);
     }
+
+    // callbacks from injected ui
+
+    window.addEventListener('message',function(event) {
+        if (!is_bilibili(event.origin))
+            return;
+        if (event.data.type && event.data.type === 'pakku_video_jump') {
+            window.player?.seek(event.data.time);
+        }
+    });
 
     console.log('pakku ajax: hook set');
 })();

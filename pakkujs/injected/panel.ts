@@ -4,7 +4,7 @@ import {
     get_L,
     make_a,
     make_elem,
-    make_p,
+    make_p, parse_time,
     proc_mode,
     proc_rgb,
     sleep_ms
@@ -32,6 +32,7 @@ function make_panel_dom() {
     dom.appendChild(dom_title);
     dom.appendChild(dom_selectbar);
     dom.appendChild(make_elem('hr', ''));
+    dom.appendChild(make_elem('div', 'pakku-insight-row'));
     dom.appendChild(make_elem('div', 'pakku-panel-desc'));
     dom.appendChild(make_elem('hr', 'pakku-for-desc'));
     dom.appendChild(make_elem('div', 'pakku-panel-peers'));
@@ -123,6 +124,53 @@ async function query_uid(uidhash: string, logger_container: HTMLElement) {
     }
 }
 
+function extract_insight(s: string): HTMLButtonElement[] {
+    let ret = [];
+
+    // note that s may be prefixed or suffixed `₍₎` or `[]` by pakku
+
+    // jump to time (1:00:00)
+    for(let pattern_jump of s.matchAll(/(?:^|\D)(\d+)(?:(?:[:：]|小?时)([0-5][0-9]))?(?:[:：]|分钟?)([0-5][0-9])(?:$|\D)/g)) {
+        let time_normalized = pattern_jump[2] ? `${pattern_jump[1]}:${pattern_jump[2]}:${pattern_jump[3]}` : `${pattern_jump[1]}:${pattern_jump[3]}`;
+        let jump_s = parse_time(time_normalized, null);
+        if(jump_s!==null) {
+            let btn = document.createElement('button') as HTMLButtonElement;
+            btn.textContent = time_normalized;
+            btn.onclick = function () {
+                window.postMessage({
+                    type: 'pakku_video_jump',
+                    time: jump_s,
+                });
+            };
+            ret.push(btn);
+        }
+    }
+
+    // video reference (av314 or BVxxxxx)
+    for(let pattern_video of s.matchAll(/(?:^|[^a-zA-Z0-9])([aA][vV][1-9]\d{2,}|BV[a-zA-Z0-9]{10})(?:$|[^a-zA-Z0-9])/g)) {
+        let video_link = 'https://www.bilibili.com/video/' + pattern_video[1];
+        let btn = document.createElement('button') as HTMLButtonElement;
+        btn.textContent = pattern_video[1];
+        btn.onclick = function () {
+            window.open(video_link);
+        };
+        ret.push(btn);
+    }
+
+    // user reference (@xxxx)
+    for(let pattern_user of s.matchAll(/(?:^|[ ~,，.。《》、:：()（）…!！?？₎/\[\]]|\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana})(@(?:[0-9a-zA-Zー_-]|\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}){3,16})(?:$|[ @~,，.。《》、:：()（）…!！?？/₍\[\]])/ug)) {
+        let user_link = 'https://search.bilibili.com/upuser?keyword=' + encodeURIComponent(pattern_user[1]);
+        let btn = document.createElement('button') as HTMLButtonElement;
+        btn.textContent = pattern_user[1];
+        btn.onclick = function () {
+            window.open(user_link);
+        };
+        ret.push(btn);
+    }
+
+    return ret;
+}
+
 export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, config: Config) {
     let panel_obj = document.createElement('div');
     panel_obj.style.display = 'none';
@@ -163,6 +211,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
                 left: panel_obj.querySelector('.pakku-panel-selectbar-left') as HTMLElement,
                 right: panel_obj.querySelector('.pakku-panel-selectbar-right') as HTMLElement,
             },
+            insight_row = panel_obj.querySelector('.pakku-insight-row') as HTMLElement,
             desc_container = panel_obj.querySelector('.pakku-panel-desc') as HTMLElement,
             peers_container = panel_obj.querySelector('.pakku-panel-peers') as HTMLElement,
             footer_container = panel_obj.querySelector('.pakku-panel-footer') as HTMLElement;
@@ -211,6 +260,11 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             desc_container.textContent = '';
             for(let desc of info.pakku.desc) {
                 desc_container.appendChild(make_p(desc));
+            }
+
+            insight_row.textContent = '';
+            for(let btn of extract_insight(info.content)) {
+                insight_row.appendChild(btn);
             }
 
             peers_container.textContent = '';

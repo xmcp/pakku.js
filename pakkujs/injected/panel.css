@@ -1,5 +1,6 @@
 .pakku-panel {
     background-color: rgba(247, 247, 247, .8);
+    backdrop-filter: blur(3px);
     color: black;
     width: 300px;
     position: absolute;
@@ -14,7 +15,7 @@
     margin: 0;
 }
 .pakku-floating .pakku-panel {
-    filter: brightness(.8);
+    filter: brightness(.85);
     pointer-events: none;
 }
 .pakku-panel .pakku-panel-title {
@@ -59,6 +60,13 @@
     line-height: 1.2em;
     margin: 3px 0 3px 6px;
     white-space: initial;
+}
+.pakku-panel .pakku-insight-row:not(:empty) {
+    margin: 3px 0 3px 6px;
+    font-weight: bold;
+}
+.pakku-panel .pakku-insight-row:not(:empty)::before {
+    content: '跳转 ';
 }
 .pakku-panel .pakku-panel-peers {
     max-height: 350px;
@@ -153,6 +161,15 @@
 }
 .pakku-panel .pakku-panel-peers div:hover {
     padding: .4em 0;
+}
+
+.pakku-insight-row button {
+    border-radius: 1em;
+    background-color: black;
+    color: yellow;
+    padding: .25em .5em;
+    margin: 0 .5em 0 0;
+    cursor: pointer;
 }
 
 /* event fix */
