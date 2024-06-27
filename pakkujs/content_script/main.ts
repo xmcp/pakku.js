@@ -6,13 +6,14 @@ import {process_local, userscript_sandbox} from "./sandboxed";
 import {ProtobufIngressSeg, ProtobufView} from "../protocol/interface_protobuf";
 
 function get_player_blacklist(): BlacklistItem[] {
+    type BlockListType = {
+        type: 0 | 1 | 2; // 0 text (case insensitive), 1 regexp (case sensitive), 2 user
+        filter: string;
+        opened: boolean;
+        id: int;
+    }[];
     type BpxProfileType = {
-        blockList: {
-            type: 0 | 1 | 2; // 0 text (case insensitive), 1 regexp (case sensitive), 2 user
-            filter: string;
-            opened: boolean;
-            id: int;
-        }[];
+        blockList: BlockListType
         dmSetting: {
             status: boolean;
         };
@@ -20,9 +21,15 @@ function get_player_blacklist(): BlacklistItem[] {
     try {
         let j = JSON.parse(window.localStorage.getItem('bpx_player_profile')!) as BpxProfileType;
         if(!j) // possibly in another domain
-            return [];
+            j = {
+                blockList: [],
+                dmSetting: {status: false},
+            };
         if(!j.dmSetting.status) // blacklist disabled
-            return [];
+            j.blockList = [];
+
+        let extra = JSON.parse(window.localStorage.getItem('pakku_extra_blacklist') || '[]') as BlockListType;
+        j.blockList.push(...extra);
 
         let ret = (
             j.blockList
@@ -63,7 +70,11 @@ function _really_get_local_config(is_pure_env: boolean): Promise<{tabid: int, lo
 async function get_local_config(is_pure_env: boolean = false): Promise<LocalizedConfig> {
     if(!local_config) {
         ({tabid, local_config} = await _really_get_local_config(is_pure_env));
+
         local_config.BLACKLIST = local_config.BLACKLIST.length ? get_player_blacklist() : [];
+
+        if(localStorage.getItem('pakku_extra_userscript'))
+            local_config.USERSCRIPT = local_config.USERSCRIPT + '\n\n' + localStorage.getItem('pakku_extra_userscript');
 
         // storage cleanup
         window.onbeforeunload = function() {

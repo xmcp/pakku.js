@@ -193,9 +193,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             let config = await get_config();
             let state = await get_state();
 
-            let userscript = config.USERSCRIPT;
+            let userscript = config.USERSCRIPT || '';
             if(state[`USERSCRIPT_${tabid}`])
-                userscript = (userscript || '') + '\n\n' + state[`USERSCRIPT_${tabid}`];
+                userscript = userscript + '\n\n' + state[`USERSCRIPT_${tabid}`];
 
             let local_config: LocalizedConfig = {
                 ...config,
