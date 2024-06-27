@@ -293,6 +293,13 @@ id('version').addEventListener('click', async function(event: MouseEvent) {
 });
 id('backup-restore').addEventListener('click', backup_restore_prompt);
 
+for(let elem of document.querySelectorAll('a[data-help-text]') as NodeListOf<HTMLElement>) {
+    let txt = elem.dataset['helpText']!.replace(/\\n/g, '\n');
+    elem.onclick = ()=>{
+        alert(txt);
+    };
+}
+
 async function reload(changed_dnr=false) {
     let err = await try_save_config(config);
 

@@ -97,6 +97,9 @@
             min-width: 750px;
             width: 750px;
         }
+        a[data-help-text] {
+            cursor: pointer;
+        }
         .list {
             margin-bottom: 1em;
         }
@@ -154,7 +157,6 @@
             border: 2px solid #00aa00;
         }
         .img-inactive {
-            cursor: pointer;
             border: 2px solid #ff4444;
             filter: brightness(.8) contrast(.5);
             -webkit-filter: brightness(.8) contrast(.5);
@@ -466,7 +468,7 @@
                         </span>
                     </p>
                     <p class="warning">
-                        * 还可以查询弹幕发送者（仅支持 2022 年之前注册的用户），
+                        * 还可以查询弹幕发送者（仅支持部分用户 <a data-help-text="仅支持查询 2022 年之前注册（UID 不超过 10 位数字）的用户。\n\n弹幕发送者信息经过不可逆的 CRC32 哈希处理，因此对一条弹幕会查询出多个可能的发送者。">[?]</a>），
                         感谢 <a href="https://github.com/dramforever" target="_blank">@dramforever</a>
                     </p>
                     <p id="tooltip-keybinding-panel">
@@ -523,7 +525,7 @@
                         <a href="userscript_editor.html" target="_blank">前去设置</a>
                     </p>
                     <p class="advanced warning">
-                        * 面向希望深度自定义 pakku 功能的高级用户，可以通过 JavaScript 回调函数来修改弹幕内容
+                        * 用于深度自定义 pakku 功能，可以通过 JavaScript 回调函数来修改弹幕内容
                     </p>
                 </td>
                 <td></td>
@@ -532,13 +534,13 @@
                 <td></td>
                 <td>其他设置</td>
                 <td>
-                    <p>
+                    <p class="advanced">
                         <label for="combine-threads">并行处理：</label>
                         使用
                         <input id="combine-threads" type="number" min="0" step="1" max="6">
                         个后台线程
                     </p>
-                    <p class="warning">
+                    <p class="advanced warning">
                         * 对于长视频（如电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间；设置为 0 来完全禁用后台线程（处理弹幕时将阻塞页面）
                     </p>
                     <p class="advanced">
@@ -557,7 +559,7 @@
                         </span>
                     </p>
                     <p class="advanced warning">
-                        * Tips: 在视频页面点击 pakku 图标可以查看弹幕过滤的统计信息
+                        * 在视频页面点击 pakku 图标可以查看弹幕过滤的统计信息
                     </p>
                     <p class="advanced">
                         <input id="read-player-blacklist" type="checkbox">
@@ -565,12 +567,12 @@
                         <span>在合并弹幕前按播放器的屏蔽词过滤弹幕</span>
                     </p>
                     <p class="advanced warning">
-                        * 可以使数量标记和弹幕密度计算更准确，并避免数量标记影响正则匹配，但将无法在弹幕列表中看到被屏蔽的弹幕
+                        * 使数量标记和弹幕密度计算更准确，并避免数量标记影响正则匹配，但将无法在弹幕列表中看到被屏蔽的弹幕；可以在播放器页面的 <code>localStorage</code> 中添加额外的屏蔽词 <a data-help-text="当屏蔽词数量过多，超出播放器限制或者造成了性能问题时，可以将屏蔽词存储在播放器域名的 localStorage 的 pakku_extra_blacklist 项中，pakku 将额外导入这些屏蔽词。\n\n屏蔽词格式与播放器导出的 JSON 格式相同，例如：\n\nlocalStorage['pakku_extra_blacklist'] = JSON.stringify([{type: 1, filter: '^.{1,6}[天时点分钟秒]前', opened: true, id: 0}]);">[?]</a>
                     </p>
                     <p>
-                        （有一些 <a href="#show-advanced">复杂的设置</a>
+                        （一些面向高级用户的 <a href="#show-advanced">复杂的设置</a>
                         <span class="advanced">现在并没有</span>
-                        被隐藏了，一般人不需要修改它们）
+                        被隐藏了）
                     </p>
                     <p>
                         <button type="button" id="reset">重置所有设置</button>

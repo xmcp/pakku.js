@@ -20,7 +20,10 @@
 
 ![screenshot](userscript_in_options.png)
 
-[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度不能超过 8KB。可以利用 [`importScripts`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#importing_scripts_and_libraries) 函数通过 URL 引入较大的外部文件，此时请合理设置 HTTP 缓存来避免拖慢弹幕加载速度。
+[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度在经过 gzip 压缩后不能超过 8KB。如果代码量较大，可以考虑以下两种方法：
+
+- 在用户脚本中使用 [`importScripts`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#importing_scripts_and_libraries) 函数通过 URL 引入外部文件，见下方示例。此时请合理设置 HTTP 缓存来避免拖慢弹幕加载速度。
+- 将用户脚本存储在播放器域名的 `localStorage['pakku_extra_userscript']` 中。pakku 会读取其中的代码，并拼接到其他用户脚本的结尾。此时请注意及时备份代码，避免清除浏览器缓存导致代码丢失。
 
 ## 添加临时用户脚本
 
@@ -206,7 +209,7 @@ tweak_after_pakku(chunk=>{
 });
 ```
 
-[根据大量黑名单屏蔽弹幕](https://github.com/xmcp/pakku.js/issues/288)：
+[在用户脚本中引入外部文件](https://github.com/xmcp/pakku.js/issues/288)：
 
 ```javascript
 importScripts('https://s.xmcp.ltd/sample/large_data.js');
