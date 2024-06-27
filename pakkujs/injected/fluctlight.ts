@@ -63,7 +63,16 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         return;
     }
 
+    let fix_canvas_position_fn: null | (()=>void) = null;
+
     let v4_detail_elem = bar_elem.querySelector('.bpx-player-progress-popup');
+    if(_version===4 && v4_detail_elem) {
+        fix_canvas_position_fn = function () {
+            let v_offset = v4_detail_elem!.clientHeight;
+            if (v_offset > 0)
+                canvas_elem.style.top = (-HEIGHT_CSS - 12 - v_offset) + 'px';
+        };
+    }
 
     let DURATION = 0;
 
@@ -249,8 +258,12 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         return true;
     }
 
-    function redraw(hltime?: number) {
+    function redraw(hltime?: number, fix_position: boolean = false) {
         let succ = recalc();
+
+        if(fix_position && fix_canvas_position_fn) {
+            fix_canvas_position_fn();
+        }
 
         canvas_elem.style.width = (WIDTH / DPI) + 'px';
         canvas_elem.width = WIDTH;
@@ -343,12 +356,6 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
 
         console.log('pakku fluctlight: graph observer, bar_opened =', bar_opened);
 
-        if (_version === 4 && v4_detail_elem) {
-            let v_offset = v4_detail_elem.clientHeight;
-            if (v_offset > 0)
-                canvas_elem.style.top = (-HEIGHT_CSS - 12 - v_offset) + 'px';
-        }
-
         if (bar_opened && canvas_elem.style.display === 'none') {
             canvas_elem.style.display = 'initial';
             // detect resize
@@ -356,6 +363,10 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             if (width && width !== WIDTH) {
                 WIDTH = width;
             }
+
+            if(fix_canvas_position_fn)
+                fix_canvas_position_fn();
+
             redraw(time_elem ? parse_time(time_elem.textContent!, undefined) : undefined);
         } else if (!bar_opened && canvas_elem.style.display !== 'none') {
             canvas_elem.style.display = 'none';
@@ -434,6 +445,8 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
         return lo;
     }
 
+    let first_run = true;
+
     // time
     window.details_observer = new MutationObserver(function (muts) {
         for(let mut of muts) {
@@ -488,8 +501,14 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                     fluct.style.bottom = (72 + container_height) + 'px';
                 }
 
-                if (window.fluctlight_highlight)
-                    window.fluctlight_highlight(time);
+                if (window.fluctlight_highlight) {
+                    if(first_run) { // fix a rare race when the canvas position is wrong
+                        window.fluctlight_highlight(time, true);
+                        first_run = false;
+                    } else {
+                        window.fluctlight_highlight(time);
+                    }
+                }
             }
         }
     });
