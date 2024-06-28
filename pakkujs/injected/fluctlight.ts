@@ -445,8 +445,6 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
         return lo;
     }
 
-    let first_run = true;
-
     // time
     window.details_observer = new MutationObserver(function (muts) {
         for(let mut of muts) {
@@ -502,12 +500,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                 }
 
                 if (window.fluctlight_highlight) {
-                    if(first_run) { // fix a rare race when the canvas position is wrong
-                        window.fluctlight_highlight(time, true);
-                        first_run = false;
-                    } else {
-                        window.fluctlight_highlight(time);
-                    }
+                    window.fluctlight_highlight(time, true);
                 }
             }
         }
