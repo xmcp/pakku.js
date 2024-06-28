@@ -6,8 +6,9 @@ const COMPRESS_THRESHOLD = 8000; // browser limit is 8192: https://developer.chr
 // borrowed from https://github.com/nE0sIghT/ascii85.js/blob/master/ascii85.js
 
 let base85 = (function () {
+    // note: the charset and endianness is not a standard base85
+
     const TUPLE_BITS = [0, 8, 16, 24];
-    const CHARSET_BASE = 0x28;
     const POW_85_4 = [
         1,
         85,
@@ -15,6 +16,16 @@ let base85 = (function () {
         85 * 85 * 85,
         85 * 85 * 85 * 85,
     ];
+
+    // charset: [0] = `'` (0x26), [84] = `z` (0x7a)
+    // [85] = '{' (0x7b) is used for padding
+    // '\\' (0x5c) and '<' (0x3c) are escaped to [86] = 0x7c `|` and [87] = 0x7d `}` respectively to avoid json escaping
+
+    const CHARSET_BASE = 0x26;
+    const ESCAPE_1_FROM = 0x5c - CHARSET_BASE;
+    const ESCAPE_1_TO = 86;
+    const ESCAPE_2_FROM = 0x3c - CHARSET_BASE;
+    const ESCAPE_2_TO = 87;
 
     let _buf_4 = new Uint8Array(4);
     let _buf_5 = new Uint8Array(5);
@@ -24,7 +35,12 @@ let base85 = (function () {
 
         for (let i = 0; i <= 4; i++) {
             if (i <= bytes) {
-                _buf_5[i] = d % 85 + CHARSET_BASE;
+                let cur = d % 85;
+
+                if(cur===ESCAPE_1_FROM) cur = ESCAPE_1_TO;
+                else if(cur===ESCAPE_2_FROM) cur = ESCAPE_2_TO;
+
+                _buf_5[i] = cur + CHARSET_BASE;
             } else {
                 _buf_5[i] = 85 + CHARSET_BASE;
             }
@@ -72,12 +88,16 @@ let base85 = (function () {
         let i = 0;
         do {
             let c_delta = text.charCodeAt(i) - CHARSET_BASE;
-            if (c_delta<0 || c_delta>85) {
-                throw new Error('pakku compressor: cannot decode char delta '+c_delta);
-            }
-            if(c_delta===85) {
+
+            if(c_delta===ESCAPE_1_TO) { c_delta = ESCAPE_1_FROM; }
+            else if(c_delta===ESCAPE_2_TO) { c_delta = ESCAPE_2_FROM; }
+            else if(c_delta===85) {
                 c_delta = 0;
                 pad++;
+            }
+
+            if (c_delta<0 || c_delta>85) {
+                throw new Error('pakku compressor: cannot decode char delta '+c_delta);
             }
 
             tuple += c_delta * POW_85_4[tupleIndex++];
@@ -150,13 +170,28 @@ async function decompress_str(s: string): Promise<string> {
 
 // below: compressed object signature
 
+function chrome_stringification_length(s: Uint8Array) {
+    // the '<' character will occupy 6 bytes in the quota in Chrome
+    // https://issues.chromium.org/issues/349918278
+
+    if(process.env.PAKKU_CHANNEL==='firefox')
+        return s.length;
+
+    let char_count = 0;
+    for(let i=0; i<s.length; i++) {
+        if(s[i] === 0x3c)
+            char_count++;
+    }
+    return s.length + 5 * char_count;
+}
+
 async function compress(o: any): Promise<any> {
     // small data do not need compression
-    if(o===null || typeof o === 'boolean' || typeof o === 'number' || (typeof o === 'string' && o.length<=COMPRESS_THRESHOLD/4))
+    if(o===null || typeof o === 'boolean' || typeof o === 'number' || (typeof o === 'string' && o.length<=COMPRESS_THRESHOLD/6))
         return o;
 
     let encoded = new TextEncoder().encode(JSON.stringify(o));
-    if(encoded.length<=COMPRESS_THRESHOLD)
+    if(chrome_stringification_length(encoded) <= COMPRESS_THRESHOLD)
         return o;
 
     let compressed = await compress_str(encoded);
