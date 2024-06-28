@@ -57,6 +57,7 @@ async function load() {
                     await chrome.tabs.sendMessage(tabid, {type: 'refresh'});
                 } catch(e) {}
                 alert('清除成功');
+                $editor.value = ''; // clear it because firefox will preserve textarea content after refresh
                 location.reload();
             }
         };
@@ -83,6 +84,7 @@ async function load() {
                     alert(err);
                 } else {
                     alert('清除成功');
+                    $editor.value = ''; // clear it because firefox will preserve textarea content after refresh
                     location.reload();
                 }
             }
