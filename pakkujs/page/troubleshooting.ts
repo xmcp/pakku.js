@@ -40,9 +40,30 @@ chrome.declarativeNetRequest.getDynamicRules(function(rules) {
 debug.textContent += '\n\n**localStorage:** `' + JSON.stringify(localStorage) + '`';
 get_config().then((config)=>{
     debug.textContent += '\n\n**Config:** `' + JSON.stringify(config) + '`';
+}, (e)=>{
+    debug.textContent += '\n\n**Config:** FAILED `' + stringify_error(e) + '`';
+
+    chrome.storage.sync.get((config)=>{
+        if(chrome.runtime.lastError) {
+            debug.textContent += '\n\n**Config (storage):** FAILED `' + chrome.runtime.lastError + '`';
+        } else {
+            debug.textContent += '\n\n**Config (storage):** `' + JSON.stringify(config) + '`';
+        }
+    });
 });
 get_state().then((state)=>{
     debug.textContent += '\n\n**State:** `' + JSON.stringify(state) + '`';
+}, (e)=>{
+    debug.textContent += '\n\n**State:** FAILED `' + stringify_error(e) + '`';
+
+    let store = HAS_SESSION_STORAGE ? chrome.storage.session : chrome.storage.local;
+    store.get((state)=>{
+        if(chrome.runtime.lastError) {
+            debug.textContent += '\n\n**State (storage):** FAILED `' + chrome.runtime.lastError + '`';
+        } else {
+            debug.textContent += '\n\n**State (storage):** `' + JSON.stringify(state) + '`';
+        }
+    });
 });
 
 debug.textContent += '\n\n**Views:**';

@@ -205,13 +205,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 SKIP_INJECT: is_pure_env,
             };
 
-            sendResponse({
+            return {
                 tabid: sender.tab?.id,
                 local_config: local_config,
-            });
+            };
         }
 
-        void worker();
+        worker().then((res)=>{
+            sendResponse({
+                error: null,
+                result: res,
+            });
+        }, (err)=>{
+            sendResponse({
+                error: ''+err,
+            });
+        });
         return true;
     }
     else if(msg.type==='update_badge') {

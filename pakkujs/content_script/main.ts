@@ -59,11 +59,17 @@ let local_config: null | LocalizedConfig = null;
 let unreg_userscript = true;
 
 function _really_get_local_config(is_pure_env: boolean): Promise<{tabid: int, local_config: LocalizedConfig}> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({
             type: 'get_local_config',
             is_pure_env: is_pure_env,
-        }, resolve);
+        }, (res)=>{
+            if(res.error) {
+                reject('in background script: '+res.error);
+            } else {
+                resolve(res.result);
+            }
+        });
     });
 }
 
