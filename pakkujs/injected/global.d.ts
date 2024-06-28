@@ -9,5 +9,5 @@ interface Window {
 
     graph_observer: MutationObserver | null,
     details_observer: MutationObserver | null,
-    fluctlight_highlight: ((hltime?: number, fix_position: boolean = false) => void) | null;
+    fluctlight_highlight: ((hltime?: number, hlheight?: number) => void) | null;
 }

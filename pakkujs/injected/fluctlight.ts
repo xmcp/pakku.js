@@ -258,10 +258,10 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         return true;
     }
 
-    function redraw(hltime?: number, fix_position: boolean = false) {
+    function redraw(hltime?: number, hlheight?: number) {
         let succ = recalc();
 
-        if(fix_position && fix_canvas_position_fn) {
+        if(fix_canvas_position_fn) {
             fix_canvas_position_fn();
         }
 
@@ -293,7 +293,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             ctx.globalCompositeOperation = 'destination-out';
             ctx.globalAlpha = .6;
             ctx.fillStyle = gra;
-            ctx.fillRect(hlblock - GRALENGTH, 0, GRALENGTH * 2, HEIGHT);
+            ctx.fillRect(hlblock - GRALENGTH, hlheight===undefined ? 0 : (HEIGHT - hlheight*DPI), GRALENGTH * 2, HEIGHT);
 
             // highlight current time
 
@@ -367,7 +367,10 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
             if(fix_canvas_position_fn)
                 fix_canvas_position_fn();
 
-            redraw(time_elem ? parse_time(time_elem.textContent!, undefined) : undefined);
+            if(time_elem)
+                redraw(parse_time(time_elem.textContent!, undefined));
+            else
+                redraw();
         } else if (!bar_opened && canvas_elem.style.display !== 'none') {
             canvas_elem.style.display = 'none';
             canvas_elem.style.width = '0px';
@@ -500,7 +503,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                 }
 
                 if (window.fluctlight_highlight) {
-                    window.fluctlight_highlight(time, true);
+                    window.fluctlight_highlight(time, container_height);
                 }
             }
         }
