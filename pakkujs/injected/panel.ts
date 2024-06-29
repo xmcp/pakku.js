@@ -129,8 +129,8 @@ function extract_insight(s: string): HTMLButtonElement[] {
 
     // note that s may be prefixed or suffixed `₍₎` or `[]` by pakku
 
-    // jump to time (1:00:00)
-    for(let pattern_jump of s.matchAll(/(?:^|[^a-zA-Z0-9日号天])(\d+)(?:(?:[:：.]|小?时)([0-5][0-9]))?(?:[:：.]|分钟?)([0-5][0-9])(?:$|[^a-zA-Z0-9分万倍个+:：.])/g)) {
+    // jump to time (1:00:00), also include things like `7.30` because a few users do send danmus like this
+    for(let pattern_jump of s.matchAll(/(?:^|[^a-zA-Z0-9日号天])(\d+)(?:(?:[:：.]|小?时)([0-5][0-9]))?(?:[:：.]|分钟?)([0-5][0-9])(?:$|[^a-zA-Z0-9分千万亿倍个天日月年元米+:：.])/g)) {
         let time_normalized = pattern_jump[2] ? `${pattern_jump[1]}:${pattern_jump[2]}:${pattern_jump[3]}` : `${pattern_jump[1]}:${pattern_jump[3]}`;
         let jump_s = parse_time(time_normalized, null);
         if(jump_s!==null) {
@@ -146,9 +146,12 @@ function extract_insight(s: string): HTMLButtonElement[] {
         }
     }
 
-    // video reference (av314 or BVxxxxx)
+    // video reference (avxxxx or BVxxxxx)
     for(let pattern_video of s.matchAll(/(?:^|[^a-zA-Z0-9])([aA][vV][1-9]\d{2,}|BV[a-zA-Z0-9]{10})(?:$|[^a-zA-Z0-9])/g)) {
-        let video_link = 'https://www.bilibili.com/video/' + pattern_video[1];
+        let video_link = 'https://www.bilibili.com/video/' + (
+            // avxxxx must be lowercase
+            pattern_video[1].toLowerCase().startsWith('a') ? pattern_video[1].toLowerCase() : pattern_video[1]
+        );
         let btn = document.createElement('button') as HTMLButtonElement;
         btn.textContent = pattern_video[1];
         btn.onclick = function () {
