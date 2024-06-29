@@ -140,6 +140,15 @@ let whitelisted: (text: string) => boolean;
 let blacklisted: (text: string) => string | null;
 let similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
 
+function select_median_length(strs: string[]): string {
+    if(strs.length===1)
+        return strs[0];
+
+    let sorted = strs.sort((a, b) => a.length - b.length);
+    let mid = Math.floor(sorted.length / 2);
+    return sorted[mid];
+}
+
 function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): DanmuClusterOutput {
     let ret: DanmuClusterOutput = {
         clusters: [],
@@ -166,17 +175,22 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
                 chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
             });
         } else {
-            let text_cnts = new Map(), most_text = irs[0].str, most_cnt = 1;
+            let text_cnts = new Map(), most_texts: string[] = [], most_cnt = 0;
+
             for(let ir of irs) {
                 let text = ir.str;
                 let cnt = 1 + (text_cnts.get(text) || 0);
                 text_cnts.set(text, cnt);
 
                 if(cnt > most_cnt) {
-                    most_text = text;
+                    most_texts = [text];
                     most_cnt = cnt;
+                } else if(cnt === most_cnt) {
+                    most_texts.push(text);
                 }
             }
+
+            let most_text = select_median_length(most_texts);
 
             ret.clusters.push({
                 peers: irs.map(ir => ir.obj),
