@@ -13,6 +13,8 @@ import {AnyObject, DanmuObjectRepresentative, int} from "../core/types";
 import {crack_uidhash} from "./crc32_crack";
 import {Config} from "../background/config";
 
+const DANMU_SELECTOR = '.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide), .bili-dm, .bili-danmaku-x-show';
+
 function make_panel_dom() {
     let dom = make_elem('div', 'pakku-panel');
     let dom_title = make_elem('p', 'pakku-panel-title');
@@ -348,7 +350,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
                 return;
             hover_counter++;
 
-            let target = (e.target as HTMLElement).closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide), .bili-dm') as HTMLElement;
+            let target = (e.target as HTMLElement).closest(DANMU_SELECTOR) as HTMLElement;
             if(target) {
                 show_panel({str: extract_danmaku_text(target)}, true);
             }
@@ -363,7 +365,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             if(!player_elem.classList.contains('__pakku_pointer_event'))
                 return;
 
-            let target = (e.target as HTMLElement).closest('.bilibili-danmaku, .b-danmaku:not(.b-danmaku-hide), .bili-dm') as HTMLElement;
+            let target = (e.target as HTMLElement).closest(DANMU_SELECTOR) as HTMLElement;
             if(target) {
                 show_panel({str: extract_danmaku_text(target)});
                 e.stopPropagation();
