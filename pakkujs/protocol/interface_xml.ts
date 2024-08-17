@@ -64,7 +64,7 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
         '<chatserver>chat.bilibili.com</chatserver>' +
         `<chatid>${chunk.extra.xml_chatid || 0}</chatid>` +
         '<mission>0</mission>' +
-        `<maxlimit>${chunk.extra.xml_maxlimit || chunk.objs.length+1}}</maxlimit>` +
+        `<maxlimit>${chunk.extra.xml_maxlimit || chunk.objs.length+1}</maxlimit>` +
         '<state>0</state>' +
         '<real_name>0</real_name>' +
         '</i>'
