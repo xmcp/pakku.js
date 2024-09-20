@@ -163,7 +163,7 @@ async function protoapi_get_segcount(view_response: Promise<ArrayBuffer>): Promi
     let d = await protoapi_get_view(view_response);
     console.log('pakku protobuf api: got view', d);
 
-    if(d.dmSge && d.dmSge.total && d.dmSge.total < 200)
+    if(d.dmSge && d.dmSge.total && d.dmSge.total < 100)
         return d.dmSge.total as int;
     else
         return null;
@@ -245,7 +245,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
         console.log('pakku protobuf api: guessing page numbers');
 
         // noinspection ES6MissingAwait
-        let req= [chunk_1_req, chunk_2_req, protoapi_get_seg(ingress, 3)];
+        let req = [chunk_1_req, chunk_2_req, protoapi_get_seg(ingress, 3)];
 
         async function work(idx: int): Promise<void> {
             let d = await req.shift()!;
