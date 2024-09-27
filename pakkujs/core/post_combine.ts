@@ -109,6 +109,22 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     }
 }
 
+function judge_drop(dispval: number, threshold: number, peers: DanmuObject[]): boolean {
+    if(threshold<=0 || dispval<=threshold)
+        return false;
+
+    let max_weight = Math.max(...peers.map(p=>p.weight));
+    let drop_rate = (
+        (dispval - threshold) / threshold
+        - (max_weight - 1) / 10
+        - (Math.sqrt(peers.length) - 1) / 2
+    );
+    //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
+
+    return (drop_rate>=1 || (drop_rate>0 && Math.random()<drop_rate));
+
+}
+
 export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: input_chunk.extra};
@@ -229,12 +245,8 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
                 break;
 
             // may be dropped
-            if(config.DROP_THRESHOLD>0 && onscreen_dispval>config.DROP_THRESHOLD) {
-                if(c.peers.length===1 && c.peers[0].weight===1) {
-                    let drop_rate = (onscreen_dispval - config.DROP_THRESHOLD) / config.DROP_THRESHOLD;
-                    if (drop_rate>1 || Math.random()<drop_rate)
-                        continue;
-                }
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers)) {
+                continue;
             }
 
             let dv = dispval(c.peers[0]);
@@ -264,15 +276,10 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
             // check drop
 
-            if(config.DROP_THRESHOLD>0 && onscreen_dispval>config.DROP_THRESHOLD) {
-                if(dm.pakku.peers.length<=1 && dm.weight===1) {
-                    let drop_rate = (onscreen_dispval - config.DROP_THRESHOLD) / config.DROP_THRESHOLD;
-                    if(drop_rate>1 || Math.random()<drop_rate) {
-                        stats.deleted_dispval++;
-                        dm.weight = WEIGHT_DROPPED;
-                        continue;
-                    }
-                }
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers)) {
+                stats.deleted_dispval++;
+                dm.weight = WEIGHT_DROPPED;
+                continue;
             }
 
             onscreen_dispval += dv;
