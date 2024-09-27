@@ -435,7 +435,7 @@
                             <option class="other"></option>
                         </select>
                         <label for="drop-threshold">：</label>
-                        <span>瞬时弹幕密度大于阈值时，按比例删除权重低的弹幕，优先删除未合并弹幕</span>
+                        <span>瞬时弹幕密度大于阈值时，按比例删除低权重弹幕，优先删除未合并弹幕</span>
                     </p>
                     <p class="advanced">
                         <label for="representative-percent">合并后的弹幕显示于 </label>
@@ -510,6 +510,14 @@
                     </p>
                     <p class="warning">
                         * 选中后，观看视频时将<b>不会动态更新弹幕</b>，也不会显示在线人数
+                    </p>
+                    <p>
+                        <input id="takeover-aijudge" type="checkbox">
+                        <label for="takeover-aijudge">阻止弹幕云屏蔽：</label>
+                        <span>禁用B站播放器的弹幕智能云屏蔽功能</span>
+                    </p>
+                    <p class="warning">
+                        * pakku 的 <a href="#drop-threshold">自动弹幕优选</a> 是效果更好的替代方案，启用本选项将阻止播放器二次过滤弹幕
                     </p>
                     <p>
                         <label for="scroll-threshold">关怀小屏幕用户：</label>

@@ -383,6 +383,7 @@ function loadconfig() {
     id('fluctlight').checked = config.FLUCTLIGHT;
     // 实验室
     id('break-update').checked = config.BREAK_UPDATE;
+    id('takeover-aijudge').checked = config.TAKEOVER_AIJUDGE;
     id('scroll-threshold').value = config.SCROLL_THRESHOLD;
     // 其他
     id('popup-badge').value = config.POPUP_BADGE;
@@ -598,6 +599,7 @@ function update(this: HTMLInputElement) {
     config.FLUCTLIGHT = id('fluctlight').checked;
     // 实验室
     config.BREAK_UPDATE = id('break-update').checked;
+    config.TAKEOVER_AIJUDGE = id('takeover-aijudge').checked;
     config.SCROLL_THRESHOLD = safe_int(id('scroll-threshold').value, 0, null, DEFAULT_CONFIG.SCROLL_THRESHOLD);
     // 其他
     config.POPUP_BADGE = id('popup-badge').value;
@@ -628,7 +630,7 @@ for(let elem of [
     // 播放器增强
     'tooltip', 'tooltip-keybinding', 'auto-disable-danmu', 'auto-danmu-list', 'fluctlight',
     // 实验室
-    'break-update', 'scroll-threshold',
+    'break-update', 'takeover-aijudge', 'scroll-threshold',
     // 其他
     'popup-badge', 'combine-threads', 'read-player-blacklist',
 ]) {

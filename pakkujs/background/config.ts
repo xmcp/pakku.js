@@ -43,6 +43,7 @@ export const DEFAULT_CONFIG = {
 
     // 实验室
     BREAK_UPDATE: false,
+    TAKEOVER_AIJUDGE: false,
     SCROLL_THRESHOLD: 1200, // 0 to disable
     USERSCRIPT: null as (string | null),
 
@@ -153,6 +154,7 @@ export function migrate_config(remote_config: AnyObject): Config {
     }
 
     // 2 -> 3
+    /*
     if(config._CONFIG_VER < 3) {
         config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 3;
@@ -161,6 +163,15 @@ export function migrate_config(remote_config: AnyObject): Config {
 
         // v3 adds config compression.
         // bumped the version to make sure old clients won't override the config in new format.
+    }
+    */
+
+    // 3 -> 4
+    if(config._CONFIG_VER < 4) {
+        config._LAST_UPDATE_TIME = gen_timestamp();
+        config._CONFIG_VER = 4;
+
+        config.TAKEOVER_AIJUDGE = false;
     }
 
     return {...DEFAULT_CONFIG, ...config};

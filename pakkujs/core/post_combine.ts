@@ -323,8 +323,14 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         stats.num_max_combo = Math.max(stats.num_max_combo, dm.pakku.peers.length);
     }
 
+    // dropped danmakus are assigned a special weight; delete them here
     if(stats.deleted_dispval) {
         out_danmus = out_danmus.filter(dm => dm.weight!==WEIGHT_DROPPED);
+    }
+
+    if(config.TAKEOVER_AIJUDGE) {
+        for(let d of out_danmus)
+            d.weight = Math.max(d.weight, 10);
     }
 
     stats.num_onscreen_danmu += out_danmus.length;
