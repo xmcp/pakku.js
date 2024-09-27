@@ -172,6 +172,7 @@ export function migrate_config(remote_config: AnyObject): Config {
         config._CONFIG_VER = 4;
 
         config.TAKEOVER_AIJUDGE = false;
+        // we also added the 'dispval' option for POPUP_BADGE, so we have to bump version number to inform old clients.
     }
 
     return {...DEFAULT_CONFIG, ...config};
