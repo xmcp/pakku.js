@@ -3,7 +3,7 @@ import {compress_all, decompress_all} from "./compressor";
 
 export const DEFAULT_CONFIG = {
     _LAST_UPDATE_TIME: 0,
-    _CONFIG_VER: 3,
+    _CONFIG_VER: 4,
 
     ADVANCED_USER: false,
 
