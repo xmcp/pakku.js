@@ -275,7 +275,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         ctx.drawImage(graph_img!, 0, 0, WIDTH, HEIGHT+2);
         ctx.save();
 
-        let hlblock = (hltime === undefined) ? undefined : block(hltime * 1000 + 1000);
+        let hlblock = (hltime === undefined) ? undefined : block(hltime * 1000 + 1000); // bias 1000ms to compensate unbalanced shadow
         if(hlblock !== undefined) {
             // add gradient
             let GRALENGTH = 90 * DPI;
@@ -464,7 +464,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
                 if(time===null)
                     return;
 
-                let time_ms = time * 1000 + 1000;
+                let time_ms = time * 1000 + 1000; // bias 1000ms to make current danmaku visible in fluct list
                 let danmus = [];
 
                 if (window.danmus !== D_tag) { // recalc D_sorted if D is changed
