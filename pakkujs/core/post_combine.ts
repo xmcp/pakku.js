@@ -229,7 +229,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     // final adjustments
 
-    let need_dispval = config.SHRINK_THRESHOLD>0 || config.DROP_THRESHOLD>0;
+    let need_dispval = config.SHRINK_THRESHOLD>0 || config.DROP_THRESHOLD>0 || config.POPUP_BADGE==='dispval';
     const dispval_base = Math.pow(config.SHRINK_THRESHOLD, DISPVAL_POWER);
 
     let dispval_subtract: Queue<[number, number]> | null = null;
