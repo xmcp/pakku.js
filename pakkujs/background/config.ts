@@ -48,7 +48,7 @@ export const DEFAULT_CONFIG = {
     USERSCRIPT: null as (string | null),
 
     // 其他
-    POPUP_BADGE: 'percent' as ('percent' | 'count' | 'off'),
+    POPUP_BADGE: 'percent' as ('percent' | 'count' | 'dispval' | 'off'),
     COMBINE_THREADS: 3,
     READ_PLAYER_BLACKLIST: true,
 }
