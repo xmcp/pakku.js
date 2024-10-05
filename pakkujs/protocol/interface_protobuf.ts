@@ -263,6 +263,9 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
                     await work(idx+2);
                 } else { // probably yes
                     console.log('pakku protobuf api: ASSUMING total', idx-1, 'pages');
+                    if(idx===1) { // the logic doesn't for 0 pages, so we emit an empty chunk
+                        await chunk_callback(1, protobuf_to_obj(1, d));
+                    }
                     return;
                 }
             }
