@@ -70,7 +70,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         fix_canvas_position_fn = function () {
             let v_offset = v4_detail_elem!.clientHeight;
             if (v_offset > 0)
-                canvas_elem.style.top = (-HEIGHT_CSS - 12 - v_offset) + 'px';
+                canvas_elem.style.top = (-HEIGHT_CSS - 18 - v_offset) + 'px';
         };
     }
 
@@ -320,7 +320,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     canvas_elem.style.marginBottom = -HEIGHT_CSS + 'px';
 
     if(_version === 4)
-        canvas_elem.style.top = (-HEIGHT_CSS - 102) + 'px';
+        canvas_elem.style.top = (-HEIGHT_CSS - 108) + 'px';
     else if (_version === 3)
         canvas_elem.style.top = (-HEIGHT_CSS - 92) + 'px';
     else if (_version === 2)
