@@ -15,13 +15,15 @@ function edit_distance(P: string, Q: string): int {
     let ans = 0;
 
     for(let i = P.length-1; i>=0; i--) {
-        ans += Math.abs(ed_counts[P.charCodeAt(i)]);
-        ed_counts[P.charCodeAt(i)] = 0;
+        let c = P.charCodeAt(i);
+        ans += Math.abs(ed_counts[c]);
+        ed_counts[c] = 0;
     }
 
     for(let i = Q.length-1; i>=0; i--) {
-        ans += Math.abs(ed_counts[Q.charCodeAt(i)]);
-        ed_counts[Q.charCodeAt(i)] = 0;
+        let c = Q.charCodeAt(i);
+        ans += Math.abs(ed_counts[c]);
+        ed_counts[c] = 0;
     }
 
     return ans;
