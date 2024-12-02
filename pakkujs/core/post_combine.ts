@@ -23,6 +23,15 @@ const _cvs = document.createElement('canvas');
 const _ctx = _cvs.getContext('2d')!;
 _ctx.font = `20px 黑体`;
 
+function shuffle<T>(array: T[]) {
+    for (let i = array.length - 1; i >= 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 function get_width_if_exceeds(text: string, size: number, threshold: number): number {
     if(text.length * size < threshold) // speedup
         return 0;
@@ -238,23 +247,31 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
     if(need_dispval) {
         out_danmus.sort((a, b) => a.time_ms - b.time_ms);
 
+        // pre-populate dispval from the previous chunk
+
         let dispval_preload: [number, number][] = [];
+        let prev_dms: DanmuCluster[] = [];
+
         for(let i = prev_input.clusters.length-1; i >= 0; i--) {
             let c = prev_input.clusters[i];
-            if (c.peers[0].time_ms < FIRST_TIME_MS - DISPVAL_TIME_THRESHOLD)
+            if(c.peers[0].time_ms < FIRST_TIME_MS - DISPVAL_TIME_THRESHOLD)
                 break;
-
-            // may be dropped
+            prev_dms.push(c);
+        }
+        shuffle(prev_dms); // make these pre-populated items disappear randomly in the current chunk, hence less biased
+        for(let c of prev_dms) {
+            // check drop
             if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers)) {
                 continue;
             }
 
-            let dv = dispval(c.peers[0]);
+            let rep_dm = c.peers[0];
+            let dv = dispval(rep_dm);
             onscreen_dispval += dv;
-            dispval_preload.push([c.peers[0].time_ms + DISPVAL_TIME_THRESHOLD, dv]);
+            dispval_preload.push([rep_dm.time_ms + DISPVAL_TIME_THRESHOLD, dv]);
         }
 
-        dispval_preload.reverse();
+        dispval_preload.sort((a, b) => a[0] - b[0]);
         dispval_subtract = new Queue<[number, number]>(dispval_preload);
     }
 
