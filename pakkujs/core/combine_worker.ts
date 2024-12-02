@@ -1,6 +1,7 @@
 import {DanmuChunk, DanmuClusterOutput, DanmuObject, DanmuObjectPeer, int, LocalizedConfig, Stats} from "./types";
 import {PINYIN_DICT_RAW} from "./pinyin_dict";
 import {gen_2gram_array, similar_meta} from "./similarity";
+import {Queue} from "./queue";
 
 interface DanmuIr {
     obj: DanmuObjectPeer;
@@ -293,14 +294,19 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
     let danmus = obj_to_ir(chunk.objs, ret.stats);
     let next_chunk_danmus = obj_to_ir(next_chunk.objs, null);
 
-    let nearby_danmus: DanmuIr[][] = [];
+    let nearby_danmus: Queue<DanmuIr[]> = new Queue();
 
     const THRESHOLD_MS =config.THRESHOLD * 1000;
     const CROSS_MODE =config.CROSS_MODE;
 
     for(let dm of danmus) {
-        while(nearby_danmus.length && dm.obj.time_ms - nearby_danmus[0][0].obj.time_ms > THRESHOLD_MS)
-            apply_cluster(nearby_danmus.shift()!);
+        while(true) {
+            let peeked = nearby_danmus.peek();
+            if(!peeked || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
+                break;
+            apply_cluster(peeked);
+            nearby_danmus.pop();
+        }
 
         let sim = null;
         for(let candidate of nearby_danmus) {
@@ -323,8 +329,13 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
 
     // now process last few clusters with the next chunk
     for(let dm of next_chunk_danmus) {
-        while(nearby_danmus.length && dm.obj.time_ms - nearby_danmus[0][0].obj.time_ms > THRESHOLD_MS)
-            apply_cluster(nearby_danmus.shift()!);
+        while(true) {
+            let peeked = nearby_danmus.peek();
+            if(!peeked || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
+                break;
+            apply_cluster(peeked);
+            nearby_danmus.pop();
+        }
 
         let sim = null;
         for(let candidate of nearby_danmus) {
