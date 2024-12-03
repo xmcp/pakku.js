@@ -129,7 +129,7 @@ export class WorkerPool {
                     if(e.data.error)
                         config.reject(e.data.exc);
                     else {
-                        let output = e.data.output;
+                        let output = e.data.output || null;
                         if(process.env.PAKKU_CHANNEL==='firefox') {
                             // xxx: https://github.com/xmcp/pakku.js/issues/272
                             output = JSON.parse(JSON.stringify(output));
