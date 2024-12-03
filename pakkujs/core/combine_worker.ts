@@ -1,15 +1,11 @@
 import {DanmuChunk, DanmuClusterOutput, DanmuObject, DanmuObjectPeer, int, LocalizedConfig, Stats} from "./types";
-import {PINYIN_DICT_RAW} from "./pinyin_dict";
-import {gen_2gram_array, similar_meta} from "./similarity";
+import {init as sim_init, begin_chunk, add_cacheline, similar} from "../similarity/similarity_stub";
 import {Queue} from "./queue";
 
 interface DanmuIr {
     obj: DanmuObjectPeer;
-
-    // for similarity algorithms
-    str: string;
-    str_pinyin: string | null;
-    str_2gram: number[] | null;
+    idx: int;
+    str: string; // for similarity algorithm
 }
 
 const ENDING_CHARS = new Set('.。,，/?？!！…~～@^、+=-_♂♀ ');
@@ -27,30 +23,6 @@ const WIDTH_TABLE = new Map(Object.entries({
     "Ａ":"A","Ｓ":"S","Ｄ":"D","Ｆ":"F","Ｇ":"G","Ｈ":"H","Ｊ":"J","Ｋ":"K","Ｌ":"L",
     "Ｚ":"Z","Ｘ":"X","Ｃ":"C","Ｖ":"V","Ｂ":"B","Ｎ":"N","Ｍ":"M"
 }));
-const PINYIN_TABLE = (()=>{
-    let ret = new Map();
-    let symbols = new Map(); // 'a': '\ue000'
-    let symbol_idx = 0xe000; // U+E000 ~ U+F8FF: Private Use Area
-
-    for(let phonetic_raw in PINYIN_DICT_RAW) {
-        let phonetics = phonetic_raw.split('_').map(function(phonetic) {
-            let got = symbols.get(phonetic);
-            if(got) {
-                return got;
-            } else {
-                let n = String.fromCharCode(symbol_idx++);
-                symbols.set(phonetic, n);
-                return n;
-            }
-        }).join('');
-
-        for(let c of PINYIN_DICT_RAW[phonetic_raw]) {
-            ret.set(c, phonetics);
-        }
-    }
-
-    return ret;
-})();
 
 function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string] {
     const TRIM_ENDING = config.TRIM_ENDING;
@@ -127,19 +99,9 @@ function extract_special_danmu(text: string): string {
     return text;
 }
 
-function trim_pinyin(text: string): string {
-    return Array.from(text.toLowerCase()).map(c => PINYIN_TABLE.get(c) || c).join('');
-}
-
 function trim_dispstr(text: string): string {
     return text.replace(/([\r\n\t])/g,'').trim();
 }
-
-let _fn_initialized = false;
-let detaolu: (text: string) => [boolean, string];
-let whitelisted: (text: string) => boolean;
-let blacklisted: (text: string) => string | null;
-let similar: (P: string, Q: string, Pgram: (int[] | null), Qgram: (int[] | null), Ppinyin: (string | null), Qpinyin: (string | null), S: Stats) => (string | null);
 
 function select_median_length(strs: string[]): string {
     if(strs.length===1)
@@ -150,7 +112,13 @@ function select_median_length(strs: string[]): string {
     return sorted[mid];
 }
 
-function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): DanmuClusterOutput {
+async function prepare_combine(wasm_mod: ArrayBuffer) {
+    await sim_init(wasm_mod);
+}
+
+async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): Promise<DanmuClusterOutput> {
+    begin_chunk(config);
+
     let ret: DanmuClusterOutput = {
         clusters: [],
         stats: new Stats(),
@@ -201,15 +169,9 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
         }
     }
 
-    // since config will not change, we only declare these functions once to make jit happy
-    if(!_fn_initialized) {
-        _fn_initialized = true;
-
-        detaolu = detaolu_meta(config);
-        whitelisted = whitelisted_meta(config);
-        blacklisted = blacklisted_meta(config);
-        similar = similar_meta(config);
-    }
+    let detaolu = detaolu_meta(config);
+    let whitelisted = whitelisted_meta(config);
+    let blacklisted = blacklisted_meta(config);
 
     function obj_to_ir(objs: DanmuObject[], s: Stats | null): DanmuIr[] {
         return objs
@@ -284,8 +246,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
                         },
                     },
                     str: detaolued,
-                    str_pinyin: config.TRIM_PINYIN ? trim_pinyin(detaolued) : null,
-                    str_2gram: config.MAX_COSINE<100 ? gen_2gram_array(detaolued) : null,
+                    idx: -1,
                 };
             })
             .filter(obj => obj!==null) as DanmuIr[];
@@ -296,13 +257,15 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
 
     let nearby_danmus: Queue<DanmuIr[]> = new Queue();
 
-    const THRESHOLD_MS =config.THRESHOLD * 1000;
-    const CROSS_MODE =config.CROSS_MODE;
+    const THRESHOLD_MS = config.THRESHOLD * 1000;
+    const CROSS_MODE = config.CROSS_MODE;
 
     for(let dm of danmus) {
+        dm.idx = add_cacheline(dm.str);
+
         while(true) {
             let peeked = nearby_danmus.peek();
-            if(!peeked || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
+            if(peeked===null || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
                 break;
             apply_cluster(peeked);
             nearby_danmus.pop();
@@ -314,7 +277,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
             if(!CROSS_MODE && dm0.obj.mode!==dm.obj.mode)
                 continue;
 
-            sim = similar(dm.str, dm0.str, dm.str_2gram, dm0.str_2gram, dm.str_pinyin, dm0.str_pinyin, ret.stats);
+            sim = similar(dm.idx, dm0.idx, ret.stats);
             if(sim!==null) {
                 dm.obj.pakku.sim_reason = sim;
                 candidate.push(dm);
@@ -328,10 +291,15 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
     }
 
     // now process last few clusters with the next chunk
+    outer:
     for(let dm of next_chunk_danmus) {
+        dm.idx = add_cacheline(dm.str);
+
         while(true) {
             let peeked = nearby_danmus.peek();
-            if(!peeked || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
+            if(peeked===null)
+                break outer;
+            if(dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
                 break;
             apply_cluster(peeked);
             nearby_danmus.pop();
@@ -343,7 +311,7 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
             if(!CROSS_MODE && dm0.obj.mode!==dm.obj.mode)
                 continue;
 
-            sim = similar(dm.str, dm0.str, dm.str_2gram, dm0.str_2gram, dm.str_pinyin, dm0.str_pinyin, ret.stats);
+            sim = similar(dm.idx, dm0.idx, ret.stats);
             if(sim!==null) {
                 dm.obj.pakku.sim_reason = sim;
                 candidate.push(dm);
@@ -360,4 +328,4 @@ function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<Danmu
     return ret;
 }
 
-export { do_combine };
+export { do_combine, prepare_combine };

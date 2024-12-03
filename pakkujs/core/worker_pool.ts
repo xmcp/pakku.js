@@ -1,26 +1,29 @@
 import {DanmuChunk, DanmuClusterOutput, DanmuObject, int, LocalizedConfig} from "./types";
 
-type ArgsType = [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig];
+type InitArgsType = [ArrayBuffer];
+type RunArgsType = [DanmuChunk<DanmuObject>, DanmuChunk<DanmuObject>, LocalizedConfig];
 type RetType = DanmuClusterOutput;
-const FUNCTION_NAME = 'do_combine';
+const INIT_FUNCTION_NAME = 'prepare_combine';
+const RUN_FUNCTION_NAME = 'do_combine';
+type PostedMessage = {cmd: typeof INIT_FUNCTION_NAME, args: InitArgsType} | {cmd: typeof RUN_FUNCTION_NAME, args: RunArgsType};
 
 const WORKER_FOOTER = `
-onmessage = (e) => {
-    console.log('pakku worker: received job');
+onmessage = async (e) => {
+    console.log('pakku worker: received job ' + e.data.cmd);
     try {
-        let res = ${FUNCTION_NAME}(...e.data);
+        let res = await self[e.data.cmd](...e.data.args);
         console.log('pakku worker: job done');
-        postMessage({error: null, output: res});
+        postMessage({error: false, output: res});
     } catch(err) {
         console.error('pakku worker: job FAILED', err);
-        postMessage({error: err});
+        postMessage({error: true, exc: err});
     }
 };
 `;
 
 interface WebWorkerLike {
-    postMessage: (msg: ArgsType)=>void;
-    onmessage: null | ((e: {data: {error: Error} | {error: null, output: RetType}})=>void);
+    postMessage: (msg: PostedMessage)=>void;
+    onmessage: null | ((e: {data: {error: true, exc: any} | {error: false, output: RetType}})=>void);
     terminate: ()=>void;
 }
 
@@ -30,11 +33,11 @@ export class WorkerMaker {
     use_simulated: boolean;
 
     worker_blob_url: string | null;
-    fallback_fn: ((...args: ArgsType)=>RetType) | null;
+    simulated_module: {[fn: string]: any} | null;
     constructor() {
         this.use_simulated = false;
         this.worker_blob_url = null;
-        this.fallback_fn = null;
+        this.simulated_module = null;
     }
 
     async spawn(): Promise<WebWorkerLike> {
@@ -43,8 +46,8 @@ export class WorkerMaker {
 
         if(!this.worker_blob_url) {
             let src = await (await fetch(WORKER_URL)).text();
-            // remove `export { do_combine };`
-            src = src.replace(/\bexport\s*\{\s*[a-zA-Z0-9_]+\s*}/, '');
+            // remove `export { ... };`
+            src = src.replace(/\bexport\s*\{[\sa-zA-Z0-9_,]+}/, '');
 
             this.worker_blob_url = URL.createObjectURL(new Blob([src + WORKER_FOOTER], {
                 type: "text/javascript",
@@ -61,25 +64,28 @@ export class WorkerMaker {
     }
 
     async _spawn_simulated(): Promise<WebWorkerLike> {
-        if(!this.fallback_fn) {
-            let module = await import(WORKER_URL);
-            this.fallback_fn = module[FUNCTION_NAME] as (...args: ArgsType)=>RetType;
+        if(!this.simulated_module) {
+            this.simulated_module = await import(WORKER_URL);
         }
 
         let ret = {
-            onmessage: null as (null | ((e: {data: {error: any} | {error: null, output: RetType}})=>void)),
-            postMessage: (args: ArgsType)=>{
-                console.log('pakku worker (simulated): received job');
+            onmessage: null as (null | ((e: {data: {error: true, exc: any} | {error: false, output: RetType}})=>void)),
+            postMessage: async (msg: PostedMessage)=>{
+                console.log('pakku worker (simulated): received job', msg.cmd);
                 try {
-                    let res = this.fallback_fn!(...args);
+                    let res = await this.simulated_module![msg.cmd](...msg.args);
                     console.log('pakku worker (simulated): job done');
-                    ret.onmessage!({data: {error: null, output: res}});
+                    ret.onmessage!({data: {error: false, output: res}});
                 } catch(err) {
                     console.error('pakku worker (simulated): job FAILED', err);
-                    ret.onmessage!({data: {error: err}});
+                    ret.onmessage!({data: {error: true, exc: err}});
                 }
             },
-            terminate: ()=>{},
+            terminate: ()=>{
+                // xxx: this WON'T actually free up memory used by the imported module
+                // https://stackoverflow.com/questions/71684556/how-to-unload-dynamic-imports-in-javascript
+                this.simulated_module = null;
+            },
         };
         return ret;
     }
@@ -93,7 +99,7 @@ export class WorkerPool {
         resolve: null | ((res: RetType)=>void);
         reject: null | ((e: any)=>void);
     }[];
-    queue: [...ArgsType, (res: RetType)=>void, (e: any)=>void][];
+    queue: [PostedMessage, (res: RetType)=>void, (e: any)=>void][];
 
     constructor(pool_size: int) {
         this.terminated = false;
@@ -102,7 +108,7 @@ export class WorkerPool {
         this.queue = [];
     }
 
-    async spawn() {
+    async spawn(init_args: InitArgsType) {
         console.log('pakku worker pool: spawn', this.pool_size, 'workers');
 
         let maker = new WorkerMaker();
@@ -121,7 +127,7 @@ export class WorkerPool {
             w.onmessage = (e) => {
                 if(config.resolve && config.reject) {
                     if(e.data.error)
-                        config.reject(e.data.error);
+                        config.reject(e.data.exc);
                     else {
                         let output = e.data.output;
                         if(process.env.PAKKU_CHANNEL==='firefox') {
@@ -139,6 +145,13 @@ export class WorkerPool {
 
                 this._try_perform_work();
             };
+
+            await new Promise((resolve, reject) => {
+                config.resolve = resolve;
+                config.reject = reject;
+                w.postMessage({cmd: INIT_FUNCTION_NAME, args: init_args});
+            });
+
             return config;
         }
 
@@ -153,25 +166,29 @@ export class WorkerPool {
 
         for(let w of this.workers) {
             if(w.resolve===null) { // idle
-                let [arg1, arg2, arg3, resolve, reject] = this.queue.shift()!;
+                let [msg, resolve, reject] = this.queue.shift()!;
                 w.resolve = resolve;
                 w.reject = reject;
-                w.worker.postMessage([arg1, arg2, arg3]);
+                w.worker.postMessage(msg);
                 return;
             }
         }
         //console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
-    exec(args: ArgsType): Promise<RetType> {
+    _exec(msg: PostedMessage): Promise<RetType> {
         return new Promise((resolve: (res: RetType)=>void, reject: (e: any)=>void) => {
             if(this.terminated) {
                 reject('worker pool: cannot accept job because terminated');
                 return;
             }
-            this.queue.push([...args, resolve, reject]);
+            this.queue.push([msg, resolve, reject]);
             this._try_perform_work();
         });
+    }
+
+    async exec(args: RunArgsType): Promise<RetType> {
+        return await this._exec({cmd: RUN_FUNCTION_NAME, args});
     }
 
     terminate() {

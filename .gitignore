@@ -5,3 +5,4 @@ package-lock.json
 /dist/
 *.log
 TODO.*
+cmake-*

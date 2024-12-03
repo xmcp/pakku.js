@@ -75,7 +75,7 @@
     ],
 
     "web_accessible_resources": [{
-        "resources": ["/generated/combine_worker.js", "/generated/xhr_hook.js"],
+        "resources": ["/generated/combine_worker.js", "/generated/xhr_hook.js", "/assets/similarity-gen.wasm"],
         "matches": ["*://*.bilibili.com/*"]
     }]
 }

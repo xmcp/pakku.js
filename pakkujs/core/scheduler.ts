@@ -152,11 +152,7 @@ class Scheduler {
         let res: DanmuClusterOutput;
         try {
             if(chunk.objs.length) {
-                res = await this.pool.exec([
-                    chunk as DanmuChunk<DanmuObject>,
-                    next_chunk_filtered as DanmuChunk<DanmuObject>,
-                    this.config as LocalizedConfig,
-                ]);
+                res = await this.pool.exec([chunk, next_chunk_filtered, this.config]);
                 console.log('pakku scheduler: got combine result', segidx, res.clusters.length);
             } else {
                 res = {
@@ -301,6 +297,12 @@ class Scheduler {
         }, 1500); // delay destroying web workers to fix view req race and improve performance
     }
 
+    async init_worker_pool() {
+        let wasm_resp = await fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'));
+        let wasm_mod = await wasm_resp.arrayBuffer();
+        await this.pool.spawn([wasm_mod]);
+    }
+
     async init_userscript() {
         if(!this.userscript)
             return;
@@ -327,7 +329,7 @@ class Scheduler {
             this.pool.pool_size = this.prefetch_data.guessed_chunks;
 
         await Promise.all([
-            this.pool.spawn(),
+            this.init_worker_pool(),
             this.init_userscript(),
         ]);
 
