@@ -186,8 +186,8 @@ extern "C" {
             int py_dis = edit_distance(p.pinyin, q.pinyin);
             if(
                 (p.length + q.length < config.min_danmu_size) ?
-                    edit_dis < (p.length + q.length) / config.min_danmu_size * config.max_dist - 1:
-                    edit_dis <= config.max_dist
+                    py_dis < (p.length + q.length) / config.min_danmu_size * config.max_dist - 1:
+                    py_dis <= config.max_dist
             ) {
                     return sim_result(combined_pinyin_distance, py_dis);
             }

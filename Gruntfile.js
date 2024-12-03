@@ -327,30 +327,30 @@ module.exports = function(grunt) {
     grunt.registerTask('chrome', [
         '_common',
         'rollup:chrome',
+        'clean:chrome',
         'terser:production',
         'copy:chrome_manifest',
 
-        'clean:chrome',
         'move:chrome',
         'compress:chrome',
     ]);
     grunt.registerTask('edg', [
         '_common',
         'rollup:edg',
+        'clean:edg',
         'terser:production',
         'copy:chrome_manifest',
 
-        'clean:edg',
         'move:edg',
         'compress:edg',
     ]);
     grunt.registerTask('firefox', [
         '_common',
         'rollup:firefox',
+        'clean:firefox',
         'terser:production',
         'copy:firefox_manifest',
 
-        'clean:firefox',
         'move:firefox',
         'compress:firefox',
     ]);
