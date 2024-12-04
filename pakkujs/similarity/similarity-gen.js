@@ -13,7 +13,7 @@ var readyPromise = new Promise((resolve, reject) => {
   readyPromiseReject = reject;
 });
 
-[ "_begin_chunk", "_similar", "_add_cacheline", "_malloc", "_memory", "___indirect_function_table", "onRuntimeInitialized" ].forEach(prop => {
+[ "_begin_chunk", "_check_similar", "_begin_index_lock", "_malloc", "_memory", "___indirect_function_table", "onRuntimeInitialized" ].forEach(prop => {
   if (!Object.getOwnPropertyDescriptor(readyPromise, prop)) {
     Object.defineProperty(readyPromise, prop, {
       get: () => abort("You are getting " + prop + " on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js"),
@@ -466,7 +466,7 @@ function initRuntime(wasmExports) {
 // Initialize wasm (asynchronous)
 // In non-fastcomp non-asm.js builds, grab wasm exports to outer scope
 // for emscripten_get_exported_function() to be able to access them.
-var _begin_chunk, _add_cacheline, _similar, _fflush, _malloc, _emscripten_stack_init, _emscripten_stack_get_free, _emscripten_stack_get_base, _emscripten_stack_get_end, __emscripten_stack_alloc, _emscripten_stack_get_current;
+var _begin_chunk, _begin_index_lock, _check_similar, _fflush, _malloc, _emscripten_stack_init, _emscripten_stack_get_free, _emscripten_stack_get_base, _emscripten_stack_get_end, __emscripten_stack_alloc, _emscripten_stack_get_current;
 
 var imports = {
   "env": wasmImports,
@@ -488,8 +488,8 @@ WebAssembly.instantiate(Module["wasm"], imports).then(output => {
   // Depending on the build mode, Module['wasm'] can mean a different thing.
   wasmExports = output.instance.exports;
   Module["_begin_chunk"] = _begin_chunk = wasmExports["begin_chunk"];
-  Module["_add_cacheline"] = _add_cacheline = wasmExports["add_cacheline"];
-  Module["_similar"] = _similar = wasmExports["similar"];
+  Module["_begin_index_lock"] = _begin_index_lock = wasmExports["begin_index_lock"];
+  Module["_check_similar"] = _check_similar = wasmExports["check_similar"];
   _fflush = wasmExports["fflush"];
   Module["_malloc"] = _malloc = wasmExports["malloc"];
   _emscripten_stack_init = wasmExports["emscripten_stack_init"];

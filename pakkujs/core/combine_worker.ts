@@ -1,10 +1,9 @@
 import {DanmuChunk, DanmuClusterOutput, DanmuObject, DanmuObjectPeer, int, LocalizedConfig, Stats} from "./types";
-import {init as sim_init, begin_chunk, add_cacheline, similar} from "../similarity/similarity_stub";
+import {init as sim_init, begin_chunk, begin_index_lock, detect_similarity} from "../similarity/similarity_stub";
 import {Queue} from "./queue";
 
 interface DanmuIr {
     obj: DanmuObjectPeer;
-    idx: int;
     str: string; // for similarity algorithm
 }
 
@@ -246,7 +245,6 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                         },
                     },
                     str: detaolued,
-                    idx: -1,
                 };
             })
             .filter(obj => obj!==null) as DanmuIr[];
@@ -258,11 +256,8 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     let nearby_danmus: Queue<DanmuIr[]> = new Queue();
 
     const THRESHOLD_MS = config.THRESHOLD * 1000;
-    const CROSS_MODE = config.CROSS_MODE;
 
     for(let dm of danmus) {
-        dm.idx = add_cacheline(dm.str);
-
         while(true) {
             let peeked = nearby_danmus.peek();
             if(peeked===null || dm.obj.time_ms - peeked[0].obj.time_ms <= THRESHOLD_MS)
@@ -271,30 +266,20 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             nearby_danmus.pop();
         }
 
-        let sim = null;
-        for(let candidate of nearby_danmus) {
-            let dm0 = candidate[0];
-            if(!CROSS_MODE && dm0.obj.mode!==dm.obj.mode)
-                continue;
-
-            sim = similar(dm.idx, dm0.idx, ret.stats);
-            if(sim!==null) {
-                dm.obj.pakku.sim_reason = sim;
-                candidate.push(dm);
-                break;
-            }
-        }
-
-        if(!sim) { // not combined yet, add itself to candidates
+        let sim = detect_similarity(dm.str, dm.obj.mode, nearby_danmus.index_l, ret.stats);
+        if(sim!==null) {
+            let candidate = nearby_danmus.storage[nearby_danmus.index_r - sim.idx_diff];
+            dm.obj.pakku.sim_reason = sim.reason;
+            candidate.push(dm);
+        } else {
             nearby_danmus.push([dm]);
         }
     }
 
     // now process last few clusters with the next chunk
+    begin_index_lock();
     outer:
     for(let dm of next_chunk_danmus) {
-        dm.idx = add_cacheline(dm.str);
-
         while(true) {
             let peeked = nearby_danmus.peek();
             if(peeked===null)
@@ -305,18 +290,11 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             nearby_danmus.pop();
         }
 
-        let sim = null;
-        for(let candidate of nearby_danmus) {
-            let dm0 = candidate[0];
-            if(!CROSS_MODE && dm0.obj.mode!==dm.obj.mode)
-                continue;
-
-            sim = similar(dm.idx, dm0.idx, ret.stats);
-            if(sim!==null) {
-                dm.obj.pakku.sim_reason = sim;
-                candidate.push(dm);
-                break;
-            }
+        let sim = detect_similarity(dm.str, dm.obj.mode, nearby_danmus.index_l, ret.stats);
+        if(sim!==null) {
+            let candidate = nearby_danmus.storage[nearby_danmus.index_r - sim.idx_diff];
+            dm.obj.pakku.sim_reason = sim.reason;
+            candidate.push(dm);
         }
     }
 

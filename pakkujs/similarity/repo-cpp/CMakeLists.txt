@@ -20,7 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MEMORY_GROWTH_GEOMETRIC_STEP=1.0 \
     -s MAXIMUM_MEMORY=134217728 \
-    -s EXPORTED_FUNCTIONS=['_begin_chunk','_similar','_add_cacheline','_malloc'] \
+    -s EXPORTED_FUNCTIONS=['_begin_chunk','_check_similar','_begin_index_lock','_malloc'] \
     -s EXPORTED_RUNTIME_METHODS=['stringToUTF16'] \
     -s EXPORT_KEEPALIVE=1 \
 ")
