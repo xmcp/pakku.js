@@ -11,7 +11,7 @@ struct Config {
     bool use_pinyin = false;
     bool cross_mode = false;
 
-    ushort *str_buf = NULL;
+    ushort *str_buf = nullptr;
     bool index_r_lock = false;
     std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict;
     int min_danmu_size = 0;
@@ -29,66 +29,92 @@ constexpr int PINYIN_BASE = 0xe000; // U+E000 ~ U+F8FF: Private Use Area
 constexpr int HASH_MOD = 1007;
 constexpr int MAX_HASH = std::max(HASH_MOD*HASH_MOD, 1<<16) + 7;
 
+short ed_a[MAX_HASH], ed_b[MAX_HASH];
+
+template<typename T>
+struct UnorderedContainer {
+    std::vector<std::pair<T, ushort>> data{};
+
+    void push(T x) {
+        if(ed_a[x] == 0) {
+            data.emplace_back(x, 1);
+            ed_a[x] = data.size();
+        } else {
+            data[ed_a[x]-1].second++;
+        }
+    }
+    void cleanup() {
+        for(auto &p: data) {
+            ed_a[p.first] = 0;
+        }
+    }
+};
+
 struct DanmuCacheline {
     uint idx{};
     ushort length{};
     ushort mode{};
-    std::vector<ushort> str{};
-    std::vector<ushort> pinyin{};
-    std::vector<uint> gram{};
+    std::vector<ushort> orig{};
+    UnorderedContainer<ushort> str{};
+    UnorderedContainer<ushort> pinyin{};
+    UnorderedContainer<uint> gram{};
 
     explicit DanmuCacheline(const ushort *s, ushort mode, uint idx): mode(mode), idx(idx) {
+        // gen orig
         for(ushort c = *s; c; c = *(++s)) {
-            // gen str
-            str.push_back(c);
+            orig.push_back(c);
+            str.push(c);
+        }
+        str.cleanup();
 
-            // gen pinyin
-            if(config.use_pinyin) {
+        // gen pinyin
+        if(config.use_pinyin) {
+            for(ushort c: orig) {
                 auto cs = config.pinyin_dict.find(c);
                 if(cs!=config.pinyin_dict.end()) {
-                    pinyin.push_back(PINYIN_BASE + cs->second.first);
+                    pinyin.push(PINYIN_BASE + cs->second.first);
                     if(cs->second.second)
-                        pinyin.push_back(PINYIN_BASE + cs->second.second);
+                        pinyin.push(PINYIN_BASE + cs->second.second);
                 } else {
                     if(c>='A' && c<='Z') // to lowercase
                         c += 'a' - 'A';
-                    pinyin.push_back(c);
+                    pinyin.push(c);
                 }
             }
+            pinyin.cleanup();
         }
 
         // gen gram
         if(config.max_cosine<=100) {
-            uint clast = (*str.crbegin()) % HASH_MOD;
-            for(uint c: str) {
+            uint clast = (*orig.crbegin()) % HASH_MOD;
+            for(uint c: orig) {
                 c = c % HASH_MOD;
-                gram.push_back(clast * HASH_MOD + c);
+                gram.push(clast * HASH_MOD + c);
                 clast = c;
             }
+            gram.cleanup();
         }
 
-        length = str.size();
+        length = orig.size();
     }
 };
 
 std::vector<DanmuCacheline> nearby_danmu;
 
-short ed_a[MAX_HASH], ed_b[MAX_HASH];
-
-int edit_distance(const std::vector<ushort> &p, const std::vector<ushort> &q) {
+int edit_distance(const UnorderedContainer<ushort> &p, const UnorderedContainer<ushort> &q) {
     // this is NOT the real edit_distance as in a textbook because it would be too slow
     // actually this takes O(n) time
 
-    for(auto c: p) ed_a[c]++;
-    for(auto c: q) ed_a[c]--;
+    for(auto [c, x]: p.data) ed_a[c] += x;
+    for(auto [c, x]: q.data) ed_a[c] -= x;
 
     int ans = 0;
 
-    for(auto c: p) {
+    for(auto [c, _]: p.data) {
         ans += std::abs(ed_a[c]);
         ed_a[c] = 0;
     }
-    for(auto c: q) {
+    for(auto [c, _]: q.data) {
         ans += std::abs(ed_a[c]);
         ed_a[c] = 0;
     }
@@ -96,13 +122,13 @@ int edit_distance(const std::vector<ushort> &p, const std::vector<ushort> &q) {
     return ans;
 }
 
-float cosine_distance(const std::vector<uint> &p, const std::vector<uint> &q) {
-    for(auto c: p) ed_a[c]++;
-    for(auto c: q) ed_b[c]++;
+float cosine_distance(const UnorderedContainer<uint> &p, const UnorderedContainer<uint> &q) {
+    for(auto [c, x]: p.data) ed_a[c] += x;
+    for(auto [c, x]: q.data) ed_b[c] += x;
 
     int x=0, y=0, z=0;
 
-    for(auto c: p) {
+    for(auto [c, _]: p.data) {
         int xa = ed_a[c], xb = ed_b[c];
         x += xa*xb;
         y += xa*xa;
@@ -110,7 +136,7 @@ float cosine_distance(const std::vector<uint> &p, const std::vector<uint> &q) {
         ed_a[c] = 0;
         ed_b[c] = 0;
     }
-    for(auto c: q) {
+    for(auto [c, _]: q.data) {
         int xb = ed_b[c];
         z += xb*xb;
         ed_b[c] = 0;
@@ -138,7 +164,7 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
 
     // check identical
 
-    if(p.str==q.str)
+    if(p.orig == q.orig)
         return sim_result(combined_identical, 0, idx_delta);
 
     // check edit dist
@@ -148,7 +174,7 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
         (p.length + q.length < config.min_danmu_size) ?
         edit_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
         edit_dis <= config.max_dist
-        ) {
+    ) {
         return sim_result(combined_edit_distance, edit_dis, idx_delta);
     }
 
@@ -160,7 +186,7 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
             (p.length + q.length < config.min_danmu_size) ?
             py_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
             py_dis <= config.max_dist
-            ) {
+        ) {
             return sim_result(combined_pinyin_distance, py_dis, idx_delta);
         }
     }

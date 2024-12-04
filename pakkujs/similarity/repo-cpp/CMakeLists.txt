@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.30)
 project(similarity-gen)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
     -Wno-unused-command-line-argument \
     -fno-exceptions \
-    -O3 -g2 \
+    -O3 -g2 -msimd128 \
     -s ASSERTIONS=1 \
     -s CHECK_NULL_WRITES=0 \
     -s EXPORT_ES6=1 \
