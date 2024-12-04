@@ -22,8 +22,7 @@ export function begin_chunk(config: LocalizedConfig) {
             config.TRIM_PINYIN,
         );
     } catch(e) {
-        console.error('wasm error (begin_chunk):', e);
-        throw e;
+        throw new Error(`wasm error (begin_chunk):\n${e}`);
     }
 }
 
@@ -40,8 +39,7 @@ export function add_cacheline(str: string): number {
         let len = module.stringToUTF16(str, ptr_buf, MAX_STRING_LEN*2) >> 1;
         return module._add_cacheline(ptr_buf, len);
     } catch(e) {
-        console.error('wasm error (add_cacheline):', str, e);
-        throw e;
+        throw new Error(`wasm error (add_cacheline): ${str}\n${e}`);
     }
 }
 
@@ -50,8 +48,7 @@ export function similar(id_p: number, id_q: number, S: Stats) {
     try {
         ret = module._similar(id_p, id_q);
     } catch(e) {
-        console.error('wasm error (similar):', id_p, id_q, e);
-        throw e;
+        throw new Error(`wasm error (similar): ${id_p} ${id_q}\n${e}`);
     }
 
     if(ret===0) // fast path for CombinedReason.not_combined

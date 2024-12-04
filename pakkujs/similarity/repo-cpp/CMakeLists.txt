@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
     -Wno-unused-command-line-argument \
     -fno-exceptions \
-    -O3 \
+    -O3 -g2 \
+    -s ASSERTIONS=1 \
+    -s CHECK_NULL_WRITES=0 \
     -s EXPORT_ES6=1 \
     -s USE_ES6_IMPORT_META=0 \
     -s MINIMAL_RUNTIME=1 \
@@ -17,6 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
     -s NO_EXIT_RUNTIME=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MEMORY_GROWTH_GEOMETRIC_STEP=1.0 \
+    -s MAXIMUM_MEMORY=134217728 \
     -s EXPORTED_FUNCTIONS=['_begin_chunk','_similar','_add_cacheline','_malloc'] \
     -s EXPORTED_RUNTIME_METHODS=['stringToUTF16'] \
     -s EXPORT_KEEPALIVE=1 \

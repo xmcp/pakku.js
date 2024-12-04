@@ -78,6 +78,13 @@ chrome.tabs.query({}, function(tabs) {
     }
 });
 
+fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'))
+    .then((resp)=>resp.arrayBuffer())
+    .then((buf)=>{
+        let val = WebAssembly.validate(buf)
+        debug.textContent += '\n\n**Wasm Validate:** `' + val + ' (' + buf.byteLength +  ' bytes)';
+    });
+
 async function test_worker() {
     let maker = new WorkerMaker();
     await maker.spawn();

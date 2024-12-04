@@ -27,10 +27,10 @@ constexpr int HASH_MOD = 1007;
 constexpr int MAX_HASH = std::max(HASH_MOD*HASH_MOD, 1<<16) + 7;
 
 struct DanmuCacheline {
-    ushort length;
-    std::vector<ushort> str;
-    std::vector<ushort> pinyin;
-    std::vector<uint> gram;
+    ushort length{};
+    std::vector<ushort> str{};
+    std::vector<ushort> pinyin{};
+    std::vector<uint> gram{};
 
     explicit DanmuCacheline(const ushort *s, ushort len) {
         str.reserve(len);
@@ -71,15 +71,6 @@ struct DanmuCacheline {
 };
 
 std::vector<DanmuCacheline> danmu_map;
-
-bool identical(const ushort *p, const ushort *q) {
-    while(*p && *q) {
-        if(*p != *q)
-            return false;
-        p++; q++;
-    }
-    return *p == *q;
-}
 
 short ed_a[MAX_HASH], ed_b[MAX_HASH];
 
@@ -156,7 +147,7 @@ extern "C" {
     }
 
     int add_cacheline(const ushort *str, ushort len) {
-        danmu_map.emplace_back(DanmuCacheline(str, len));
+        danmu_map.emplace_back(str, len);
         return danmu_map.size()-1;
     }
 
@@ -174,7 +165,7 @@ extern "C" {
         int edit_dis = edit_distance(p.str, q.str);
         if(
             (p.length + q.length < config.min_danmu_size) ?
-                edit_dis < (p.length + q.length) / config.min_danmu_size * config.max_dist - 1:
+                edit_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
                 edit_dis <= config.max_dist
         ) {
             return sim_result(combined_edit_distance, edit_dis);
@@ -186,7 +177,7 @@ extern "C" {
             int py_dis = edit_distance(p.pinyin, q.pinyin);
             if(
                 (p.length + q.length < config.min_danmu_size) ?
-                    py_dis < (p.length + q.length) / config.min_danmu_size * config.max_dist - 1:
+                    py_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
                     py_dis <= config.max_dist
             ) {
                     return sim_result(combined_pinyin_distance, py_dis);
