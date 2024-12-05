@@ -5,7 +5,7 @@ import {int, LocalizedConfig, Stats} from "../core/types";
 let module: any = null;
 let ptr_buf: number;
 
-const MAX_STRING_LEN = 16384;
+const MAX_STRING_LEN = 16005;
 
 export async function init(wasm_module: ArrayBuffer) {
     module = await generated_promise({wasm: wasm_module});

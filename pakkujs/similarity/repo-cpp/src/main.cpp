@@ -34,8 +34,12 @@ short ed_a[MAX_HASH], ed_b[MAX_HASH];
 template<typename T>
 struct UnorderedContainer {
     std::vector<std::pair<T, ushort>> data{};
+    int length{}; // use signed type so that we can subtract two lengths easily
+
+    UnorderedContainer(): length(0) {}
 
     void push(T x) {
+        length++;
         if(ed_a[x] == 0) {
             data.emplace_back(x, 1);
             ed_a[x] = data.size();
@@ -52,15 +56,14 @@ struct UnorderedContainer {
 
 struct DanmuCacheline {
     uint idx{};
-    ushort length{};
-    ushort mode{};
+    uint mode{};
     std::vector<ushort> orig{};
     UnorderedContainer<ushort> str{};
     UnorderedContainer<ushort> pinyin{};
     UnorderedContainer<uint> gram{};
 
-    explicit DanmuCacheline(const ushort *s, ushort mode, uint idx): mode(mode), idx(idx) {
-        // gen orig
+    explicit DanmuCacheline(const ushort *s, uint mode, uint idx): mode(mode), idx(idx) {
+        // gen orig and str
         for(ushort c = *s; c; c = *(++s)) {
             orig.push_back(c);
             str.push(c);
@@ -94,8 +97,6 @@ struct DanmuCacheline {
             }
             gram.cleanup();
         }
-
-        length = orig.size();
     }
 };
 
@@ -162,6 +163,9 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
     uint idx_delta = p.idx - q.idx;
     // assert 0 < idx_delta <= MAX_IDX_RANGE
 
+    uint len_p = p.orig.size(), len_q = q.orig.size();
+    uint len_sum = len_p + len_q;
+
     // check identical
 
     if(p.orig == q.orig)
@@ -169,23 +173,28 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
 
     // check edit dist
 
-    int edit_dis = edit_distance(p.str, q.str);
-    if(
-        (p.length + q.length < config.min_danmu_size) ?
-        edit_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
-        edit_dis <= config.max_dist
-    ) {
-        return sim_result(combined_edit_distance, edit_dis, idx_delta);
+    int edit_dis;
+    bool calc_edit_dis = std::abs(p.str.length - q.str.length) <= config.max_dist;
+    if(calc_edit_dis) {
+        edit_dis = edit_distance(p.str, q.str);
+        if(
+            (len_sum < config.min_danmu_size) ?
+                edit_dis < config.max_dist * len_sum / config.min_danmu_size:
+                edit_dis <= config.max_dist
+        ) {
+            return sim_result(combined_edit_distance, edit_dis, idx_delta);
+        }
     }
 
     // check pinyin dist
 
-    if(config.use_pinyin) {
+    bool calc_py_dis = config.use_pinyin && std::abs(p.pinyin.length - q.pinyin.length) <= config.max_dist;
+    if(calc_py_dis) {
         int py_dis = edit_distance(p.pinyin, q.pinyin);
         if(
-            (p.length + q.length < config.min_danmu_size) ?
-            py_dis < config.max_dist * (p.length + q.length) / config.min_danmu_size:
-            py_dis <= config.max_dist
+            (len_sum < config.min_danmu_size) ?
+                py_dis < config.max_dist * len_sum / config.min_danmu_size:
+                py_dis <= config.max_dist
         ) {
             return sim_result(combined_pinyin_distance, py_dis, idx_delta);
         }
@@ -193,12 +202,14 @@ uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
 
     // check cosine similarity
 
-    if(config.max_cosine<=100) {
-        if(edit_dis < p.length + q.length) { // they can be similar only if they share some common chars
-            int cos = 100 * cosine_distance(p.gram, q.gram);
-            if(cos >= config.max_cosine) {
-                return sim_result(combined_cosine_distance, cos, idx_delta);
-            }
+    bool calc_cosine_sim = config.max_cosine <= 100 && !(
+        // if edit_dis shows that p and q share no common char, they have no way to be cosine-similar
+        calc_edit_dis && edit_dis >= len_sum
+    );
+    if(calc_cosine_sim) {
+        int cosine_sim = 100 * cosine_distance(p.gram, q.gram);
+        if(cosine_sim >= config.max_cosine) {
+            return sim_result(combined_cosine_distance, cosine_sim, idx_delta);
         }
     }
 
@@ -229,7 +240,7 @@ extern "C" {
         config.index_r_lock = true;
     }
 
-    uint check_similar(ushort mode, uint index_l) {
+    uint check_similar(uint mode, uint index_l) {
         uint index_r = nearby_danmu.size();
         auto p = DanmuCacheline(config.str_buf, mode, index_r);
 
