@@ -13,16 +13,12 @@ struct Config {
 
     ushort *str_buf = nullptr;
     bool index_r_lock = false;
-    std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict;
+
     int min_danmu_size = 0;
 } config;
 
-struct PinyinSymbolLine {
-    ushort codepoint;
-    uchar s1;
-    uchar s2;
-} pinyin_dict_raw[] = {
-#include "pinyin_dict.txt"
+std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict = {
+    #include "pinyin_dict.txt"
 };
 
 constexpr int PINYIN_BASE = 0xe000; // U+E000 ~ U+F8FF: Private Use Area
@@ -73,8 +69,8 @@ struct DanmuCacheline {
         // gen pinyin
         if(config.use_pinyin) {
             for(ushort c: orig) {
-                auto cs = config.pinyin_dict.find(c);
-                if(cs!=config.pinyin_dict.end()) {
+                auto cs = pinyin_dict.find(c);
+                if(cs!=pinyin_dict.end()) {
                     pinyin.push(PINYIN_BASE + cs->second.first);
                     if(cs->second.second)
                         pinyin.push(PINYIN_BASE + cs->second.second);
@@ -225,11 +221,6 @@ extern "C" {
         config.use_pinyin = use_pinyin;
         config.cross_mode = cross_mode;
 
-        if(config.use_pinyin && config.pinyin_dict.empty()) {
-            for(auto &p: pinyin_dict_raw) {
-                config.pinyin_dict.emplace(p.codepoint, std::make_pair(p.s1, p.s2));
-            }
-        }
         config.min_danmu_size = std::max(1, max_dist*2);
         config.index_r_lock = false;
 
