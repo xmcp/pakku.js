@@ -38,7 +38,6 @@ function ready() {
   out("ready() called, and INVOKE_RUN=0. The runtime is now ready for you to call run() to invoke application _main(). You can also override ready() in a --pre-js file to get this signal as a callback");
 }
 
-// See https://caniuse.com/mdn-javascript_builtins_object_assign
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
 // end include: shell_minimal.js
@@ -223,7 +222,7 @@ var getHeapMax = () => // Stay one Wasm page short of 4GB: while e.g. Chrome is 
 // full 4GB Wasm memories, the size will wrap back to 0 bytes in Wasm side
 // for any code that deals with heap sizes, which would require special
 // casing all heap size related code to treat 0 specially.
-134217728;
+268435456;
 
 var alignMemory = (size, alignment) => {
   assert(alignment, "alignment argument is required");
