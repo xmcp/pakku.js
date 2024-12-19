@@ -68,7 +68,7 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
     };
 }
 
-export function obj_to_protobuf(egress: ProtobufEgressSeg, chunk: DanmuChunk<DanmuObject>): ArrayBuffer {
+export function obj_to_protobuf(egress: ProtobufEgressSeg, chunk: DanmuChunk<DanmuObject>): Uint8Array {
     let objs = chunk.objs;
 
     if(egress.ps || egress.pe) {
@@ -93,8 +93,7 @@ export function obj_to_protobuf(egress: ProtobufEgressSeg, chunk: DanmuChunk<Dan
         "colorful": item.extra.proto_colorful,
         "oid": item.extra.proto_oid,
     }));
-    let ret = proto_seg.encode({elems: res, colorfulSrc: chunk.extra.proto_colorfulsrc}).finish();
-    return ret.buffer;
+    return proto_seg.encode({elems: res, colorfulSrc: chunk.extra.proto_colorfulsrc}).finish();
 }
 
 function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoapi_sub_url: string | null): AnyObject {
@@ -275,7 +274,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
     }
 }
 
-export function egress_proto(egress: ProtobufEgressSeg, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): ArrayBuffer | typeof MissingData {
+export function egress_proto(egress: ProtobufEgressSeg, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): Uint8Array | typeof MissingData {
     if(egress.segidx===null) { // want all chunks
         if(!num_chunks || num_chunks!==chunks.size)
             return MissingData; // not finished

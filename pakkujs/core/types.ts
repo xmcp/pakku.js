@@ -192,5 +192,5 @@ export interface LocalizedConfig extends Config {
 }
 
 export type AjaxResponse = null | {
-    data: string | ArrayBuffer | {[k: int]: int}; // uint8arr object representation {0: ord, 1: ord, ...}
+    data: string | Uint8Array | {[k: int]: int}; // uint8arr object representation {0: ord, 1: ord, ...}
 }

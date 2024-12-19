@@ -167,25 +167,19 @@ function is_proto_view(x: any): x is [ProtobufIngressSeg, ProtobufView] {
 }
 
 window.addEventListener('message', async function(event) {
-    let event_source = event.source as WindowProxy;
     if(is_bilibili(event.origin) && event.data.type=='pakku_ping') {
-        event_source.postMessage({
+        event.source!.postMessage({
             type: 'pakku_pong',
         }, event.origin as any);
     }
     else if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
         console.log('pakku injected: got ajax request', event.data.url);
-
-        let sendResponse = (resp: AjaxResponse, transfer: boolean = true) => {
-            let msg = {
+        let sendResponse = (resp: AjaxResponse) => {
+            event.source!.postMessage({
                 type: 'pakku_ajax_response',
                 url: event.data.url,
                 resp: resp,
-            };
-            if(transfer && resp && resp.data instanceof ArrayBuffer)
-                event_source.postMessage(msg, event.origin as any, [resp.data]);
-            else
-                event_source.postMessage(msg, event.origin as any);
+            }, event.origin as any);
         };
 
         url_finder.protoapi_img_url = window.localStorage.getItem('wbi_img_url');
@@ -226,8 +220,8 @@ window.addEventListener('message', async function(event) {
             handle_proto_view(url[0], event.data.url, local_config, tabid!)
                 .then((ab)=>{
                     sendResponse({
-                        data: ab,
-                    }, false);
+                        data: new Uint8Array(ab),
+                    });
                 });
             return;
         }
@@ -236,7 +230,7 @@ window.addEventListener('message', async function(event) {
     }
     else if(event.origin===ext_domain && event.data.type==='pakku_userscript_sandbox_request') {
         let res = await userscript_sandbox(event.data.script);
-        event_source.postMessage({
+        event.source!.postMessage({
             type: 'pakku_userscript_sandbox_result',
             result: res,
         }, event.origin as any);
@@ -246,7 +240,7 @@ window.addEventListener('message', async function(event) {
         config.GLOBAL_SWITCH = true;
 
         let res = await process_local(event.data.ingress, event.data.egress, config, tabid!);
-        event_source.postMessage({
+        event.source!.postMessage({
             type: 'pakku_process_local_result',
             result: res,
         }, event.origin as any);
