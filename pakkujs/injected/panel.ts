@@ -206,16 +206,21 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
     player_elem.appendChild(panel_obj);
 
     function extract_danmaku_text(elem: HTMLElement) {
-        for(let sub of (elem.children as any)) {
-            if(sub.className.endsWith('text')) // e.g. b-danmaku-high-text
-                return sub.textContent!;
+        let subs = [];
+        for(let sub of (elem.childNodes as any)) {
+            let clz = sub.className || '';
+            if(
+                !clz.includes('-icon') // bad example: 'bili-danmaku-x-high-icon'
+                && !clz.includes('-tip') // bad example: 'bili-danmaku-x-up-tip'
+            ) {
+                // some good examples:
+                // - 'bili-danmaku-x-dm-vip'
+                // - '' (text node or plain <span>)
+                subs.push(sub.textContent);
+            }
         }
 
-        // try to select only text node to avoid things like `<span class="bili-up-tip" style="font-size:15px;">UP主</span>`
-        let textnodes = [...elem.childNodes].filter(ch => ch.nodeType===Node.TEXT_NODE);
-        let text = textnodes.map(node => node.textContent).join('');
-
-        return text ? text : elem.textContent!;
+        return subs.join('');
     }
 
     function show_panel(dminfo: {str: string, index?: int}, floating: boolean = false) {
