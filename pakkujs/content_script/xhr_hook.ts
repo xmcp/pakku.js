@@ -52,10 +52,12 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
         window.addEventListener('message', top_waiter);
     }
 
+    /*
     function uint8array_to_arraybuffer(array: Uint8Array) {
         // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
         return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
     }
+     */
 
     function str_to_arraybuffer(str: string) {
         // https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
@@ -164,15 +166,15 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             Object.defineProperty(xhr, 'statusText', {writable: true});
 
             if(xhr.responseType === 'arraybuffer') {
-                if(resp.data instanceof Uint8Array)
-                    xhr.response = uint8array_to_arraybuffer(resp.data);
+                if(resp.data instanceof ArrayBuffer)
+                    xhr.response = resp.data;
                 else if(typeof resp.data === 'object')
                     xhr.response = byte_object_to_arraybuffer(resp.data);
                 else // str
                     xhr.response = str_to_arraybuffer(resp.data);
             } else { // xhr.responseType === 'string'
-                if(resp.data instanceof Uint8Array)
-                    xhr.response = xhr.responseText = arraybuffer_to_string(uint8array_to_arraybuffer(resp.data));
+                if(resp.data instanceof ArrayBuffer)
+                    xhr.response = xhr.responseText = arraybuffer_to_string(resp.data);
                 else if(typeof resp.data === 'object')
                     xhr.response = xhr.responseText = arraybuffer_to_string(byte_object_to_arraybuffer(resp.data));
                 else // str
@@ -249,7 +251,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
                 console.log('pakku ajax: got tampered fetch response for', url);
 
                 let resp_data;
-                if(resp.data instanceof Uint8Array)
+                if(resp.data instanceof ArrayBuffer)
                     resp_data = resp.data;
                 else if(typeof resp.data === 'object')
                     resp_data = byte_object_to_arraybuffer(resp.data);

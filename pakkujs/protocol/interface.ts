@@ -31,7 +31,7 @@ export async function perform_ingress(ingress: Ingress, chunk_callback: (idx: in
         return ts_assert_never(ingress);
 }
 
-export function perform_egress(egress: Egress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | Uint8Array | typeof MissingData {
+export function perform_egress(egress: Egress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | ArrayBuffer | typeof MissingData {
     if(egress.type==='xml')
         return egress_xml(egress, num_chunks, chunks);
     else if(egress.type==='proto_seg')
