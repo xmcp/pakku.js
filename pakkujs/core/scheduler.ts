@@ -2,7 +2,7 @@ import {WorkerPool} from "./worker_pool";
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
 import {
     AjaxResponse, AnyObject,
-    DanmuChunk,
+    DanmuChunk, DanmuCluster,
     DanmuClusterOutput,
     DanmuObject, DanmuObjectRepresentative,
     int,
@@ -62,7 +62,7 @@ class Scheduler {
     start_ts: number;
 
     chunks_in: Map<int, DanmuChunk<DanmuObject>>;
-    clusters: Map<int, DanmuClusterOutput>;
+    clusters: Map<int, DanmuCluster[]>;
     chunks_out: Map<int, DanmuChunk<DanmuObjectRepresentative>>;
     chunks_deleted: Map<int, DanmuChunk<DanmuObject>>;
 
@@ -166,7 +166,16 @@ class Scheduler {
             return;
         }
 
-        this.clusters.set(segidx, res);
+        this.clusters.set(segidx, res.clusters.map(c => ({
+            peers: c.peers_ptr.map(([idx, reason]) => ({
+                ...chunk.objs[idx],
+                pakku: {
+                    sim_reason: reason,
+                },
+            })),
+            desc: c.desc,
+            chosen_str: c.chosen_str,
+        })));
         this.ongoing_stats.update_from(res.stats);
 
         void this.try_start_postproc(segidx);
@@ -218,7 +227,7 @@ class Scheduler {
 
     try_serve_egress() {
         if(this.failed) {
-            for(let [egress, callback] of this.egresses) {
+            for(let [_egress, callback] of this.egresses) {
                 callback(null);
             }
             this.egresses = [];
@@ -375,7 +384,7 @@ class Scheduler {
 
         void this.try_start_combine(this.num_chunks);
 
-        this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
+        this.clusters.set(0, []); // pad a pseudo cluster before the first one for the `prev_clusters` arg
         void this.try_start_postproc(1);
     }
 

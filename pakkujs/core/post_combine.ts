@@ -1,7 +1,6 @@
 import {
     DanmuChunk,
     DanmuCluster,
-    DanmuClusterOutput,
     DanmuObject,
     DanmuObjectRepresentative,
     int,
@@ -134,7 +133,7 @@ function judge_drop(dispval: number, threshold: number, peers: DanmuObject[]): b
 
 }
 
-export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
+export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: input_chunk.extra};
 
@@ -152,8 +151,8 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     let ids_included_in_prev = new Set() as Set<string>;
     let max_included_time = -1;
-    for(let i = prev_input.clusters.length-1; i >= 0; i--) {
-        let c = prev_input.clusters[i];
+    for(let i = prev_input_clusters.length-1; i >= 0; i--) {
+        let c = prev_input_clusters[i];
         if(c.peers[0].time_ms < FIRST_TIME_MS - THRESHOLD_MS)
             break;
 
@@ -165,7 +164,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     // gen out_danmus
 
-    for(let c of input.clusters) {
+    for(let c of input_clusters) {
         // dedup from prev cluster
 
         if(c.peers[0].time_ms < max_included_time) {
@@ -252,8 +251,8 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         let dispval_preload: [number, number][] = [];
         let prev_dms: DanmuCluster[] = [];
 
-        for(let i = prev_input.clusters.length-1; i >= 0; i--) {
-            let c = prev_input.clusters[i];
+        for(let i = prev_input_clusters.length-1; i >= 0; i--) {
+            let c = prev_input_clusters[i];
             if(c.peers[0].time_ms < FIRST_TIME_MS - DISPVAL_TIME_THRESHOLD)
                 break;
             prev_dms.push(c);

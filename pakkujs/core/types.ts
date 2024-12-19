@@ -63,8 +63,14 @@ export interface DanmuCluster {
     chosen_str: string;
 }
 
+export interface DanmuClusterPtr {
+    peers_ptr: [int, string][]; // index and sim_reason
+    desc: string[];
+    chosen_str: string;
+}
+
 export interface DanmuClusterOutput {
-    clusters: DanmuCluster[];
+    clusters: DanmuClusterPtr[];
     stats: Stats;
 }
 
