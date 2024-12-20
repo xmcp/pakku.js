@@ -117,20 +117,19 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     }
 }
 
-function judge_drop(dispval: number, threshold: number, peers: DanmuObject[]): boolean {
+function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], weight_distribution: number[]): boolean {
     if(threshold<=0 || dispval<=threshold)
         return false;
 
     let max_weight = Math.max(...peers.map(p=>p.weight));
     let drop_rate = (
         (dispval - threshold) / threshold
-        - (max_weight - 1) / 10
-        - (Math.sqrt(peers.length) - 1) / 2
+        - (weight_distribution[max_weight-1] || 0)
+        - (Math.sqrt(peers.length) - 1) / 3
     );
     //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
 
     return (drop_rate>=1 || (drop_rate>0 && Math.random()<drop_rate));
-
 }
 
 export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
@@ -242,9 +241,23 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
 
     let dispval_subtract: Queue<[number, number]> | null = null;
     let onscreen_dispval = 0;
+    let weight_distribution = Array.from({length: 12}).map(_=>0);
 
     if(need_dispval) {
         out_danmus.sort((a, b) => a.time_ms - b.time_ms);
+
+        // calc weight distribution
+
+        for(let dm of out_danmus) {
+            dm.weight = Math.max(1, Math.min(11, dm.weight)); // ensure weights are 1~11
+            weight_distribution[dm.weight] += 1;
+        }
+        for(let i=1; i<=11; i++) {
+            weight_distribution[i] /= out_danmus.length;
+            weight_distribution[i] += weight_distribution[i-1];
+            weight_distribution[i-1] = Math.pow((weight_distribution[i-1] + weight_distribution[i]) / 2, 3);
+        }
+        //console.log('!!! weight', weight_distribution);
 
         // pre-populate dispval from the previous chunk
 
@@ -260,7 +273,7 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
         shuffle(prev_dms); // make these pre-populated items disappear randomly in the current chunk, hence less biased
         for(let c of prev_dms) {
             // check drop
-            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers)) {
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers, weight_distribution)) {
                 continue;
             }
 
@@ -292,7 +305,7 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
 
             // check drop
 
-            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers)) {
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers, weight_distribution)) {
                 stats.deleted_dispval++;
                 dm.weight = WEIGHT_DROPPED;
                 continue;
