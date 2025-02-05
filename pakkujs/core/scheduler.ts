@@ -12,7 +12,7 @@ import {
     Stats
 } from "./types";
 import {post_combine} from "./post_combine";
-import {UserscriptWorker} from "./userscript";
+import {UserscriptEnv, UserscriptWorker} from "./userscript";
 import {do_inject} from "../injected/do_inject";
 import {
     protoapi_encode_view,
@@ -211,7 +211,7 @@ class Scheduler {
             try {
                 let t1 = +new Date();
 
-                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
+                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out, env: this.make_userscript_env(segidx)}) as any;
                 this.userscript.sancheck_chunk_output(chunk_out);
 
                 let t2 = +new Date();
@@ -344,6 +344,14 @@ class Scheduler {
         return this.userscript_init;
     }
 
+    make_userscript_env(segidx: int | null): UserscriptEnv {
+        return {
+            ingress: this.ingress,
+            segidx: segidx,
+            config: this.config,
+        };
+    }
+
     async start() {
         this.write_cur_message_stats();
 
@@ -364,7 +372,7 @@ class Scheduler {
                     try {
                         let t1 = +new Date();
 
-                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
+                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk, env: this.make_userscript_env(idx)}) as any;
                         this.userscript.sancheck_chunk_output(chunk);
 
                         let t2 = +new Date();
@@ -419,7 +427,7 @@ class Scheduler {
             try {
                 let t1 = +new Date();
 
-                view = await this.userscript.exec({type: 'proto_view', view: view});
+                view = await this.userscript.exec({type: 'proto_view', view: view, env: this.make_userscript_env(null)});
                 let view_ab = protoapi_encode_view(view).buffer;
 
                 let t2 = +new Date();

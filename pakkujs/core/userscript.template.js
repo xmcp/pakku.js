@@ -7,7 +7,12 @@ function reg_tweak_fn(list) {
     return (callback, timing=0) => {
         if(typeof callback !== 'function')
             throw new Error('callback argument is not a function');
-        list.push([timing, callback]);
+        list.push([timing, async (chunk, env) => {
+            let ret = callback(chunk, env);
+            if(ret instanceof Promise)
+                ret = await ret;
+            return ret;
+        }]);
     };
 }
 const tweak_before_pakku = reg_tweak_fn(fn_before);
@@ -26,7 +31,7 @@ function fix_dispstr(chunk) {
     }
 }
 
-onmessage = (e) => {
+onmessage = async (e) => {
     try {
         if(e.data.type==='init') {
             install_callbacks(tweak_before_pakku, tweak_after_pakku, tweak_proto_view);
@@ -44,21 +49,24 @@ onmessage = (e) => {
         }
         else if(e.data.type==='pakku_before') {
             let chunk = e.data.chunk;
+            let env = e.data.env;
             for(let [timing, fn] of fn_before)
-                fn(chunk);
+                await fn(chunk, env);
             postMessage({error: null, output: chunk});
         }
         else if(e.data.type==='pakku_after') {
             let chunk = e.data.chunk;
+            let env = e.data.env;
             for(let [timing, fn] of fn_after)
-                fn(chunk);
+                await fn(chunk, env);
             fix_dispstr(chunk);
             postMessage({error: null, output: chunk});
         }
         else if(e.data.type==='proto_view') {
             let view = e.data.view;
+            let env = e.data.env;
             for(let [timing, fn] of fn_view)
-                fn(view);
+                await fn(view, env);
             postMessage({error: null, output: view});
         }
         else {
