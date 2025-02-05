@@ -84,9 +84,16 @@ interface DanmuChunk&lt;ObjectType extends DanmuObject> {
     };
 }
 
-function tweak_before_pakku(callback: (chunk: DanmuChunk&lt;DanmuObject>) => void, timing: number = 0) {}
-function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresentative>) => void, timing: number = 0) {}
-function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
+export interface Env {
+    ingress: AnyObject; // 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型
+    segidx: int | null; // 当前弹幕分片的编号
+    config: AnyObject; // 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型
+}
+type Ret = void | Promise&lt;void>; // 支持同步或异步的回调函数
+
+function tweak_before_pakku(callback: (chunk: DanmuChunk&lt;DanmuObject>, env: Env) => Ret, t: number = 0) {}
+function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
 </pre>
         </details>
 

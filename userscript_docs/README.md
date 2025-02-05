@@ -44,12 +44,12 @@
 以下是一个什么都不做的示例用户脚本。
 
 ```javascript
-tweak_before_pakku(chunk=>{
-  console.log('!!! BEFORE PAKKU', chunk);
+tweak_before_pakku((chunk, env)=>{
+  console.log('!!! BEFORE PAKKU', chunk, env);
 });
 
-tweak_after_pakku(chunk=>{
-  console.log('!!! AFTER PAKKU', chunk);
+tweak_after_pakku((chunk, env)=>{
+  console.log('!!! AFTER PAKKU', chunk, env);
 });
 ```
 
@@ -57,7 +57,9 @@ tweak_after_pakku(chunk=>{
 
 ![screenshot](userscript_console.png)
 
-回调函数可以直接修改 `chunk` 的内容。
+其中 `chunk` 是弹幕列表，回调函数可以直接修改此变量的内容来修改弹幕。
+
+`env` 是执行时的其他环境信息（仅支持 pakku 2025.2.1 或更高版本），包括当前视频（`env.ingress`）、当前弹幕分片的编号（`env.segidx`）和 pakku 设置（`env.config`），供用户脚本参考。
 
 如果注册了多个回调函数，你可能关心回调函数的执行顺序。可以向 `tweak_before_pakku` 和 `tweak_after_pakku` 额外传递一个数字参数表示先后顺序，数字越大则执行顺序越靠后。
 
@@ -113,14 +115,34 @@ interface DanmuChunk<ObjectType extends DanmuObject> {
     };
 }
 
-function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>) => void, timing: number = 0) {}
-function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>) => void, timing: number = 0) {}
-function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
+export interface Env {
+    ingress: AnyObject; // 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型
+    segidx: int | null; // 当前弹幕分片的编号
+    config: AnyObject; // 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型
+}
+type Ret = void | Promise<void>; // 支持同步或异步的回调函数
+
+function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>, env: Env) => Ret, t: number = 0) {}
+function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
+```
+
+回调函数可以是异步的（仅支持 pakku 2025.2.1 或更高版本）。例如：
+
+```javascript
+function sleep(x) {
+   return new Promise(resolve => setTimeout(resolve, x));
+}
+
+tweak_after_pakku(async (chunk, env)=>{
+    console.log('!!! blocking loading of the segment', env.segidx);
+    await sleep(2000);
+});
 ```
 
 ## 通过用户脚本来修改弹幕元信息
 
-从 2024.6.1 版本起，用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应。
+用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应（仅支持 pakku 2024.6.1 或更高版本）。
 
 由于它是 B 站播放器的私有 API，pakku 不保证此接口的稳定性，也无法解释每个字段的准确含义。完整的字段列表参见 [Protobuf 定义](../proto_translation/bili-proto.json) 中的 `DmWebViewReply` 类型。
 
