@@ -211,7 +211,7 @@ class Scheduler {
             try {
                 let t1 = +new Date();
 
-                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out, env: this.make_userscript_env(segidx)}) as any;
+                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out, env: {segidx: segidx}}) as any;
                 this.userscript.sancheck_chunk_output(chunk_out);
 
                 let t2 = +new Date();
@@ -331,7 +331,11 @@ class Scheduler {
 
         let fn = async () => {
             try {
-                this.ongoing_stats.num_userscript = await this.userscript!.init();
+                await this.userscript!.init({
+                    ingress: this.ingress,
+                    segidx: null,
+                    config: this.config,
+                });
             } catch(e) {
                 this.write_failing_stats('初始化用户脚本时出错', e as Error, BADGE_ERR_JS);
                 return;
@@ -342,14 +346,6 @@ class Scheduler {
             this.userscript_init = fn();
 
         return this.userscript_init;
-    }
-
-    make_userscript_env(segidx: int | null): UserscriptEnv {
-        return {
-            ingress: this.ingress,
-            segidx: segidx,
-            config: this.config,
-        };
     }
 
     async start() {
@@ -372,7 +368,7 @@ class Scheduler {
                     try {
                         let t1 = +new Date();
 
-                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk, env: this.make_userscript_env(idx)}) as any;
+                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk, env: {segidx: idx}}) as any;
                         this.userscript.sancheck_chunk_output(chunk);
 
                         let t2 = +new Date();
@@ -427,7 +423,7 @@ class Scheduler {
             try {
                 let t1 = +new Date();
 
-                view = await this.userscript.exec({type: 'proto_view', view: view, env: this.make_userscript_env(null)});
+                view = await this.userscript.exec({type: 'proto_view', view: view, env: {}});
                 let view_ab = protoapi_encode_view(view).buffer;
 
                 let t2 = +new Date();

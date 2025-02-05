@@ -126,7 +126,6 @@ export class Stats {
     num_taolu_matched= 0;
     num_total_danmu= 0;
     num_onscreen_danmu= 0;
-    num_userscript = 0;
     num_max_combo= 0;
     num_max_dispval = 0;
 
