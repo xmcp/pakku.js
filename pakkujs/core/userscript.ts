@@ -1,16 +1,24 @@
-import {AnyObject, DanmuChunk, DanmuObject, DanmuObjectRepresentative, int} from "./types";
+import {AnyObject, DanmuChunk, DanmuObject, DanmuObjectRepresentative, int, LocalizedConfig} from "./types";
+import {Ingress} from '../protocol/interface';
+
 // @ts-ignore
 import userscript_template from "./userscript.template.js";
 
+export interface UserscriptEnv {
+    ingress: Ingress;
+    segidx: int | null;
+    config: LocalizedConfig;
+}
+
 type ArgType = (
     {type: 'init'}
-    | {type: 'pakku_before', chunk: DanmuChunk<DanmuObject>}
-    | {type: 'pakku_after', chunk: DanmuChunk<DanmuObjectRepresentative>}
-    | {type: 'proto_view', view: AnyObject}
+    | {type: 'pakku_before', chunk: DanmuChunk<DanmuObject>, env: UserscriptEnv}
+    | {type: 'pakku_after', chunk: DanmuChunk<DanmuObjectRepresentative>, env: UserscriptEnv}
+    | {type: 'proto_view', view: AnyObject, env: UserscriptEnv}
 );
 type RetType = AnyObject;
 
-const USERSCRIPT_TEMPLATE = userscript_template;
+const USERSCRIPT_TEMPLATE: string = userscript_template;
 
 export class UserscriptWorker {
     script: string;

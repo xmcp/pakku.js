@@ -12,6 +12,7 @@ export interface XmlContentIngress {
 
 export interface XmlEgress {
     type: 'xml';
+    wait_finished: boolean;
 }
 
 // extracted from bilibiliPlayer.min.js
@@ -109,8 +110,12 @@ export async function ingress_xml_content(ingress: XmlContentIngress, chunk_call
 }
 
 export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {
-    if(!num_chunks || num_chunks!==chunks.size)
-        return MissingData; // not finished
+    if(!num_chunks || num_chunks!==chunks.size) {
+        if(egress.wait_finished)
+            return MissingData; // not finished
+        else
+            return chunk_to_xml({objs: [], extra: {}});
+    }
 
     let c: DanmuChunk<DanmuObject> = {
         objs: [],

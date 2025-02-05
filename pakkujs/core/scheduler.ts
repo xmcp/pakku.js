@@ -69,6 +69,7 @@ class Scheduler {
     num_chunks: int;
     combine_started: Set<int>;
     failed: boolean;
+    cleaned_up: boolean;
     pool: WorkerPool;
     userscript: UserscriptWorker | null;
     userscript_init: Promise<void> | null;
@@ -90,6 +91,7 @@ class Scheduler {
         this.num_chunks = 0;
         this.combine_started = new Set();
         this.failed = false;
+        this.cleaned_up = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
         this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
         this.userscript_init = null;
@@ -125,6 +127,9 @@ class Scheduler {
     }
 
     add_egress(egress: Egress, callback: (resp: AjaxResponse)=>void) {
+        if(this.cleaned_up)
+            egress.wait_finished = false;
+
         console.log('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
         this.egresses.push([egress, callback]);
         this.try_serve_egress();
@@ -234,7 +239,7 @@ class Scheduler {
             return;
         }
 
-        if(this.num_chunks && this.num_chunks===this.chunks_out.size)
+        if(!this.cleaned_up && this.num_chunks && this.num_chunks===this.chunks_out.size)
             this.do_cleanup();
 
         this.egresses = this.egresses.filter(([egress, callback]) => {
@@ -293,8 +298,16 @@ class Scheduler {
     }
 
     do_cleanup() {
+        this.cleaned_up = true;
+
         if(this.stats.type==='message') {
             this.finish();
+        }
+
+        for(let e of this.egresses) {
+            // in unusual cases (e.g., when we guessed the number of chunks wrong), the player may request chunks we don't have
+            // since we are finished, there is no chance to wait for them, so we should serve an empty response instead of hanging forever
+            e[0].wait_finished = false;
         }
 
         this.clusters.clear(); // to free some RAM

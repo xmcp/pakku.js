@@ -7,8 +7,8 @@ export interface DebugContentIngress {
 
 export interface DebugEgress {
     type: 'debug';
-    show_peers: boolean;
     wait_finished: boolean;
+    show_peers: boolean;
 }
 
 const REMOVE_COMMENTS_RE = /^\s*\/\/.*$/gm;
