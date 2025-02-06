@@ -12,7 +12,7 @@ import {
     Stats
 } from "./types";
 import {post_combine} from "./post_combine";
-import {UserscriptEnv, UserscriptWorker} from "./userscript";
+import {UserscriptWorker} from "./userscript";
 import {do_inject} from "../injected/do_inject";
 import {
     protoapi_encode_view,
@@ -49,6 +49,11 @@ function perform_throttle(fn: ()=>void) {
             }
         }, 100);
     }
+}
+
+// https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
+function u8array_to_arraybuffer(array: Uint8Array): ArrayBuffer {
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
 }
 
 class Scheduler {
@@ -424,7 +429,7 @@ class Scheduler {
                 let t1 = +new Date();
 
                 view = await this.userscript.exec({type: 'proto_view', view: view, env: {}});
-                let view_ab = protoapi_encode_view(view).buffer;
+                let view_ab = u8array_to_arraybuffer(protoapi_encode_view(view));
 
                 let t2 = +new Date();
                 this.ongoing_stats.userscript_time_ms += Math.ceil(t2 - t1)
