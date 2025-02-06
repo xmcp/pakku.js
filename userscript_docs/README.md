@@ -71,6 +71,7 @@ tweak_before_pakku(chunk=>{console.log('!!! THIRD');}, 10);
 
 以下是与用户脚本相关的类型定义：
 
+<!-- DOC-GEN: BEGIN-TYPE-DEF -->
 ```typescript
 type int = number; type float = number; type AnyObject = {[k: string]: any};
 
@@ -126,6 +127,7 @@ function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>, env: Env)
 function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
 function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
 ```
+<!-- DOC-GEN: END-TYPE-DEF -->
 
 回调函数可以是异步的（仅支持 pakku 2025.2.1 或更高版本）。例如：
 
@@ -260,6 +262,41 @@ tweak_proto_view(view=>{
 ```javascript
 tweak_proto_view(view=>{
     view.dmSetting.seniorModeSwitch = 3;
+});
+```
+
+[屏蔽投票弹幕和产生的所有投票结果](https://github.com/xmcp/pakku.js/issues/178#issuecomment-2636519563)：
+
+```javascript
+let votes_resolve = null;
+let votes_promise = new Promise(resolve => votes_resolve = resolve);
+
+tweak_proto_view(view => {
+    let votes_res = view.commandDms.filter(d => d.command === '#VOTE#').map(d => {
+        let extra = JSON.parse(d.extra);
+        return {
+            time_begin_ms: d.stime,
+            time_end_ms: d.stime + extra.duration + 2000,
+            option_texts: extra.options.map(o => o.desc),
+        };
+    });
+    votes_resolve(votes_res);
+    view.commandDms = view.commandDms.filter(d => d.command !== '#VOTE#');
+});
+
+tweak_before_pakku(async chunk => {
+    let votes = await votes_promise;
+    chunk.objs = chunk.objs.filter(d => {
+        for(let v of votes) {
+            if(
+                d.time_ms >= v.time_begin_ms &&
+                d.time_ms <= v.time_end_ms &&
+                v.option_texts.includes(d.content)
+            )
+                return false;
+        }
+        return true;
+    });
 });
 ```
 
