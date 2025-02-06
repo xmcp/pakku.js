@@ -19,7 +19,8 @@ export async function userscript_sandbox(script: string): Promise<{error: string
         let tot_number = await w.init(null);
         return {error: null, total: tot_number};
     } catch(e: any) {
-        return {error: `${e.message || '未知错误'}\n\n${e.stack}`};
+        let stack = e.stack || `at ${e.filename}:${e.lineno}:${e.colno}`;
+        return {error: `${e.message || '未知错误'}\n\n${stack}`};
     } finally {
         if(w)
             w.worker.terminate();

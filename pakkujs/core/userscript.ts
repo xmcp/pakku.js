@@ -24,6 +24,7 @@ export class UserscriptWorker {
     script: string;
     worker: Worker;
     terminated: boolean;
+    init_error: ErrorEvent | null;
 
     queue_serial: int;
     queue_callback: Map<int, [((res: RetType)=>void), ((e: any)=>void)]>;
@@ -38,6 +39,7 @@ export class UserscriptWorker {
             USERSCRIPT_TEMPLATE.replace('/* MAIN */', this.script+'\n'),
         ], {type: 'text/javascript'})));
         this.terminated = false;
+        this.init_error = null;
         this.queue_callback = new Map();
         this.queue_serial = 0;
         this.n_before = 0;
@@ -46,6 +48,11 @@ export class UserscriptWorker {
 
         this.worker.onerror = (e: ErrorEvent) => {
             console.error('pakku userscript: UNCAUGHT ERROR', e);
+            this.init_error = e;
+            for(let [resolve, reject] of this.queue_callback.values()) {
+                reject(e);
+            }
+            this.queue_callback.clear();
         }
         this.worker.onmessage = (e) => {
             let serial = e.data.serial;
@@ -68,6 +75,9 @@ export class UserscriptWorker {
     }
 
     exec(arg: ArgType): Promise<RetType> {
+        if(this.init_error)
+            return Promise.reject(this.init_error);
+
         console.log('pakku userscript: exec', arg.type);
         return new Promise((resolve: (res: RetType)=>void, reject: (e: any)=>void) => {
             let serial = ++this.queue_serial;
