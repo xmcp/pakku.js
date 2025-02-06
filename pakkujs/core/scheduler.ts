@@ -425,6 +425,11 @@ class Scheduler {
                 return view_req;
             }
 
+            if(this.userscript.terminated) { // normally shouldn't happen, but possible when network is too slow
+                console.log('pakku userscript: worker terminated, skip proto_view');
+                return view_req;
+            }
+
             try {
                 let t1 = +new Date();
 
