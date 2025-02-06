@@ -92,6 +92,7 @@ interface DanmuObject {
         proto_animation?: string | null;
         proto_colorful?: int | null;
         proto_oid?: int | null;
+        proto_dmfrom?: int | null;
     };
 }
 interface DanmuObjectPeer extends DanmuObject {
@@ -165,8 +166,8 @@ tweak_after_pakku(async (chunk, env)=>{
 const OFFSET_MS = 5000;
 
 tweak_before_pakku(chunk=>{
-  for(let dm of chunk.objs)
-    dm.time_ms += OFFSET_MS;
+    for(let dm of chunk.objs)
+        dm.time_ms += OFFSET_MS;
 });
 ```
 
@@ -174,8 +175,8 @@ tweak_before_pakku(chunk=>{
 
 ```javascript
 tweak_after_pakku(chunk=>{
-  for(let dm of chunk.objs)
-    dm.extra.proto_colorful = 0;
+    for(let dm of chunk.objs)
+        dm.extra.proto_colorful = 0;
 });
 ```
 
@@ -187,10 +188,10 @@ function ENLARGE_RATIO(count) {
 }
 
 tweak_after_pakku(chunk=>{
-  for(let dm of chunk.objs) {
-    let orig_fontsize = Math.max(...dm.pakku.peers.map(p => p.fontsize));
-    dm.fontsize = orig_fontsize * ENLARGE_RATIO(dm.pakku.peers.length);
-  }
+    for(let dm of chunk.objs) {
+        let orig_fontsize = Math.max(...dm.pakku.peers.map(p => p.fontsize));
+        dm.fontsize = orig_fontsize * ENLARGE_RATIO(dm.pakku.peers.length);
+    }
 });
 ```
 
@@ -200,9 +201,9 @@ tweak_after_pakku(chunk=>{
 const TARGET_TIME = +new Date('2023/1/1') / 1000;
 
 tweak_before_pakku(chunk=>{
-  chunk.objs = chunk.objs.filter(
-    dm => dm.sendtime < TARGET_TIME
-  );
+    chunk.objs = chunk.objs.filter(
+        dm => dm.sendtime < TARGET_TIME
+    );
 });
 ```
 
@@ -242,9 +243,9 @@ importScripts('https://s.xmcp.ltd/sample/large_data.js');
 let regexps = LARGE_DATA.map(s => new RegExp(s, 'i'));
 
 tweak_before_pakku(chunk=>{
-  chunk.objs = chunk.objs.filter(d=>
-    !regexps.some(r => r.test(d.content))
-  );
+    chunk.objs = chunk.objs.filter(d=>
+        !regexps.some(r => r.test(d.content))
+    );
 });
 ```
 
@@ -268,35 +269,13 @@ tweak_proto_view(view=>{
 [屏蔽投票弹幕和产生的所有投票结果](https://github.com/xmcp/pakku.js/issues/178#issuecomment-2636519563)：
 
 ```javascript
-let votes_resolve = null;
-let votes_promise = new Promise(resolve => votes_resolve = resolve);
-
-tweak_proto_view(view => {
-    let votes_res = view.commandDms.filter(d => d.command === '#VOTE#').map(d => {
-        let extra = JSON.parse(d.extra);
-        return {
-            time_begin_ms: d.stime,
-            time_end_ms: d.stime + extra.duration + 2000,
-            option_texts: extra.options.map(o => o.desc),
-        };
-    });
-    votes_resolve(votes_res);
+tweak_proto_view(view=>{
     view.commandDms = view.commandDms.filter(d => d.command !== '#VOTE#');
 });
-
-tweak_before_pakku(async chunk => {
-    let votes = await votes_promise;
-    chunk.objs = chunk.objs.filter(d => {
-        for(let v of votes) {
-            if(
-                d.time_ms >= v.time_begin_ms &&
-                d.time_ms <= v.time_end_ms &&
-                v.option_texts.includes(d.content)
-            )
-                return false;
-        }
-        return true;
-    });
+tweak_before_pakku(chunk=>{
+    chunk.objs = chunk.objs.filter(
+        dm => dm.extra.proto_dmfrom !== 2 // DmFromType.DmFromCmd
+    );
 });
 ```
 

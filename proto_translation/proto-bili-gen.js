@@ -3843,6 +3843,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {string|null} [animation] DanmakuElem animation
                          * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [colorful] DanmakuElem colorful
                          * @property {number|null} [oid] DanmakuElem oid
+                         * @property {bilibili.community.service.dm.v1.DmFromType|null} [dmFrom] DanmakuElem dmFrom
                          */
 
                         /**
@@ -3981,6 +3982,14 @@ export const bilibili = $root.bilibili = (() => {
                         DanmakuElem.prototype.oid = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                         /**
+                         * DanmakuElem dmFrom.
+                         * @member {bilibili.community.service.dm.v1.DmFromType} dmFrom
+                         * @memberof bilibili.community.service.dm.v1.DanmakuElem
+                         * @instance
+                         */
+                        DanmakuElem.prototype.dmFrom = 0;
+
+                        /**
                          * Encodes the specified DanmakuElem message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuElem.verify|verify} messages.
                          * @function encode
                          * @memberof bilibili.community.service.dm.v1.DanmakuElem
@@ -4022,6 +4031,8 @@ export const bilibili = $root.bilibili = (() => {
                                 writer.uint32(/* id 24, wireType 0 =*/192).int32(message.colorful);
                             if (message.oid != null && Object.hasOwnProperty.call(message, "oid"))
                                 writer.uint32(/* id 26, wireType 0 =*/208).int64(message.oid);
+                            if (message.dmFrom != null && Object.hasOwnProperty.call(message, "dmFrom"))
+                                writer.uint32(/* id 27, wireType 0 =*/216).int32(message.dmFrom);
                             return writer;
                         };
 
@@ -4103,6 +4114,10 @@ export const bilibili = $root.bilibili = (() => {
                                         message.oid = reader.int64();
                                         break;
                                     }
+                                case 27: {
+                                        message.dmFrom = reader.int32();
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -4129,6 +4144,24 @@ export const bilibili = $root.bilibili = (() => {
                         return DanmakuElem;
                     })();
 
+                    /**
+                     * DmFromType enum.
+                     * @name bilibili.community.service.dm.v1.DmFromType
+                     * @enum {number}
+                     * @property {number} DmFromUnknown=0 DmFromUnknown value
+                     * @property {number} DmFromNormal=1 DmFromNormal value
+                     * @property {number} DmFromCmd=2 DmFromCmd value
+                     * @property {number} DmFromLive=3 DmFromLive value
+                     */
+                    v1.DmFromType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "DmFromUnknown"] = 0;
+                        values[valuesById[1] = "DmFromNormal"] = 1;
+                        values[valuesById[2] = "DmFromCmd"] = 2;
+                        values[valuesById[3] = "DmFromLive"] = 3;
+                        return values;
+                    })();
+
                     v1.DanmuWebPlayerConfig = (function() {
 
                         /**
@@ -4146,7 +4179,6 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {boolean|null} [preventshade] DanmuWebPlayerConfig preventshade
                          * @property {boolean|null} [dmask] DanmuWebPlayerConfig dmask
                          * @property {number|null} [opacity] DanmuWebPlayerConfig opacity
-                         * @property {number|null} [dmarea] DanmuWebPlayerConfig dmarea
                          * @property {number|null} [speedplus] DanmuWebPlayerConfig speedplus
                          * @property {number|null} [fontsize] DanmuWebPlayerConfig fontsize
                          * @property {boolean|null} [fullscreensync] DanmuWebPlayerConfig fullscreensync
@@ -4155,6 +4187,9 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {boolean|null} [bold] DanmuWebPlayerConfig bold
                          * @property {number|null} [fontborder] DanmuWebPlayerConfig fontborder
                          * @property {number|null} [seniorModeSwitch] DanmuWebPlayerConfig seniorModeSwitch
+                         * @property {boolean|null} [typeTopBottom] DanmuWebPlayerConfig typeTopBottom
+                         * @property {number|null} [dmarea] DanmuWebPlayerConfig dmarea
+                         * @property {number|null} [dmdensity] DanmuWebPlayerConfig dmdensity
                          */
 
                         /**
@@ -4261,14 +4296,6 @@ export const bilibili = $root.bilibili = (() => {
                         DanmuWebPlayerConfig.prototype.opacity = 0;
 
                         /**
-                         * DanmuWebPlayerConfig dmarea.
-                         * @member {number} dmarea
-                         * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
-                         * @instance
-                         */
-                        DanmuWebPlayerConfig.prototype.dmarea = 0;
-
-                        /**
                          * DanmuWebPlayerConfig speedplus.
                          * @member {number} speedplus
                          * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
@@ -4333,6 +4360,30 @@ export const bilibili = $root.bilibili = (() => {
                         DanmuWebPlayerConfig.prototype.seniorModeSwitch = 0;
 
                         /**
+                         * DanmuWebPlayerConfig typeTopBottom.
+                         * @member {boolean} typeTopBottom
+                         * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
+                         * @instance
+                         */
+                        DanmuWebPlayerConfig.prototype.typeTopBottom = false;
+
+                        /**
+                         * DanmuWebPlayerConfig dmarea.
+                         * @member {number} dmarea
+                         * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
+                         * @instance
+                         */
+                        DanmuWebPlayerConfig.prototype.dmarea = 0;
+
+                        /**
+                         * DanmuWebPlayerConfig dmdensity.
+                         * @member {number} dmdensity
+                         * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
+                         * @instance
+                         */
+                        DanmuWebPlayerConfig.prototype.dmdensity = 0;
+
+                        /**
                          * Encodes the specified DanmuWebPlayerConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmuWebPlayerConfig.verify|verify} messages.
                          * @function encode
                          * @memberof bilibili.community.service.dm.v1.DanmuWebPlayerConfig
@@ -4366,8 +4417,6 @@ export const bilibili = $root.bilibili = (() => {
                                 writer.uint32(/* id 10, wireType 0 =*/80).bool(message.dmask);
                             if (message.opacity != null && Object.hasOwnProperty.call(message, "opacity"))
                                 writer.uint32(/* id 11, wireType 5 =*/93).float(message.opacity);
-                            if (message.dmarea != null && Object.hasOwnProperty.call(message, "dmarea"))
-                                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.dmarea);
                             if (message.speedplus != null && Object.hasOwnProperty.call(message, "speedplus"))
                                 writer.uint32(/* id 13, wireType 5 =*/109).float(message.speedplus);
                             if (message.fontsize != null && Object.hasOwnProperty.call(message, "fontsize"))
@@ -4384,6 +4433,12 @@ export const bilibili = $root.bilibili = (() => {
                                 writer.uint32(/* id 19, wireType 0 =*/152).int32(message.fontborder);
                             if (message.seniorModeSwitch != null && Object.hasOwnProperty.call(message, "seniorModeSwitch"))
                                 writer.uint32(/* id 21, wireType 0 =*/168).int32(message.seniorModeSwitch);
+                            if (message.typeTopBottom != null && Object.hasOwnProperty.call(message, "typeTopBottom"))
+                                writer.uint32(/* id 24, wireType 0 =*/192).bool(message.typeTopBottom);
+                            if (message.dmarea != null && Object.hasOwnProperty.call(message, "dmarea"))
+                                writer.uint32(/* id 25, wireType 0 =*/200).int32(message.dmarea);
+                            if (message.dmdensity != null && Object.hasOwnProperty.call(message, "dmdensity"))
+                                writer.uint32(/* id 26, wireType 0 =*/208).int32(message.dmdensity);
                             return writer;
                         };
 
@@ -4449,10 +4504,6 @@ export const bilibili = $root.bilibili = (() => {
                                         message.opacity = reader.float();
                                         break;
                                     }
-                                case 12: {
-                                        message.dmarea = reader.int32();
-                                        break;
-                                    }
                                 case 13: {
                                         message.speedplus = reader.float();
                                         break;
@@ -4483,6 +4534,18 @@ export const bilibili = $root.bilibili = (() => {
                                     }
                                 case 21: {
                                         message.seniorModeSwitch = reader.int32();
+                                        break;
+                                    }
+                                case 24: {
+                                        message.typeTopBottom = reader.bool();
+                                        break;
+                                    }
+                                case 25: {
+                                        message.dmarea = reader.int32();
+                                        break;
+                                    }
+                                case 26: {
+                                        message.dmdensity = reader.int32();
                                         break;
                                     }
                                 default:

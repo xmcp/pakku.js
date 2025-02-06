@@ -26,6 +26,7 @@ export interface DanmuObject {
         proto_animation?: string | null;
         proto_colorful?: int | null;
         proto_oid?: int | null;
+        proto_dmfrom?: int | null;
     };
 }
 

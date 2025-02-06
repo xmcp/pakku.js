@@ -708,7 +708,19 @@
                                                         "oid": {
                                                             "type": "int64",
                                                             "id": 26
+                                                        },
+                                                        "dmFrom": {
+                                                            "type": "DmFromType",
+                                                            "id": 27
                                                         }
+                                                    }
+                                                },
+                                                "DmFromType": {
+                                                    "values": {
+                                                        "DmFromUnknown": 0,
+                                                        "DmFromNormal": 1,
+                                                        "DmFromCmd": 2,
+                                                        "DmFromLive": 3
                                                     }
                                                 },
                                                 "DanmuWebPlayerConfig": {
@@ -757,10 +769,6 @@
                                                             "type": "float",
                                                             "id": 11
                                                         },
-                                                        "dmarea": {
-                                                            "type": "int32",
-                                                            "id": 12
-                                                        },
                                                         "speedplus": {
                                                             "type": "float",
                                                             "id": 13
@@ -792,6 +800,18 @@
                                                         "seniorModeSwitch": {
                                                             "type": "int32",
                                                             "id": 21
+                                                        },
+                                                        "typeTopBottom": {
+                                                            "type": "bool",
+                                                            "id": 24
+                                                        },
+                                                        "dmarea": {
+                                                            "type": "int32",
+                                                            "id": 25
+                                                        },
+                                                        "dmdensity": {
+                                                            "type": "int32",
+                                                            "id": 26
                                                         }
                                                     }
                                                 },
