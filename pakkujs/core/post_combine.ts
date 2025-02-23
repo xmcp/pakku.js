@@ -14,7 +14,7 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-export const DISPVAL_TIME_THRESHOLD = 4500;
+export const DISPVAL_TIME_THRESHOLD = 5000;
 const DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
 const WEIGHT_DROPPED = -114514;
 
@@ -73,8 +73,11 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
+const SMALL_CHARS = new Set('₍₀₁₂₃₄₅₆₇₈₉₎↓↑');
+for(let x=0x20; x<=0x7e; x++)
+    SMALL_CHARS.add(String.fromCharCode(x));
+
 function count_small_chars(s: string) {
-    const SMALL_CHARS = new Set('₍₀₁₂₃₄₅₆₇₈₉₎↓↑');
     let ret = 0;
     for(let c of s)
         if(SMALL_CHARS.has(c))
@@ -87,8 +90,7 @@ export function dispval(d: DanmuObject) {
         // a representative value, check for small chars
         let dr = d as DanmuObjectRepresentative;
         let str = dr.pakku.disp_str;
-        text_length = str.length - (dr.pakku.peers.length>1 ? (count_small_chars(str) * .7) : 0);
-        //text_length = str.length;
+        text_length = str.length - count_small_chars(str)/2;
     } else {
         // a peer value
         text_length = d.content.length;
@@ -124,8 +126,8 @@ function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], we
     let max_weight = Math.max(...peers.map(p=>p.weight));
     let drop_rate = (
         (dispval - threshold) / threshold
-        - (weight_distribution[max_weight-1] || 0)
-        - (Math.sqrt(peers.length) - 1) / 3
+        - (weight_distribution[max_weight-1] || 0) / 2
+        - (Math.sqrt(peers.length) - 1) / 2
     );
     //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
 
