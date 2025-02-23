@@ -37,6 +37,12 @@ chrome.declarativeNetRequest.getDynamicRules(function(rules) {
     debug.textContent += '\n\n**DNR Rules:** `' + JSON.stringify(rules) + '`';
 });
 
+if(navigator.serviceWorker && navigator.serviceWorker.controller) {
+    debug.textContent += '\n\n**Service Worker:** `' + navigator.serviceWorker.controller.scriptURL + '` (state: `' + navigator.serviceWorker.controller.state + '`)';
+} else {
+    debug.textContent += '\n\n**Service Worker:** FAILED';
+}
+
 debug.textContent += '\n\n**localStorage:** `' + JSON.stringify(localStorage) + '`';
 get_config().then((config)=>{
     debug.textContent += '\n\n**Config:** `' + JSON.stringify(config) + '`';
@@ -82,7 +88,7 @@ fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'))
     .then((resp)=>resp.arrayBuffer())
     .then((buf)=>{
         let val = WebAssembly.validate(buf)
-        debug.textContent += '\n\n**Wasm Validate:** `' + val + ' (' + buf.byteLength +  ' bytes)';
+        debug.textContent += '\n\n**Wasm Validate:** `' + val + '` (' + buf.byteLength +  ' bytes)';
     });
 
 async function test_worker() {
