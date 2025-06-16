@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <vector>
+#include <wasm_simd128.h>
 
 typedef uint8_t uchar;
 typedef uint16_t ushort;
@@ -267,5 +268,38 @@ extern "C" {
         if(!config.index_r_lock)
             nearby_danmu.push_back(std::move(p));
         return 0;
+    }
+
+    uint test_speed_sim() {
+        std::vector<float> emb_i, emb_j;
+        float sz_i=0, sz_j=0;
+        for(int i=0; i<512; i++) {
+            emb_i.push_back(float(i) / 512);
+            sz_i += emb_i.back()*emb_i.back();
+            emb_j.push_back(1 - float(i) / 512);
+            sz_j += emb_j.back()*emb_j.back();
+        }
+        sz_i = std::sqrt(sz_i);
+        sz_j = std::sqrt(sz_j);
+        for(int i=0; i<512; i++) {
+            emb_i[i] /= sz_i;
+            emb_j[i] /= sz_j;
+        }
+
+        constexpr int N_TRIES = 30000000;
+        float sum = 0;
+
+        for(int tr=0; tr<N_TRIES; tr++) {
+            v128_t acc = wasm_f32x4_const_splat(0);
+            for(int i=0; i<512; i+=4) {
+                v128_t a = wasm_v128_load(&emb_i[i]);
+                v128_t b = wasm_v128_load(&emb_j[i]);
+                //acc = wasm_f32x4_relaxed_madd(a, b, acc);
+                acc = wasm_f32x4_add(acc, wasm_f32x4_mul(a, b));
+            }
+            sum += wasm_f32x4_extract_lane(acc, 0) + wasm_f32x4_extract_lane(acc, 1) + wasm_f32x4_extract_lane(acc, 2) + wasm_f32x4_extract_lane(acc, 3);
+        }
+
+        return sum * 10000 / N_TRIES;
     }
 }
