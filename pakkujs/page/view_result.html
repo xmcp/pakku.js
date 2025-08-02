@@ -9,7 +9,7 @@
             }
             pre {
                 font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
-                overflow-x: auto;
+                word-break: break-all;
             }
         </style>
     </head>
@@ -20,11 +20,15 @@
                 阶段：
                 <label>
                     <input type="radio" name="step" value="input">
-                    合并前
+                    合并前（input）
+                </label>
+                <label>
+                    <input type="radio" name="step" value="deleted">
+                    合并时被删除（deleted）
                 </label>
                 <label>
                     <input type="radio" name="step" value="output" checked>
-                    合并后
+                    合并后（output）
                 </label>
             </p>
             <p>
@@ -39,21 +43,21 @@
                 </label>
                 <label>
                     <input type="radio" name="egress" value="debug_peers">
-                    Debug(+peers)
+                    Debug +peers
                 </label>
                 &ensp;
-                <button id="download">保存</button>
+                <button id="download">下载</button>
             </p>
         </fieldset>
 
         <fieldset>
-            <legend>输入</legend>
-            <pre id="ingress">loading...</pre>
+            <legend>任务信息</legend>
+            <pre id="ingress" style="white-space: pre-wrap">loading...</pre>
         </fieldset>
 
         <fieldset>
             <legend>弹幕</legend>
-            <pre id="content">loading...</pre>
+            <pre id="content" style="overflow-x: auto">loading...</pre>
         </fieldset>
 
         <script src="/generated/view_result.js"></script>

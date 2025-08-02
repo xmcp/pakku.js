@@ -75,7 +75,10 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
 
     for(let d of chunk.objs) {
         let elem = dom.createElement('d');
+
         let tn = dom.createTextNode(d.content);
+        elem.appendChild(tn);
+
         let attr = [
             d.time_ms/1000, // 0
             d.mode, // 1
@@ -87,8 +90,12 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
             d.id, // 7
             d.weight, // 8
         ];
-        elem.appendChild(tn);
         elem.setAttribute('p',attr.join(','));
+
+        if((d as any).pakku && (d as any).pakku.deleted_reason) {
+            elem.setAttribute('pakku_deleted_reason', (d as any).pakku.deleted_reason);
+        }
+
         i_elem.appendChild(elem);
     }
     

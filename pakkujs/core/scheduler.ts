@@ -268,6 +268,19 @@ class Scheduler {
         });
     }
 
+    dump_result(step: ('input' | 'output' | 'deleted'), egress: Egress): AjaxResponse {
+        let chunks = {input: this.chunks_in, output: this.chunks_out, deleted: this.chunks_deleted}[step];
+        if(!chunks)
+            return null;
+
+        let res = perform_egress(egress, this.num_chunks, chunks);
+        if(res===MissingData)
+            return null;
+        else {
+            return {data: res};
+        }
+    }
+
     finish() {
         console.log('pakku scheduler: all finished');
 
