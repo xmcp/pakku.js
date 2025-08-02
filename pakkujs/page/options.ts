@@ -260,6 +260,9 @@ async function backup_restore_prompt() {
     if(inp === null) return;
     if(!inp) { // export
         document.body.textContent = JSON.stringify(config);
+        document.body.style.wordBreak = 'break-all';
+        document.body.style.fontFamily = 'Consolas, Courier, monospace';
+        document.body.style.padding = '.5em';
         alert('导出成功。\n请将屏幕上的文本妥善保存在别处。');
     } else { // import
         try {
