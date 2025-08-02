@@ -1,11 +1,11 @@
 import {
     DanmuChunk,
     DanmuCluster,
-    DanmuObject,
+    DanmuObject, DanmuObjectDeleted,
     DanmuObjectRepresentative,
     int,
     LocalizedConfig,
-    Stats
+    Stats,
 } from "./types";
 import {Queue} from "./queue";
 
@@ -134,7 +134,11 @@ function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], we
     return (drop_rate>=1 || (drop_rate>0 && Math.random()<drop_rate));
 }
 
-export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
+export function post_combine(
+    input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>,
+    config: LocalizedConfig, stats: Stats,
+    deleted_danmus_output: DanmuObjectDeleted[],
+): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: input_chunk.extra};
 
@@ -308,8 +312,19 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
             // check drop
 
             if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers, weight_distribution)) {
+                // do drop
                 stats.deleted_dispval++;
                 dm.weight = WEIGHT_DROPPED;
+
+                for(let d of dm.pakku.peers) {
+                    deleted_danmus_output.push({
+                        ...d,
+                        pakku: {
+                            deleted_reason: '弹幕密度',
+                        },
+                    });
+                }
+
                 continue;
             }
 

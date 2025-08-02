@@ -44,6 +44,12 @@ export interface DanmuObjectRepresentative extends DanmuObject {
     };
 }
 
+export interface DanmuObjectDeleted extends DanmuObject {
+    pakku: {
+        deleted_reason: string;
+    };
+}
+
 export interface DanmuChunk<ObjectType extends DanmuObject> {
     objs: ObjectType[];
 
@@ -73,6 +79,7 @@ export interface DanmuClusterPtr {
 export interface DanmuClusterOutput {
     clusters: DanmuClusterPtr[];
     stats: Stats;
+    deleted_chunk: DanmuObjectDeleted[];
 }
 
 export class MessageStats {
