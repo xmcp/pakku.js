@@ -44,12 +44,12 @@
 以下是一个什么都不做的示例用户脚本。
 
 ```javascript
-tweak_before_pakku(chunk=>{
-  console.log('!!! BEFORE PAKKU', chunk);
+tweak_before_pakku((chunk, env)=>{
+  console.log('!!! BEFORE PAKKU', chunk, env);
 });
 
-tweak_after_pakku(chunk=>{
-  console.log('!!! AFTER PAKKU', chunk);
+tweak_after_pakku((chunk, env)=>{
+  console.log('!!! AFTER PAKKU', chunk, env);
 });
 ```
 
@@ -57,7 +57,9 @@ tweak_after_pakku(chunk=>{
 
 ![screenshot](userscript_console.png)
 
-回调函数可以直接修改 `chunk` 的内容。
+其中 `chunk` 是弹幕列表，回调函数可以直接修改此变量的内容来修改弹幕。
+
+`env` 是执行时的其他环境信息（仅支持 pakku 2025.2.1 或更高版本），包括当前视频（`env.ingress`）、当前弹幕分片的编号（`env.segidx`）和 pakku 设置（`env.config`），供用户脚本参考。
 
 如果注册了多个回调函数，你可能关心回调函数的执行顺序。可以向 `tweak_before_pakku` 和 `tweak_after_pakku` 额外传递一个数字参数表示先后顺序，数字越大则执行顺序越靠后。
 
@@ -69,6 +71,7 @@ tweak_before_pakku(chunk=>{console.log('!!! THIRD');}, 10);
 
 以下是与用户脚本相关的类型定义：
 
+<!-- DOC-GEN: BEGIN-TYPE-DEF -->
 ```typescript
 type int = number; type float = number; type AnyObject = {[k: string]: any};
 
@@ -89,6 +92,7 @@ interface DanmuObject {
         proto_animation?: string | null;
         proto_colorful?: int | null;
         proto_oid?: int | null;
+        proto_dmfrom?: int | null;
     };
 }
 interface DanmuObjectPeer extends DanmuObject {
@@ -113,14 +117,35 @@ interface DanmuChunk<ObjectType extends DanmuObject> {
     };
 }
 
-function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>) => void, timing: number = 0) {}
-function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>) => void, timing: number = 0) {}
-function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
+export interface Env {
+    ingress: AnyObject; // 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型
+    segidx: int | null; // 当前弹幕分片的编号
+    config: AnyObject; // 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型
+}
+type Ret = void | Promise<void>; // 支持同步或异步的回调函数
+
+function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>, env: Env) => Ret, t: number = 0) {}
+function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
+```
+<!-- DOC-GEN: END-TYPE-DEF -->
+
+回调函数可以是异步的（仅支持 pakku 2025.2.1 或更高版本）。例如：
+
+```javascript
+function sleep(x) {
+   return new Promise(resolve => setTimeout(resolve, x));
+}
+
+tweak_after_pakku(async (chunk, env)=>{
+    console.log('!!! blocking loading of the segment', env.segidx);
+    await sleep(2000);
+});
 ```
 
 ## 通过用户脚本来修改弹幕元信息
 
-从 2024.6.1 版本起，用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应。
+用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应（仅支持 pakku 2024.6.1 或更高版本）。
 
 由于它是 B 站播放器的私有 API，pakku 不保证此接口的稳定性，也无法解释每个字段的准确含义。完整的字段列表参见 [Protobuf 定义](../proto_translation/bili-proto.json) 中的 `DmWebViewReply` 类型。
 
@@ -141,8 +166,8 @@ function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 
 const OFFSET_MS = 5000;
 
 tweak_before_pakku(chunk=>{
-  for(let dm of chunk.objs)
-    dm.time_ms += OFFSET_MS;
+    for(let dm of chunk.objs)
+        dm.time_ms += OFFSET_MS;
 });
 ```
 
@@ -150,8 +175,8 @@ tweak_before_pakku(chunk=>{
 
 ```javascript
 tweak_after_pakku(chunk=>{
-  for(let dm of chunk.objs)
-    dm.extra.proto_colorful = 0;
+    for(let dm of chunk.objs)
+        dm.extra.proto_colorful = 0;
 });
 ```
 
@@ -163,10 +188,10 @@ function ENLARGE_RATIO(count) {
 }
 
 tweak_after_pakku(chunk=>{
-  for(let dm of chunk.objs) {
-    let orig_fontsize = Math.max(...dm.pakku.peers.map(p => p.fontsize));
-    dm.fontsize = orig_fontsize * ENLARGE_RATIO(dm.pakku.peers.length);
-  }
+    for(let dm of chunk.objs) {
+        let orig_fontsize = Math.max(...dm.pakku.peers.map(p => p.fontsize));
+        dm.fontsize = orig_fontsize * ENLARGE_RATIO(dm.pakku.peers.length);
+    }
 });
 ```
 
@@ -176,9 +201,9 @@ tweak_after_pakku(chunk=>{
 const TARGET_TIME = +new Date('2023/1/1') / 1000;
 
 tweak_before_pakku(chunk=>{
-  chunk.objs = chunk.objs.filter(
-    dm => dm.sendtime < TARGET_TIME
-  );
+    chunk.objs = chunk.objs.filter(
+        dm => dm.sendtime < TARGET_TIME
+    );
 });
 ```
 
@@ -218,9 +243,9 @@ importScripts('https://s.xmcp.ltd/sample/large_data.js');
 let regexps = LARGE_DATA.map(s => new RegExp(s, 'i'));
 
 tweak_before_pakku(chunk=>{
-  chunk.objs = chunk.objs.filter(d=>
-    !regexps.some(r => r.test(d.content))
-  );
+    chunk.objs = chunk.objs.filter(d=>
+        !regexps.some(r => r.test(d.content))
+    );
 });
 ```
 
@@ -238,6 +263,19 @@ tweak_proto_view(view=>{
 ```javascript
 tweak_proto_view(view=>{
     view.dmSetting.seniorModeSwitch = 3;
+});
+```
+
+[屏蔽投票弹幕和产生的所有投票结果](https://github.com/xmcp/pakku.js/issues/178#issuecomment-2636519563)：
+
+```javascript
+tweak_proto_view(view=>{
+    view.commandDms = view.commandDms.filter(d => d.command !== '#VOTE#');
+});
+tweak_before_pakku(chunk=>{
+    chunk.objs = chunk.objs.filter(
+        dm => dm.extra.proto_dmfrom !== 2 // DmFromType.DmFromCmd
+    );
 });
 ```
 

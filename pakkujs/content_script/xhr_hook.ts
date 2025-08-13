@@ -163,33 +163,64 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             Object.defineProperty(xhr, 'status', {writable: true});
             Object.defineProperty(xhr, 'statusText', {writable: true});
 
-            if(xhr.responseType === 'arraybuffer') {
-                if(resp.data instanceof Uint8Array)
+            let content_type = 'application/octet-stream';
+
+            if(['arraybuffer', 'blob'].includes(xhr.responseType)) {
+                if(resp.data instanceof Uint8Array) {
                     xhr.response = uint8array_to_arraybuffer(resp.data);
-                else if(typeof resp.data === 'object')
+                } else if(typeof resp.data === 'object') {
                     xhr.response = byte_object_to_arraybuffer(resp.data);
-                else // str
+                } else { // str
                     xhr.response = str_to_arraybuffer(resp.data);
-            } else { // xhr.responseType === 'string'
-                if(resp.data instanceof Uint8Array)
+                }
+
+                if(xhr.responseType==='blob') {
+                    xhr.response = new Blob([xhr.response], {type: content_type});
+                }
+            } else { // xhr.responseType === 'text' or ''
+                if(resp.data instanceof Uint8Array) {
                     xhr.response = xhr.responseText = arraybuffer_to_string(uint8array_to_arraybuffer(resp.data));
-                else if(typeof resp.data === 'object')
+                } else if(typeof resp.data === 'object') {
                     xhr.response = xhr.responseText = arraybuffer_to_string(byte_object_to_arraybuffer(resp.data));
-                else // str
+                } else { // str
                     xhr.response = xhr.responseText = resp.data;
+                }
             }
 
-            xhr.getAllResponseHeaders = function() {
-                return "X-Pakku: yay\r\n";
-            };
-            xhr.responseURL = xhr.pakku_url;
+            // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
             xhr.readyState = 4;
+            xhr.responseURL = xhr.pakku_url;
             xhr.status = 200;
             xhr.statusText = 'OK';
+            xhr.getAllResponseHeaders = function() {
+                return `Content-Type: ${content_type}\r\n`;
+            };
+            xhr.getResponseHeader = function(k) {
+                if(k.toLowerCase()==='content-type')
+                    return content_type;
+                return null;
+            };
 
             console.log('pakku ajax: got tampered xhr response for', xhr.pakku_url, xhr.responseType);
             for(let i = 0; i < xhr.pakku_load_callback.length; i++)
-                xhr.pakku_load_callback[i].bind(xhr)();
+                xhr.pakku_load_callback[i].bind(xhr)({
+                    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event
+                    lengthComputable: false,
+                    loaded: 1,
+                    total: 1,
+
+                    // https://developer.mozilla.org/en-US/docs/Web/API/Event
+                    bubbles: false,
+                    cancelable: false,
+                    composed: false,
+                    currentTarget: xhr,
+                    defaultPrevented: false,
+                    eventPhase: 2,
+                    isTrusted: true,
+                    target: xhr,
+                    timeStamp: 0,
+                    type: 'load',
+                });
         });
     }
 

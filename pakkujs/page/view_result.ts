@@ -25,10 +25,10 @@ async function process() {
 
     let egress: Egress = (
         options.egress==='xml' ?
-            {type: 'xml'} :
+            {type: 'xml', wait_finished: false} :
         options.egress==='debug' ?
-            {type: 'debug', show_peers: false, wait_finished: false} :
-            {type: 'debug', show_peers: true, wait_finished: false}
+            {type: 'debug', wait_finished: false, show_peers: false} :
+            {type: 'debug', wait_finished: false, show_peers: true}
     );
 
     let dumped_result: AnyObject;
@@ -36,7 +36,7 @@ async function process() {
         dumped_result = await chrome.tabs.sendMessage(tabid, {
             type: 'dump_result',
             egress: egress,
-            switch: options.step==='output',
+            step: options.step,
         });
     } catch(e: any) {
         $ingress.textContent = 'error!';

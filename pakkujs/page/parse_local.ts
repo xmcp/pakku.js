@@ -103,10 +103,10 @@ document.addEventListener('drop', function(e) {
     let ingress_type = options.ingress;
     let egress: Egress = (
         options.egress==='xml' ?
-            {type: 'xml'} :
+            {type: 'xml', wait_finished: true} :
         options.egress==='debug' ?
-            {type: 'debug', show_peers: false, wait_finished: true} :
-            {type: 'debug', show_peers: true, wait_finished: true}
+            {type: 'debug', wait_finished: true, show_peers: false} :
+            {type: 'debug', wait_finished: true, show_peers: true}
     );
     let ext = options.egress==='xml' ? 'xml' : 'js';
 

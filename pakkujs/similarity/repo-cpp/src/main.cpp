@@ -15,6 +15,7 @@ struct Config {
     bool index_r_lock = false;
 
     int min_danmu_size = 0;
+    uint dispose_idx = 0;
 } config;
 
 std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict = {
@@ -48,6 +49,9 @@ struct UnorderedContainer {
             ed_a[p.first] = 0;
         }
     }
+    void dispose() {
+        data.clear();
+    }
 };
 
 struct DanmuCacheline {
@@ -57,6 +61,13 @@ struct DanmuCacheline {
     UnorderedContainer<ushort> str{};
     UnorderedContainer<ushort> pinyin{};
     UnorderedContainer<uint> gram{};
+
+    void dispose() {
+        orig.clear();
+        str.dispose();
+        pinyin.dispose();
+        gram.dispose();
+    }
 
     explicit DanmuCacheline(const ushort *s, uint mode, uint idx): mode(mode), idx(idx) {
         // gen orig and str
@@ -223,6 +234,7 @@ extern "C" {
 
         config.min_danmu_size = std::max(1, max_dist*2);
         config.index_r_lock = false;
+        config.dispose_idx = 0;
 
         nearby_danmu.clear();
     }
@@ -234,6 +246,10 @@ extern "C" {
     uint check_similar(uint mode, uint index_l) {
         uint index_r = nearby_danmu.size();
         auto p = DanmuCacheline(config.str_buf, mode, index_r);
+
+        for(;config.dispose_idx<index_l; config.dispose_idx++) {
+            nearby_danmu[config.dispose_idx].dispose();
+        }
 
         if(index_l + MAX_IDX_RANGE < index_r)
             index_l = index_r - MAX_IDX_RANGE;

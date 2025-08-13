@@ -2,14 +2,14 @@ import {WorkerPool} from "./worker_pool";
 import {Egress, Ingress, perform_egress, perform_ingress} from "../protocol/interface";
 import {
     AjaxResponse, AnyObject,
-    DanmuChunk,
+    DanmuChunk, DanmuCluster,
     DanmuClusterOutput,
-    DanmuObject, DanmuObjectRepresentative,
+    DanmuObject, DanmuObjectDeleted, DanmuObjectRepresentative,
     int,
     LocalizedConfig,
     MessageStats,
     MissingData,
-    Stats
+    Stats,
 } from "./types";
 import {post_combine} from "./post_combine";
 import {UserscriptWorker} from "./userscript";
@@ -51,6 +51,11 @@ function perform_throttle(fn: ()=>void) {
     }
 }
 
+// https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
+function u8array_to_arraybuffer(array: Uint8Array): ArrayBuffer {
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
+}
+
 class Scheduler {
     ingress: Ingress;
     egresses: Array<[Egress, (resp: AjaxResponse)=>void]>;
@@ -62,13 +67,14 @@ class Scheduler {
     start_ts: number;
 
     chunks_in: Map<int, DanmuChunk<DanmuObject>>;
-    clusters: Map<int, DanmuClusterOutput>;
+    clusters: Map<int, DanmuCluster[]>;
     chunks_out: Map<int, DanmuChunk<DanmuObjectRepresentative>>;
-    chunks_deleted: Map<int, DanmuChunk<DanmuObject>>;
+    chunks_deleted: Map<int, DanmuChunk<DanmuObjectDeleted>>;
 
     num_chunks: int;
     combine_started: Set<int>;
     failed: boolean;
+    cleaned_up: boolean;
     pool: WorkerPool;
     userscript: UserscriptWorker | null;
     userscript_init: Promise<void> | null;
@@ -90,6 +96,7 @@ class Scheduler {
         this.num_chunks = 0;
         this.combine_started = new Set();
         this.failed = false;
+        this.cleaned_up = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
         this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
         this.userscript_init = null;
@@ -125,6 +132,9 @@ class Scheduler {
     }
 
     add_egress(egress: Egress, callback: (resp: AjaxResponse)=>void) {
+        if(this.cleaned_up)
+            egress.wait_finished = false;
+
         console.log('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
         this.egresses.push([egress, callback]);
         this.try_serve_egress();
@@ -158,6 +168,7 @@ class Scheduler {
                 res = {
                     clusters: [],
                     stats: new Stats(),
+                    deleted_chunk: [],
                 };
                 console.log('pakku scheduler: got combine result', segidx, '(skipped)');
             }
@@ -166,8 +177,22 @@ class Scheduler {
             return;
         }
 
-        this.clusters.set(segidx, res);
+        this.clusters.set(segidx, res.clusters.map(c => ({
+            peers: c.peers_ptr.map(([idx, reason]) => ({
+                ...chunk.objs[idx],
+                pakku: {
+                    sim_reason: reason,
+                },
+            })),
+            desc: c.desc,
+            chosen_str: c.chosen_str,
+        })));
         this.ongoing_stats.update_from(res.stats);
+
+        this.chunks_deleted.set(segidx, {
+            objs: res.deleted_chunk,
+            extra: {},
+        });
 
         void this.try_start_postproc(segidx);
         void this.try_start_postproc(segidx+1);
@@ -185,9 +210,11 @@ class Scheduler {
         if(!clusters || !prev_clusters)
             return; // not ready
 
+        let deleted_danmus_output = this.chunks_deleted.get(segidx)!.objs;
+
         let chunk_out;
         try {
-            chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats);
+            chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats, deleted_danmus_output);
         } catch(e) {
             this.write_failing_stats(`后处理分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
@@ -197,7 +224,7 @@ class Scheduler {
             try {
                 let t1 = +new Date();
 
-                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out}) as any;
+                chunk_out = await this.userscript.exec({type: 'pakku_after', chunk: chunk_out, env: {segidx: segidx}}) as any;
                 this.userscript.sancheck_chunk_output(chunk_out);
 
                 let t2 = +new Date();
@@ -218,14 +245,14 @@ class Scheduler {
 
     try_serve_egress() {
         if(this.failed) {
-            for(let [egress, callback] of this.egresses) {
+            for(let [_egress, callback] of this.egresses) {
                 callback(null);
             }
             this.egresses = [];
             return;
         }
 
-        if(this.num_chunks && this.num_chunks===this.chunks_out.size)
+        if(!this.cleaned_up && this.num_chunks && this.num_chunks===this.chunks_out.size)
             this.do_cleanup();
 
         this.egresses = this.egresses.filter(([egress, callback]) => {
@@ -241,6 +268,19 @@ class Scheduler {
         });
     }
 
+    dump_result(step: ('input' | 'output' | 'deleted'), egress: Egress): AjaxResponse {
+        let chunks = {input: this.chunks_in, output: this.chunks_out, deleted: this.chunks_deleted}[step];
+        if(!chunks)
+            return null;
+
+        let res = perform_egress(egress, this.num_chunks, chunks);
+        if(res===MissingData)
+            return null;
+        else {
+            return {data: res};
+        }
+    }
+
     finish() {
         console.log('pakku scheduler: all finished');
 
@@ -249,43 +289,23 @@ class Scheduler {
         this.stats = this.ongoing_stats;
 
         setTimeout(()=>{
-            this.calc_chunk_deleted();
             if(this.config.GLOBAL_SWITCH && !this.config.SKIP_INJECT) {
                 do_inject(this.chunks_out, this.chunks_deleted, this.config);
             }
         }, 300); // delay ui injection to improve player responsiveness
     }
 
-    calc_chunk_deleted() {
-        let out_danmu_ids = new Set();
-        for(let chunk of this.chunks_out.values()) {
-            for(let dr of chunk.objs) {
-                out_danmu_ids.add(dr.id);
-                for(let dp of dr.pakku.peers)
-                    out_danmu_ids.add(dp.id);
-            }
-        }
-
-        this.chunks_deleted.clear();
-
-        for(let [idx, chunk_in] of this.chunks_in) {
-            let chunk_del = {
-                objs: [] as DanmuObject[],
-                extra: chunk_in.extra,
-            };
-
-            for(let d of chunk_in.objs) {
-                if(!out_danmu_ids.has(d.id))
-                    chunk_del.objs.push(d);
-            }
-
-            this.chunks_deleted.set(idx, chunk_del);
-        }
-    }
-
     do_cleanup() {
+        this.cleaned_up = true;
+
         if(this.stats.type==='message') {
             this.finish();
+        }
+
+        for(let e of this.egresses) {
+            // in unusual cases (e.g., when we guessed the number of chunks wrong), the player may request chunks we don't have
+            // since we are finished, there is no chance to wait for them, so we should serve an empty response instead of hanging forever
+            e[0].wait_finished = false;
         }
 
         this.clusters.clear(); // to free some RAM
@@ -309,7 +329,11 @@ class Scheduler {
 
         let fn = async () => {
             try {
-                this.ongoing_stats.num_userscript = await this.userscript!.init();
+                await this.userscript!.init({
+                    ingress: this.ingress,
+                    segidx: null,
+                    config: this.config,
+                });
             } catch(e) {
                 this.write_failing_stats('初始化用户脚本时出错', e as Error, BADGE_ERR_JS);
                 return;
@@ -342,7 +366,7 @@ class Scheduler {
                     try {
                         let t1 = +new Date();
 
-                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk}) as any;
+                        chunk = await this.userscript.exec({type: 'pakku_before', chunk: chunk, env: {segidx: idx}}) as any;
                         this.userscript.sancheck_chunk_output(chunk);
 
                         let t2 = +new Date();
@@ -375,7 +399,7 @@ class Scheduler {
 
         void this.try_start_combine(this.num_chunks);
 
-        this.clusters.set(0, {clusters: [], stats: new Stats()}); // pad a pseudo cluster before the first one for the `prev_clusters` arg
+        this.clusters.set(0, []); // pad a pseudo cluster before the first one for the `prev_clusters` arg
         void this.try_start_postproc(1);
     }
 
@@ -394,11 +418,16 @@ class Scheduler {
                 return view_req;
             }
 
+            if(this.userscript.terminated) { // normally shouldn't happen, but possible when network is too slow
+                console.log('pakku userscript: worker terminated, skip proto_view');
+                return view_req;
+            }
+
             try {
                 let t1 = +new Date();
 
-                view = await this.userscript.exec({type: 'proto_view', view: view});
-                let view_ab = protoapi_encode_view(view).buffer;
+                view = await this.userscript.exec({type: 'proto_view', view: view, env: {}});
+                let view_ab = u8array_to_arraybuffer(protoapi_encode_view(view));
 
                 let t2 = +new Date();
                 this.ongoing_stats.userscript_time_ms += Math.ceil(t2 - t1)

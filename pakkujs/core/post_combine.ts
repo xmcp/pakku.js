@@ -1,12 +1,11 @@
 import {
     DanmuChunk,
     DanmuCluster,
-    DanmuClusterOutput,
-    DanmuObject,
+    DanmuObject, DanmuObjectDeleted,
     DanmuObjectRepresentative,
     int,
     LocalizedConfig,
-    Stats
+    Stats,
 } from "./types";
 import {Queue} from "./queue";
 
@@ -15,7 +14,7 @@ function calc_enlarge_rate(count: int): number {
     return count<=5 ? 1 : (Math.log(count) / MATH_LOG5);
 }
 
-export const DISPVAL_TIME_THRESHOLD = 4500;
+export const DISPVAL_TIME_THRESHOLD = 5000;
 const DISPVAL_POWER = .35, SHRINK_MAX_RATE = 1.732;
 const WEIGHT_DROPPED = -114514;
 
@@ -74,8 +73,11 @@ function make_mark_meta(config: LocalizedConfig): (text: string, cnt: int)=>stri
     }
 }
 
+const SMALL_CHARS = new Set('₍₀₁₂₃₄₅₆₇₈₉₎↓↑');
+for(let x=0x20; x<=0x7e; x++)
+    SMALL_CHARS.add(String.fromCharCode(x));
+
 function count_small_chars(s: string) {
-    const SMALL_CHARS = new Set('₍₀₁₂₃₄₅₆₇₈₉₎↓↑');
     let ret = 0;
     for(let c of s)
         if(SMALL_CHARS.has(c))
@@ -88,8 +90,7 @@ export function dispval(d: DanmuObject) {
         // a representative value, check for small chars
         let dr = d as DanmuObjectRepresentative;
         let str = dr.pakku.disp_str;
-        text_length = str.length - (dr.pakku.peers.length>1 ? (count_small_chars(str) * .7) : 0);
-        //text_length = str.length;
+        text_length = str.length - count_small_chars(str)/2;
     } else {
         // a peer value
         text_length = d.content.length;
@@ -118,23 +119,26 @@ function build_text(c: DanmuCluster, rep_dm: DanmuObjectRepresentative): void {
     }
 }
 
-function judge_drop(dispval: number, threshold: number, peers: DanmuObject[]): boolean {
+function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], weight_distribution: number[]): boolean {
     if(threshold<=0 || dispval<=threshold)
         return false;
 
     let max_weight = Math.max(...peers.map(p=>p.weight));
     let drop_rate = (
         (dispval - threshold) / threshold
-        - (max_weight - 1) / 10
+        - (weight_distribution[max_weight-1] || 0) / 2
         - (Math.sqrt(peers.length) - 1) / 2
     );
     //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
 
     return (drop_rate>=1 || (drop_rate>0 && Math.random()<drop_rate));
-
 }
 
-export function post_combine(input: DanmuClusterOutput, prev_input: DanmuClusterOutput, input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
+export function post_combine(
+    input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>,
+    config: LocalizedConfig, stats: Stats,
+    deleted_danmus_output: DanmuObjectDeleted[],
+): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: input_chunk.extra};
 
@@ -152,8 +156,8 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     let ids_included_in_prev = new Set() as Set<string>;
     let max_included_time = -1;
-    for(let i = prev_input.clusters.length-1; i >= 0; i--) {
-        let c = prev_input.clusters[i];
+    for(let i = prev_input_clusters.length-1; i >= 0; i--) {
+        let c = prev_input_clusters[i];
         if(c.peers[0].time_ms < FIRST_TIME_MS - THRESHOLD_MS)
             break;
 
@@ -165,7 +169,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     // gen out_danmus
 
-    for(let c of input.clusters) {
+    for(let c of input_clusters) {
         // dedup from prev cluster
 
         if(c.peers[0].time_ms < max_included_time) {
@@ -243,17 +247,31 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
     let dispval_subtract: Queue<[number, number]> | null = null;
     let onscreen_dispval = 0;
+    let weight_distribution = Array.from({length: 12}).map(_=>0);
 
     if(need_dispval) {
         out_danmus.sort((a, b) => a.time_ms - b.time_ms);
+
+        // calc weight distribution
+
+        for(let dm of out_danmus) {
+            dm.weight = Math.max(1, Math.min(11, dm.weight)); // ensure weights are 1~11
+            weight_distribution[dm.weight] += 1;
+        }
+        for(let i=1; i<=11; i++) {
+            weight_distribution[i] /= out_danmus.length;
+            weight_distribution[i] += weight_distribution[i-1];
+            weight_distribution[i-1] = Math.pow((weight_distribution[i-1] + weight_distribution[i]) / 2, 3);
+        }
+        //console.log('!!! weight', weight_distribution);
 
         // pre-populate dispval from the previous chunk
 
         let dispval_preload: [number, number][] = [];
         let prev_dms: DanmuCluster[] = [];
 
-        for(let i = prev_input.clusters.length-1; i >= 0; i--) {
-            let c = prev_input.clusters[i];
+        for(let i = prev_input_clusters.length-1; i >= 0; i--) {
+            let c = prev_input_clusters[i];
             if(c.peers[0].time_ms < FIRST_TIME_MS - DISPVAL_TIME_THRESHOLD)
                 break;
             prev_dms.push(c);
@@ -261,7 +279,7 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
         shuffle(prev_dms); // make these pre-populated items disappear randomly in the current chunk, hence less biased
         for(let c of prev_dms) {
             // check drop
-            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers)) {
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, c.peers, weight_distribution)) {
                 continue;
             }
 
@@ -293,9 +311,20 @@ export function post_combine(input: DanmuClusterOutput, prev_input: DanmuCluster
 
             // check drop
 
-            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers)) {
+            if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers, weight_distribution)) {
+                // do drop
                 stats.deleted_dispval++;
                 dm.weight = WEIGHT_DROPPED;
+
+                for(let d of dm.pakku.peers) {
+                    deleted_danmus_output.push({
+                        ...d,
+                        pakku: {
+                            deleted_reason: '弹幕密度',
+                        },
+                    });
+                }
+
                 continue;
             }
 

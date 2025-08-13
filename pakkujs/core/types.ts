@@ -26,6 +26,7 @@ export interface DanmuObject {
         proto_animation?: string | null;
         proto_colorful?: int | null;
         proto_oid?: int | null;
+        proto_dmfrom?: int | null;
     };
 }
 
@@ -40,6 +41,12 @@ export interface DanmuObjectRepresentative extends DanmuObject {
         peers: DanmuObjectPeer[];
         desc: string[];
         disp_str: string;
+    };
+}
+
+export interface DanmuObjectDeleted extends DanmuObject {
+    pakku: {
+        deleted_reason: string;
     };
 }
 
@@ -63,9 +70,16 @@ export interface DanmuCluster {
     chosen_str: string;
 }
 
+export interface DanmuClusterPtr {
+    peers_ptr: [int, string][]; // index and sim_reason
+    desc: string[];
+    chosen_str: string;
+}
+
 export interface DanmuClusterOutput {
-    clusters: DanmuCluster[];
+    clusters: DanmuClusterPtr[];
     stats: Stats;
+    deleted_chunk: DanmuObjectDeleted[];
 }
 
 export class MessageStats {
@@ -120,7 +134,6 @@ export class Stats {
     num_taolu_matched= 0;
     num_total_danmu= 0;
     num_onscreen_danmu= 0;
-    num_userscript = 0;
     num_max_combo= 0;
     num_max_dispval = 0;
 

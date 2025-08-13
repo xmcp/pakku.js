@@ -4,9 +4,6 @@
         <meta charset="utf-8">
         <title>pakku :: 用户脚本</title>
         <style>
-            code, .code {
-                font-family: Consolas, Courier, '微软雅黑', 'Microsoft Yahei', '宋体', monospace;
-            }
             textarea {
                 width: 100%;
                 box-sizing: border-box;
@@ -41,53 +38,137 @@
 
         <details>
             <summary>类型速查</summary>
-            <pre>type int = number; type float = number; type AnyObject = {[k: string]: any};
+            <!-- DOC-GEN: BEGIN-TYPE-DEF -->
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.typedef-hl .hll { background-color: #ffffcc }
+.typedef-hl .c { color: #3D7B7B; font-style: italic } /* Comment */
+.typedef-hl .err { border: 1px solid #FF0000 } /* Error */
+.typedef-hl .k { color: #008000; font-weight: bold } /* Keyword */
+.typedef-hl .o { color: #666666 } /* Operator */
+.typedef-hl .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.typedef-hl .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.typedef-hl .cp { color: #9C6500 } /* Comment.Preproc */
+.typedef-hl .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.typedef-hl .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.typedef-hl .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.typedef-hl .gd { color: #A00000 } /* Generic.Deleted */
+.typedef-hl .ge { font-style: italic } /* Generic.Emph */
+.typedef-hl .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.typedef-hl .gr { color: #E40000 } /* Generic.Error */
+.typedef-hl .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.typedef-hl .gi { color: #008400 } /* Generic.Inserted */
+.typedef-hl .go { color: #717171 } /* Generic.Output */
+.typedef-hl .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.typedef-hl .gs { font-weight: bold } /* Generic.Strong */
+.typedef-hl .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.typedef-hl .gt { color: #0044DD } /* Generic.Traceback */
+.typedef-hl .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.typedef-hl .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.typedef-hl .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.typedef-hl .kp { color: #008000 } /* Keyword.Pseudo */
+.typedef-hl .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.typedef-hl .kt { color: #B00040 } /* Keyword.Type */
+.typedef-hl .m { color: #666666 } /* Literal.Number */
+.typedef-hl .s { color: #BA2121 } /* Literal.String */
+.typedef-hl .na { color: #687822 } /* Name.Attribute */
+.typedef-hl .nb { color: #008000 } /* Name.Builtin */
+.typedef-hl .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.typedef-hl .no { color: #880000 } /* Name.Constant */
+.typedef-hl .nd { color: #AA22FF } /* Name.Decorator */
+.typedef-hl .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.typedef-hl .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.typedef-hl .nf { color: #0000FF } /* Name.Function */
+.typedef-hl .nl { color: #767600 } /* Name.Label */
+.typedef-hl .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.typedef-hl .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.typedef-hl .nv { color: #19177C } /* Name.Variable */
+.typedef-hl .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.typedef-hl .w { color: #bbbbbb } /* Text.Whitespace */
+.typedef-hl .mb { color: #666666 } /* Literal.Number.Bin */
+.typedef-hl .mf { color: #666666 } /* Literal.Number.Float */
+.typedef-hl .mh { color: #666666 } /* Literal.Number.Hex */
+.typedef-hl .mi { color: #666666 } /* Literal.Number.Integer */
+.typedef-hl .mo { color: #666666 } /* Literal.Number.Oct */
+.typedef-hl .sa { color: #BA2121 } /* Literal.String.Affix */
+.typedef-hl .sb { color: #BA2121 } /* Literal.String.Backtick */
+.typedef-hl .sc { color: #BA2121 } /* Literal.String.Char */
+.typedef-hl .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.typedef-hl .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.typedef-hl .s2 { color: #BA2121 } /* Literal.String.Double */
+.typedef-hl .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.typedef-hl .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.typedef-hl .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.typedef-hl .sx { color: #008000 } /* Literal.String.Other */
+.typedef-hl .sr { color: #A45A77 } /* Literal.String.Regex */
+.typedef-hl .s1 { color: #BA2121 } /* Literal.String.Single */
+.typedef-hl .ss { color: #19177C } /* Literal.String.Symbol */
+.typedef-hl .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.typedef-hl .fm { color: #0000FF } /* Name.Function.Magic */
+.typedef-hl .vc { color: #19177C } /* Name.Variable.Class */
+.typedef-hl .vg { color: #19177C } /* Name.Variable.Global */
+.typedef-hl .vi { color: #19177C } /* Name.Variable.Instance */
+.typedef-hl .vm { color: #19177C } /* Name.Variable.Magic */
+.typedef-hl .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<div class="typedef-hl"><pre><span></span><span class="kr">type</span><span class="w"> </span><span class="kr">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="kr">float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">AnyObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{[</span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">any</span><span class="p">};</span>
 
-interface DanmuObject {
-    time_ms: int; // 弹幕在视频中的时间
-    mode: int; // 1 滚动, 4 底部, 5 顶部, 6 逆向滚动, 7 特殊, 8 代码, 9 BAS
-    fontsize: float; // 字号
-    color: int; // 颜色，0xRRGGBB
-    sender_hash: string; // 发送者UID的CRC32
-    content: string; // 弹幕内容
-    sendtime: int; // 弹幕发送时间，UNIX 时间戳
-    weight: int; // 权重，低于云屏蔽等级时会被播放器过滤
-    id: string; // 弹幕ID，举报等操作使用
-    pool: int; // 0 普通, 1 字幕
-    extra: { // 协议中的附加字段
-        proto_attr?: int | null;
-        proto_action?: string | null;
-        proto_animation?: string | null;
-        proto_colorful?: int | null;
-        proto_oid?: int | null;
-    };
-}
-interface DanmuObjectPeer extends DanmuObject {
-    pakku: {
-        sim_reason: string; // 相似性判断结果
-    };
-}
-interface DanmuObjectRepresentative extends DanmuObject {
-    pakku: {
-        peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
-        desc: string[]; // 合并时的说明
-        disp_str: string; // 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode为7）的content为JSON、此值为其中的文本
-    };
-}
-interface DanmuChunk&lt;ObjectType extends DanmuObject> {
-    objs: ObjectType[]; // 此分片包含的弹幕
-    extra: { // 协议中的附加字段
-        proto_segidx?: int;
-        proto_colorfulsrc?: AnyObject[];
-        xml_maxlimit?: string;
-        xml_chatid?: string;
-    };
-}
+<span class="kd">interface</span><span class="w"> </span><span class="nx">DanmuObject</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">time_ms</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 弹幕在视频中的时间</span>
+<span class="w">    </span><span class="nx">mode</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 1 滚动, 4 底部, 5 顶部, 6 逆向滚动, 7 特殊, 8 代码, 9 BAS</span>
+<span class="w">    </span><span class="nx">fontsize</span><span class="o">:</span><span class="w"> </span><span class="kt">float</span><span class="p">;</span><span class="w"> </span><span class="c1">// 字号</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 颜色，0xRRGGBB</span>
+<span class="w">    </span><span class="nx">sender_hash</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// 发送者UID的CRC32</span>
+<span class="w">    </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// 弹幕内容</span>
+<span class="w">    </span><span class="nx">sendtime</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 弹幕发送时间，UNIX 时间戳</span>
+<span class="w">    </span><span class="nx">weight</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 权重，低于云屏蔽等级时会被播放器过滤</span>
+<span class="w">    </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// 弹幕ID，举报等操作使用</span>
+<span class="w">    </span><span class="nx">pool</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w"> </span><span class="c1">// 0 普通, 1 字幕</span>
+<span class="w">    </span><span class="nx">extra</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// 协议中的附加字段</span>
+<span class="w">        </span><span class="nx">proto_attr?</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_action?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_animation?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_colorful?</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_oid?</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_dmfrom?</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">DanmuObjectPeer</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">DanmuObject</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">pakku</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">sim_reason</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// 相似性判断结果</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">DanmuObjectRepresentative</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">DanmuObject</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">pakku</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">peers</span><span class="o">:</span><span class="w"> </span><span class="kt">DanmuObjectPeer</span><span class="p">[];</span><span class="w"> </span><span class="c1">// 所有被合并为此弹幕的相似弹幕</span>
+<span class="w">        </span><span class="nx">desc</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span><span class="w"> </span><span class="c1">// 合并时的说明</span>
+<span class="w">        </span><span class="nx">disp_str</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode为7）的content为JSON、此值为其中的文本</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">DanmuChunk</span><span class="o">&lt;</span><span class="nx">ObjectType</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">DanmuObject</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">objs</span><span class="o">:</span><span class="w"> </span><span class="kt">ObjectType</span><span class="p">[];</span><span class="w"> </span><span class="c1">// 此分片包含的弹幕</span>
+<span class="w">    </span><span class="nx">extra</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// 协议中的附加字段</span>
+<span class="w">        </span><span class="nx">proto_segidx?</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">proto_colorfulsrc?</span><span class="o">:</span><span class="w"> </span><span class="kt">AnyObject</span><span class="p">[];</span>
+<span class="w">        </span><span class="nx">xml_maxlimit?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">xml_chatid?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
 
-function tweak_before_pakku(callback: (chunk: DanmuChunk&lt;DanmuObject>) => void, timing: number = 0) {}
-function tweak_after_pakku(callback: (chunk: DanmuChunk&lt;DanmuObjectRepresentative>) => void, timing: number = 0) {}
-function tweak_proto_view(callback: (view: AnyObject) => void, timing: number = 0) {}
-</pre>
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Env</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">ingress</span><span class="o">:</span><span class="w"> </span><span class="kt">AnyObject</span><span class="p">;</span><span class="w"> </span><span class="c1">// 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型</span>
+<span class="w">    </span><span class="nx">segidx</span><span class="o">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="c1">// 当前弹幕分片的编号</span>
+<span class="w">    </span><span class="nx">config</span><span class="o">:</span><span class="w"> </span><span class="kt">AnyObject</span><span class="p">;</span><span class="w"> </span><span class="c1">// 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型</span>
+<span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// 支持同步或异步的回调函数</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">tweak_before_pakku</span><span class="p">(</span><span class="nx">callback</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">chunk</span><span class="o">:</span><span class="w"> </span><span class="kt">DanmuChunk</span><span class="o">&lt;</span><span class="nx">DanmuObject</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">env</span><span class="o">:</span><span class="w"> </span><span class="kt">Env</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Ret</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">tweak_after_pakku</span><span class="p">(</span><span class="nx">callback</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">chunk</span><span class="o">:</span><span class="w"> </span><span class="kt">DanmuChunk</span><span class="o">&lt;</span><span class="nx">DanmuObjectRepresentative</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">env</span><span class="o">:</span><span class="w"> </span><span class="kt">Env</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Ret</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">tweak_proto_view</span><span class="p">(</span><span class="nx">callback</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">view</span><span class="o">:</span><span class="w"> </span><span class="kt">AnyObject</span><span class="p">,</span><span class="w"> </span><span class="nx">env</span><span class="o">:</span><span class="w"> </span><span class="kt">Env</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Ret</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+</pre></div>
+<!-- DOC-GEN: END-TYPE-DEF -->
         </details>
 
         <iframe id="sandbox" src="https://www.bilibili.com/robots.txt?pakku_sandbox"></iframe>

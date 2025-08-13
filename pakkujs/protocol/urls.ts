@@ -23,6 +23,7 @@ class DanmuUrlFinder {
                     url: url,
                 }, {
                     type: 'xml',
+                    wait_finished: true,
                 }];
         }
         else if(url.includes('/list.so?')) {
@@ -33,6 +34,7 @@ class DanmuUrlFinder {
                     url: url,
                 }, {
                     type: 'xml',
+                    wait_finished: true,
                 }];
         }
         else if(url.includes('/history/seg.so?')) {
@@ -49,6 +51,7 @@ class DanmuUrlFinder {
                         static_sub_url: this.protoapi_sub_url,
                     }, {
                         type: 'proto_seg',
+                        wait_finished: true,
                         segidx: null,
                         ps: null,
                         pe: null,
@@ -59,6 +62,7 @@ class DanmuUrlFinder {
                         url: url,
                     }, {
                         type: 'proto_seg',
+                        wait_finished: true,
                         segidx: null,
                         ps: null,
                         pe: null,
@@ -85,6 +89,7 @@ class DanmuUrlFinder {
                     static_sub_url: this.protoapi_sub_url,
                 }, {
                     type: 'proto_seg',
+                    wait_finished: true,
                     segidx: segidx,
                     ps: ps_str ? parseInt(ps_str) : null,
                     pe: pe_str ? parseInt(pe_str) : null,

@@ -12,6 +12,7 @@ export interface XmlContentIngress {
 
 export interface XmlEgress {
     type: 'xml';
+    wait_finished: boolean;
 }
 
 // extracted from bilibiliPlayer.min.js
@@ -74,7 +75,10 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
 
     for(let d of chunk.objs) {
         let elem = dom.createElement('d');
+
         let tn = dom.createTextNode(d.content);
+        elem.appendChild(tn);
+
         let attr = [
             d.time_ms/1000, // 0
             d.mode, // 1
@@ -86,8 +90,12 @@ function chunk_to_xml(chunk: DanmuChunk<DanmuObject>): string {
             d.id, // 7
             d.weight, // 8
         ];
-        elem.appendChild(tn);
         elem.setAttribute('p',attr.join(','));
+
+        if((d as any).pakku && (d as any).pakku.deleted_reason) {
+            elem.setAttribute('pakku_deleted_reason', (d as any).pakku.deleted_reason);
+        }
+
         i_elem.appendChild(elem);
     }
     
@@ -109,8 +117,12 @@ export async function ingress_xml_content(ingress: XmlContentIngress, chunk_call
 }
 
 export function egress_xml(egress: XmlEgress, num_chunks: int, chunks: Map<int, DanmuChunk<DanmuObject>>): string | typeof MissingData {
-    if(!num_chunks || num_chunks!==chunks.size)
-        return MissingData; // not finished
+    if(!num_chunks || num_chunks!==chunks.size) {
+        if(egress.wait_finished)
+            return MissingData; // not finished
+        else
+            return chunk_to_xml({objs: [], extra: {}});
+    }
 
     let c: DanmuChunk<DanmuObject> = {
         objs: [],

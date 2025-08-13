@@ -3,8 +3,10 @@ import {init as sim_init, begin_chunk, begin_index_lock, detect_similarity} from
 import {Queue} from "./queue";
 
 interface DanmuIr {
-    obj: DanmuObjectPeer;
+    obj: DanmuObject;
     str: string; // for similarity algorithm
+    idx: int;
+    sim_reason: string;
 }
 
 const ENDING_CHARS = new Set('.。,，/?？!！…~～@^、+=-_♂♀ ');
@@ -121,16 +123,12 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     let ret: DanmuClusterOutput = {
         clusters: [],
         stats: new Stats(),
+        deleted_chunk: [],
     };
 
-    function apply_single_cluster(obj: DanmuObject, desc: string) {
+    function apply_single_cluster(idx: int, obj: DanmuObject, desc: string) {
         ret.clusters.push({
-            peers: [{
-                ...obj,
-                pakku: {
-                    sim_reason: 'IGN',
-                },
-            }],
+            peers_ptr: [[idx, 'IGN']],
             desc: [desc],
             chosen_str: obj.content,
         });
@@ -138,7 +136,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     function apply_cluster(irs: DanmuIr[]) {
         if(irs.length===1) {
             ret.clusters.push({
-                peers: [irs[0].obj],
+                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
                 desc: [],
                 chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
             });
@@ -161,7 +159,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             let most_text = select_median_length(most_texts);
 
             ret.clusters.push({
-                peers: irs.map(ir => ir.obj),
+                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
                 desc: most_cnt>1 ? [`采用了出现 ${most_cnt} 次的文本`] : [],
                 chosen_str: most_text,
             });
@@ -174,39 +172,39 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
 
     function obj_to_ir(objs: DanmuObject[], s: Stats | null): DanmuIr[] {
         return objs
-            .map(obj => {
+            .map((obj, idx) => {
                 if(!config.PROC_POOL1 && obj.pool===1) {
                     if(s) {
                         s.ignored_type++;
-                        apply_single_cluster(obj, '已忽略字幕弹幕，可以在选项中修改');
+                        apply_single_cluster(idx, obj, '已忽略字幕弹幕，可以在选项中修改');
                     }
                     return null;
                 }
                 if(!config.PROC_TYPE7 && obj.mode===7) {
                     if(s) {
                         s.ignored_type++;
-                        apply_single_cluster(obj, '已忽略特殊弹幕，可以在选项中修改');
+                        apply_single_cluster(idx, obj, '已忽略特殊弹幕，可以在选项中修改');
                     }
                     return null;
                 }
                 if(!config.PROC_TYPE4 && obj.mode===4) {
                     if(s) {
                         s.ignored_type++;
-                        apply_single_cluster(obj, '已忽略底部弹幕，可以在选项中修改');
+                        apply_single_cluster(idx, obj, '已忽略底部弹幕，可以在选项中修改');
                     }
                     return null;
                 }
                 if(obj.mode===8) {
                     if(s) {
                         s.ignored_script++;
-                        apply_single_cluster(obj, '代码弹幕');
+                        apply_single_cluster(idx, obj, '代码弹幕');
                     }
                     return null;
                 }
                 if(obj.mode===9) {
                     if(s) {
                         s.ignored_script++;
-                        apply_single_cluster(obj, 'BAS弹幕');
+                        apply_single_cluster(idx, obj, 'BAS弹幕');
                     }
                     return null;
                 }
@@ -219,6 +217,12 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                         if(s) {
                             s.deleted_blacklist++;
                             s.deleted_blacklist_each[matched] = (s.deleted_blacklist_each[matched] || 0) + 1;
+                            ret.deleted_chunk.push({
+                                ...obj,
+                                pakku: {
+                                    deleted_reason: '命中黑名单：' + matched,
+                                },
+                            });
                         }
                         return null;
                     }
@@ -226,7 +230,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                 if(whitelisted(disp_str)) {
                     if(s) {
                         s.ignored_whitelist++;
-                        apply_single_cluster(obj, '命中白名单');
+                        apply_single_cluster(idx, obj, '命中白名单');
                     }
                     return null;
                 }
@@ -238,13 +242,10 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                 }
 
                 return {
-                    obj: {
-                        ...obj,
-                        pakku: {
-                            sim_reason: 'ORIG',
-                        },
-                    },
+                    obj: obj,
                     str: detaolued,
+                    idx: idx,
+                    sim_reason: 'ORIG',
                 };
             })
             .filter(obj => obj!==null) as DanmuIr[];
@@ -269,7 +270,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
         let sim = detect_similarity(dm.str, dm.obj.mode, nearby_danmus.index_l, ret.stats);
         if(sim!==null) {
             let candidate = nearby_danmus.storage[nearby_danmus.index_r - sim.idx_diff];
-            dm.obj.pakku.sim_reason = sim.reason;
+            dm.sim_reason = sim.reason;
             candidate.push(dm);
         } else {
             nearby_danmus.push([dm]);
@@ -293,7 +294,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
         let sim = detect_similarity(dm.str, dm.obj.mode, nearby_danmus.index_l, ret.stats);
         if(sim!==null) {
             let candidate = nearby_danmus.storage[nearby_danmus.index_r - sim.idx_diff];
-            dm.obj.pakku.sim_reason = sim.reason;
+            dm.sim_reason = sim.reason;
             candidate.push(dm);
         }
     }

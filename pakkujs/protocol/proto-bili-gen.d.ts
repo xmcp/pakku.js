@@ -1672,6 +1672,9 @@ export namespace bilibili {
 
                         /** DanmakuElem oid */
                         oid?: (number|null);
+
+                        /** DanmakuElem dmFrom */
+                        dmFrom?: (bilibili.community.service.dm.v1.DmFromType|null);
                     }
 
                     /** Represents a DanmakuElem. */
@@ -1728,6 +1731,9 @@ export namespace bilibili {
                         /** DanmakuElem oid. */
                         public oid: number;
 
+                        /** DanmakuElem dmFrom. */
+                        public dmFrom: bilibili.community.service.dm.v1.DmFromType;
+
                         /**
                          * Encodes the specified DanmakuElem message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmakuElem.verify|verify} messages.
                          * @param message DanmakuElem message or plain object to encode
@@ -1752,6 +1758,14 @@ export namespace bilibili {
                          * @returns The default type url
                          */
                         public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** DmFromType enum. */
+                    enum DmFromType {
+                        DmFromUnknown = 0,
+                        DmFromNormal = 1,
+                        DmFromCmd = 2,
+                        DmFromLive = 3
                     }
 
                     /** Properties of a DanmuWebPlayerConfig. */
@@ -1790,9 +1804,6 @@ export namespace bilibili {
                         /** DanmuWebPlayerConfig opacity */
                         opacity?: (number|null);
 
-                        /** DanmuWebPlayerConfig dmarea */
-                        dmarea?: (number|null);
-
                         /** DanmuWebPlayerConfig speedplus */
                         speedplus?: (number|null);
 
@@ -1816,6 +1827,15 @@ export namespace bilibili {
 
                         /** DanmuWebPlayerConfig seniorModeSwitch */
                         seniorModeSwitch?: (number|null);
+
+                        /** DanmuWebPlayerConfig typeTopBottom */
+                        typeTopBottom?: (boolean|null);
+
+                        /** DanmuWebPlayerConfig dmarea */
+                        dmarea?: (number|null);
+
+                        /** DanmuWebPlayerConfig dmdensity */
+                        dmdensity?: (number|null);
                     }
 
                     /** Represents a DanmuWebPlayerConfig. */
@@ -1860,9 +1880,6 @@ export namespace bilibili {
                         /** DanmuWebPlayerConfig opacity. */
                         public opacity: number;
 
-                        /** DanmuWebPlayerConfig dmarea. */
-                        public dmarea: number;
-
                         /** DanmuWebPlayerConfig speedplus. */
                         public speedplus: number;
 
@@ -1886,6 +1903,15 @@ export namespace bilibili {
 
                         /** DanmuWebPlayerConfig seniorModeSwitch. */
                         public seniorModeSwitch: number;
+
+                        /** DanmuWebPlayerConfig typeTopBottom. */
+                        public typeTopBottom: boolean;
+
+                        /** DanmuWebPlayerConfig dmarea. */
+                        public dmarea: number;
+
+                        /** DanmuWebPlayerConfig dmdensity. */
+                        public dmdensity: number;
 
                         /**
                          * Encodes the specified DanmuWebPlayerConfig message. Does not implicitly {@link bilibili.community.service.dm.v1.DanmuWebPlayerConfig.verify|verify} messages.
