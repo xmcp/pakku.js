@@ -53,7 +53,7 @@ function perform_throttle(fn: ()=>void) {
 
 // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
 function u8array_to_arraybuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset) as ArrayBuffer
 }
 
 class Scheduler {
