@@ -126,7 +126,7 @@ let base85 = (function () {
 // borrowed from https://evanhahn.com/javascript-compression-streams-api-with-strings/
 
 async function concat_u8_array(arrays: Uint8Array[]): Promise<Uint8Array> {
-    let ab = await new Blob(arrays).arrayBuffer();
+    let ab = await new Blob(arrays as BlobPart[]).arrayBuffer();
     return new Uint8Array(ab);
 }
 

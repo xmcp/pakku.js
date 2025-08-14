@@ -54,7 +54,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
     function uint8array_to_arraybuffer(array: Uint8Array) {
         // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
-        return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
+        return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset) as ArrayBuffer;
     }
 
     function str_to_arraybuffer(str: string) {
@@ -281,7 +281,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
                 let resp_data;
                 if(resp.data instanceof Uint8Array)
-                    resp_data = resp.data;
+                    resp_data = uint8array_to_arraybuffer(resp.data);
                 else if(typeof resp.data === 'object')
                     resp_data = byte_object_to_arraybuffer(resp.data);
                 else // str
