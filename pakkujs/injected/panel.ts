@@ -305,8 +305,8 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
 
                 self.appendChild(make_p(proc_mode(p.mode) + ' ' + p.content));
                 self.appendChild(make_p(
-                    p.pakku.sim_reason + ' ' + p.sender_hash + ' ' + (p.time_ms / 1000).toFixed(1) + 's ' + p.fontsize + 'px '
-                    + 'W' + p.weight + ' ' + format_datetime(new Date(p.sendtime * 1000))
+                    `${p.pakku.sim_reason} ${(p.time_ms / 1000).toFixed(1)}s ${p.fontsize}px ` +
+                    `W${p.weight} +${p.extra.proto_likecount} ${format_datetime(new Date(p.sendtime * 1000))}`
                 ));
 
                 self.addEventListener('mouseover', function () {
