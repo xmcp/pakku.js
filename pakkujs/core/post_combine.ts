@@ -124,10 +124,13 @@ function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], we
         return false;
 
     let max_weight = Math.max(...peers.map(p=>p.weight));
+    let tot_likes = peers.map(p=>p.extra.proto_likecount||0).reduce((a,b)=>a+b, 0);
     let drop_rate = (
         (dispval - threshold) / threshold
-        - (weight_distribution[max_weight-1] || 0) / 2
-        - (Math.sqrt(peers.length) - 1) / 2
+        + .25
+        - (weight_distribution[max_weight-1] || 0) / 4
+        - (Math.sqrt(peers.length) - 1) / 5
+        - (Math.sqrt(tot_likes)) / 8
     );
     //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
 
@@ -201,7 +204,10 @@ export function post_combine(
 
         // text, mode elevation, fontsize enlarge, weight, proto_animation
 
-        let max_dm_size = rep_dm.fontsize, max_weight = rep_dm.weight, max_mode = rep_dm.mode;
+        let max_dm_size = rep_dm.fontsize;
+        let max_weight = rep_dm.weight;
+        let max_mode = rep_dm.mode;
+        let tot_likecount = 0;
         for(let p of c.peers) {
             max_weight = Math.max(max_weight, p.weight);
             if(p.fontsize<30)
@@ -211,6 +217,8 @@ export function post_combine(
                 max_mode = 4;
             else if(p.mode===5 && max_mode!==4) // top danmu get top priority
                 max_mode = 5;
+
+            tot_likecount += (p.extra.proto_likecount || 0);
         }
 
         build_text(c, rep_dm);
@@ -220,6 +228,8 @@ export function post_combine(
 
         rep_dm.fontsize = max_dm_size;
         rep_dm.weight = max_weight;
+        if(tot_likecount)
+            rep_dm.extra.proto_likecount = tot_likecount;
 
         if(config.ENLARGE) {
             let enlarge_rate = calc_enlarge_rate(c.peers.length);
