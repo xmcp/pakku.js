@@ -188,6 +188,13 @@ function guess_current_info_idx(infos: DanmuObjectRepresentative[]) {
     return item[0][0];
 }
 
+function get_dm_title(elem: HTMLElement) {
+    let r = elem.getAttribute('data-hover-title');
+    if(!r)
+        r = elem.title;
+    return r;
+}
+
 export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, config: Config) {
     let panel_obj = document.createElement('div');
     panel_obj.style.display = 'none';
@@ -342,7 +349,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             });
         if(dm_obj && dm_obj.classList.contains('dm-info-row') && dm_obj.getAttribute('data-index')) // ver 3
             show_panel({
-                str: dm_obj.querySelector('.dm-info-dm').title,
+                str: get_dm_title(dm_obj.querySelector('.dm-info-dm')),
                 index: parseInt(dm_obj.getAttribute('data-index')),
             });
     });
