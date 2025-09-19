@@ -93,6 +93,7 @@ interface DanmuObject {
         proto_colorful?: int | null;
         proto_oid?: int | null;
         proto_dmfrom?: int | null;
+        proto_likecount?: int | null;
     };
 }
 interface DanmuObjectPeer extends DanmuObject {
