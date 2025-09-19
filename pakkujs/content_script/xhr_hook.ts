@@ -5,6 +5,7 @@ declare global {
         player: {
             getManifest: ()=>{cid: number};
             seek: (time: number)=>void;
+            reload: (wtf: null)=>void;
         };
     }
     interface XMLHttpRequest {
@@ -310,8 +311,12 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     window.addEventListener('message',function(event) {
         if (!is_bilibili(event.origin))
             return;
-        if (event.data.type && event.data.type === 'pakku_video_jump') {
-            window.player?.seek(event.data.time);
+        if (event.data.type) {
+            if(event.data.type === 'pakku_video_jump') {
+                window.player?.seek(event.data.time);
+            } else if(event.data.type === 'pakku_trigger_reload') {
+                window.player?.reload(null);
+            }
         }
     });
 
