@@ -71,6 +71,9 @@ export namespace bilibili {
 
                         /** DmWebViewReply maskWalls */
                         maskWalls?: (bilibili.community.service.dm.v1.IDmMaskWall[]|null);
+
+                        /** DmWebViewReply dmRestrict */
+                        dmRestrict?: (bilibili.community.service.dm.v1.IDMRestrict|null);
                     }
 
                     /** Represents a DmWebViewReply. */
@@ -136,6 +139,9 @@ export namespace bilibili {
                         /** DmWebViewReply maskWalls. */
                         public maskWalls: bilibili.community.service.dm.v1.IDmMaskWall[];
 
+                        /** DmWebViewReply dmRestrict. */
+                        public dmRestrict?: (bilibili.community.service.dm.v1.IDMRestrict|null);
+
                         /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @param message DmWebViewReply message or plain object to encode
@@ -156,6 +162,102 @@ export namespace bilibili {
 
                         /**
                          * Gets the default type url for DmWebViewReply
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a DMRestrict. */
+                    interface IDMRestrict {
+
+                        /** DMRestrict periods */
+                        periods?: (bilibili.community.service.dm.v1.IDMRestrictPeriod[]|null);
+                    }
+
+                    /** Represents a DMRestrict. */
+                    class DMRestrict implements IDMRestrict {
+
+                        /**
+                         * Constructs a new DMRestrict.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IDMRestrict);
+
+                        /** DMRestrict periods. */
+                        public periods: bilibili.community.service.dm.v1.IDMRestrictPeriod[];
+
+                        /**
+                         * Encodes the specified DMRestrict message. Does not implicitly {@link bilibili.community.service.dm.v1.DMRestrict.verify|verify} messages.
+                         * @param message DMRestrict message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IDMRestrict, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a DMRestrict message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns DMRestrict
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DMRestrict;
+
+                        /**
+                         * Gets the default type url for DMRestrict
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a DMRestrictPeriod. */
+                    interface IDMRestrictPeriod {
+
+                        /** DMRestrictPeriod start */
+                        start?: (number|null);
+
+                        /** DMRestrictPeriod end */
+                        end?: (number|null);
+                    }
+
+                    /** Represents a DMRestrictPeriod. */
+                    class DMRestrictPeriod implements IDMRestrictPeriod {
+
+                        /**
+                         * Constructs a new DMRestrictPeriod.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IDMRestrictPeriod);
+
+                        /** DMRestrictPeriod start. */
+                        public start: number;
+
+                        /** DMRestrictPeriod end. */
+                        public end: number;
+
+                        /**
+                         * Encodes the specified DMRestrictPeriod message. Does not implicitly {@link bilibili.community.service.dm.v1.DMRestrictPeriod.verify|verify} messages.
+                         * @param message DMRestrictPeriod message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IDMRestrictPeriod, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a DMRestrictPeriod message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns DMRestrictPeriod
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.DMRestrictPeriod;
+
+                        /**
+                         * Gets the default type url for DMRestrictPeriod
                          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                          * @returns The default type url
                          */
@@ -1664,6 +1766,9 @@ export namespace bilibili {
                         /** DanmakuElem attr */
                         attr?: (number|null);
 
+                        /** DanmakuElem likeCount */
+                        likeCount?: (number|null);
+
                         /** DanmakuElem animation */
                         animation?: (string|null);
 
@@ -1721,6 +1826,9 @@ export namespace bilibili {
 
                         /** DanmakuElem attr. */
                         public attr: number;
+
+                        /** DanmakuElem likeCount. */
+                        public likeCount: number;
 
                         /** DanmakuElem animation. */
                         public animation: string;

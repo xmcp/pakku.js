@@ -76,6 +76,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {Array.<bilibili.community.service.dm.v1.IDmSubView>|null} [subViews] DmWebViewReply subViews
                          * @property {bilibili.community.service.dm.v1.IQoeInfo|null} [qoe] DmWebViewReply qoe
                          * @property {Array.<bilibili.community.service.dm.v1.IDmMaskWall>|null} [maskWalls] DmWebViewReply maskWalls
+                         * @property {bilibili.community.service.dm.v1.IDMRestrict|null} [dmRestrict] DmWebViewReply dmRestrict
                          */
 
                         /**
@@ -247,6 +248,14 @@ export const bilibili = $root.bilibili = (() => {
                         DmWebViewReply.prototype.maskWalls = $util.emptyArray;
 
                         /**
+                         * DmWebViewReply dmRestrict.
+                         * @member {bilibili.community.service.dm.v1.IDMRestrict|null|undefined} dmRestrict
+                         * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                         * @instance
+                         */
+                        DmWebViewReply.prototype.dmRestrict = null;
+
+                        /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @function encode
                          * @memberof bilibili.community.service.dm.v1.DmWebViewReply
@@ -303,6 +312,8 @@ export const bilibili = $root.bilibili = (() => {
                             if (message.maskWalls != null && message.maskWalls.length)
                                 for (let i = 0; i < message.maskWalls.length; ++i)
                                     $root.bilibili.community.service.dm.v1.DmMaskWall.encode(message.maskWalls[i], writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
+                            if (message.dmRestrict != null && Object.hasOwnProperty.call(message, "dmRestrict"))
+                                $root.bilibili.community.service.dm.v1.DMRestrict.encode(message.dmRestrict, writer.uint32(/* id 19, wireType 2 =*/154).fork()).ldelim();
                             return writer;
                         };
 
@@ -414,6 +425,10 @@ export const bilibili = $root.bilibili = (() => {
                                         message.maskWalls.push($root.bilibili.community.service.dm.v1.DmMaskWall.decode(reader, reader.uint32()));
                                         break;
                                     }
+                                case 19: {
+                                        message.dmRestrict = $root.bilibili.community.service.dm.v1.DMRestrict.decode(reader, reader.uint32());
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -438,6 +453,219 @@ export const bilibili = $root.bilibili = (() => {
                         };
 
                         return DmWebViewReply;
+                    })();
+
+                    v1.DMRestrict = (function() {
+
+                        /**
+                         * Properties of a DMRestrict.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IDMRestrict
+                         * @property {Array.<bilibili.community.service.dm.v1.IDMRestrictPeriod>|null} [periods] DMRestrict periods
+                         */
+
+                        /**
+                         * Constructs a new DMRestrict.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a DMRestrict.
+                         * @implements IDMRestrict
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IDMRestrict=} [properties] Properties to set
+                         */
+                        function DMRestrict(properties) {
+                            this.periods = [];
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * DMRestrict periods.
+                         * @member {Array.<bilibili.community.service.dm.v1.IDMRestrictPeriod>} periods
+                         * @memberof bilibili.community.service.dm.v1.DMRestrict
+                         * @instance
+                         */
+                        DMRestrict.prototype.periods = $util.emptyArray;
+
+                        /**
+                         * Encodes the specified DMRestrict message. Does not implicitly {@link bilibili.community.service.dm.v1.DMRestrict.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.DMRestrict
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IDMRestrict} message DMRestrict message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DMRestrict.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.periods != null && message.periods.length)
+                                for (let i = 0; i < message.periods.length; ++i)
+                                    $root.bilibili.community.service.dm.v1.DMRestrictPeriod.encode(message.periods[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a DMRestrict message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.DMRestrict
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.DMRestrict} DMRestrict
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DMRestrict.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DMRestrict();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        if (!(message.periods && message.periods.length))
+                                            message.periods = [];
+                                        message.periods.push($root.bilibili.community.service.dm.v1.DMRestrictPeriod.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for DMRestrict
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.DMRestrict
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        DMRestrict.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.DMRestrict";
+                        };
+
+                        return DMRestrict;
+                    })();
+
+                    v1.DMRestrictPeriod = (function() {
+
+                        /**
+                         * Properties of a DMRestrictPeriod.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IDMRestrictPeriod
+                         * @property {number|null} [start] DMRestrictPeriod start
+                         * @property {number|null} [end] DMRestrictPeriod end
+                         */
+
+                        /**
+                         * Constructs a new DMRestrictPeriod.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a DMRestrictPeriod.
+                         * @implements IDMRestrictPeriod
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IDMRestrictPeriod=} [properties] Properties to set
+                         */
+                        function DMRestrictPeriod(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * DMRestrictPeriod start.
+                         * @member {number} start
+                         * @memberof bilibili.community.service.dm.v1.DMRestrictPeriod
+                         * @instance
+                         */
+                        DMRestrictPeriod.prototype.start = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * DMRestrictPeriod end.
+                         * @member {number} end
+                         * @memberof bilibili.community.service.dm.v1.DMRestrictPeriod
+                         * @instance
+                         */
+                        DMRestrictPeriod.prototype.end = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * Encodes the specified DMRestrictPeriod message. Does not implicitly {@link bilibili.community.service.dm.v1.DMRestrictPeriod.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.DMRestrictPeriod
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IDMRestrictPeriod} message DMRestrictPeriod message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DMRestrictPeriod.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.start != null && Object.hasOwnProperty.call(message, "start"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.start);
+                            if (message.end != null && Object.hasOwnProperty.call(message, "end"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.end);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a DMRestrictPeriod message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.DMRestrictPeriod
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.DMRestrictPeriod} DMRestrictPeriod
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DMRestrictPeriod.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.DMRestrictPeriod();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.start = reader.int64();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.end = reader.int64();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for DMRestrictPeriod
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.DMRestrictPeriod
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        DMRestrictPeriod.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.DMRestrictPeriod";
+                        };
+
+                        return DMRestrictPeriod;
                     })();
 
                     v1.DmMaskWall = (function() {
@@ -3840,6 +4068,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {number|null} [pool] DanmakuElem pool
                          * @property {string|null} [dmid] DanmakuElem dmid
                          * @property {number|null} [attr] DanmakuElem attr
+                         * @property {number|null} [likeCount] DanmakuElem likeCount
                          * @property {string|null} [animation] DanmakuElem animation
                          * @property {bilibili.community.service.dm.v1.DmColorfulType|null} [colorful] DanmakuElem colorful
                          * @property {number|null} [oid] DanmakuElem oid
@@ -3958,6 +4187,14 @@ export const bilibili = $root.bilibili = (() => {
                         DanmakuElem.prototype.attr = 0;
 
                         /**
+                         * DanmakuElem likeCount.
+                         * @member {number} likeCount
+                         * @memberof bilibili.community.service.dm.v1.DanmakuElem
+                         * @instance
+                         */
+                        DanmakuElem.prototype.likeCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
                          * DanmakuElem animation.
                          * @member {string} animation
                          * @memberof bilibili.community.service.dm.v1.DanmakuElem
@@ -4025,6 +4262,8 @@ export const bilibili = $root.bilibili = (() => {
                                 writer.uint32(/* id 12, wireType 2 =*/98).string(message.dmid);
                             if (message.attr != null && Object.hasOwnProperty.call(message, "attr"))
                                 writer.uint32(/* id 13, wireType 0 =*/104).int32(message.attr);
+                            if (message.likeCount != null && Object.hasOwnProperty.call(message, "likeCount"))
+                                writer.uint32(/* id 15, wireType 0 =*/120).int64(message.likeCount);
                             if (message.animation != null && Object.hasOwnProperty.call(message, "animation"))
                                 writer.uint32(/* id 22, wireType 2 =*/178).string(message.animation);
                             if (message.colorful != null && Object.hasOwnProperty.call(message, "colorful"))
@@ -4100,6 +4339,10 @@ export const bilibili = $root.bilibili = (() => {
                                     }
                                 case 13: {
                                         message.attr = reader.int32();
+                                        break;
+                                    }
+                                case 15: {
+                                        message.likeCount = reader.int64();
                                         break;
                                     }
                                 case 22: {
