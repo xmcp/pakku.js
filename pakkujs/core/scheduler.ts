@@ -172,22 +172,30 @@ class Scheduler {
                 };
                 console.log('pakku scheduler: got combine result', segidx, '(skipped)');
             }
+
+            function retrieve_ptr_idx(ptr_idx: int): DanmuObject {
+                let obj = ptr_idx>=0 ? chunk!.objs[ptr_idx] : next_chunk!.objs[-ptr_idx-1];
+                if(!obj) {
+                    throw new Error(`invalid ptr_idx ${ptr_idx}`);
+                }
+                return obj;
+            }
+
+            this.clusters.set(segidx, res.clusters.map(c => ({
+                peers: c.peers_ptr.map(([ptr_idx, reason]) => ({
+                    ...retrieve_ptr_idx(ptr_idx),
+                    pakku: {
+                        sim_reason: reason,
+                    },
+                })),
+                desc: c.desc,
+                chosen_str: c.chosen_str,
+            })));
+            this.ongoing_stats.update_from(res.stats);
         } catch(e) {
             this.write_failing_stats(`合并分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
-
-        this.clusters.set(segidx, res.clusters.map(c => ({
-            peers: c.peers_ptr.map(([idx, reason]) => ({
-                ...chunk.objs[idx],
-                pakku: {
-                    sim_reason: reason,
-                },
-            })),
-            desc: c.desc,
-            chosen_str: c.chosen_str,
-        })));
-        this.ongoing_stats.update_from(res.stats);
 
         this.chunks_deleted.set(segidx, {
             objs: res.deleted_chunk,

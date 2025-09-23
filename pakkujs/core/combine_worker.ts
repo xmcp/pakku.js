@@ -5,7 +5,7 @@ import {Queue} from "./queue";
 interface DanmuIr {
     obj: DanmuObject;
     str: string; // for similarity algorithm
-    idx: int;
+    ptr_idx: int;
     sim_reason: string;
 }
 
@@ -117,6 +117,10 @@ async function prepare_combine(wasm_mod: ArrayBuffer) {
     await sim_init(wasm_mod);
 }
 
+function make_ptr_idx(idx: int, is_next_chunk: boolean): int {
+    return is_next_chunk ? (-1-idx) : idx;
+}
+
 async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): Promise<DanmuClusterOutput> {
     begin_chunk(config);
 
@@ -136,7 +140,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     function apply_cluster(irs: DanmuIr[]) {
         if(irs.length===1) {
             ret.clusters.push({
-                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
+                peers_ptr: irs.map(ir => [ir.ptr_idx, ir.sim_reason]),
                 desc: [],
                 chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
             });
@@ -159,7 +163,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             let most_text = select_median_length(most_texts);
 
             ret.clusters.push({
-                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
+                peers_ptr: irs.map(ir => [ir.ptr_idx, ir.sim_reason]),
                 desc: most_cnt>1 ? [`采用了出现 ${most_cnt} 次的文本`] : [],
                 chosen_str: most_text,
             });
@@ -170,7 +174,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     let whitelisted = whitelisted_meta(config);
     let blacklisted = blacklisted_meta(config);
 
-    function obj_to_ir(objs: DanmuObject[], s: Stats | null): DanmuIr[] {
+    function obj_to_ir(objs: DanmuObject[], s: Stats | null, is_next_chunk: boolean): DanmuIr[] {
         return objs
             .map((obj, idx) => {
                 if(!config.PROC_POOL1 && obj.pool===1) {
@@ -244,15 +248,15 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                 return {
                     obj: obj,
                     str: detaolued,
-                    idx: idx,
+                    ptr_idx: make_ptr_idx(idx, is_next_chunk),
                     sim_reason: 'ORIG',
                 };
             })
             .filter(obj => obj!==null) as DanmuIr[];
     }
 
-    let danmus = obj_to_ir(chunk.objs, ret.stats);
-    let next_chunk_danmus = obj_to_ir(next_chunk.objs, null);
+    let danmus = obj_to_ir(chunk.objs, ret.stats, false);
+    let next_chunk_danmus = obj_to_ir(next_chunk.objs, null, true);
 
     let nearby_danmus: Queue<DanmuIr[]> = new Queue();
 
