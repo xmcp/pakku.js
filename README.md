@@ -51,3 +51,13 @@
 [GPLv3](LICENSE.txt)
 
 #### [→ 点我安装 ←](https://s.xmcp.ltd/pakkujs/?src=readme_2) （支持 Chrome、Edge、Firefox）
+
+## Star History
+
+<a href="https://www.star-history.com/#xmcp/pakku.js&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xmcp/pakku.js&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xmcp/pakku.js&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xmcp/pakku.js&type=Date" />
+ </picture>
+</a>
