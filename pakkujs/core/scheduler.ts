@@ -326,9 +326,14 @@ class Scheduler {
     }
 
     async init_worker_pool() {
-        let wasm_resp = await fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'));
-        let wasm_mod = await wasm_resp.arrayBuffer();
-        await this.pool.spawn([wasm_mod]);
+        try {
+            let wasm_resp = await fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'));
+            let wasm_mod = await wasm_resp.arrayBuffer();
+            await this.pool.spawn([wasm_mod]);
+        } catch(e) {
+            this.write_failing_stats('初始化核心模块时出错', e as Error, BADGE_ERR_JS);
+            return;
+        }
     }
 
     async init_userscript() {
