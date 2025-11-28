@@ -315,7 +315,8 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             if(event.data.type === 'pakku_video_jump') {
                 window.player?.seek(event.data.time);
             } else if(event.data.type === 'pakku_trigger_reload') {
-                window.player?.reload(null);
+                // xxx: not working in the latest player (#322)
+                //window.player?.reload(null);
             }
         }
     });
