@@ -29,7 +29,7 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
     const TRIM_ENDING = config.TRIM_ENDING;
     const TRIM_SPACE = config.TRIM_SPACE;
     const TRIM_WIDTH = config.TRIM_WIDTH;
-    const FORCELIST = config.FORCELIST.map(([pattern, repl]) => [new RegExp(pattern, 'ig'), repl] as [RegExp, string]);
+    const FORCELIST = config.FORCELIST.map(([pattern, repl]) => [new RegExp(pattern, 'uig'), repl] as [RegExp, string]);
     const FORCELIST_BREAK_ON_MATCH = !config.FORCELIST_CONTINUE_ON_MATCH;
 
     return (inp: string) => {
@@ -71,7 +71,7 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
 }
 
 function whitelisted_meta(config: LocalizedConfig): (text: string)=>boolean {
-    const WHITELIST = config.WHITELIST.map(x => new RegExp(x[0], 'i'));
+    const WHITELIST = config.WHITELIST.map(x => new RegExp(x[0], 'ui'));
 
     if(WHITELIST.length===0)
         return () => false;
