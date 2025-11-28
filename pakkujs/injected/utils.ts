@@ -71,11 +71,12 @@ export function format_datetime(x: Date) {
     return format_date(x) + ' ' + x.getHours() + ':' + _fix2(x.getMinutes());
 }
 
-export function format_duration(d: number) {
-    d = d | 0; // to int
+export function format_duration(d: number, ms: boolean = false) {
+    let s = d | 0; // to int
+    let ms_part = ms ? ('.' + _fix2(Math.floor((d - s) * 100))) : '';
     return d < 3600 ?
-        (Math.floor(d / 60) + ':' + _fix2(d % 60)) :
-        (Math.floor(d / 3600) + ':' + _fix2(Math.floor((d % 3600) / 60)) + ':' + _fix2(d % 60));
+        `${Math.floor(s/60)}:${_fix2(s%60)}${ms_part}` :
+        `${Math.floor(s/3600)}:${_fix2(Math.floor((s%3600)/60))}:${_fix2(s%60)}${ms_part}`;
 }
 
 export function zero_array(len: int): number[] {
