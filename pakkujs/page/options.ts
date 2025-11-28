@@ -51,14 +51,6 @@ function try_regexp(x: string) {
     }
 }
 
-function regexp_wrap(src: string) {
-    if(!src.startsWith('^'))
-        src = '^.*' + src;
-    if(!src.endsWith('$'))
-        src = src + '.*$';
-    return src;
-}
-
 let version = 'v' + chrome.runtime.getManifest().version;
 let img_btns: NodeListOf<HTMLElement> = document.querySelectorAll('[data-name]');
 id('version').textContent = version + '_' + (IS_FIREFOX ? 'F' : IS_EDG ? 'E' : 'C');
@@ -539,7 +531,7 @@ function loadconfig() {
 id('newforcelist-form').addEventListener('submit', function(e: Event) {
     e.preventDefault();
     config.FORCELIST.push([
-        try_regexp(regexp_wrap(id('newforcelist-pattern').value)),
+        try_regexp(id('newforcelist-pattern').value),
         id('newforcelist-name').value,
     ]);
     void reload();
