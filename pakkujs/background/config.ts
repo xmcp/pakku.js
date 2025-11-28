@@ -18,7 +18,7 @@ export const DEFAULT_CONFIG = {
 
     // 例外设置
     FORCELIST: [["^23{2,}$", "23333"], ["^6{3,}$", "66666"]],
-    FORCELIST_CONTINUE_ON_MATCH: false,
+    FORCELIST_CONTINUE_ON_MATCH: true,
     FORCELIST_APPLY_SINGULAR: false,
     WHITELIST: [] as ([string, string])[],
     CROSS_MODE: true,
