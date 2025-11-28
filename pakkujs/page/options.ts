@@ -365,6 +365,8 @@ function loadconfig() {
     id('trim-space').checked = config.TRIM_SPACE;
     id('trim-width').checked = config.TRIM_WIDTH;
     // 例外设置
+    id('forcelist-continue-on-match').checked = config.FORCELIST_CONTINUE_ON_MATCH;
+    id('forcelist-apply-singular').checked = config.FORCELIST_APPLY_SINGULAR;
     id('cross-mode').checked = config.CROSS_MODE;
     id('ignore-type7').checked = !config.PROC_TYPE7;
     id('ignore-type4').checked = !config.PROC_TYPE4;
@@ -581,6 +583,8 @@ function update(this: HTMLInputElement) {
     config.TRIM_SPACE = id('trim-space').checked;
     config.TRIM_WIDTH = id('trim-width').checked;
     // 例外设置
+    config.FORCELIST_CONTINUE_ON_MATCH = id('forcelist-continue-on-match').checked;
+    config.FORCELIST_APPLY_SINGULAR = id('forcelist-apply-singular').checked;
     config.CROSS_MODE = id('cross-mode').checked;
     config.PROC_TYPE7 = !id('ignore-type7').checked;
     config.PROC_TYPE4 = !id('ignore-type4').checked;
@@ -627,7 +631,7 @@ for(let elem of [
     // 弹幕合并
     'threshold', 'max-dist', 'max-cosine', 'trim-pinyin', 'trim-ending', 'trim-space', 'trim-width',
     // 例外设置
-    'cross-mode', 'ignore-type7', 'ignore-type4', 'ignore-pool1',
+    'forcelist-continue-on-match', 'forcelist-apply-singular', 'cross-mode', 'ignore-type7', 'ignore-type4', 'ignore-pool1',
     // 显示设置
     'mark-threshold', 'danmu-mark', 'danmu-subscript', 'enlarge', 'shrink-threshold', 'drop-threshold', 'mode-elevation', 'representative-percent',
     // 播放器增强

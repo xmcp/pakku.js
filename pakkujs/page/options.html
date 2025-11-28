@@ -331,7 +331,7 @@
                 <td>例外设置</td>
                 <td>
                     <div class="advanced">
-                        <p><b>强制合并</b>：（符合这些规则的弹幕，在比较是否相同时会先进行替换）</p>
+                        <p><b>强制合并</b>：（符合这些规则的弹幕，在比较是否相同时会对内容进行替换）</p>
                         <form id="newforcelist-form">
                             <p>
                                 <input id="newforcelist-pattern" class="code" placeholder="正则表达式" required>
@@ -342,6 +342,14 @@
                             </p>
                         </form>
                         <div class="list" id="forcelist"></div>
+                        <p>
+                            <b>规则命中时：</b>
+                            <input id="forcelist-continue-on-match" type="checkbox">
+                            <label for="forcelist-continue-on-match">继续尝试匹配后续规则</label>
+                            /
+                            <input id="forcelist-apply-singular" type="checkbox">
+                            <label for="forcelist-apply-singular">即使未触发合并也使用替换后的文本</label>
+                        </p>
                         <hr>
                         <p><b>强制忽略</b>：（符合这些规则的弹幕，即使内容相同也不会被合并）</p>
                         <form id="newwhitelist-form">
@@ -549,7 +557,7 @@
                         个后台线程
                     </p>
                     <p class="advanced warning">
-                        * 对于长视频（如电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间；设置为 0 来完全禁用后台线程（处理弹幕时将阻塞页面）
+                        * 对于弹幕极多的长视频，适当增加线程数量可以加快处理速度，但也会增加资源消耗和初始化时间；设置为 0 来完全禁用后台线程（将阻塞页面，仅用于调试）
                     </p>
                     <p class="advanced">
                         <label for="popup-badge">扩展程序角标 </label>

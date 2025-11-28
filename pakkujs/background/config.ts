@@ -3,7 +3,7 @@ import {compress_all, decompress_all} from "./compressor";
 
 export const DEFAULT_CONFIG = {
     _LAST_UPDATE_TIME: 0,
-    _CONFIG_VER: 4,
+    _CONFIG_VER: 5,
 
     ADVANCED_USER: false,
 
@@ -18,6 +18,8 @@ export const DEFAULT_CONFIG = {
 
     // 例外设置
     FORCELIST: [["^23{2,}$", "23333"], ["^6{3,}$", "66666"]],
+    FORCELIST_CONTINUE_ON_MATCH: false,
+    FORCELIST_APPLY_SINGULAR: false,
     WHITELIST: [] as ([string, string])[],
     CROSS_MODE: true,
     PROC_TYPE7: true,
@@ -171,8 +173,17 @@ export function migrate_config(remote_config: AnyObject): Config {
         config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 4;
 
-        config.TAKEOVER_AIJUDGE = false;
+        config.TAKEOVER_AIJUDGE = DEFAULT_CONFIG.TAKEOVER_AIJUDGE;
         // we also added the 'dispval' option for POPUP_BADGE, so we have to bump version number to inform old clients.
+    }
+
+    // 4 -> 5
+    if(config._CONFIG_VER < 5) {
+        config._LAST_UPDATE_TIME = gen_timestamp();
+        config._CONFIG_VER = 5;
+
+        config.FORCELIST_APPLY_SINGULAR = DEFAULT_CONFIG.FORCELIST_APPLY_SINGULAR;
+        config.FORCELIST_CONTINUE_ON_MATCH = DEFAULT_CONFIG.FORCELIST_CONTINUE_ON_MATCH;
     }
 
     return {...DEFAULT_CONFIG, ...config};

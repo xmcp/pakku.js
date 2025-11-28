@@ -30,6 +30,7 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
     const TRIM_SPACE = config.TRIM_SPACE;
     const TRIM_WIDTH = config.TRIM_WIDTH;
     const FORCELIST = config.FORCELIST.map(([pattern, repl]) => [new RegExp(pattern, 'ig'), repl] as [RegExp, string]);
+    const FORCELIST_BREAK_ON_MATCH = !config.FORCELIST_CONTINUE_ON_MATCH;
 
     return (inp: string) => {
         let len = inp.length;
@@ -55,14 +56,17 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
             text = text.replace(TRIM_EXTRA_SPACE_RE,' ').replace(TRIM_CJK_SPACE_RE, '$1');
         }
 
+        let taolu_matched = false;
         for(let taolu of FORCELIST) {
             if(taolu[0].test(text)) {
                 text = text.replace(taolu[0], taolu[1]);
-                return [true, text];
+                taolu_matched = true;
+                if(FORCELIST_BREAK_ON_MATCH)
+                    break;
             }
         }
 
-        return [false, text];
+        return [taolu_matched, text];
     };
 }
 
@@ -142,7 +146,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             ret.clusters.push({
                 peers_ptr: irs.map(ir => [ir.ptr_idx, ir.sim_reason]),
                 desc: [],
-                chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
+                chosen_str: irs[0].obj.content,
             });
         } else {
             let text_cnts = new Map(), most_texts: string[] = [], most_cnt = 0;
@@ -241,8 +245,14 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
 
                 let [matched_taolu, detaolued] = detaolu(disp_str);
 
-                if(matched_taolu && s) {
-                    s.num_taolu_matched++;
+                if(matched_taolu) {
+                    if(s)
+                        s.num_taolu_matched++;
+                    if(config.FORCELIST_APPLY_SINGULAR)
+                        obj = {
+                            ...obj,
+                            content: detaolued,
+                        };
                 }
 
                 return {
