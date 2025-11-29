@@ -1,3 +1,6 @@
+// noinspection JSConstantReassignment
+// ↑ for rewriting things like xhr.response
+
 import {AjaxResponse} from "../core/types";
 
 declare global {
@@ -315,7 +318,10 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             if(event.data.type === 'pakku_video_jump') {
                 window.player?.seek(event.data.time);
             } else if(event.data.type === 'pakku_trigger_reload') {
-                // xxx: not working in the latest player (#322)
+                // xxx: causing problems in the latest player (#322 #323)
+                // will probably add this feature back when bilibili has fixed its player
+                // also we might want to restrict to only reload the active tabid
+
                 //window.player?.reload(null);
             }
         }
