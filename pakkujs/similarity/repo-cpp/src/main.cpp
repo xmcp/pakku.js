@@ -290,14 +290,20 @@ extern "C" {
         float sum = 0;
 
         for(int tr=0; tr<N_TRIES; tr++) {
-            v128_t acc = wasm_f32x4_const_splat(0);
-            for(int i=0; i<512; i+=4) {
-                v128_t a = wasm_v128_load(&emb_i[i]);
-                v128_t b = wasm_v128_load(&emb_j[i]);
-                //acc = wasm_f32x4_relaxed_madd(a, b, acc);
-                acc = wasm_f32x4_add(acc, wasm_f32x4_mul(a, b));
+            v128_t acc1 = wasm_f32x4_const_splat(0);
+            v128_t acc2 = wasm_f32x4_const_splat(0);
+            v128_t acc3 = wasm_f32x4_const_splat(0);
+            v128_t acc4 = wasm_f32x4_const_splat(0);
+            for(int i=0; i<512; i+=16) {
+                acc1 = wasm_f32x4_add(acc1, wasm_f32x4_mul(wasm_v128_load(&emb_i[i]), wasm_v128_load(&emb_j[i])));
+                acc2 = wasm_f32x4_add(acc2, wasm_f32x4_mul(wasm_v128_load(&emb_i[i+4]), wasm_v128_load(&emb_j[i+4])));
+                acc3 = wasm_f32x4_add(acc3, wasm_f32x4_mul(wasm_v128_load(&emb_i[i+8]), wasm_v128_load(&emb_j[i+8])));
+                acc4 = wasm_f32x4_add(acc4, wasm_f32x4_mul(wasm_v128_load(&emb_i[i+12]), wasm_v128_load(&emb_j[i+12])));
             }
-            sum += wasm_f32x4_extract_lane(acc, 0) + wasm_f32x4_extract_lane(acc, 1) + wasm_f32x4_extract_lane(acc, 2) + wasm_f32x4_extract_lane(acc, 3);
+            acc1 = wasm_f32x4_add(acc1, acc2);
+            acc3 = wasm_f32x4_add(acc3, acc4);
+            acc1 = wasm_f32x4_add(acc1, acc3);
+            sum += wasm_f32x4_extract_lane(acc1, 0) + wasm_f32x4_extract_lane(acc1, 1) + wasm_f32x4_extract_lane(acc1, 2) + wasm_f32x4_extract_lane(acc1, 3);
         }
 
         return sum * 10000 / N_TRIES;
