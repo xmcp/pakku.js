@@ -5,7 +5,7 @@ import {Queue} from "./queue";
 interface DanmuIr {
     obj: DanmuObject;
     str: string; // for similarity algorithm
-    idx: int;
+    ptr_idx: int;
     sim_reason: string;
 }
 
@@ -29,7 +29,8 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
     const TRIM_ENDING = config.TRIM_ENDING;
     const TRIM_SPACE = config.TRIM_SPACE;
     const TRIM_WIDTH = config.TRIM_WIDTH;
-    const FORCELIST = config.FORCELIST.map(([pattern, repl]) => [new RegExp(pattern, 'ig'), repl] as [RegExp, string]);
+    const FORCELIST = config.FORCELIST.map(([pattern, repl]) => [new RegExp(pattern, 'uig'), repl] as [RegExp, string]);
+    const FORCELIST_BREAK_ON_MATCH = !config.FORCELIST_CONTINUE_ON_MATCH;
 
     return (inp: string) => {
         let len = inp.length;
@@ -55,19 +56,22 @@ function detaolu_meta(config: LocalizedConfig): (text: string)=>[boolean, string
             text = text.replace(TRIM_EXTRA_SPACE_RE,' ').replace(TRIM_CJK_SPACE_RE, '$1');
         }
 
+        let taolu_matched = false;
         for(let taolu of FORCELIST) {
             if(taolu[0].test(text)) {
                 text = text.replace(taolu[0], taolu[1]);
-                return [true, text];
+                taolu_matched = true;
+                if(FORCELIST_BREAK_ON_MATCH)
+                    break;
             }
         }
 
-        return [false, text];
+        return [taolu_matched, text];
     };
 }
 
 function whitelisted_meta(config: LocalizedConfig): (text: string)=>boolean {
-    const WHITELIST = config.WHITELIST.map(x => new RegExp(x[0], 'i'));
+    const WHITELIST = config.WHITELIST.map(x => new RegExp(x[0], 'ui'));
 
     if(WHITELIST.length===0)
         return () => false;
@@ -117,12 +121,17 @@ async function prepare_combine(wasm_mod: ArrayBuffer) {
     await sim_init(wasm_mod);
 }
 
+function make_ptr_idx(idx: int, is_next_chunk: boolean): int {
+    return is_next_chunk ? (-1-idx) : idx;
+}
+
 async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig): Promise<DanmuClusterOutput> {
     begin_chunk(config);
 
     let ret: DanmuClusterOutput = {
         clusters: [],
         stats: new Stats(),
+        deleted_chunk: [],
     };
 
     function apply_single_cluster(idx: int, obj: DanmuObject, desc: string) {
@@ -135,9 +144,9 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     function apply_cluster(irs: DanmuIr[]) {
         if(irs.length===1) {
             ret.clusters.push({
-                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
+                peers_ptr: irs.map(ir => [ir.ptr_idx, ir.sim_reason]),
                 desc: [],
-                chosen_str: irs[0].obj.content, // do not use detaolued str for single danmu
+                chosen_str: irs[0].obj.content,
             });
         } else {
             let text_cnts = new Map(), most_texts: string[] = [], most_cnt = 0;
@@ -158,7 +167,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
             let most_text = select_median_length(most_texts);
 
             ret.clusters.push({
-                peers_ptr: irs.map(ir => [ir.idx, ir.sim_reason]),
+                peers_ptr: irs.map(ir => [ir.ptr_idx, ir.sim_reason]),
                 desc: most_cnt>1 ? [`采用了出现 ${most_cnt} 次的文本`] : [],
                 chosen_str: most_text,
             });
@@ -169,7 +178,7 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
     let whitelisted = whitelisted_meta(config);
     let blacklisted = blacklisted_meta(config);
 
-    function obj_to_ir(objs: DanmuObject[], s: Stats | null): DanmuIr[] {
+    function obj_to_ir(objs: DanmuObject[], s: Stats | null, is_next_chunk: boolean): DanmuIr[] {
         return objs
             .map((obj, idx) => {
                 if(!config.PROC_POOL1 && obj.pool===1) {
@@ -216,6 +225,12 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
                         if(s) {
                             s.deleted_blacklist++;
                             s.deleted_blacklist_each[matched] = (s.deleted_blacklist_each[matched] || 0) + 1;
+                            ret.deleted_chunk.push({
+                                ...obj,
+                                pakku: {
+                                    deleted_reason: '命中黑名单：' + matched,
+                                },
+                            });
                         }
                         return null;
                     }
@@ -230,22 +245,28 @@ async function do_combine(chunk: DanmuChunk<DanmuObject>, next_chunk: DanmuChunk
 
                 let [matched_taolu, detaolued] = detaolu(disp_str);
 
-                if(matched_taolu && s) {
-                    s.num_taolu_matched++;
+                if(matched_taolu) {
+                    if(s)
+                        s.num_taolu_matched++;
+                    if(config.FORCELIST_APPLY_SINGULAR)
+                        obj = {
+                            ...obj,
+                            content: detaolued,
+                        };
                 }
 
                 return {
                     obj: obj,
                     str: detaolued,
-                    idx: idx,
+                    ptr_idx: make_ptr_idx(idx, is_next_chunk),
                     sim_reason: 'ORIG',
                 };
             })
             .filter(obj => obj!==null) as DanmuIr[];
     }
 
-    let danmus = obj_to_ir(chunk.objs, ret.stats);
-    let next_chunk_danmus = obj_to_ir(next_chunk.objs, null);
+    let danmus = obj_to_ir(chunk.objs, ret.stats, false);
+    let next_chunk_danmus = obj_to_ir(next_chunk.objs, null, true);
 
     let nearby_danmus: Queue<DanmuIr[]> = new Queue();
 

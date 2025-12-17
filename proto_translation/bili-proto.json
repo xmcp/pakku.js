@@ -92,6 +92,31 @@
                                                             "rule": "repeated",
                                                             "type": "DmMaskWall",
                                                             "id": 18
+                                                        },
+                                                        "dmRestrict": {
+                                                            "type": "DMRestrict",
+                                                            "id": 19
+                                                        }
+                                                    }
+                                                },
+                                                "DMRestrict": {
+                                                    "fields": {
+                                                        "periods": {
+                                                            "rule": "repeated",
+                                                            "type": "DMRestrictPeriod",
+                                                            "id": 1
+                                                        }
+                                                    }
+                                                },
+                                                "DMRestrictPeriod": {
+                                                    "fields": {
+                                                        "start": {
+                                                            "type": "int64",
+                                                            "id": 1
+                                                        },
+                                                        "end": {
+                                                            "type": "int64",
+                                                            "id": 2
                                                         }
                                                     }
                                                 },
@@ -696,6 +721,10 @@
                                                         "attr": {
                                                             "type": "int32",
                                                             "id": 13
+                                                        },
+                                                        "likeCount": {
+                                                            "type": "int64",
+                                                            "id": 15
                                                         },
                                                         "animation": {
                                                             "type": "string",

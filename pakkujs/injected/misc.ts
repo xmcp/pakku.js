@@ -29,6 +29,7 @@ function trigger_mouse_event(node: HTMLElement, eventType: string) {
     node.dispatchEvent(e);
 }
 
+/*
 export function reload_danmu_magic(key: int) {
     function proceed(date_picker: HTMLElement) {
         let elem = document.createElement('span');
@@ -38,7 +39,7 @@ export function reload_danmu_magic(key: int) {
         elem.style.display = 'none';
         date_picker.appendChild(elem);
 
-        console.log('pakku reload danmu: proceed');
+        console.log('pakku reload danmu: proceed', key);
         trigger_mouse_event(elem, 'mousedown');
         trigger_mouse_event(elem, 'mouseup');
         trigger_mouse_event(elem, 'click');
@@ -51,7 +52,7 @@ export function reload_danmu_magic(key: int) {
     if(date_picker)
         proceed(date_picker);
     else {
-        let history_btn = window.root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bpx-player-dm-btn-history, .bilibili-player-danmaku-btn-history') as HTMLElement;
+        let history_btn = window.root_elem.querySelector('.player-auxiliary-danmaku-btn-history, .bpx-player-dm-btn-history, .bilibili-player-danmaku-btn-history, .bpx-player-filter .bui-dropdown-item[data-value="HISTORY"]') as HTMLElement;
         if(!history_btn) {
             console.log('pakku reload danmu: IGNORE request because danmu list not found');
             return;
@@ -87,4 +88,12 @@ export function reload_danmu_magic(key: int) {
             setTimeout(try_find, 1000);
         }
     }
+}
+ */
+
+export function reload_danmu_magic(key: int) {
+    console.log('pakku reload danmu: proceed to player', key);
+    window.postMessage({
+        type: 'pakku_trigger_reload',
+    });
 }

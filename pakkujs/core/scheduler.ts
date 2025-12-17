@@ -4,12 +4,12 @@ import {
     AjaxResponse, AnyObject,
     DanmuChunk, DanmuCluster,
     DanmuClusterOutput,
-    DanmuObject, DanmuObjectRepresentative,
+    DanmuObject, DanmuObjectDeleted, DanmuObjectRepresentative,
     int,
     LocalizedConfig,
     MessageStats,
     MissingData,
-    Stats
+    Stats,
 } from "./types";
 import {post_combine} from "./post_combine";
 import {UserscriptWorker} from "./userscript";
@@ -53,7 +53,7 @@ function perform_throttle(fn: ()=>void) {
 
 // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
 function u8array_to_arraybuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset) as ArrayBuffer
 }
 
 class Scheduler {
@@ -69,7 +69,7 @@ class Scheduler {
     chunks_in: Map<int, DanmuChunk<DanmuObject>>;
     clusters: Map<int, DanmuCluster[]>;
     chunks_out: Map<int, DanmuChunk<DanmuObjectRepresentative>>;
-    chunks_deleted: Map<int, DanmuChunk<DanmuObject>>;
+    chunks_deleted: Map<int, DanmuChunk<DanmuObjectDeleted>>;
 
     num_chunks: int;
     combine_started: Set<int>;
@@ -168,25 +168,39 @@ class Scheduler {
                 res = {
                     clusters: [],
                     stats: new Stats(),
+                    deleted_chunk: [],
                 };
                 console.log('pakku scheduler: got combine result', segidx, '(skipped)');
             }
+
+            function retrieve_ptr_idx(ptr_idx: int): DanmuObject {
+                let obj = ptr_idx>=0 ? chunk!.objs[ptr_idx] : next_chunk!.objs[-ptr_idx-1];
+                if(!obj) {
+                    throw new Error(`invalid ptr_idx ${ptr_idx}`);
+                }
+                return obj;
+            }
+
+            this.clusters.set(segidx, res.clusters.map(c => ({
+                peers: c.peers_ptr.map(([ptr_idx, reason]) => ({
+                    ...retrieve_ptr_idx(ptr_idx),
+                    pakku: {
+                        sim_reason: reason,
+                    },
+                })),
+                desc: c.desc,
+                chosen_str: c.chosen_str,
+            })));
+            this.ongoing_stats.update_from(res.stats);
         } catch(e) {
             this.write_failing_stats(`合并分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
         }
 
-        this.clusters.set(segidx, res.clusters.map(c => ({
-            peers: c.peers_ptr.map(([idx, reason]) => ({
-                ...chunk.objs[idx],
-                pakku: {
-                    sim_reason: reason,
-                },
-            })),
-            desc: c.desc,
-            chosen_str: c.chosen_str,
-        })));
-        this.ongoing_stats.update_from(res.stats);
+        this.chunks_deleted.set(segidx, {
+            objs: res.deleted_chunk,
+            extra: {},
+        });
 
         void this.try_start_postproc(segidx);
         void this.try_start_postproc(segidx+1);
@@ -204,9 +218,11 @@ class Scheduler {
         if(!clusters || !prev_clusters)
             return; // not ready
 
+        let deleted_danmus_output = this.chunks_deleted.get(segidx)!.objs;
+
         let chunk_out;
         try {
-            chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats);
+            chunk_out = post_combine(clusters, prev_clusters, chunk!, this.config, this.ongoing_stats, deleted_danmus_output);
         } catch(e) {
             this.write_failing_stats(`后处理分片 ${segidx} 时出错`, e as Error, BADGE_ERR_JS);
             return;
@@ -260,6 +276,19 @@ class Scheduler {
         });
     }
 
+    dump_result(step: ('input' | 'output' | 'deleted'), egress: Egress): AjaxResponse {
+        let chunks = {input: this.chunks_in, output: this.chunks_out, deleted: this.chunks_deleted}[step];
+        if(!chunks)
+            return null;
+
+        let res = perform_egress(egress, this.num_chunks, chunks);
+        if(res===MissingData)
+            return null;
+        else {
+            return {data: res};
+        }
+    }
+
     finish() {
         console.log('pakku scheduler: all finished');
 
@@ -268,38 +297,10 @@ class Scheduler {
         this.stats = this.ongoing_stats;
 
         setTimeout(()=>{
-            this.calc_chunk_deleted();
             if(this.config.GLOBAL_SWITCH && !this.config.SKIP_INJECT) {
                 do_inject(this.chunks_out, this.chunks_deleted, this.config);
             }
         }, 300); // delay ui injection to improve player responsiveness
-    }
-
-    calc_chunk_deleted() {
-        let out_danmu_ids = new Set();
-        for(let chunk of this.chunks_out.values()) {
-            for(let dr of chunk.objs) {
-                out_danmu_ids.add(dr.id);
-                for(let dp of dr.pakku.peers)
-                    out_danmu_ids.add(dp.id);
-            }
-        }
-
-        this.chunks_deleted.clear();
-
-        for(let [idx, chunk_in] of this.chunks_in) {
-            let chunk_del = {
-                objs: [] as DanmuObject[],
-                extra: chunk_in.extra,
-            };
-
-            for(let d of chunk_in.objs) {
-                if(!out_danmu_ids.has(d.id))
-                    chunk_del.objs.push(d);
-            }
-
-            this.chunks_deleted.set(idx, chunk_del);
-        }
     }
 
     do_cleanup() {
@@ -325,9 +326,14 @@ class Scheduler {
     }
 
     async init_worker_pool() {
-        let wasm_resp = await fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'));
-        let wasm_mod = await wasm_resp.arrayBuffer();
-        await this.pool.spawn([wasm_mod]);
+        try {
+            let wasm_resp = await fetch(chrome.runtime.getURL('/assets/similarity-gen.wasm'));
+            let wasm_mod = await wasm_resp.arrayBuffer();
+            await this.pool.spawn([wasm_mod]);
+        } catch(e) {
+            this.write_failing_stats('初始化核心模块时出错', e as Error, BADGE_ERR_JS);
+            return;
+        }
     }
 
     async init_userscript() {

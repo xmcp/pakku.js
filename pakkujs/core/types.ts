@@ -27,6 +27,7 @@ export interface DanmuObject {
         proto_colorful?: int | null;
         proto_oid?: int | null;
         proto_dmfrom?: int | null;
+        proto_likecount?: int | null;
     };
 }
 
@@ -41,6 +42,12 @@ export interface DanmuObjectRepresentative extends DanmuObject {
         peers: DanmuObjectPeer[];
         desc: string[];
         disp_str: string;
+    };
+}
+
+export interface DanmuObjectDeleted extends DanmuObject {
+    pakku: {
+        deleted_reason: string;
     };
 }
 
@@ -73,6 +80,7 @@ export interface DanmuClusterPtr {
 export interface DanmuClusterOutput {
     clusters: DanmuClusterPtr[];
     stats: Stats;
+    deleted_chunk: DanmuObjectDeleted[];
 }
 
 export class MessageStats {

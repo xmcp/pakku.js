@@ -188,6 +188,13 @@ function guess_current_info_idx(infos: DanmuObjectRepresentative[]) {
     return item[0][0];
 }
 
+function get_dm_title(elem: HTMLElement) {
+    let r = elem.getAttribute('data-hover-title');
+    if(!r)
+        r = elem.title;
+    return r;
+}
+
 export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, config: Config) {
     let panel_obj = document.createElement('div');
     panel_obj.style.display = 'none';
@@ -298,8 +305,8 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
 
                 self.appendChild(make_p(proc_mode(p.mode) + ' ' + p.content));
                 self.appendChild(make_p(
-                    p.pakku.sim_reason + ' ' + p.sender_hash + ' ' + (p.time_ms / 1000).toFixed(1) + 's ' + p.fontsize + 'px '
-                    + 'W' + p.weight + ' ' + format_datetime(new Date(p.sendtime * 1000))
+                    `${p.pakku.sim_reason} ${format_duration(p.time_ms/1000, true)} ${p.fontsize}px ` +
+                    `W${p.weight}${p.extra.proto_likecount ? (' +'+p.extra.proto_likecount) : ''} ${format_datetime(new Date(p.sendtime*1000))}`
                 ));
 
                 self.addEventListener('mouseover', function () {
@@ -342,7 +349,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
             });
         if(dm_obj && dm_obj.classList.contains('dm-info-row') && dm_obj.getAttribute('data-index')) // ver 3
             show_panel({
-                str: dm_obj.querySelector('.dm-info-dm').title,
+                str: get_dm_title(dm_obj.querySelector('.dm-info-dm')),
                 index: parseInt(dm_obj.getAttribute('data-index')),
             });
     });

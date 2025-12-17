@@ -61,6 +61,7 @@ export function protobuf_to_obj(segidx: int, chunk: proto_seg): DanmuChunk<Danmu
                 'proto_colorful': item.colorful,
                 'proto_oid': item.oid,
                 'proto_dmfrom': item.dmFrom,
+                'proto_likecount': item.likeCount,
             },
         })),
         extra: {
@@ -95,6 +96,7 @@ export function obj_to_protobuf(egress: ProtobufEgressSeg, chunk: DanmuChunk<Dan
         "colorful": item.extra.proto_colorful,
         "oid": item.extra.proto_oid,
         "dmFrom": item.extra.proto_dmfrom || null,
+        "likeCount": item.extra.proto_likecount || 0,
     }));
     return proto_seg.encode({elems: res, colorfulSrc: chunk.extra.proto_colorfulsrc || []}).finish();
 }

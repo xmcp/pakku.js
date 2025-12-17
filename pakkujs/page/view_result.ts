@@ -36,7 +36,7 @@ async function process() {
         dumped_result = await chrome.tabs.sendMessage(tabid, {
             type: 'dump_result',
             egress: egress,
-            switch: options.step==='output',
+            step: options.step,
         });
     } catch(e: any) {
         $ingress.textContent = 'error!';

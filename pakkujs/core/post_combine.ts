@@ -1,11 +1,11 @@
 import {
     DanmuChunk,
     DanmuCluster,
-    DanmuObject,
+    DanmuObject, DanmuObjectDeleted,
     DanmuObjectRepresentative,
     int,
     LocalizedConfig,
-    Stats
+    Stats,
 } from "./types";
 import {Queue} from "./queue";
 
@@ -124,17 +124,24 @@ function judge_drop(dispval: number, threshold: number, peers: DanmuObject[], we
         return false;
 
     let max_weight = Math.max(...peers.map(p=>p.weight));
+    let tot_likes = peers.map(p=>p.extra.proto_likecount||0).reduce((a,b)=>a+b, 0);
     let drop_rate = (
         (dispval - threshold) / threshold
-        - (weight_distribution[max_weight-1] || 0) / 2
-        - (Math.sqrt(peers.length) - 1) / 2
+        + .25
+        - (weight_distribution[max_weight-1] || 0) / 4
+        - (Math.sqrt(peers.length) - 1) / 5
+        - (Math.sqrt(tot_likes)) / 8
     );
     //console.log('!!!judge', dispval, max_weight, peers.length, drop_rate);
 
     return (drop_rate>=1 || (drop_rate>0 && Math.random()<drop_rate));
 }
 
-export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>, config: LocalizedConfig, stats: Stats): DanmuChunk<DanmuObjectRepresentative> {
+export function post_combine(
+    input_clusters: DanmuCluster[], prev_input_clusters: DanmuCluster[], input_chunk: DanmuChunk<DanmuObject>,
+    config: LocalizedConfig, stats: Stats,
+    deleted_danmus_output: DanmuObjectDeleted[],
+): DanmuChunk<DanmuObjectRepresentative> {
     if(input_chunk.objs.length===0) // empty chunk
         return {objs: [], extra: input_chunk.extra};
 
@@ -197,7 +204,10 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
 
         // text, mode elevation, fontsize enlarge, weight, proto_animation
 
-        let max_dm_size = rep_dm.fontsize, max_weight = rep_dm.weight, max_mode = rep_dm.mode;
+        let max_dm_size = rep_dm.fontsize;
+        let max_weight = rep_dm.weight;
+        let max_mode = rep_dm.mode;
+        let tot_likecount = 0;
         for(let p of c.peers) {
             max_weight = Math.max(max_weight, p.weight);
             if(p.fontsize<30)
@@ -207,6 +217,8 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
                 max_mode = 4;
             else if(p.mode===5 && max_mode!==4) // top danmu get top priority
                 max_mode = 5;
+
+            tot_likecount += (p.extra.proto_likecount || 0);
         }
 
         build_text(c, rep_dm);
@@ -216,6 +228,8 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
 
         rep_dm.fontsize = max_dm_size;
         rep_dm.weight = max_weight;
+        if(tot_likecount)
+            rep_dm.extra.proto_likecount = tot_likecount;
 
         if(config.ENLARGE) {
             let enlarge_rate = calc_enlarge_rate(c.peers.length);
@@ -308,8 +322,19 @@ export function post_combine(input_clusters: DanmuCluster[], prev_input_clusters
             // check drop
 
             if(judge_drop(onscreen_dispval, config.DROP_THRESHOLD, dm.pakku.peers, weight_distribution)) {
+                // do drop
                 stats.deleted_dispval++;
                 dm.weight = WEIGHT_DROPPED;
+
+                for(let d of dm.pakku.peers) {
+                    deleted_danmus_output.push({
+                        ...d,
+                        pakku: {
+                            deleted_reason: '弹幕密度',
+                        },
+                    });
+                }
+
                 continue;
             }
 

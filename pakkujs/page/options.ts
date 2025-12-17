@@ -51,14 +51,6 @@ function try_regexp(x: string) {
     }
 }
 
-function regexp_wrap(src: string) {
-    if(!src.startsWith('^'))
-        src = '^.*' + src;
-    if(!src.endsWith('$'))
-        src = src + '.*$';
-    return src;
-}
-
 let version = 'v' + chrome.runtime.getManifest().version;
 let img_btns: NodeListOf<HTMLElement> = document.querySelectorAll('[data-name]');
 id('version').textContent = version + '_' + (IS_FIREFOX ? 'F' : IS_EDG ? 'E' : 'C');
@@ -260,6 +252,9 @@ async function backup_restore_prompt() {
     if(inp === null) return;
     if(!inp) { // export
         document.body.textContent = JSON.stringify(config);
+        document.body.style.wordBreak = 'break-all';
+        document.body.style.fontFamily = 'Consolas, Courier, monospace';
+        document.body.style.padding = '.5em';
         alert('导出成功。\n请将屏幕上的文本妥善保存在别处。');
     } else { // import
         try {
@@ -362,6 +357,8 @@ function loadconfig() {
     id('trim-space').checked = config.TRIM_SPACE;
     id('trim-width').checked = config.TRIM_WIDTH;
     // 例外设置
+    id('forcelist-continue-on-match').checked = config.FORCELIST_CONTINUE_ON_MATCH;
+    id('forcelist-apply-singular').checked = config.FORCELIST_APPLY_SINGULAR;
     id('cross-mode').checked = config.CROSS_MODE;
     id('ignore-type7').checked = !config.PROC_TYPE7;
     id('ignore-type4').checked = !config.PROC_TYPE4;
@@ -534,7 +531,7 @@ function loadconfig() {
 id('newforcelist-form').addEventListener('submit', function(e: Event) {
     e.preventDefault();
     config.FORCELIST.push([
-        try_regexp(regexp_wrap(id('newforcelist-pattern').value)),
+        try_regexp(id('newforcelist-pattern').value),
         id('newforcelist-name').value,
     ]);
     void reload();
@@ -578,6 +575,8 @@ function update(this: HTMLInputElement) {
     config.TRIM_SPACE = id('trim-space').checked;
     config.TRIM_WIDTH = id('trim-width').checked;
     // 例外设置
+    config.FORCELIST_CONTINUE_ON_MATCH = id('forcelist-continue-on-match').checked;
+    config.FORCELIST_APPLY_SINGULAR = id('forcelist-apply-singular').checked;
     config.CROSS_MODE = id('cross-mode').checked;
     config.PROC_TYPE7 = !id('ignore-type7').checked;
     config.PROC_TYPE4 = !id('ignore-type4').checked;
@@ -624,7 +623,7 @@ for(let elem of [
     // 弹幕合并
     'threshold', 'max-dist', 'max-cosine', 'trim-pinyin', 'trim-ending', 'trim-space', 'trim-width',
     // 例外设置
-    'cross-mode', 'ignore-type7', 'ignore-type4', 'ignore-pool1',
+    'forcelist-continue-on-match', 'forcelist-apply-singular', 'cross-mode', 'ignore-type7', 'ignore-type4', 'ignore-pool1',
     // 显示设置
     'mark-threshold', 'danmu-mark', 'danmu-subscript', 'enlarge', 'shrink-threshold', 'drop-threshold', 'mode-elevation', 'representative-percent',
     // 播放器增强

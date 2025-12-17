@@ -224,7 +224,9 @@
             pointer-events: none;
         }
         label[for=show-advanced], .advanced:not(.warning) {
-            background-color: rgba(0, 0, 255, .09);
+            background-color: rgba(0, 0, 255, .08);
+            border-inline: .2em solid transparent;
+            border-radius: .3em;
         }
         body:not(.i-am-advanced) .advanced:not(.js-show-this) {
             display: none;
@@ -331,7 +333,7 @@
                 <td>例外设置</td>
                 <td>
                     <div class="advanced">
-                        <p><b>强制合并</b>：（符合这些规则的弹幕，在比较是否相同时会先进行替换）</p>
+                        <p><b>内容替换</b>：（符合这些规则的弹幕，判断是否合并前会先对内容进行替换）</p>
                         <form id="newforcelist-form">
                             <p>
                                 <input id="newforcelist-pattern" class="code" placeholder="正则表达式" required>
@@ -342,8 +344,16 @@
                             </p>
                         </form>
                         <div class="list" id="forcelist"></div>
+                        <p>
+                            <b>内容替换规则命中时：</b>
+                            <input id="forcelist-continue-on-match" type="checkbox">
+                            <label for="forcelist-continue-on-match">继续尝试匹配后续规则</label>
+                            /
+                            <input id="forcelist-apply-singular" type="checkbox">
+                            <label for="forcelist-apply-singular">即使未触发合并也使用替换后的文本</label>
+                        </p>
                         <hr>
-                        <p><b>强制忽略</b>：（符合这些规则的弹幕，即使内容相同也不会被合并）</p>
+                        <p><b>强制忽略</b>：（符合这些规则的弹幕不会被合并，优先级高于内容替换规则）</p>
                         <form id="newwhitelist-form">
                             <p>
                                 <input id="newwhitelist-pattern" class="code" placeholder="正则表达式" required>
@@ -549,7 +559,7 @@
                         个后台线程
                     </p>
                     <p class="advanced warning">
-                        * 对于长视频（如电影），适当增加线程数量以加快处理速度；对于短视频，适当减少线程数量以缩短初始化时间；设置为 0 来完全禁用后台线程（处理弹幕时将阻塞页面）
+                        * 对于弹幕极多的长视频，适当增加线程数量可以加快处理速度，但也会增加资源消耗和初始化时间；设置为 0 来完全禁用后台线程（将阻塞页面，仅用于调试）
                     </p>
                     <p class="advanced">
                         <label for="popup-badge">扩展程序角标 </label>
@@ -574,9 +584,7 @@
                         * 使数量标记和弹幕密度计算更准确，并避免数量标记影响正则匹配，但将无法在弹幕列表中看到被屏蔽的弹幕；可以在播放器页面的 <code>localStorage</code> 中添加额外的屏蔽词 <a data-help-text="当屏蔽词数量过多，超出播放器限制或者造成了性能问题时，可以将屏蔽词存储在播放器域名的 localStorage 的 pakku_extra_blacklist 项中，pakku 将额外导入这些屏蔽词。\n\n屏蔽词格式与播放器导出的 JSON 格式相同，例如：\n\nlocalStorage['pakku_extra_blacklist'] = JSON.stringify([{type: 1, filter: '^.{1,6}[天时点分钟秒]前', opened: true, id: 0}]);">[?]</a>
                     </p>
                     <p>
-                        （一些面向高级用户的 <a href="#show-advanced">复杂的设置</a>
-                        <span class="advanced">现在并没有</span>
-                        被隐藏了）
+                        （一些面向高级用户的 <a href="#show-advanced">复杂的设置</a> <span class="advanced">现在并没有</span>被隐藏了）
                     </p>
                     <p>
                         <button type="button" id="reset">重置所有设置</button>
@@ -613,10 +621,7 @@
                     </p>
                     <p>
                         <strong>想要更多功能？</strong>
-                        <span class="advanced">
-                            <a href="userscript_editor.html">通过用户脚本来自定义</a>
-                            或者
-                        </span>
+                        <span class="advanced"><a href="userscript_editor.html">通过用户脚本来自定义</a> 或者</span>
                         <a href="https://github.com/xmcp/pakku.js/issues" target="_blank">在 GitHub 上提出</a>
                         。
                     </p>

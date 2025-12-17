@@ -1,3 +1,6 @@
+// noinspection JSConstantReassignment
+// ↑ for rewriting things like xhr.response
+
 import {AjaxResponse} from "../core/types";
 
 declare global {
@@ -5,6 +8,7 @@ declare global {
         player: {
             getManifest: ()=>{cid: number};
             seek: (time: number)=>void;
+            reload: (wtf: null)=>void;
         };
     }
     interface XMLHttpRequest {
@@ -54,7 +58,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
     function uint8array_to_arraybuffer(array: Uint8Array) {
         // https://stackoverflow.com/questions/37228285/uint8array-to-arraybuffer
-        return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
+        return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset) as ArrayBuffer;
     }
 
     function str_to_arraybuffer(str: string) {
@@ -281,7 +285,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
 
                 let resp_data;
                 if(resp.data instanceof Uint8Array)
-                    resp_data = resp.data;
+                    resp_data = uint8array_to_arraybuffer(resp.data);
                 else if(typeof resp.data === 'object')
                     resp_data = byte_object_to_arraybuffer(resp.data);
                 else // str
@@ -310,8 +314,16 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     window.addEventListener('message',function(event) {
         if (!is_bilibili(event.origin))
             return;
-        if (event.data.type && event.data.type === 'pakku_video_jump') {
-            window.player?.seek(event.data.time);
+        if (event.data.type) {
+            if(event.data.type === 'pakku_video_jump') {
+                window.player?.seek(event.data.time);
+            } else if(event.data.type === 'pakku_trigger_reload') {
+                // xxx: causing problems in the latest player (#322 #323)
+                // will probably add this feature back when bilibili has fixed its player
+                // also we might want to restrict to only reload the active tabid
+
+                //window.player?.reload(null);
+            }
         }
     });
 
