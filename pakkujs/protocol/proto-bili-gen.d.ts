@@ -74,6 +74,9 @@ export namespace bilibili {
 
                         /** DmWebViewReply dmRestrict */
                         dmRestrict?: (bilibili.community.service.dm.v1.IDMRestrict|null);
+
+                        /** DmWebViewReply subtitle */
+                        subtitle?: (bilibili.community.service.dm.v1.IVideoSubtitle|null);
                     }
 
                     /** Represents a DmWebViewReply. */
@@ -141,6 +144,9 @@ export namespace bilibili {
 
                         /** DmWebViewReply dmRestrict. */
                         public dmRestrict?: (bilibili.community.service.dm.v1.IDMRestrict|null);
+
+                        /** DmWebViewReply subtitle. */
+                        public subtitle?: (bilibili.community.service.dm.v1.IVideoSubtitle|null);
 
                         /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
@@ -2359,6 +2365,413 @@ export namespace bilibili {
 
                         /**
                          * Gets the default type url for DmSubView
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a VideoSubtitle. */
+                    interface IVideoSubtitle {
+
+                        /** VideoSubtitle lan */
+                        lan?: (string|null);
+
+                        /** VideoSubtitle lanDoc */
+                        lanDoc?: (string|null);
+
+                        /** VideoSubtitle subtitles */
+                        subtitles?: (bilibili.community.service.dm.v1.ISubtitleItem[]|null);
+
+                        /** VideoSubtitle subtitlePosition */
+                        subtitlePosition?: (bilibili.community.service.dm.v1.ISubtitlePosition|null);
+
+                        /** VideoSubtitle fontSizeType */
+                        fontSizeType?: (bilibili.community.service.dm.v1.FontSizeType|null);
+                    }
+
+                    /** Represents a VideoSubtitle. */
+                    class VideoSubtitle implements IVideoSubtitle {
+
+                        /**
+                         * Constructs a new VideoSubtitle.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IVideoSubtitle);
+
+                        /** VideoSubtitle lan. */
+                        public lan: string;
+
+                        /** VideoSubtitle lanDoc. */
+                        public lanDoc: string;
+
+                        /** VideoSubtitle subtitles. */
+                        public subtitles: bilibili.community.service.dm.v1.ISubtitleItem[];
+
+                        /** VideoSubtitle subtitlePosition. */
+                        public subtitlePosition?: (bilibili.community.service.dm.v1.ISubtitlePosition|null);
+
+                        /** VideoSubtitle fontSizeType. */
+                        public fontSizeType: bilibili.community.service.dm.v1.FontSizeType;
+
+                        /**
+                         * Encodes the specified VideoSubtitle message. Does not implicitly {@link bilibili.community.service.dm.v1.VideoSubtitle.verify|verify} messages.
+                         * @param message VideoSubtitle message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IVideoSubtitle, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a VideoSubtitle message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns VideoSubtitle
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.VideoSubtitle;
+
+                        /**
+                         * Gets the default type url for VideoSubtitle
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** SubtitleType enum. */
+                    enum SubtitleType {
+                        CC = 0,
+                        AI = 1
+                    }
+
+                    /** SubtitleAiType enum. */
+                    enum SubtitleAiType {
+                        Normal = 0,
+                        Translate = 1
+                    }
+
+                    /** SubtitleAiStatus enum. */
+                    enum SubtitleAiStatus {
+                        None = 0,
+                        Exposure = 1,
+                        Assist = 2
+                    }
+
+                    /** SubtitleRole enum. */
+                    enum SubtitleRole {
+                        Default = 0,
+                        Main = 1,
+                        Secondary = 2
+                    }
+
+                    /** Properties of a SubtitleItem. */
+                    interface ISubtitleItem {
+
+                        /** SubtitleItem id */
+                        id?: (number|null);
+
+                        /** SubtitleItem idStr */
+                        idStr?: (string|null);
+
+                        /** SubtitleItem lan */
+                        lan?: (string|null);
+
+                        /** SubtitleItem lanDoc */
+                        lanDoc?: (string|null);
+
+                        /** SubtitleItem subtitleUrl */
+                        subtitleUrl?: (string|null);
+
+                        /** SubtitleItem author */
+                        author?: (bilibili.community.service.dm.v1.IUserInfo|null);
+
+                        /** SubtitleItem type */
+                        type?: (bilibili.community.service.dm.v1.SubtitleType|null);
+
+                        /** SubtitleItem lanDocBrief */
+                        lanDocBrief?: (string|null);
+
+                        /** SubtitleItem aiType */
+                        aiType?: (bilibili.community.service.dm.v1.SubtitleAiType|null);
+
+                        /** SubtitleItem aiStatus */
+                        aiStatus?: (bilibili.community.service.dm.v1.SubtitleAiStatus|null);
+
+                        /** SubtitleItem role */
+                        role?: (bilibili.community.service.dm.v1.SubtitleRole|null);
+
+                        /** SubtitleItem subtitleHeight */
+                        subtitleHeight?: (bilibili.community.service.dm.v1.ISubtitleHeight|null);
+                    }
+
+                    /** Represents a SubtitleItem. */
+                    class SubtitleItem implements ISubtitleItem {
+
+                        /**
+                         * Constructs a new SubtitleItem.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.ISubtitleItem);
+
+                        /** SubtitleItem id. */
+                        public id: number;
+
+                        /** SubtitleItem idStr. */
+                        public idStr: string;
+
+                        /** SubtitleItem lan. */
+                        public lan: string;
+
+                        /** SubtitleItem lanDoc. */
+                        public lanDoc: string;
+
+                        /** SubtitleItem subtitleUrl. */
+                        public subtitleUrl: string;
+
+                        /** SubtitleItem author. */
+                        public author?: (bilibili.community.service.dm.v1.IUserInfo|null);
+
+                        /** SubtitleItem type. */
+                        public type: bilibili.community.service.dm.v1.SubtitleType;
+
+                        /** SubtitleItem lanDocBrief. */
+                        public lanDocBrief: string;
+
+                        /** SubtitleItem aiType. */
+                        public aiType: bilibili.community.service.dm.v1.SubtitleAiType;
+
+                        /** SubtitleItem aiStatus. */
+                        public aiStatus: bilibili.community.service.dm.v1.SubtitleAiStatus;
+
+                        /** SubtitleItem role. */
+                        public role: bilibili.community.service.dm.v1.SubtitleRole;
+
+                        /** SubtitleItem subtitleHeight. */
+                        public subtitleHeight?: (bilibili.community.service.dm.v1.ISubtitleHeight|null);
+
+                        /**
+                         * Encodes the specified SubtitleItem message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitleItem.verify|verify} messages.
+                         * @param message SubtitleItem message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.ISubtitleItem, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a SubtitleItem message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns SubtitleItem
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.SubtitleItem;
+
+                        /**
+                         * Gets the default type url for SubtitleItem
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a SubtitlePosition. */
+                    interface ISubtitlePosition {
+
+                        /** SubtitlePosition xMin */
+                        xMin?: (number|null);
+
+                        /** SubtitlePosition yMin */
+                        yMin?: (number|null);
+
+                        /** SubtitlePosition xMax */
+                        xMax?: (number|null);
+
+                        /** SubtitlePosition yMax */
+                        yMax?: (number|null);
+
+                        /** SubtitlePosition purpose */
+                        purpose?: (bilibili.community.service.dm.v1.PurposeType|null);
+                    }
+
+                    /** Represents a SubtitlePosition. */
+                    class SubtitlePosition implements ISubtitlePosition {
+
+                        /**
+                         * Constructs a new SubtitlePosition.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.ISubtitlePosition);
+
+                        /** SubtitlePosition xMin. */
+                        public xMin: number;
+
+                        /** SubtitlePosition yMin. */
+                        public yMin: number;
+
+                        /** SubtitlePosition xMax. */
+                        public xMax: number;
+
+                        /** SubtitlePosition yMax. */
+                        public yMax: number;
+
+                        /** SubtitlePosition purpose. */
+                        public purpose: bilibili.community.service.dm.v1.PurposeType;
+
+                        /**
+                         * Encodes the specified SubtitlePosition message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitlePosition.verify|verify} messages.
+                         * @param message SubtitlePosition message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.ISubtitlePosition, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a SubtitlePosition message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns SubtitlePosition
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.SubtitlePosition;
+
+                        /**
+                         * Gets the default type url for SubtitlePosition
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** PurposeType enum. */
+                    enum PurposeType {
+                        PurposeCover = 0,
+                        PurposeOGV = 1
+                    }
+
+                    /** FontSizeType enum. */
+                    enum FontSizeType {
+                        FontSizeDefault = 0,
+                        FontSizeOGV = 1
+                    }
+
+                    /** Properties of a SubtitleHeight. */
+                    interface ISubtitleHeight {
+
+                        /** SubtitleHeight value */
+                        value?: (number|null);
+                    }
+
+                    /** Represents a SubtitleHeight. */
+                    class SubtitleHeight implements ISubtitleHeight {
+
+                        /**
+                         * Constructs a new SubtitleHeight.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.ISubtitleHeight);
+
+                        /** SubtitleHeight value. */
+                        public value: number;
+
+                        /**
+                         * Encodes the specified SubtitleHeight message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitleHeight.verify|verify} messages.
+                         * @param message SubtitleHeight message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.ISubtitleHeight, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a SubtitleHeight message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns SubtitleHeight
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.SubtitleHeight;
+
+                        /**
+                         * Gets the default type url for SubtitleHeight
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a UserInfo. */
+                    interface IUserInfo {
+
+                        /** UserInfo mid */
+                        mid?: (number|null);
+
+                        /** UserInfo name */
+                        name?: (string|null);
+
+                        /** UserInfo sex */
+                        sex?: (string|null);
+
+                        /** UserInfo face */
+                        face?: (string|null);
+
+                        /** UserInfo sign */
+                        sign?: (string|null);
+
+                        /** UserInfo rank */
+                        rank?: (number|null);
+                    }
+
+                    /** Represents a UserInfo. */
+                    class UserInfo implements IUserInfo {
+
+                        /**
+                         * Constructs a new UserInfo.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: bilibili.community.service.dm.v1.IUserInfo);
+
+                        /** UserInfo mid. */
+                        public mid: number;
+
+                        /** UserInfo name. */
+                        public name: string;
+
+                        /** UserInfo sex. */
+                        public sex: string;
+
+                        /** UserInfo face. */
+                        public face: string;
+
+                        /** UserInfo sign. */
+                        public sign: string;
+
+                        /** UserInfo rank. */
+                        public rank: number;
+
+                        /**
+                         * Encodes the specified UserInfo message. Does not implicitly {@link bilibili.community.service.dm.v1.UserInfo.verify|verify} messages.
+                         * @param message UserInfo message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: bilibili.community.service.dm.v1.IUserInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a UserInfo message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns UserInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): bilibili.community.service.dm.v1.UserInfo;
+
+                        /**
+                         * Gets the default type url for UserInfo
                          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                          * @returns The default type url
                          */

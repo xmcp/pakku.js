@@ -77,6 +77,7 @@ export const bilibili = $root.bilibili = (() => {
                          * @property {bilibili.community.service.dm.v1.IQoeInfo|null} [qoe] DmWebViewReply qoe
                          * @property {Array.<bilibili.community.service.dm.v1.IDmMaskWall>|null} [maskWalls] DmWebViewReply maskWalls
                          * @property {bilibili.community.service.dm.v1.IDMRestrict|null} [dmRestrict] DmWebViewReply dmRestrict
+                         * @property {bilibili.community.service.dm.v1.IVideoSubtitle|null} [subtitle] DmWebViewReply subtitle
                          */
 
                         /**
@@ -256,6 +257,14 @@ export const bilibili = $root.bilibili = (() => {
                         DmWebViewReply.prototype.dmRestrict = null;
 
                         /**
+                         * DmWebViewReply subtitle.
+                         * @member {bilibili.community.service.dm.v1.IVideoSubtitle|null|undefined} subtitle
+                         * @memberof bilibili.community.service.dm.v1.DmWebViewReply
+                         * @instance
+                         */
+                        DmWebViewReply.prototype.subtitle = null;
+
+                        /**
                          * Encodes the specified DmWebViewReply message. Does not implicitly {@link bilibili.community.service.dm.v1.DmWebViewReply.verify|verify} messages.
                          * @function encode
                          * @memberof bilibili.community.service.dm.v1.DmWebViewReply
@@ -314,6 +323,8 @@ export const bilibili = $root.bilibili = (() => {
                                     $root.bilibili.community.service.dm.v1.DmMaskWall.encode(message.maskWalls[i], writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
                             if (message.dmRestrict != null && Object.hasOwnProperty.call(message, "dmRestrict"))
                                 $root.bilibili.community.service.dm.v1.DMRestrict.encode(message.dmRestrict, writer.uint32(/* id 19, wireType 2 =*/154).fork()).ldelim();
+                            if (message.subtitle != null && Object.hasOwnProperty.call(message, "subtitle"))
+                                $root.bilibili.community.service.dm.v1.VideoSubtitle.encode(message.subtitle, writer.uint32(/* id 20, wireType 2 =*/162).fork()).ldelim();
                             return writer;
                         };
 
@@ -427,6 +438,10 @@ export const bilibili = $root.bilibili = (() => {
                                     }
                                 case 19: {
                                         message.dmRestrict = $root.bilibili.community.service.dm.v1.DMRestrict.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 20: {
+                                        message.subtitle = $root.bilibili.community.service.dm.v1.VideoSubtitle.decode(reader, reader.uint32());
                                         break;
                                     }
                                 default:
@@ -5532,6 +5547,943 @@ export const bilibili = $root.bilibili = (() => {
                         };
 
                         return DmSubView;
+                    })();
+
+                    v1.VideoSubtitle = (function() {
+
+                        /**
+                         * Properties of a VideoSubtitle.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IVideoSubtitle
+                         * @property {string|null} [lan] VideoSubtitle lan
+                         * @property {string|null} [lanDoc] VideoSubtitle lanDoc
+                         * @property {Array.<bilibili.community.service.dm.v1.ISubtitleItem>|null} [subtitles] VideoSubtitle subtitles
+                         * @property {bilibili.community.service.dm.v1.ISubtitlePosition|null} [subtitlePosition] VideoSubtitle subtitlePosition
+                         * @property {bilibili.community.service.dm.v1.FontSizeType|null} [fontSizeType] VideoSubtitle fontSizeType
+                         */
+
+                        /**
+                         * Constructs a new VideoSubtitle.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a VideoSubtitle.
+                         * @implements IVideoSubtitle
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IVideoSubtitle=} [properties] Properties to set
+                         */
+                        function VideoSubtitle(properties) {
+                            this.subtitles = [];
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * VideoSubtitle lan.
+                         * @member {string} lan
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @instance
+                         */
+                        VideoSubtitle.prototype.lan = "";
+
+                        /**
+                         * VideoSubtitle lanDoc.
+                         * @member {string} lanDoc
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @instance
+                         */
+                        VideoSubtitle.prototype.lanDoc = "";
+
+                        /**
+                         * VideoSubtitle subtitles.
+                         * @member {Array.<bilibili.community.service.dm.v1.ISubtitleItem>} subtitles
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @instance
+                         */
+                        VideoSubtitle.prototype.subtitles = $util.emptyArray;
+
+                        /**
+                         * VideoSubtitle subtitlePosition.
+                         * @member {bilibili.community.service.dm.v1.ISubtitlePosition|null|undefined} subtitlePosition
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @instance
+                         */
+                        VideoSubtitle.prototype.subtitlePosition = null;
+
+                        /**
+                         * VideoSubtitle fontSizeType.
+                         * @member {bilibili.community.service.dm.v1.FontSizeType} fontSizeType
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @instance
+                         */
+                        VideoSubtitle.prototype.fontSizeType = 0;
+
+                        /**
+                         * Encodes the specified VideoSubtitle message. Does not implicitly {@link bilibili.community.service.dm.v1.VideoSubtitle.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IVideoSubtitle} message VideoSubtitle message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        VideoSubtitle.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.lan != null && Object.hasOwnProperty.call(message, "lan"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.lan);
+                            if (message.lanDoc != null && Object.hasOwnProperty.call(message, "lanDoc"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.lanDoc);
+                            if (message.subtitles != null && message.subtitles.length)
+                                for (let i = 0; i < message.subtitles.length; ++i)
+                                    $root.bilibili.community.service.dm.v1.SubtitleItem.encode(message.subtitles[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.subtitlePosition != null && Object.hasOwnProperty.call(message, "subtitlePosition"))
+                                $root.bilibili.community.service.dm.v1.SubtitlePosition.encode(message.subtitlePosition, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            if (message.fontSizeType != null && Object.hasOwnProperty.call(message, "fontSizeType"))
+                                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.fontSizeType);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a VideoSubtitle message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.VideoSubtitle} VideoSubtitle
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        VideoSubtitle.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.VideoSubtitle();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.lan = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.lanDoc = reader.string();
+                                        break;
+                                    }
+                                case 3: {
+                                        if (!(message.subtitles && message.subtitles.length))
+                                            message.subtitles = [];
+                                        message.subtitles.push($root.bilibili.community.service.dm.v1.SubtitleItem.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                case 4: {
+                                        message.subtitlePosition = $root.bilibili.community.service.dm.v1.SubtitlePosition.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 5: {
+                                        message.fontSizeType = reader.int32();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for VideoSubtitle
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.VideoSubtitle
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        VideoSubtitle.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.VideoSubtitle";
+                        };
+
+                        return VideoSubtitle;
+                    })();
+
+                    /**
+                     * SubtitleType enum.
+                     * @name bilibili.community.service.dm.v1.SubtitleType
+                     * @enum {number}
+                     * @property {number} CC=0 CC value
+                     * @property {number} AI=1 AI value
+                     */
+                    v1.SubtitleType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "CC"] = 0;
+                        values[valuesById[1] = "AI"] = 1;
+                        return values;
+                    })();
+
+                    /**
+                     * SubtitleAiType enum.
+                     * @name bilibili.community.service.dm.v1.SubtitleAiType
+                     * @enum {number}
+                     * @property {number} Normal=0 Normal value
+                     * @property {number} Translate=1 Translate value
+                     */
+                    v1.SubtitleAiType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "Normal"] = 0;
+                        values[valuesById[1] = "Translate"] = 1;
+                        return values;
+                    })();
+
+                    /**
+                     * SubtitleAiStatus enum.
+                     * @name bilibili.community.service.dm.v1.SubtitleAiStatus
+                     * @enum {number}
+                     * @property {number} None=0 None value
+                     * @property {number} Exposure=1 Exposure value
+                     * @property {number} Assist=2 Assist value
+                     */
+                    v1.SubtitleAiStatus = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "None"] = 0;
+                        values[valuesById[1] = "Exposure"] = 1;
+                        values[valuesById[2] = "Assist"] = 2;
+                        return values;
+                    })();
+
+                    /**
+                     * SubtitleRole enum.
+                     * @name bilibili.community.service.dm.v1.SubtitleRole
+                     * @enum {number}
+                     * @property {number} Default=0 Default value
+                     * @property {number} Main=1 Main value
+                     * @property {number} Secondary=2 Secondary value
+                     */
+                    v1.SubtitleRole = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "Default"] = 0;
+                        values[valuesById[1] = "Main"] = 1;
+                        values[valuesById[2] = "Secondary"] = 2;
+                        return values;
+                    })();
+
+                    v1.SubtitleItem = (function() {
+
+                        /**
+                         * Properties of a SubtitleItem.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface ISubtitleItem
+                         * @property {number|null} [id] SubtitleItem id
+                         * @property {string|null} [idStr] SubtitleItem idStr
+                         * @property {string|null} [lan] SubtitleItem lan
+                         * @property {string|null} [lanDoc] SubtitleItem lanDoc
+                         * @property {string|null} [subtitleUrl] SubtitleItem subtitleUrl
+                         * @property {bilibili.community.service.dm.v1.IUserInfo|null} [author] SubtitleItem author
+                         * @property {bilibili.community.service.dm.v1.SubtitleType|null} [type] SubtitleItem type
+                         * @property {string|null} [lanDocBrief] SubtitleItem lanDocBrief
+                         * @property {bilibili.community.service.dm.v1.SubtitleAiType|null} [aiType] SubtitleItem aiType
+                         * @property {bilibili.community.service.dm.v1.SubtitleAiStatus|null} [aiStatus] SubtitleItem aiStatus
+                         * @property {bilibili.community.service.dm.v1.SubtitleRole|null} [role] SubtitleItem role
+                         * @property {bilibili.community.service.dm.v1.ISubtitleHeight|null} [subtitleHeight] SubtitleItem subtitleHeight
+                         */
+
+                        /**
+                         * Constructs a new SubtitleItem.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a SubtitleItem.
+                         * @implements ISubtitleItem
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.ISubtitleItem=} [properties] Properties to set
+                         */
+                        function SubtitleItem(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * SubtitleItem id.
+                         * @member {number} id
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * SubtitleItem idStr.
+                         * @member {string} idStr
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.idStr = "";
+
+                        /**
+                         * SubtitleItem lan.
+                         * @member {string} lan
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.lan = "";
+
+                        /**
+                         * SubtitleItem lanDoc.
+                         * @member {string} lanDoc
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.lanDoc = "";
+
+                        /**
+                         * SubtitleItem subtitleUrl.
+                         * @member {string} subtitleUrl
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.subtitleUrl = "";
+
+                        /**
+                         * SubtitleItem author.
+                         * @member {bilibili.community.service.dm.v1.IUserInfo|null|undefined} author
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.author = null;
+
+                        /**
+                         * SubtitleItem type.
+                         * @member {bilibili.community.service.dm.v1.SubtitleType} type
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.type = 0;
+
+                        /**
+                         * SubtitleItem lanDocBrief.
+                         * @member {string} lanDocBrief
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.lanDocBrief = "";
+
+                        /**
+                         * SubtitleItem aiType.
+                         * @member {bilibili.community.service.dm.v1.SubtitleAiType} aiType
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.aiType = 0;
+
+                        /**
+                         * SubtitleItem aiStatus.
+                         * @member {bilibili.community.service.dm.v1.SubtitleAiStatus} aiStatus
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.aiStatus = 0;
+
+                        /**
+                         * SubtitleItem role.
+                         * @member {bilibili.community.service.dm.v1.SubtitleRole} role
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.role = 0;
+
+                        /**
+                         * SubtitleItem subtitleHeight.
+                         * @member {bilibili.community.service.dm.v1.ISubtitleHeight|null|undefined} subtitleHeight
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @instance
+                         */
+                        SubtitleItem.prototype.subtitleHeight = null;
+
+                        /**
+                         * Encodes the specified SubtitleItem message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitleItem.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.ISubtitleItem} message SubtitleItem message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        SubtitleItem.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+                            if (message.idStr != null && Object.hasOwnProperty.call(message, "idStr"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.idStr);
+                            if (message.lan != null && Object.hasOwnProperty.call(message, "lan"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.lan);
+                            if (message.lanDoc != null && Object.hasOwnProperty.call(message, "lanDoc"))
+                                writer.uint32(/* id 4, wireType 2 =*/34).string(message.lanDoc);
+                            if (message.subtitleUrl != null && Object.hasOwnProperty.call(message, "subtitleUrl"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.subtitleUrl);
+                            if (message.author != null && Object.hasOwnProperty.call(message, "author"))
+                                $root.bilibili.community.service.dm.v1.UserInfo.encode(message.author, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.type);
+                            if (message.lanDocBrief != null && Object.hasOwnProperty.call(message, "lanDocBrief"))
+                                writer.uint32(/* id 8, wireType 2 =*/66).string(message.lanDocBrief);
+                            if (message.aiType != null && Object.hasOwnProperty.call(message, "aiType"))
+                                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.aiType);
+                            if (message.aiStatus != null && Object.hasOwnProperty.call(message, "aiStatus"))
+                                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.aiStatus);
+                            if (message.role != null && Object.hasOwnProperty.call(message, "role"))
+                                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.role);
+                            if (message.subtitleHeight != null && Object.hasOwnProperty.call(message, "subtitleHeight"))
+                                $root.bilibili.community.service.dm.v1.SubtitleHeight.encode(message.subtitleHeight, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a SubtitleItem message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.SubtitleItem} SubtitleItem
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        SubtitleItem.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.SubtitleItem();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.id = reader.int64();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.idStr = reader.string();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.lan = reader.string();
+                                        break;
+                                    }
+                                case 4: {
+                                        message.lanDoc = reader.string();
+                                        break;
+                                    }
+                                case 5: {
+                                        message.subtitleUrl = reader.string();
+                                        break;
+                                    }
+                                case 6: {
+                                        message.author = $root.bilibili.community.service.dm.v1.UserInfo.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 7: {
+                                        message.type = reader.int32();
+                                        break;
+                                    }
+                                case 8: {
+                                        message.lanDocBrief = reader.string();
+                                        break;
+                                    }
+                                case 9: {
+                                        message.aiType = reader.int32();
+                                        break;
+                                    }
+                                case 10: {
+                                        message.aiStatus = reader.int32();
+                                        break;
+                                    }
+                                case 11: {
+                                        message.role = reader.int32();
+                                        break;
+                                    }
+                                case 12: {
+                                        message.subtitleHeight = $root.bilibili.community.service.dm.v1.SubtitleHeight.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for SubtitleItem
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.SubtitleItem
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        SubtitleItem.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.SubtitleItem";
+                        };
+
+                        return SubtitleItem;
+                    })();
+
+                    v1.SubtitlePosition = (function() {
+
+                        /**
+                         * Properties of a SubtitlePosition.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface ISubtitlePosition
+                         * @property {number|null} [xMin] SubtitlePosition xMin
+                         * @property {number|null} [yMin] SubtitlePosition yMin
+                         * @property {number|null} [xMax] SubtitlePosition xMax
+                         * @property {number|null} [yMax] SubtitlePosition yMax
+                         * @property {bilibili.community.service.dm.v1.PurposeType|null} [purpose] SubtitlePosition purpose
+                         */
+
+                        /**
+                         * Constructs a new SubtitlePosition.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a SubtitlePosition.
+                         * @implements ISubtitlePosition
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.ISubtitlePosition=} [properties] Properties to set
+                         */
+                        function SubtitlePosition(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * SubtitlePosition xMin.
+                         * @member {number} xMin
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @instance
+                         */
+                        SubtitlePosition.prototype.xMin = 0;
+
+                        /**
+                         * SubtitlePosition yMin.
+                         * @member {number} yMin
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @instance
+                         */
+                        SubtitlePosition.prototype.yMin = 0;
+
+                        /**
+                         * SubtitlePosition xMax.
+                         * @member {number} xMax
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @instance
+                         */
+                        SubtitlePosition.prototype.xMax = 0;
+
+                        /**
+                         * SubtitlePosition yMax.
+                         * @member {number} yMax
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @instance
+                         */
+                        SubtitlePosition.prototype.yMax = 0;
+
+                        /**
+                         * SubtitlePosition purpose.
+                         * @member {bilibili.community.service.dm.v1.PurposeType} purpose
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @instance
+                         */
+                        SubtitlePosition.prototype.purpose = 0;
+
+                        /**
+                         * Encodes the specified SubtitlePosition message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitlePosition.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.ISubtitlePosition} message SubtitlePosition message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        SubtitlePosition.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.xMin != null && Object.hasOwnProperty.call(message, "xMin"))
+                                writer.uint32(/* id 1, wireType 1 =*/9).double(message.xMin);
+                            if (message.yMin != null && Object.hasOwnProperty.call(message, "yMin"))
+                                writer.uint32(/* id 2, wireType 1 =*/17).double(message.yMin);
+                            if (message.xMax != null && Object.hasOwnProperty.call(message, "xMax"))
+                                writer.uint32(/* id 3, wireType 1 =*/25).double(message.xMax);
+                            if (message.yMax != null && Object.hasOwnProperty.call(message, "yMax"))
+                                writer.uint32(/* id 4, wireType 1 =*/33).double(message.yMax);
+                            if (message.purpose != null && Object.hasOwnProperty.call(message, "purpose"))
+                                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.purpose);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a SubtitlePosition message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.SubtitlePosition} SubtitlePosition
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        SubtitlePosition.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.SubtitlePosition();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.xMin = reader.double();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.yMin = reader.double();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.xMax = reader.double();
+                                        break;
+                                    }
+                                case 4: {
+                                        message.yMax = reader.double();
+                                        break;
+                                    }
+                                case 5: {
+                                        message.purpose = reader.int32();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for SubtitlePosition
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.SubtitlePosition
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        SubtitlePosition.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.SubtitlePosition";
+                        };
+
+                        return SubtitlePosition;
+                    })();
+
+                    /**
+                     * PurposeType enum.
+                     * @name bilibili.community.service.dm.v1.PurposeType
+                     * @enum {number}
+                     * @property {number} PurposeCover=0 PurposeCover value
+                     * @property {number} PurposeOGV=1 PurposeOGV value
+                     */
+                    v1.PurposeType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "PurposeCover"] = 0;
+                        values[valuesById[1] = "PurposeOGV"] = 1;
+                        return values;
+                    })();
+
+                    /**
+                     * FontSizeType enum.
+                     * @name bilibili.community.service.dm.v1.FontSizeType
+                     * @enum {number}
+                     * @property {number} FontSizeDefault=0 FontSizeDefault value
+                     * @property {number} FontSizeOGV=1 FontSizeOGV value
+                     */
+                    v1.FontSizeType = (function() {
+                        const valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "FontSizeDefault"] = 0;
+                        values[valuesById[1] = "FontSizeOGV"] = 1;
+                        return values;
+                    })();
+
+                    v1.SubtitleHeight = (function() {
+
+                        /**
+                         * Properties of a SubtitleHeight.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface ISubtitleHeight
+                         * @property {number|null} [value] SubtitleHeight value
+                         */
+
+                        /**
+                         * Constructs a new SubtitleHeight.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a SubtitleHeight.
+                         * @implements ISubtitleHeight
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.ISubtitleHeight=} [properties] Properties to set
+                         */
+                        function SubtitleHeight(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * SubtitleHeight value.
+                         * @member {number} value
+                         * @memberof bilibili.community.service.dm.v1.SubtitleHeight
+                         * @instance
+                         */
+                        SubtitleHeight.prototype.value = 0;
+
+                        /**
+                         * Encodes the specified SubtitleHeight message. Does not implicitly {@link bilibili.community.service.dm.v1.SubtitleHeight.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.SubtitleHeight
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.ISubtitleHeight} message SubtitleHeight message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        SubtitleHeight.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+                                writer.uint32(/* id 1, wireType 1 =*/9).double(message.value);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a SubtitleHeight message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.SubtitleHeight
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.SubtitleHeight} SubtitleHeight
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        SubtitleHeight.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.SubtitleHeight();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.value = reader.double();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for SubtitleHeight
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.SubtitleHeight
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        SubtitleHeight.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.SubtitleHeight";
+                        };
+
+                        return SubtitleHeight;
+                    })();
+
+                    v1.UserInfo = (function() {
+
+                        /**
+                         * Properties of a UserInfo.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @interface IUserInfo
+                         * @property {number|null} [mid] UserInfo mid
+                         * @property {string|null} [name] UserInfo name
+                         * @property {string|null} [sex] UserInfo sex
+                         * @property {string|null} [face] UserInfo face
+                         * @property {string|null} [sign] UserInfo sign
+                         * @property {number|null} [rank] UserInfo rank
+                         */
+
+                        /**
+                         * Constructs a new UserInfo.
+                         * @memberof bilibili.community.service.dm.v1
+                         * @classdesc Represents a UserInfo.
+                         * @implements IUserInfo
+                         * @constructor
+                         * @param {bilibili.community.service.dm.v1.IUserInfo=} [properties] Properties to set
+                         */
+                        function UserInfo(properties) {
+                            if (properties)
+                                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * UserInfo mid.
+                         * @member {number} mid
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.mid = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                        /**
+                         * UserInfo name.
+                         * @member {string} name
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.name = "";
+
+                        /**
+                         * UserInfo sex.
+                         * @member {string} sex
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.sex = "";
+
+                        /**
+                         * UserInfo face.
+                         * @member {string} face
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.face = "";
+
+                        /**
+                         * UserInfo sign.
+                         * @member {string} sign
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.sign = "";
+
+                        /**
+                         * UserInfo rank.
+                         * @member {number} rank
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @instance
+                         */
+                        UserInfo.prototype.rank = 0;
+
+                        /**
+                         * Encodes the specified UserInfo message. Does not implicitly {@link bilibili.community.service.dm.v1.UserInfo.verify|verify} messages.
+                         * @function encode
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @static
+                         * @param {bilibili.community.service.dm.v1.IUserInfo} message UserInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UserInfo.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.mid != null && Object.hasOwnProperty.call(message, "mid"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.mid);
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                            if (message.sex != null && Object.hasOwnProperty.call(message, "sex"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.sex);
+                            if (message.face != null && Object.hasOwnProperty.call(message, "face"))
+                                writer.uint32(/* id 4, wireType 2 =*/34).string(message.face);
+                            if (message.sign != null && Object.hasOwnProperty.call(message, "sign"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.sign);
+                            if (message.rank != null && Object.hasOwnProperty.call(message, "rank"))
+                                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.rank);
+                            return writer;
+                        };
+
+                        /**
+                         * Decodes a UserInfo message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {bilibili.community.service.dm.v1.UserInfo} UserInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UserInfo.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.bilibili.community.service.dm.v1.UserInfo();
+                            while (reader.pos < end) {
+                                let tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.mid = reader.int64();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.sex = reader.string();
+                                        break;
+                                    }
+                                case 4: {
+                                        message.face = reader.string();
+                                        break;
+                                    }
+                                case 5: {
+                                        message.sign = reader.string();
+                                        break;
+                                    }
+                                case 6: {
+                                        message.rank = reader.int32();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Gets the default type url for UserInfo
+                         * @function getTypeUrl
+                         * @memberof bilibili.community.service.dm.v1.UserInfo
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UserInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/bilibili.community.service.dm.v1.UserInfo";
+                        };
+
+                        return UserInfo;
                     })();
 
                     return v1;

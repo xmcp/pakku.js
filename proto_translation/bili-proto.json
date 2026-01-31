@@ -96,6 +96,10 @@
                                                         "dmRestrict": {
                                                             "type": "DMRestrict",
                                                             "id": 19
+                                                        },
+                                                        "subtitle": {
+                                                            "type": "VideoSubtitle",
+                                                            "id": 20
                                                         }
                                                     }
                                                 },
@@ -927,6 +931,181 @@
                                                             "rule": "repeated",
                                                             "type": "PostPanelV2",
                                                             "id": 4
+                                                        }
+                                                    }
+                                                },
+                                                "VideoSubtitle": {
+                                                    "fields": {
+                                                        "lan": {
+                                                            "type": "string",
+                                                            "id": 1
+                                                        },
+                                                        "lanDoc": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "subtitles": {
+                                                            "rule": "repeated",
+                                                            "type": "SubtitleItem",
+                                                            "id": 3
+                                                        },
+                                                        "subtitlePosition": {
+                                                            "type": "SubtitlePosition",
+                                                            "id": 4
+                                                        },
+                                                        "fontSizeType": {
+                                                            "type": "FontSizeType",
+                                                            "id": 5
+                                                        }
+                                                    }
+                                                },
+                                                "SubtitleType": {
+                                                    "values": {
+                                                        "CC": 0,
+                                                        "AI": 1
+                                                    }
+                                                },
+                                                "SubtitleAiType": {
+                                                    "values": {
+                                                        "Normal": 0,
+                                                        "Translate": 1
+                                                    }
+                                                },
+                                                "SubtitleAiStatus": {
+                                                    "values": {
+                                                        "None": 0,
+                                                        "Exposure": 1,
+                                                        "Assist": 2
+                                                    }
+                                                },
+                                                "SubtitleRole": {
+                                                    "values": {
+                                                        "Default": 0,
+                                                        "Main": 1,
+                                                        "Secondary": 2
+                                                    }
+                                                },
+                                                "SubtitleItem": {
+                                                    "fields": {
+                                                        "id": {
+                                                            "type": "int64",
+                                                            "id": 1
+                                                        },
+                                                        "idStr": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "lan": {
+                                                            "type": "string",
+                                                            "id": 3
+                                                        },
+                                                        "lanDoc": {
+                                                            "type": "string",
+                                                            "id": 4
+                                                        },
+                                                        "subtitleUrl": {
+                                                            "type": "string",
+                                                            "id": 5
+                                                        },
+                                                        "author": {
+                                                            "type": "UserInfo",
+                                                            "id": 6
+                                                        },
+                                                        "type": {
+                                                            "type": "SubtitleType",
+                                                            "id": 7
+                                                        },
+                                                        "lanDocBrief": {
+                                                            "type": "string",
+                                                            "id": 8
+                                                        },
+                                                        "aiType": {
+                                                            "type": "SubtitleAiType",
+                                                            "id": 9
+                                                        },
+                                                        "aiStatus": {
+                                                            "type": "SubtitleAiStatus",
+                                                            "id": 10
+                                                        },
+                                                        "role": {
+                                                            "type": "SubtitleRole",
+                                                            "id": 11
+                                                        },
+                                                        "subtitleHeight": {
+                                                            "type": "SubtitleHeight",
+                                                            "id": 12
+                                                        }
+                                                    }
+                                                },
+                                                "SubtitlePosition": {
+                                                    "fields": {
+                                                        "xMin": {
+                                                            "type": "double",
+                                                            "id": 1
+                                                        },
+                                                        "yMin": {
+                                                            "type": "double",
+                                                            "id": 2
+                                                        },
+                                                        "xMax": {
+                                                            "type": "double",
+                                                            "id": 3
+                                                        },
+                                                        "yMax": {
+                                                            "type": "double",
+                                                            "id": 4
+                                                        },
+                                                        "purpose": {
+                                                            "type": "PurposeType",
+                                                            "id": 5
+                                                        }
+                                                    }
+                                                },
+                                                "PurposeType": {
+                                                    "values": {
+                                                        "PurposeCover": 0,
+                                                        "PurposeOGV": 1
+                                                    }
+                                                },
+                                                "FontSizeType": {
+                                                    "values": {
+                                                        "FontSizeDefault": 0,
+                                                        "FontSizeOGV": 1
+                                                    }
+                                                },
+                                                "SubtitleHeight": {
+                                                    "fields": {
+                                                        "value": {
+                                                            "type": "double",
+                                                            "id": 1
+                                                        }
+                                                    }
+                                                },
+                                                "UserInfo": {
+                                                    "fields": {
+                                                        "mid": {
+                                                            "type": "int64",
+                                                            "id": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "id": 2
+                                                        },
+                                                        "sex": {
+                                                            "type": "string",
+                                                            "id": 3
+                                                        },
+                                                        "face": {
+                                                            "type": "string",
+                                                            "id": 4
+                                                        },
+                                                        "sign": {
+                                                            "type": "string",
+                                                            "id": 5
+                                                        },
+                                                        "rank": {
+                                                            "type": "int32",
+                                                            "id": 6
                                                         }
                                                     }
                                                 }
