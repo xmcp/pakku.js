@@ -156,6 +156,7 @@ tweak_after_pakku(async (chunk, env)=>{
 - `commandDms`：视频中的互动控件，例如相关视频、投票、打分、一键三连等
 - `specialDms`：视频中的特殊弹幕，B 站不会把特殊弹幕混在正常弹幕池中，而是单独上传到 CDN 然后在这个字段中指示特殊弹幕的 URL
 - `dmSetting`：播放器的弹幕设置，默认会从 B 站账号同步
+- `subtitle`：视频的字幕信息，会显示在播放器右下角的字幕菜单中
 
 ## 示例
 
