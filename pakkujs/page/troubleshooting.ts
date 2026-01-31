@@ -98,6 +98,18 @@ async function test_worker() {
 }
 void test_worker();
 
+async function get_full_ua() {
+    try {
+        let ua = await (window.navigator as any).userAgentData.getHighEntropyValues(
+            ['architecture', 'bitness', 'model', 'platformVersion', 'fullVersionList']
+        );
+        debug.textContent += '\n\n**Full User Agent:** `' + JSON.stringify(ua) + '`';
+    } catch(e) {
+        // firefox does not support userAgentData
+    }
+}
+void get_full_ua();
+
 (async function() {
     throw new Error('async error log is working');
 })();
