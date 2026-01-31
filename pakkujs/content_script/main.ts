@@ -139,7 +139,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
     else if(msg.type==='reload_danmu') {
         local_config = null;
-        if(window.reload_danmu_magic)
+        if(msg.trigger_player && window.reload_danmu_magic)
             window.reload_danmu_magic(msg.key);
     }
     else {

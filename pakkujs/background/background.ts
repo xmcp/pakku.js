@@ -139,10 +139,11 @@ async function toggle_global_switch() {
     // notify popup and content scripts
     chrome.runtime.sendMessage({type: 'reload_popup_state', tabid: null})
         .catch(()=>{});
+    let cur_tabid = (await chrome.tabs.query({active: true, currentWindow: true}))[0]?.id || null;
     for(let tab of await chrome.tabs.query({})) {
         let url = tab.url;
         if(url?.includes('bilibili.com/'))
-            chrome.tabs.sendMessage(tab.id!, {type: 'reload_danmu', key: new_switch ? 2 : 1})
+            chrome.tabs.sendMessage(tab.id!, {type: 'reload_danmu', key: new_switch ? 2 : 1, trigger_player: (tab.id===cur_tabid)})
                 .catch(()=>{});
     }
 
