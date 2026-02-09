@@ -118,7 +118,7 @@ async function ver_check() {
     let chrome_ver_match = navigator.userAgent.match(/Chrome\/(\d+)/);
     let chrome_ver = chrome_ver_match ? parseInt(chrome_ver_match[1]) : null;
 
-    if(process.env.PAKKU_CHANNEL!=='firefox' && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
+    if(!IS_FIREFOX && chrome_ver && chrome_ver<MIN_CHROME_VERSION) {
         show_note(
             'browser_version',
             `你的浏览器内核版本太低（实为 ${chrome_ver}，需要 ≥${MIN_CHROME_VERSION}），部分功能不可用。请更新浏览器。`,
