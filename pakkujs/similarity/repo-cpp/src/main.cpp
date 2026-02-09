@@ -4,6 +4,7 @@
 typedef uint8_t uchar;
 typedef uint16_t ushort;
 typedef uint32_t uint;
+typedef uint64_t ulong;
 
 struct Config {
     int max_dist = 0;
@@ -18,9 +19,7 @@ struct Config {
     uint dispose_idx = 0;
 } config;
 
-std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict = {
-    #include "pinyin_dict.txt"
-};
+extern std::unordered_map<ushort, std::pair<uchar, uchar>> pinyin_dict;
 
 constexpr int PINYIN_BASE = 0xe000; // U+E000 ~ U+F8FF: Private Use Area
 constexpr int HASH_MOD = 1007;
@@ -54,6 +53,16 @@ struct UnorderedContainer {
     }
 };
 
+std::unordered_map<ulong, uint> precise_matcher;
+
+ulong precise_matcher_hash(const ushort *s, ushort mode) {
+    ulong ret = mode;
+    for(ushort c = *s; c; c = *(++s)) {
+        ret ^= c + 0x9e3779b9 + (ret << 6) + (ret >> 2);
+    }
+    return ret;
+}
+
 struct DanmuCacheline {
     uint idx{};
     uint mode{};
@@ -61,15 +70,20 @@ struct DanmuCacheline {
     UnorderedContainer<ushort> str{};
     UnorderedContainer<ushort> pinyin{};
     UnorderedContainer<uint> gram{};
+    std::vector<ulong> peers{};
 
     void dispose() {
         orig.clear();
         str.dispose();
         pinyin.dispose();
         gram.dispose();
+        for(auto &peer: peers) {
+            precise_matcher.erase(peer);
+        }
+        peers.clear();
     }
 
-    explicit DanmuCacheline(const ushort *s, uint mode, uint idx): mode(mode), idx(idx) {
+    explicit DanmuCacheline(const ushort *s, uint mode, uint idx): idx(idx), mode(mode), peers({}) {
         // gen orig and str
         for(ushort c = *s; c; c = *(++s)) {
             orig.push_back(c);
@@ -153,7 +167,7 @@ float cosine_distance(const UnorderedContainer<uint> &p, const UnorderedContaine
     return static_cast<float>(x) * x / y / z;
 }
 
-enum CombinedReason {
+enum CombinedReason: uint {
     combined_identical = 0,
     combined_edit_distance = 1,
     combined_pinyin_distance = 2,
@@ -167,6 +181,9 @@ uint sim_result(CombinedReason reason, uint dist, uint target_idx) {
 }
 
 uint check_similar_single(const DanmuCacheline &p, const DanmuCacheline &q) {
+    if(!config.cross_mode && p.mode!=q.mode)
+        return 0;
+
     uint idx_delta = p.idx - q.idx;
     // assert 0 < idx_delta <= MAX_IDX_RANGE
 
@@ -246,6 +263,7 @@ extern "C" {
     uint check_similar(uint mode, uint index_l) {
         uint index_r = nearby_danmu.size();
         auto p = DanmuCacheline(config.str_buf, mode, index_r);
+        ulong h = precise_matcher_hash(config.str_buf, config.cross_mode ? 0 : mode);
 
         for(;config.dispose_idx<index_l; config.dispose_idx++) {
             nearby_danmu[config.dispose_idx].dispose();
@@ -254,18 +272,31 @@ extern "C" {
         if(index_l + MAX_IDX_RANGE < index_r)
             index_l = index_r - MAX_IDX_RANGE;
 
-        for(uint idx=index_l; idx<index_r; idx++) {
-            const auto &q = nearby_danmu[idx];
-            if(!config.cross_mode && p.mode!=q.mode)
-                continue;
-
-            uint res = check_similar_single(p, q);
-            if(res)
-                return res;
+        auto it = precise_matcher.find(h);
+        if(it != precise_matcher.end()) {
+            uint idx = it->second;
+            if(idx >= index_l) {
+                uint res = check_similar_single(p, nearby_danmu[idx]);
+                if(res) {
+                    // override reason to ideltical
+                    res = (res & ((1u << 30) - 1u)) | (combined_identical << 30);
+                    return res;
+                }
+            }
         }
 
-        if(!config.index_r_lock)
+        for(uint idx=index_l; idx<index_r; idx++) {
+            uint res = check_similar_single(p, nearby_danmu[idx]);
+            if(res) {
+                precise_matcher[h] = idx;
+                return res;
+            }
+        }
+
+        if(!config.index_r_lock) {
+            precise_matcher[h] = index_r;
             nearby_danmu.push_back(std::move(p));
+        }
         return 0;
     }
 }

@@ -27,4 +27,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
     -s EXPORT_KEEPALIVE=1 \
 ")
 
-add_executable(similarity-gen src/main.cpp)
+add_executable(similarity-gen src/main.cpp src/pinyin_dict.cpp)
