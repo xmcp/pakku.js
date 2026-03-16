@@ -257,6 +257,7 @@ extern "C" {
         config.dispose_idx = 0;
 
         nearby_danmu.clear();
+        precise_matcher.clear();
     }
 
     void begin_index_lock() {
@@ -278,7 +279,7 @@ extern "C" {
         auto it = precise_matcher.find(h);
         if(it != precise_matcher.end()) {
             uint idx = it->second;
-            if(idx >= index_l) {
+            if(idx >= index_l && idx < index_r) {
                 uint res = check_similar_single(p, nearby_danmu[idx]);
                 if(res) {
                     // override reason to ideltical
