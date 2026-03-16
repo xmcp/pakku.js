@@ -109,7 +109,7 @@ struct DanmuCacheline {
         }
 
         // gen gram
-        if(config.max_cosine<=100) {
+        if(config.max_cosine<=100 && !orig.empty()) {
             uint clast = (*orig.crbegin()) % HASH_MOD;
             for(uint c: orig) {
                 c = c % HASH_MOD;
@@ -163,6 +163,9 @@ float cosine_distance(const UnorderedContainer<uint> &p, const UnorderedContaine
         z += xb*xb;
         ed_b[c] = 0;
     }
+
+    if(y<=0 || z<=0)
+        return 0.0f;
 
     return static_cast<float>(x) * x / y / z;
 }
