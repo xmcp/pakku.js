@@ -1,4 +1,6 @@
 import {Config, DEFAULT_CONFIG, fix_invalid_keys, get_config, migrate_config, save_config} from '../background/config';
+import {do_fix_permission, is_permission_buggy} from '../background/permission_check';
+
 import Permissions = chrome.permissions.Permissions;
 
 const IS_FIREFOX = process.env.PAKKU_CHANNEL==='firefox';
@@ -196,20 +198,16 @@ try {
 
 let perms = await get_perms();
 
-if(!perms.origins?.includes('*://*.bilibili.com/*')) {
+if(is_permission_buggy(perms)) {
     show_note(
         'permission',
-        '需要授权 pakku 访问 bilibili.com 才能正常工作，点击授予权限。',
+        '需要授权 pakku 访问 bilibili.com 才能正常工作，点击修复权限。',
         function() {
             // xxx: cannot use async here, https://bugzilla.mozilla.org/show_bug.cgi?id=1398833
-            chrome.permissions.request({
-                origins: ['*://*.bilibili.com/*', 'ws://*.bilibili.com/*', 'wss://*.bilibili.com/*'],
-            })
+            do_fix_permission(true, config.BREAK_UPDATE)
                 .then((granted)=>{
                     if(granted) {
                         show_note('permission', null, null);
-                        void chrome.runtime.sendMessage({type: 'reset_dnr_status'});
-                        void chrome.notifications.clear('//perm_hotfix');
                         chrome.permissions.getAll().then((p)=>{perms = p;});
                     }
                 });

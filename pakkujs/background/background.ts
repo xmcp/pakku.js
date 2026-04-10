@@ -2,11 +2,12 @@ import {install_dnr_rule} from "./danmu_update_blocker";
 import {get_config, hotfix_on_update, save_config} from "./config";
 import {get_state, HAS_SESSION_STORAGE, init_state, save_state} from "./state";
 import {LocalizedConfig} from "../core/types";
+import {is_permission_buggy, do_fix_permission} from './permission_check';
 
 async function check_fix_permission() {
     let perms = await chrome.permissions.getAll();
 
-    if(!perms.origins?.includes('*://*.bilibili.com/*')) {
+    if(is_permission_buggy(perms)) {
         chrome.notifications.create('//perm_hotfix', {
             type: 'basic',
             iconUrl: chrome.runtime.getURL('/assets/logo.png'),
@@ -24,37 +25,16 @@ async function check_fix_permission() {
     }
 }
 
-async function do_fix_permission() {
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1763915
-    if(process.env.PAKKU_CHANNEL==='firefox') {
-        await chrome.tabs.create({url: chrome.runtime.getURL('/page/options.html')});
-        return;
-    }
-
-    let granted = await chrome.permissions.request({
-        origins: ['*://*.bilibili.com/*'],
-    });
-    console.log('fix permission granted:', granted);
-
-    if(granted) {
-        chrome.notifications.clear('//perm_hotfix');
-        chrome.notifications.create('//perm_hotfix_done', {
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('/assets/logo.png'),
-            title: '权限修复成功',
-            message: '您可能需要刷新已经打开的B站页面',
-        });
-    }
-}
-
 chrome.notifications.onClicked.addListener(async function(notif_id) {
     if(notif_id==='//perm_hotfix') {
-        await do_fix_permission();
+        // xxx: we cannot load config.BREAK_UPDATE here because async breaks user gesture
+        await do_fix_permission(false, true);
     }
 });
 chrome.notifications.onButtonClicked.addListener(async function(notif_id,btn_idx) {
     if(notif_id==='//perm_hotfix') {
-        await do_fix_permission();
+        // xxx: we cannot load config.BREAK_UPDATE here because async breaks user gesture
+        await do_fix_permission(false, true);
     }
 });
 
