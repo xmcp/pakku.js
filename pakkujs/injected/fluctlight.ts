@@ -59,7 +59,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         progress_elem = null;
 
     if(!progress_elem) {
-        console.log('! fluctlight cannot find progress_elem');
+        console.log('pakku fluctlight: cannot find progress_elem');
         return;
     }
 
@@ -166,7 +166,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         }
 
         bar_elem.dataset['pakku_cache_width'] = ''+WIDTH;
-        console.log('pakku fluctlight: recalc dispval graph with WIDTH =', WIDTH);
+        console.debug('pakku fluctlight: recalc dispval graph with WIDTH =', WIDTH);
 
         function apply_dispval(arr: number[]) {
             return function (p: DanmuObject) {
@@ -354,7 +354,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
                 false
         );
 
-        console.log('pakku fluctlight: graph observer, bar_opened =', bar_opened);
+        console.debug('pakku fluctlight: graph observer, bar_opened =', bar_opened);
 
         if (bar_opened && canvas_elem.style.display === 'none') {
             canvas_elem.style.display = 'initial';
@@ -389,11 +389,11 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
     let time_elem = bar_elem.querySelector('.bilibili-player-video-progress-detail-time, .squirtle-progress-time, .bpx-player-progress-preview-time') as HTMLElement;
     let detail_elem = bar_elem.querySelector('.bilibili-player-video-progress-detail, .squirtle-progress-detail, .bpx-player-progress-popup') as HTMLElement;
     if (!time_elem) {
-        console.log('! fluctlight cannot find time_elem');
+        console.log('pakku fluctlight: cannot find time_elem');
         return;
     }
     if (!detail_elem) {
-        console.log('! fluctlight cannot find detail_elem')
+        console.log('pakku fluctlight: cannot find detail_elem')
     }
 
     if (_version === 2)
@@ -453,7 +453,7 @@ function inject_fluctlight_details(bar_elem: HTMLElement, _version: int) {
         for(let mut of muts) {
             if (mut.addedNodes) {
                 let time_str = mut.addedNodes[0].textContent!;
-                //console.log('pakku fluctlight: details', time_str);
+                //console.debug('pakku fluctlight: details', time_str);
 
                 if (time_str === fluct.dataset['current_time']) return;
                 fluct.dataset['current_time'] = ''+time_str;
@@ -522,7 +522,7 @@ export function inject_fluctlight() {
     wait_until_success(function () {
         let seekbar_v4_elem = window.root_elem.querySelector('.bpx-player-progress-wrap') as HTMLElement;
         if (seekbar_v4_elem) {
-            console.log('pakku injector: seekbar v4_elem', seekbar_v4_elem);
+            console.debug('pakku injector: seekbar v4_elem', seekbar_v4_elem);
             inject_fluctlight_graph(seekbar_v4_elem, 4, null);
             inject_fluctlight_details(seekbar_v4_elem, 4);
             return true;
@@ -530,7 +530,7 @@ export function inject_fluctlight() {
 
         let seekbar_v3_elem = window.root_elem.querySelector('.squirtle-progress-wrap') as HTMLElement;
         if (seekbar_v3_elem) {
-            console.log('pakku injector: seekbar v3_elem', seekbar_v3_elem);
+            console.debug('pakku injector: seekbar v3_elem', seekbar_v3_elem);
             inject_fluctlight_graph(seekbar_v3_elem, 3, null);
             inject_fluctlight_details(seekbar_v3_elem, 3);
             return true;
@@ -539,14 +539,14 @@ export function inject_fluctlight() {
         let seekbar_v2_elem = window.root_elem.querySelector('.bilibili-player-video-progress') as HTMLElement;
         let seekbar_cvs_elem = window.root_elem.querySelector('.bilibili-player-video-control-top, .bpx-player-control-wrap .squirtle-controller, .bpx-player-control-wrap .bpx-player-progress-wrap') as HTMLElement;
         if (seekbar_v2_elem && seekbar_cvs_elem) {
-            console.log('pakku injector: seekbar v2_elem', seekbar_v2_elem, 'cvs_elem', seekbar_cvs_elem);
+            console.debug('pakku injector: seekbar v2_elem', seekbar_v2_elem, 'cvs_elem', seekbar_cvs_elem);
             inject_fluctlight_graph(seekbar_v2_elem, 2, seekbar_cvs_elem);
             inject_fluctlight_details(seekbar_v2_elem, 2);
             return true;
         }
 
         if (seekbar_v2_elem) {
-            console.log('pakku injector: seekbar v1_elem', seekbar_v2_elem);
+            console.debug('pakku injector: seekbar v1_elem', seekbar_v2_elem);
             inject_fluctlight_graph(seekbar_v2_elem, 1, null);
             inject_fluctlight_details(seekbar_v2_elem, 1);
             return true;

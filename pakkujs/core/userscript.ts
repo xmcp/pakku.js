@@ -78,7 +78,7 @@ export class UserscriptWorker {
         if(this.init_error)
             return Promise.reject(this.init_error);
 
-        console.log('pakku userscript: exec', arg.type);
+        console.debug('pakku userscript: exec', arg.type);
         return new Promise((resolve: (res: RetType)=>void, reject: (e: any)=>void) => {
             let serial = ++this.queue_serial;
             this.worker.postMessage([serial, arg]);

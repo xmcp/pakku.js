@@ -38,7 +38,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     try {
         window.top!.location.href;
     } catch(e) {
-        console.log('pakku ajax: top frame cross domain, confirming worker');
+        console.debug('pakku ajax: top frame cross domain, confirming worker');
         worker_ready = false;
 
         window.top!.postMessage({
@@ -48,7 +48,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             if (!is_bilibili(event.origin))
                 return;
             if (event.data.type && event.data.type === 'pakku_pong') {
-                console.log('pakku ajax: confirmed worker available');
+                console.debug('pakku ajax: confirmed worker available');
                 worker_ready = true;
                 window.removeEventListener('message', top_waiter);
             }
@@ -205,7 +205,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
                 return null;
             };
 
-            console.log('pakku ajax: got tampered xhr response for', xhr.pakku_url, xhr.responseType);
+            console.debug('pakku ajax: got tampered xhr response for', xhr.pakku_url, xhr.responseType);
             for(let i = 0; i < xhr.pakku_load_callback.length; i++)
                 xhr.pakku_load_callback[i].bind(xhr)({
                     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event
@@ -281,7 +281,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
                     return;
                 }
 
-                console.log('pakku ajax: got tampered fetch response for', url);
+                console.debug('pakku ajax: got tampered fetch response for', url);
 
                 let resp_data;
                 if(resp.data instanceof Uint8Array)

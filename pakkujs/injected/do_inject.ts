@@ -66,13 +66,13 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
 
             return;
         } else {
-            console.log('pakku injector: root_elem', window.root_elem, 'tag_elem', pakku_tag_elem);
+            console.debug('pakku injector: root_elem', window.root_elem, 'tag_elem', pakku_tag_elem);
             pakku_tag_elem.classList.add('__pakku_injected');
         }
 
         if(config.TOOLTIP) {
             let player_elem = pakku_tag_elem;
-            console.log('pakku injector: list_elem', list_elem, 'player_elem', player_elem);
+            console.debug('pakku injector: list_elem', list_elem, 'player_elem', player_elem);
             if(player_elem)
                 inject_panel(list_elem || document.createElement('div'), player_elem, config);
         }
@@ -90,6 +90,8 @@ export function do_inject(chunks: Map<int, DanmuChunk<DanmuObjectRepresentative>
         }
 
         window.reload_danmu_magic = reload_danmu_magic;
+
+        console.log('pakku injector: ui injected');
     }
 
     try_inject();

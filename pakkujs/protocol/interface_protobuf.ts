@@ -136,7 +136,7 @@ function protoapi_sign_req(e: AnyObject, protoapi_img_url: string | null, protoa
 }
 
 async function protoapi_view_api(ingress: ProtobufIngressSeg): Promise<ArrayBuffer> {
-    console.log('pakku protobuf api: request view api', ingress);
+    console.debug('pakku protobuf api: request view api', ingress);
 
     let res = await fetch(
         `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${encodeURIComponent(ingress.cid)}&pid=${encodeURIComponent(ingress.pid)}`,
@@ -247,7 +247,7 @@ export async function ingress_proto_seg(ingress: ProtobufIngressSeg, chunk_callb
             jobs.push(return_from_resp(i, protoapi_get_seg(ingress, i)));
         await Promise.all(jobs);
     } else { // guess page numbers
-        console.log('pakku protobuf api: guessing page numbers');
+        console.debug('pakku protobuf api: guessing page numbers');
 
         // noinspection ES6MissingAwait
         let req = [chunk_1_req, chunk_2_req, protoapi_get_seg(ingress, 3)];

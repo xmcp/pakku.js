@@ -268,7 +268,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
                     infos.push(d);
         }
 
-        console.log('pakku panel: show panel', infos, accurate_guess ? '(accurate)' : '(searched)');
+        console.debug('pakku panel: show panel', infos, accurate_guess ? '(accurate)' : '(searched)');
 
         function redraw_ui(idx: int) {
             if(idx < 0) idx += infos.length;
@@ -336,7 +336,7 @@ export function inject_panel(list_elem: HTMLElement, player_elem: HTMLElement, c
 
     if(window.panel_listener) {
         list_elem.removeEventListener('click', window.panel_listener);
-        console.log('pakku panel: removing previous hook listener');
+        console.debug('pakku panel: removing previous hook listener');
     }
     list_elem.addEventListener('click', window.panel_listener = function (e) {
         let dm_obj = e.target;

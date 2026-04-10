@@ -2,7 +2,7 @@ import {int} from "../core/types";
 
 export function show_danmu_list() {
     let list_switch_elem = window.root_elem.querySelector('.danmaku-box .bui-collapse-wrap-folded .bui-collapse-header, #danmukuBox .bui-collapse-wrap-folded .bui-collapse-header') as HTMLElement;
-    console.log('pakku injector: list_switch_elem', list_switch_elem);
+    console.debug('pakku injector: list_switch_elem', list_switch_elem);
     if(list_switch_elem) {
         setTimeout(function () {
             list_switch_elem.click();
@@ -13,12 +13,12 @@ export function show_danmu_list() {
 export function disable_danmu() {
     let danmu_switch = window.root_elem.querySelector('.bilibili-player-video-danmaku-switch input[type=checkbox], .bpx-player-dm-switch input[type=checkbox]') as HTMLInputElement;
     if(danmu_switch) {
-        console.log('pakku injector: danmu_switch', danmu_switch);
+        console.debug('pakku injector: danmu_switch', danmu_switch);
         if(danmu_switch.checked)
             danmu_switch.click();
     } else { // legacy
         let disable_elem = window.root_elem.querySelector('.bilibili-player-video-btn-danmaku') as HTMLElement;
-        console.log('pakku injector: disable_elem LEGACY', disable_elem);
+        console.debug('pakku injector: disable_elem LEGACY', disable_elem);
         if(disable_elem && !disable_elem.classList.contains('video-state-danmaku-off'))
             disable_elem.click();
     }
@@ -58,7 +58,7 @@ export function reload_danmu_magic(key: int) {
             return;
         }
 
-        console.log('pakku reload danmu: activating date picker with', history_btn);
+        console.debug('pakku reload danmu: activating date picker with', history_btn);
         history_btn.click();
         history_btn.click();
         date_picker = window.root_elem.querySelector('.player-auxiliary-danmaku-date-picker-day-content, .bpx-player-date-picker-day-content, .bilibili-player-danmaku-date-picker-day-content') as HTMLElement;

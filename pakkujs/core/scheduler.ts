@@ -135,7 +135,7 @@ class Scheduler {
         if(this.cleaned_up)
             egress.wait_finished = false;
 
-        console.log('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
+        console.debug('pakku scheduler: route ingress =', this.ingress, 'egress =', egress);
         this.egresses.push([egress, callback]);
         this.try_serve_egress();
     }
@@ -163,14 +163,14 @@ class Scheduler {
         try {
             if(chunk.objs.length) {
                 res = await this.pool.exec([chunk, next_chunk_filtered, this.config]);
-                console.log('pakku scheduler: got combine result', segidx, res.clusters.length);
+                console.debug('pakku scheduler: got combine result', segidx, res.clusters.length);
             } else {
                 res = {
                     clusters: [],
                     stats: new Stats(),
                     deleted_chunk: [],
                 };
-                console.log('pakku scheduler: got combine result', segidx, '(skipped)');
+                console.debug('pakku scheduler: got combine result', segidx, '(skipped)');
             }
 
             function retrieve_ptr_idx(ptr_idx: int): DanmuObject {
@@ -245,7 +245,7 @@ class Scheduler {
 
         this.chunks_out.set(segidx, chunk_out);
 
-        console.log('pakku scheduler: got chunks out', segidx, chunk_out.objs.length);
+        console.debug('pakku scheduler: got chunks out', segidx, chunk_out.objs.length);
         this.write_cur_message_stats();
 
         this.try_serve_egress();
@@ -269,7 +269,7 @@ class Scheduler {
             if(res===MissingData)
                 return true; // keep in queue
             else {
-                console.log('pakku scheduler: served egress', egress);
+                console.debug('pakku scheduler: served egress', egress);
                 callback({data: res});
                 return false; // remove from queue
             }
@@ -373,7 +373,7 @@ class Scheduler {
         this.start_ts = +new Date();
         try {
             await perform_ingress(this.ingress, async (idx, chunk) => {
-                console.log('pakku scheduler: got ingress chunk', idx, chunk.objs.length);
+                console.debug('pakku scheduler: got ingress chunk', idx, chunk.objs.length);
 
                 if(this.userscript && this.userscript.n_before) {
                     try {
@@ -432,7 +432,7 @@ class Scheduler {
             }
 
             if(this.userscript.terminated) { // normally shouldn't happen, but possible when network is too slow
-                console.log('pakku userscript: worker terminated, skip proto_view');
+                console.debug('pakku userscript: worker terminated, skip proto_view');
                 return view_req;
             }
 

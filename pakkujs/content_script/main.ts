@@ -167,7 +167,7 @@ window.addEventListener('message', async function(event) {
         }, event.origin as any);
     }
     else if(is_bilibili(event.origin) && event.data.type=='pakku_ajax_request') {
-        console.log('pakku injected: got ajax request', event.data.url);
+        console.debug('pakku injected: got ajax request', event.data.url);
         let sendResponse = (resp: AjaxResponse) => {
             event.source!.postMessage({
                 type: 'pakku_ajax_response',
@@ -181,7 +181,7 @@ window.addEventListener('message', async function(event) {
 
         let url = url_finder.find(event.data.url);
         if(!url) {
-            console.log('pakku injected: url not matched:', event.data.url);
+            console.debug('pakku injected: url not matched:', event.data.url);
             sendResponse(null);
             return;
         }
@@ -205,7 +205,7 @@ window.addEventListener('message', async function(event) {
             !local_config.GLOBAL_SWITCH &&
             !(url[0].type==='proto_seg' && url[0].is_magicreload) // still process magic reload requests to avoid HTTP 400
         ) {
-            console.log('pakku injected: SKIPPED because global switch off');
+            console.debug('pakku injected: SKIPPED because global switch off');
             sendResponse(null);
             return;
         }

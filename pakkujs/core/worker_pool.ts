@@ -9,10 +9,10 @@ type PostedMessage = {cmd: typeof INIT_FUNCTION_NAME, args: InitArgsType} | {cmd
 
 const WORKER_FOOTER = `
 onmessage = async (e) => {
-    console.log('pakku worker: received job ' + e.data.cmd);
+    console.debug('pakku worker: received job ' + e.data.cmd);
     try {
         let res = await self[e.data.cmd](...e.data.args);
-        console.log('pakku worker: job done');
+        console.debug('pakku worker: job done');
         postMessage({error: false, output: res});
     } catch(err) {
         console.error('pakku worker: job FAILED', err);
@@ -71,10 +71,10 @@ export class WorkerMaker {
         let ret = {
             onmessage: null as (null | ((e: {data: {error: true, exc: any} | {error: false, output: RetType}})=>void)),
             postMessage: async (msg: PostedMessage)=>{
-                console.log('pakku worker (simulated): received job', msg.cmd);
+                console.debug('pakku worker (simulated): received job', msg.cmd);
                 try {
                     let res = await this.simulated_module![msg.cmd](...msg.args);
-                    console.log('pakku worker (simulated): job done');
+                    console.debug('pakku worker (simulated): job done');
                     ret.onmessage!({data: {error: false, output: res}});
                 } catch(err) {
                     console.error('pakku worker (simulated): job FAILED', err);
@@ -109,7 +109,7 @@ export class WorkerPool {
     }
 
     async spawn(init_args: InitArgsType) {
-        console.log('pakku worker pool: spawn', this.pool_size, 'workers');
+        console.debug('pakku worker pool: spawn', this.pool_size, 'workers');
 
         let maker = new WorkerMaker();
         if(this.pool_size===0) {
@@ -173,7 +173,7 @@ export class WorkerPool {
                 return;
             }
         }
-        //console.log('pakku worker pool: no idle workers, queue =', this.queue.length);
+        //console.debug('pakku worker pool: no idle workers, queue =', this.queue.length);
     }
 
     _exec(msg: PostedMessage): Promise<RetType> {
@@ -194,7 +194,7 @@ export class WorkerPool {
     terminate() {
         if(!this.terminated) {
             this.terminated = true;
-            console.log('pakku worker pool: terminated');
+            console.debug('pakku worker pool: terminated');
             for(let w of this.workers) {
                 w.worker.terminate();
             }
