@@ -82,7 +82,7 @@ function safe_int(x: string, min: number | null, max: number | null, fallback: n
 }
 
 export function migrate_config(remote_config: AnyObject): Config {
-    if(remote_config._CONFIG_VER === DEFAULT_CONFIG._CONFIG_VER) {
+    if(remote_config._CONFIG_VER===DEFAULT_CONFIG._CONFIG_VER) {
         // we can skip migration, but we still merge it to the default config to deal with possibly missing keys
         return {...DEFAULT_CONFIG, ...remote_config};
     }
@@ -93,11 +93,11 @@ export function migrate_config(remote_config: AnyObject): Config {
     if(!remote_config._LAST_UPDATE_TIME) { // no remote config, init a default one
         console.log('pakku config: init to default');
         config = DEFAULT_CONFIG;
+        config._LAST_UPDATE_TIME = gen_timestamp();
     }
 
     // 0 -> 1
     if(config._CONFIG_VER < 1) {
-        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 1;
 
         config.ADVANCED_USER = config._ADVANCED_USER==='on';
@@ -145,7 +145,6 @@ export function migrate_config(remote_config: AnyObject): Config {
 
     // 1 -> 2
     if(config._CONFIG_VER < 2) {
-        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 2;
 
         config.SHRINK_THRESHOLD = config.SHRINK ? 50 : 0;
@@ -156,21 +155,11 @@ export function migrate_config(remote_config: AnyObject): Config {
     }
 
     // 2 -> 3
-    /*
-    if(config._CONFIG_VER < 3) {
-        config._LAST_UPDATE_TIME = gen_timestamp();
-        config._CONFIG_VER = 3;
-
-        // no changes needed here.
-
-        // v3 adds config compression.
-        // bumped the version to make sure old clients won't override the config in new format.
-    }
-    */
+    // no changes needed here. v3 only adds config compression.
+    // bumped the version to make sure old clients won't override the config in new format.
 
     // 3 -> 4
     if(config._CONFIG_VER < 4) {
-        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 4;
 
         config.TAKEOVER_AIJUDGE = DEFAULT_CONFIG.TAKEOVER_AIJUDGE;
@@ -179,7 +168,6 @@ export function migrate_config(remote_config: AnyObject): Config {
 
     // 4 -> 5
     if(config._CONFIG_VER < 5) {
-        config._LAST_UPDATE_TIME = gen_timestamp();
         config._CONFIG_VER = 5;
 
         config.FORCELIST_APPLY_SINGULAR = DEFAULT_CONFIG.FORCELIST_APPLY_SINGULAR;
