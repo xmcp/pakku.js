@@ -199,6 +199,7 @@
 .__pakku_pointer_event .bpx-player-top-wrap,
 .__pakku_pointer_event .bpx-player-dm-tip,
 .__pakku_pointer_event .bpx-player-state-wrap,
-.__pakku_pointer_event .bpx-player-control-wrap {
+.__pakku_pointer_event .bpx-player-control-wrap,
+.__pakku_pointer_event .bpx-player-cmd-dm-wrap {
     display: none !important;
 }
