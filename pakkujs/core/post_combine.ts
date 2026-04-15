@@ -176,12 +176,15 @@ export function post_combine(
         // dedup from prev cluster
 
         if(c.peers[0].time_ms < max_included_time) {
-            let old_len = c.peers.length;
-            c.peers = c.peers.filter(p => !ids_included_in_prev.has(p.id));
-            if(c.peers.length===0)
+            let new_peers = c.peers.filter(p => !ids_included_in_prev.has(p.id));
+            if(new_peers.length===0) {
+                // every peer is fully contained in the prev cluster, so do not apply it at all
                 continue;
-            if(c.peers.length!==old_len)
-                c.desc.push(`已去除包含在上个分片中的 ${old_len-c.peers.length} 条弹幕`);
+            }
+            if(new_peers.length!==c.peers.length) {
+                c.desc.push(`已去除包含在上个分片中的 ${c.peers.length-new_peers.length} 条弹幕`);
+                c.peers = new_peers;
+            }
         }
 
         // select a representative obj and make a copy
