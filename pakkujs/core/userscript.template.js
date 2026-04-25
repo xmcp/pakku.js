@@ -2,6 +2,7 @@
 let fn_before = [];
 let fn_after = [];
 let fn_view = [];
+let fn_welldone = [];
 
 function reg_tweak_fn(list) {
     return (callback, timing=0) => {
@@ -18,6 +19,15 @@ function reg_tweak_fn(list) {
 const tweak_before_pakku = reg_tweak_fn(fn_before);
 const tweak_after_pakku = reg_tweak_fn(fn_after);
 const tweak_proto_view = reg_tweak_fn(fn_view);
+const on_pakku_welldone = reg_tweak_fn(fn_welldone);
+
+function emit_dom_event(name, detail={}) {
+    postMessage({
+        type: 'emit_dom_event',
+        event_name: name,
+        event_detail: detail,
+    });
+}
 
 function fix_dispstr(chunk) {
     for(let obj of chunk.objs) {
@@ -34,48 +44,69 @@ function fix_dispstr(chunk) {
 let env_base = {};
 onmessage = async (e) => {
     let [serial, payload] = e.data;
+    function reply(obj) {
+        postMessage({
+            type: 'reply',
+            serial: serial,
+            error: null,
+            ...obj,
+        });
+    }
+
     try {
         if(payload.type==='init') {
-            install_callbacks(tweak_before_pakku, tweak_after_pakku, tweak_proto_view);
-            fn_before = fn_before.sort((a, b) => a[0] - b[0]);
-            fn_after = fn_after.sort((a, b) => a[0] - b[0]);
-            fn_view = fn_view.sort((a, b) => a[0] - b[0]);
+            install_callbacks(
+                payload.pakku_version,
+                tweak_before_pakku, tweak_after_pakku, tweak_proto_view, on_pakku_welldone, emit_dom_event,
+            );
+            for(let cont of [fn_before, fn_after, fn_view, fn_welldone])
+                cont.sort((a, b) => a[0] - b[0]);
             if(payload.env_base)
                 env_base = payload.env_base;
-            postMessage({serial: serial, error: null, output: {
+            reply({output: {
                 n_before: fn_before.length,
                 n_after: fn_after.length,
                 n_view: fn_view.length,
+                n_welldone: fn_welldone.length,
             }});
         }
         else if(payload.type==='pakku_before') {
             let env = {...env_base, ...payload.env};
             for(let [timing, fn] of fn_before)
                 await fn(payload.chunk, env);
-            postMessage({serial: serial, error: null, output: payload.chunk});
+            reply({output: payload.chunk});
         }
         else if(payload.type==='pakku_after') {
             let env = {...env_base, ...payload.env};
             for(let [timing, fn] of fn_after)
                 await fn(payload.chunk, env);
             fix_dispstr(payload.chunk);
-            postMessage({serial: serial, error: null, output: payload.chunk});
+            reply({output: payload.chunk});
         }
         else if(payload.type==='proto_view') {
             let env = {...env_base, ...payload.env};
             for(let [timing, fn] of fn_view)
                 await fn(payload.view, env);
-            postMessage({serial: serial, error: null, output: payload.view});
+            reply({output: payload.view});
+        }
+        else if(payload.type==='welldone') {
+            let env = {...env_base, ...payload.env};
+            for(let [timing, fn] of fn_welldone)
+                await fn(env);
+            reply({});
         }
         else {
-            postMessage({serial: serial, error: 'unknown type '+payload.type});
+            reply({error: 'unknown type '+payload.type});
         }
     } catch(err) {
-        postMessage({serial: serial, error: err});
+        reply({error: err});
     }
 };
 })();
 
-function install_callbacks(tweak_before_pakku, tweak_after_pakku, tweak_proto_view) {
+function install_callbacks(
+    pakku_version,
+    tweak_before_pakku, tweak_after_pakku, tweak_proto_view, on_pakku_welldone, emit_dom_event,
+) {
     /* MAIN */
 }

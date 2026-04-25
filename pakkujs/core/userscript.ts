@@ -11,10 +11,11 @@ export interface UserscriptEnv {
 }
 
 type ArgType = (
-    {type: 'init', env_base: UserscriptEnv | null}
+    {type: 'init', env_base: UserscriptEnv | null, pakku_version: string}
     | {type: 'pakku_before', chunk: DanmuChunk<DanmuObject>, env: Partial<UserscriptEnv>}
     | {type: 'pakku_after', chunk: DanmuChunk<DanmuObjectRepresentative>, env: Partial<UserscriptEnv>}
     | {type: 'proto_view', view: AnyObject, env: Partial<UserscriptEnv>}
+    | {type: 'welldone', env: Partial<UserscriptEnv>}
 );
 type RetType = AnyObject;
 
@@ -32,6 +33,7 @@ export class UserscriptWorker {
     n_before: int;
     n_after: int;
     n_view: int;
+    n_welldone: int;
 
     constructor(script: string | null) {
         this.script = script || '';
@@ -42,9 +44,11 @@ export class UserscriptWorker {
         this.init_error = null;
         this.queue_callback = new Map();
         this.queue_serial = 0;
+
         this.n_before = 0;
         this.n_after = 0;
         this.n_view = 0;
+        this.n_welldone = 0;
 
         this.worker.onerror = (e: ErrorEvent) => {
             console.error('pakku userscript: UNCAUGHT ERROR', e);
@@ -55,22 +59,31 @@ export class UserscriptWorker {
             this.queue_callback.clear();
         }
         this.worker.onmessage = (e) => {
-            let serial = e.data.serial;
-            if(!this.queue_callback.has(serial)) {
-                console.error('pakku userscript: BAD SERIAL', e);
-                return;
+            if(e.data.type==='reply') {
+                let serial = e.data.serial;
+                if(!this.queue_callback.has(serial)) {
+                    console.error('pakku userscript: BAD SERIAL', e);
+                    return;
+                }
+
+                let [resolve, reject] = this.queue_callback.get(serial)!;
+                this.queue_callback.delete(serial);
+
+                if(this.terminated && this.queue_callback.size===0)
+                    this.worker.terminate();
+
+                if(e.data.error)
+                    reject(e.data.error);
+                else
+                    resolve(e.data.output);
             }
-
-            let [resolve, reject] = this.queue_callback.get(serial)!;
-            this.queue_callback.delete(serial);
-
-            if(this.terminated && this.queue_callback.size===0)
-                this.worker.terminate();
-
-            if(e.data.error)
-                reject(e.data.error);
-            else
-                resolve(e.data.output);
+            else if(e.data.type==='emit_dom_event') {
+                let event = new CustomEvent(e.data.event_name, {detail: e.data.event_detail});
+                document.documentElement.dispatchEvent(event);
+            }
+            else {
+                console.error('pakku userscript: UNKNOWN MESSAGE', e.data);
+            }
         };
     }
 
@@ -100,11 +113,13 @@ export class UserscriptWorker {
     }
 
     async init(env_base: UserscriptEnv | null): Promise<int> {
-        let {n_before, n_after, n_view} = await this.exec({type: 'init', env_base: env_base});
+        let pakku_version = chrome.runtime.getManifest().version;
+        let {n_before, n_after, n_view, n_welldone} = await this.exec({type: 'init', env_base: env_base, pakku_version: pakku_version});
         this.n_before = n_before;
         this.n_after = n_after;
         this.n_view = n_view;
-        return n_before + n_after + n_view;
+        this.n_welldone = n_welldone;
+        return n_before + n_after + n_view + n_welldone;
     }
 
     sancheck_chunk_output(chunk: any) {

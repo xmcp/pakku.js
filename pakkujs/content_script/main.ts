@@ -77,10 +77,8 @@ async function get_local_config(is_pure_env: boolean = false): Promise<Localized
     if(!local_config) {
         ({tabid, local_config} = await _really_get_local_config(is_pure_env));
 
-        local_config.BLACKLIST = local_config.BLACKLIST.length ? get_player_blacklist() : [];
-
-        if(localStorage.getItem('pakku_extra_userscript'))
-            local_config.USERSCRIPT = local_config.USERSCRIPT + '\n\n' + localStorage.getItem('pakku_extra_userscript');
+        if(local_config.READ_PLAYER_BLACKLIST)
+            local_config.BLACKLIST.push(...get_player_blacklist());
 
         // storage cleanup
         window.onbeforeunload = function() {

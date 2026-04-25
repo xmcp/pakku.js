@@ -180,9 +180,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
             let local_config: LocalizedConfig = {
                 ...config,
-                BLACKLIST: (config.READ_PLAYER_BLACKLIST && !is_pure_env) ? [[true, '']] : [],
-                GLOBAL_SWITCH: state.GLOBAL_SWITCH,
+                READ_PLAYER_BLACKLIST: is_pure_env ? false : config.READ_PLAYER_BLACKLIST,
                 USERSCRIPT: userscript,
+
+                BLACKLIST: [],
+                GLOBAL_SWITCH: state.GLOBAL_SWITCH,
                 SKIP_INJECT: is_pure_env,
             };
 

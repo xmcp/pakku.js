@@ -1,45 +1,76 @@
 # 用户脚本
 
-用户脚本是一项使用 JavaScript 代码来深度自定义 pakku 的功能。可以定义一些回调函数，它们将在 pakku 处理弹幕之前或之后运行，并修改弹幕内容。
+> [!NOTE]
+> 本功能仅面向高级用户，下面将假定你有基本的 JavaScript 编程知识。
 
-本功能仅面向高级用户，下面将假定你有基本的 JavaScript 编程知识。
+通过 pakku 用户脚本功能可以深度自定义 pakku。具体来说，你可以定义一些回调函数，它们将在 pakku 处理弹幕之前或之后运行，并修改弹幕内容或者回传信息到页面上。
 
-## 添加全局用户脚本
+## 用户脚本的三种类型
 
-全局用户脚本将保存在设置中，对 pakku 处理的所有视频生效，适合希望永久生效的自定义。
+### 全局用户脚本
+
+全局用户脚本将保存在 pakku 的设置中，对所有视频生效，适合希望全局生效的自定义逻辑，比如修改全体弹幕的大小等等。
 
 要想添加全局用户脚本，请进入选项页面：
 
-![screenshot](goto_options.png)
+![screenshot](assets/goto_options.png)
 
 勾选页面顶部的【我是高级用户】选项：
 
-![screenshot](enable_advanced.png)
+![screenshot](assets/enable_advanced.png)
 
 然后在【实验室】中点击【全局用户脚本：前去设置】链接，进入用户脚本编辑器：
 
-![screenshot](userscript_in_options.png)
+![screenshot](assets/userscript_in_options.png)
 
-[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度在经过 gzip 压缩后不能超过 8KB。如果代码量较大，可以考虑以下两种方法：
+[受浏览器限制](https://developer.chrome.com/docs/extensions/reference/api/storage#property-sync-sync-QUOTA_BYTES_PER_ITEM)，全局用户脚本的代码长度在经过 gzip 压缩后不能超过 6.4KB。如果代码量较大，可以考虑以下两种方法：
 
 - 在用户脚本中使用 [`importScripts`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#importing_scripts_and_libraries) 函数通过 URL 引入外部文件，见下方示例。此时请合理设置 HTTP 缓存来避免拖慢弹幕加载速度。
 - 将用户脚本存储在播放器域名的 `localStorage['pakku_extra_userscript']` 中。pakku 会读取其中的代码，并拼接到其他用户脚本的结尾。此时请注意及时备份代码，避免清除浏览器缓存导致代码丢失。
 
-## 添加临时用户脚本
+### 临时用户脚本
 
-临时用户脚本仅针对特定标签页中的视频生效，关闭标签页或刷新后即失效，适合对个别视频的一次性调整。
+临时用户脚本仅针对特定标签页中的视频生效，关闭标签页或刷新后即失效，适合对个别视频的一次性调整，比如希望临时屏蔽某些时间段之间的弹幕。
 
 要添加临时用户脚本，请在B站视频页面上点击 pakku 图标，然后点击顶部【JS】按钮打开编辑器：
 
-![screenshot](popup_js_btn.png)
+![screenshot](assets/popup_js_btn.png)
 
 如果没有显示这个按钮，请先在选项页面勾选【我是高级用户】。
 
-## 通过用户脚本来修改弹幕内容
+### 外部用户脚本
 
-你需要编写一个回调函数，通过参数接收一个弹幕分片（即6分钟以内的弹幕列表），然后直接修改这个分片。
+来自 Tampermonkey 等用户脚本管理器的外部用户脚本可能希望注入部分功能到 pakku 中。为此，外部用户脚本可以在 pakku 合并弹幕前（比如 `@run-at document-body`）向视频页面的 HTML 写入一个标签：
 
-可以选择在把这个回调函数注册到 pakku 处理弹幕之前或之后运行。如果选择在之后运行，此函数可以读取 pakku 的弹幕合并结果。
+```javascript
+let script_elem = document.createElement('script');
+script_elem.type = 'text/x-pakku-userscript';
+script_elem.textContent = `
+// 要作为 pakku 用户脚本执行的内容
+console.log('!!! HEY I RUN IN PAKKU', pakku_version);
+`;
+document.documentElement.appendChild(script_elem);
+```
+
+pakku 将读取 `<html>` 下相邻级别的所有 `<script type="text/x-pakku-userscript">` 标签，并将所有内容合并到一起作为用户脚本去执行。
+
+[example_histogram.user.js](example_histogram.user.js) 是使用外部用户脚本功能的一个示例。你可以把它添加到 Tampermonkey 里来看看效果。
+
+虽然上面说了 pakku 会读取 `localStorage['pakku_extra_userscript']` 作为用户脚本执行，但这个功能的初衷是**用户自己**使用，外部用户脚本请**不要**用。因为多个脚本会互相覆盖 localStorage，而且被卸载时难以清理干净。
+
+### 如何选择？
+
+- 我要做一些对所有视频都生效的自定义 → 全局用户脚本
+- 我要对当前视频做临时的自定义 → 临时用户脚本
+- 我要做一个带 UI 的功能，或者想发布给别人用 → 外部用户脚本
+
+## 编写用户脚本
+
+### 修改弹幕内容
+
+可以在 pakku 用户脚本中注册回调函数，此函数将通过参数接收 pakku 处理的每个弹幕分片（即6分钟以内的弹幕列表），并可以直接修改这个分片。
+
+回调函数可以注册到 pakku 处理弹幕之前或之后运行。如果选择在之前运行，此函数修改的是 pakku 即将处理的原始弹幕列表。如果选择在之后运行，此函数修改的是 pakku 已经处理好的弹幕列表。
 
 以下是一个什么都不做的示例用户脚本。
 
@@ -55,11 +86,11 @@ tweak_after_pakku((chunk, env)=>{
 
 保存这个用户脚本后，可以在B站播放器页面按 F12 打开开发者工具，然后在 console 中观察到它被执行了：
 
-![screenshot](userscript_console.png)
+![screenshot](assets/userscript_console.png)
 
 其中 `chunk` 是弹幕列表，回调函数可以直接修改此变量的内容来修改弹幕。
 
-`env` 是执行时的其他环境信息（仅支持 pakku 2025.2.1 或更高版本），包括当前视频（`env.ingress`）、当前弹幕分片的编号（`env.segidx`）和 pakku 设置（`env.config`），供用户脚本参考。
+`env` 是执行时的其他环境信息，包括当前视频（`env.ingress`）、当前弹幕分片的编号（`env.segidx`）和 pakku 设置（`env.config`），供用户脚本参考。
 
 如果注册了多个回调函数，你可能关心回调函数的执行顺序。可以向 `tweak_before_pakku` 和 `tweak_after_pakku` 额外传递一个数字参数表示先后顺序，数字越大则执行顺序越靠后。
 
@@ -69,69 +100,7 @@ tweak_before_pakku(chunk=>{console.log('!!! SECOND');}, 0);
 tweak_before_pakku(chunk=>{console.log('!!! THIRD');}, 10);
 ```
 
-以下是与用户脚本相关的类型定义：
-
-<!-- DOC-GEN: BEGIN-TYPE-DEF -->
-```typescript
-type int = number; type float = number; type AnyObject = {[k: string]: any};
-
-interface DanmuObject {
-    time_ms: int; // 弹幕在视频中的时间
-    mode: int; // 1 滚动, 4 底部, 5 顶部, 6 逆向滚动, 7 特殊, 8 代码, 9 BAS
-    fontsize: float; // 字号
-    color: int; // 颜色，0xRRGGBB
-    sender_hash: string; // 发送者UID的CRC32
-    content: string; // 弹幕内容
-    sendtime: int; // 弹幕发送时间，UNIX 时间戳
-    weight: int; // 权重，低于云屏蔽等级时会被播放器过滤
-    id: string; // 弹幕ID，举报等操作使用
-    pool: int; // 0 普通, 1 字幕
-    extra: { // 协议中的附加字段
-        proto_attr?: int | null;
-        proto_action?: string | null;
-        proto_animation?: string | null;
-        proto_colorful?: int | null;
-        proto_oid?: int | null;
-        proto_dmfrom?: int | null;
-        proto_likecount?: int | null;
-    };
-}
-interface DanmuObjectPeer extends DanmuObject {
-    pakku: {
-        sim_reason: string; // 相似性判断结果
-    };
-}
-interface DanmuObjectRepresentative extends DanmuObject {
-    pakku: {
-        peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
-        desc: string[]; // 合并时的说明
-        disp_str: string; // 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode为7）的content为JSON、此值为其中的文本
-    };
-}
-interface DanmuChunk<ObjectType extends DanmuObject> {
-    objs: ObjectType[]; // 此分片包含的弹幕
-    extra: { // 协议中的附加字段
-        proto_segidx?: int;
-        proto_colorfulsrc?: AnyObject[];
-        xml_maxlimit?: string;
-        xml_chatid?: string;
-    };
-}
-
-export interface Env {
-    ingress: AnyObject; // 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型
-    segidx: int | null; // 当前弹幕分片的编号
-    config: AnyObject; // 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型
-}
-type Ret = void | Promise<void>; // 支持同步或异步的回调函数
-
-function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>, env: Env) => Ret, t: number = 0) {}
-function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
-function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
-```
-<!-- DOC-GEN: END-TYPE-DEF -->
-
-回调函数可以是异步的（仅支持 pakku 2025.2.1 或更高版本）。例如：
+回调函数可以是异步的。例如：
 
 ```javascript
 function sleep(x) {
@@ -144,19 +113,121 @@ tweak_after_pakku(async (chunk, env)=>{
 });
 ```
 
-## 通过用户脚本来修改弹幕元信息
+### 修改弹幕元信息
 
-用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 请求的响应（仅支持 pakku 2024.6.1 或更高版本）。
+用户脚本可以通过 `tweak_proto_view` 注册回调函数来修改弹幕元信息，即 api.bilibili.com/x/v2/dm/web/view 这个 HTTP 请求的响应。
 
 由于它是 B 站播放器的私有 API，pakku 不保证此接口的稳定性，也无法解释每个字段的准确含义。完整的字段列表参见 [Protobuf 定义](../proto_translation/bili-proto.json) 中的 `DmWebViewReply` 类型。
 
 以下是部分功能已知的字段：
 
-- `activityMetas`：播放器内嵌广告，例如视频开头偶尔出现的 “云视听小电视” 贴片广告
 - `commandDms`：视频中的互动控件，例如相关视频、投票、打分、一键三连等
 - `specialDms`：视频中的特殊弹幕，B 站不会把特殊弹幕混在正常弹幕池中，而是单独上传到 CDN 然后在这个字段中指示特殊弹幕的 URL
 - `dmSetting`：播放器的弹幕设置，默认会从 B 站账号同步
 - `subtitle`：视频的字幕信息，会显示在播放器右下角的字幕菜单中
+
+### 把信息回传到页面
+
+有时你可能希望从 pakku 用户脚本向页面发送数据。例如你在开发一个外部用户脚本，有自己的 UI，希望在页面上展示处理结果。为此 pakku 提供了以下两个函数：
+
+- `emit_dom_event(event_name, event_detail={})`：向页面发送 DOM 事件
+- `on_pakku_welldone(callback, t=0)`：当 pakku 处理完全部弹幕后、用户脚本销毁前调用此回调函数，时机与 pakku 显示自身 UI 大致相同
+
+比如，当你想得知视频的弹幕总数，可以这样做：
+
+```javascript
+// 在pakku用户脚本中
+let count = 0;
+tweak_after_pakku((chunk)=>{
+    count += chunk.objs.length;
+});
+on_pakku_welldone(()=> {
+    emit_dom_event('got_my_danmu_count', {result: count});
+});
+```
+
+```javascript
+// 在页面上
+document.documentElement.addEventListener('got_my_danmu_count', (e)=>{
+    console.log('!!! 弹幕数量是', e.detail.result);
+});
+```
+
+## 开发参考
+
+以下是与用户脚本相关的类型定义：
+
+<!-- DOC-GEN: BEGIN-TYPE-DEF -->
+```typescript
+type int = number; type float = number; type AnyObject = {[k: string]: any};
+
+interface DanmuObject { // 一条弹幕
+    time_ms: int; // 弹幕出现在视频中的时间，单位为毫秒
+    mode: int; // 1 滚动, 4 底部, 5 顶部, 6 逆向滚动, 7 特殊, 8 代码, 9 BAS
+    fontsize: float; // 字号，默认大小是 25
+    color: int; // 颜色，0xRRGGBB
+    sender_hash: string; // 弹幕发送者的 UID ，经过 CRC32 哈希
+    content: string; // 弹幕内容
+    sendtime: int; // 弹幕发送时间，单位为 UNIX 时间戳
+    weight: int; // 弹幕权重，范围 0-11，低于云屏蔽等级时会被播放器过滤，启用B站“硬核会员弹幕模式”后仅显示权重为11的弹幕
+    id: string; // 弹幕 ID，举报等操作使用
+    pool: int; // 0 普通, 1 字幕
+    extra: { // 协议中的附加字段，见源码中 proto_translation/bili-proto.json 的 DanmakuElem 类型
+        proto_attr?: int | null;
+        proto_action?: string | null;
+        proto_animation?: string | null;
+        proto_colorful?: int | null;
+        proto_oid?: int | null;
+        proto_dmfrom?: int | null;
+        proto_likecount?: int | null; // 点赞数量
+    };
+}
+interface DanmuObjectPeer extends DanmuObject {
+    pakku: {
+        sim_reason: string; // 相似性判断结果
+    };
+}
+interface DanmuObjectRepresentative extends DanmuObject { // pakku 合并后的一条弹幕，除 DanmuObject 已有字段外新增了合并详情
+    pakku: {
+        peers: DanmuObjectPeer[]; // 所有被合并为此弹幕的相似弹幕
+        desc: string[]; // 合并时的说明
+        disp_str: string; // 弹幕实际显示的内容（不含首尾空格），另外特殊弹幕（mode 为 7）的 content 为 JSON、此值为其中的文本
+    };
+}
+interface DanmuChunk<ObjectType extends DanmuObject> { // 一个弹幕分片，包含 6 分钟以内的所有弹幕
+    objs: ObjectType[]; // 此分片包含的弹幕
+    extra: { // 协议中的附加字段，见源码中 proto_translation/bili-proto.json 的 DmSegMobileReply 类型
+        proto_segidx?: int;
+        proto_colorfulsrc?: AnyObject[];
+        xml_maxlimit?: string;
+        xml_chatid?: string;
+    };
+}
+
+export interface Env {
+    ingress: AnyObject; // 视频信息，见源码中 protocol/interface.ts 的 Ingress 类型
+    segidx: int | null; // 当前弹幕分片的编号，从1开始
+    config: AnyObject; // 当前设置，见源码中 core/types.ts 的 LocalizedConfig 类型
+}
+type Ret = void | Promise<void>; // 支持同步或异步的回调函数，没有返回值，修改弹幕请原地操作
+
+function tweak_before_pakku(callback: (chunk: DanmuChunk<DanmuObject>, env: Env) => Ret, t: number = 0) {}
+function tweak_after_pakku(callback: (chunk: DanmuChunk<DanmuObjectRepresentative>, env: Env) => Ret, t: number = 0) {}
+function tweak_proto_view(callback: (view: AnyObject, env: Env) => Ret, t: number = 0) {}
+function on_pakku_welldone(callback: (env: Env) => Ret, t: number = 0) {}
+
+let pakku_version: string = '20YY.M.N'; // 当前 pakku 的版本号
+function emit_dom_event(name: string, detail: any = {}) {}
+```
+<!-- DOC-GEN: END-TYPE-DEF -->
+
+以下是其他可能对开发用户脚本有帮助的源码：
+
+- [pakkujs/core/types.ts](../pakkujs/core/types.ts)
+- [pakkujs/core/userscript.template.js](../pakkujs/core/userscript.template.js)
+- [pakkujs/core/userscript.ts](../pakkujs/core/userscript.ts)
+- [proto_translation/bili-proto.json](../proto_translation/bili-proto.json)
+- [pakkujs/protocol/interface.ts](../pakkujs/protocol/interface.ts)
 
 ## 示例
 
@@ -251,12 +322,11 @@ tweak_before_pakku(chunk=>{
 });
 ```
 
-去除一键三连控件和贴片广告：
+去除一键三连控件：
 
 ```javascript
 tweak_proto_view(view=>{
     view.commandDms = view.commandDms.filter(d => d.command!=='#ATTENTION#');
-    view.activityMetas = [];
 });
 ```
 
@@ -285,18 +355,26 @@ tweak_before_pakku(chunk=>{
 
 如果用户脚本执行出错，pakku 图标上将出现红色角标，点击可以查看错误信息：
 
-![screenshot](popup_stacktrace.png)
+![screenshot](assets/popup_stacktrace.png)
 
 错误信息也会打印在网页的 console 中：
 
-![screenshot](exception-in-console.png)
+![screenshot](assets/exception-in-console.png)
 
 可以使用任何调试 JavaScript 程序的手段来调试用户脚本，比如使用 `debugger;` 语句来下断点：
 
-![screenshot](debugger-breakpoint.png)
+![screenshot](assets/debugger-breakpoint.png)
 
 调试临时用户脚本时请注意不要刷新视频页面，因为临时用户脚本会在刷新时被删除。如果确实需要刷新，可以在用户脚本编辑器页面再次点击【保存】，从而刷新页面且不删除临时用户脚本。
 
 点击 pakku 界面的 “弹幕 x → x” 链接可以单独打开一个网页查看 pakku 的运行结果，这可能对编写用户脚本有所帮助：
 
-![screenshot](popup_result_link.png)
+![screenshot](assets/popup_result_link.png)
+
+## 更新历史
+
+- 2026.5.1：支持从 `<script type="text/x-pakku-userscript">` 读取用户脚本，增加 `on_pakku_welldone`、`emit_dom_event`、`pakku_version`
+- 2025.2.1：回调函数支持异步，增加 `env` 参数
+- 2024.7.1：支持从 `localStorage['pakku_extra_userscript']` 读取用户脚本
+- 2024.6.1：增加 `tweak_proto_view`
+- 2024.4.1：用户脚本功能上线

@@ -56,6 +56,27 @@ function u8array_to_arraybuffer(array: Uint8Array): ArrayBuffer {
     return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset) as ArrayBuffer
 }
 
+function get_userscript(orig_src: string|null): UserscriptWorker|null {
+    let src = [];
+
+    if(orig_src)
+        src.push(orig_src);
+
+    let ls_src = localStorage.getItem('pakku_extra_userscript');
+    if(ls_src)
+        src.push(ls_src);
+
+    for(let elem of document.documentElement.children) {
+        if(elem.tagName.toLowerCase()==='script' && elem.getAttribute('type')==='text/x-pakku-userscript')
+            src.push(elem.textContent || '');
+    }
+
+    console.log('pakku injected: got userscript source', src);
+    let final_src = src.join('\n\n');
+
+    return final_src ? new UserscriptWorker(final_src) : null;
+}
+
 class Scheduler {
     ingress: Ingress;
     egresses: Array<[Egress, (resp: AjaxResponse)=>void]>;
@@ -98,7 +119,7 @@ class Scheduler {
         this.failed = false;
         this.cleaned_up = false;
         this.pool = new WorkerPool(config.COMBINE_THREADS);
-        this.userscript = config.USERSCRIPT ? new UserscriptWorker(config.USERSCRIPT) : null;
+        this.userscript = get_userscript(config.USERSCRIPT);
         this.userscript_init = null;
         this.prefetch_data = null;
     }
@@ -301,6 +322,9 @@ class Scheduler {
                 do_inject(this.chunks_out, this.chunks_deleted, this.config);
             }
         }, 300); // delay ui injection to improve player responsiveness
+
+        if(this.userscript && this.userscript.n_welldone)
+            void this.userscript.exec({type: 'welldone', env: {}});
     }
 
     do_cleanup() {
