@@ -13,7 +13,7 @@ declare global {
     }
     interface XMLHttpRequest {
         pakku_url: string;
-        pakku_load_callback: ((...args: any)=>any)[];
+        pakku_load_callback: [string, ((...args: any)=>any)][];
         pakku_open: typeof XMLHttpRequest.prototype.open;
         pakku_addEventListener: typeof XMLHttpRequest.prototype.addEventListener;
         pakku_send: typeof XMLHttpRequest.prototype.send;
@@ -206,8 +206,8 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
             };
 
             console.debug('pakku ajax: got tampered xhr response for', xhr.pakku_url, xhr.responseType);
-            for(let i = 0; i < xhr.pakku_load_callback.length; i++)
-                xhr.pakku_load_callback[i].bind(xhr)({
+            for(let [type, cb] of xhr.pakku_load_callback)
+                cb.bind(xhr)({
                     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event
                     lengthComputable: false,
                     loaded: 1,
@@ -223,7 +223,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
                     isTrusted: true,
                     target: xhr,
                     timeStamp: 0,
-                    type: 'load',
+                    type: type,
                 });
         });
     }
@@ -238,7 +238,7 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
     XMLHttpRequest.prototype.addEventListener = function(name: string, callback: (...args: any)=>any, options?: any) {
         if(name === 'load' || name === 'readystatechange' || name === 'loadend') {
             this.pakku_load_callback = this.pakku_load_callback || [];
-            this.pakku_load_callback.push(callback);
+            this.pakku_load_callback.push([name, callback]);
         }
 
         if(options===undefined)
@@ -259,11 +259,11 @@ type MutableXMLHttpRequest = Mutable<XMLHttpRequest>;
         this.pakku_load_callback = this.pakku_load_callback || [];
 
         if(this.onreadystatechange)
-            this.pakku_load_callback.push(this.onreadystatechange);
+            this.pakku_load_callback.push(['readystatechange', this.onreadystatechange]);
         if(this.onload)
-            this.pakku_load_callback.push(this.onload);
+            this.pakku_load_callback.push(['load', this.onload]);
         if(this.onloadend)
-            this.pakku_load_callback.push(this.onloadend);
+            this.pakku_load_callback.push(['loadend', this.onloadend]);
 
         if(this.pakku_load_callback.length > 0) {
             proxied_xhr_send(this, arg);
