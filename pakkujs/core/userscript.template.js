@@ -4,10 +4,15 @@ let fn_after = [];
 let fn_view = [];
 let fn_welldone = [];
 
-function reg_tweak_fn(list) {
+let is_callback_installing = false;
+
+function reg_callback_fn(list) {
     return (callback, timing=0) => {
         if(typeof callback !== 'function')
             throw new Error('callback argument is not a function');
+        if(!is_callback_installing)
+            throw new Error('callback must be registered synchronously');
+
         list.push([timing, async (chunk, env) => {
             let ret = callback(chunk, env);
             if(ret instanceof Promise)
@@ -16,10 +21,10 @@ function reg_tweak_fn(list) {
         }]);
     };
 }
-const tweak_before_pakku = reg_tweak_fn(fn_before);
-const tweak_after_pakku = reg_tweak_fn(fn_after);
-const tweak_proto_view = reg_tweak_fn(fn_view);
-const on_pakku_welldone = reg_tweak_fn(fn_welldone);
+const tweak_before_pakku = reg_callback_fn(fn_before);
+const tweak_after_pakku = reg_callback_fn(fn_after);
+const tweak_proto_view = reg_callback_fn(fn_view);
+const on_pakku_welldone = reg_callback_fn(fn_welldone);
 
 function emit_dom_event(name, detail={}) {
     postMessage({
@@ -55,10 +60,12 @@ onmessage = async (e) => {
 
     try {
         if(payload.type==='init') {
+            is_callback_installing = true;
             install_callbacks(
                 payload.pakku_version,
                 tweak_before_pakku, tweak_after_pakku, tweak_proto_view, on_pakku_welldone, emit_dom_event,
             );
+            is_callback_installing = false;
             for(let cont of [fn_before, fn_after, fn_view, fn_welldone])
                 cont.sort((a, b) => a[0] - b[0]);
             if(payload.env_base)
