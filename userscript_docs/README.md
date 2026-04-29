@@ -3,7 +3,7 @@
 > [!NOTE]
 > 本功能仅面向高级用户，下面将假定你有基本的 JavaScript 编程知识。
 
-通过 pakku 用户脚本功能可以深度自定义 pakku。具体来说，你可以定义一些回调函数，它们将在 pakku 处理弹幕之前或之后运行，并修改弹幕内容或者回传信息到页面上。
+pakku 的核心功能是对 B 站弹幕中的重复内容进行合并及其他处理。一直以来，有一些用户希望能自定义 pakku 的功能（例如 “合并数量为 2 时就不要合并了”），或者借助 pakku 的基础设施实现更多自定义处理（例如 “删除投票弹幕”），为此可以使用 pakku 用户脚本功能。具体来说，你可以定义一些回调函数，它们将在 pakku 处理弹幕之前或之后运行，并修改弹幕内容或者回传信息到页面上。
 
 ## 用户脚本的三种类型
 
@@ -55,7 +55,7 @@ document.documentElement.appendChild(script_elem);
 
 pakku 将读取 `<html>` 下相邻级别的所有 `<script type="text/x-pakku-userscript">` 标签，并将所有内容合并到一起作为用户脚本去执行。
 
-“外部用户脚本” 是三种类型中最适合对外分发的一种方式，因为它不需要最终用户对 pakku 进行设置。用户脚本的开发者仅需引导用户安装 pakku 并使用 Tampermonkey 等工具添加你的脚本即可生效。也可以依赖 Tampermonkey 进行自动更新。
+“外部用户脚本” 是三种类型中最适合对外分发的一种方式，因为它不需要最终用户对 pakku 进行设置（不需要把脚本粘贴到 pakku 的用户脚本输入框中）。开发者仅需引导最终用户安装 pakku 并使用 Tampermonkey 等工具添加你的 `….user.js` 即可生效。也可以依赖 Tampermonkey 进行自动更新。
 
 [example_histogram.user.js](example_histogram.user.js) 是使用外部用户脚本功能的一个示例，供参考。
 
@@ -73,7 +73,7 @@ pakku 将读取 `<html>` 下相邻级别的所有 `<script type="text/x-pakku-us
 
 可以在 pakku 用户脚本中注册回调函数，此函数将通过参数接收 pakku 处理的每个弹幕分片（即6分钟以内的弹幕列表），并可以直接修改这个分片。
 
-回调函数可以注册到 pakku 处理弹幕之前或之后运行（通过 `tweak_before_pakku(callback, t=0)` 或者 `tweak_after_pakku(callback, t=0)`）。如果选择在之前运行，此函数修改的是 pakku 即将处理的原始弹幕列表。如果选择在之后运行，此函数修改的是 pakku 已经处理好的弹幕列表。
+回调函数可以注册到 pakku 处理弹幕之前或之后运行（通过 `tweak_before_pakku(callback, t=0)` 或者 `tweak_after_pakku(callback, t=0)`）。如果选择在之前运行，此函数修改的是 pakku 即将处理的原始弹幕列表。如果选择在之后运行，此函数修改的是 pakku 已经处理好的弹幕列表。即运行顺序是：B站弹幕 → `tweak_before_pakku` 回调 → pakku 的过滤、合并、处理流程 → `tweak_after_pakku` 回调 → 显示给用户。
 
 以下是一个什么都不做的示例用户脚本。
 
@@ -95,7 +95,7 @@ tweak_after_pakku((chunk, env)=>{
 
 `env` 是执行时的其他环境信息，包括当前视频（`env.ingress`）、当前弹幕分片的编号（`env.segidx`）和 pakku 设置（`env.config`），供用户脚本参考。请勿修改 `env` 中的内容，因为改了也没用。
 
-如果注册了多个回调函数，你可能关心回调函数的执行顺序。可以向 `tweak_before_pakku` 和 `tweak_after_pakku` 传递一个数字参数表示先后顺序，数字越大则执行顺序越靠后。
+如果对同一个事件注册了多个回调函数，你可能关心回调函数的相对执行顺序。可以向 `tweak_before_pakku` 和 `tweak_after_pakku` 传递一个数字参数表示先后顺序，数字越大则执行顺序越靠后。
 
 ```javascript
 tweak_before_pakku(chunk=>{console.log('!!! FIRST');}, -1);
@@ -115,6 +115,12 @@ tweak_after_pakku(async (chunk, env)=>{
     await sleep(2000);
 });
 ```
+
+请根据实际场景选择使用 `tweak_before_pakku` 还是 `tweak_after_pakku`。例如，如果你希望：
+
+- **屏蔽所有一年内发送的弹幕，来防止剧透** → 应该使用 `tweak_before_pakku`。如果用了 `tweak_after_pakku`，万一较早的弹幕和较晚弹幕被合并到一起了，合并后的发送时间字段将是二者的发送时间之一（取决于在视频里出现的顺序），因此有几率漏掉一些弹幕没有被屏蔽。
+- **当仅有两条弹幕被合并到一起的时候取消合并，分开显示** → 应该使用 `tweak_after_pakku`。具体来说，应该读取 `pakku.peers` 字段，当数量为 2 时把它们从合并后的弹幕里抽出来。后面的示例将展示如何实现。
+- **把所有弹幕的字号放大两倍** → 用 `tweak_before_pakku` 或者 `tweak_after_pakku` 均可。但是如果你开启了 pakku 的 “自动弹幕优选” 等需要计算弹幕密度的功能，由于 `tweak_after_pakku` 是在 pakku 之后运行的，此时 pakku 的相关逻辑会按放大前的字号计算弹幕密度。`tweak_before_pakku` 则可以让 pakku 按放大后的字号计算弹幕密度。请根据实际需求选择。
 
 ### 修改弹幕元信息
 
@@ -249,7 +255,7 @@ tweak_before_pakku(chunk=>{
 });
 ```
 
-[去除弹幕的彩色效果](https://github.com/xmcp/pakku.js/issues/246)：
+[去除弹幕的彩虹颜色效果](https://github.com/xmcp/pakku.js/issues/246)：
 
 ```javascript
 tweak_after_pakku(chunk=>{
