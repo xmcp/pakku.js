@@ -1,5 +1,5 @@
 import {DanmuObject, DanmuObjectRepresentative, int} from "../core/types";
-import {make_p, parse_time, wait_until_success, zero_array} from "./utils";
+import {get_video_duration, make_p, parse_time, wait_until_success, zero_array} from "./utils";
 import {dispval, DISPVAL_TIME_THRESHOLD} from "../core/post_combine";
 
 const DETAILS_MAX_TIMEDELTA_MS = 10 * 1000;
@@ -74,20 +74,12 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         };
     }
 
-    let DURATION = 0;
+    let DURATION_MS = 0;
 
     function getduration() {
-        let total_time_elem = window.root_elem.querySelector('.bilibili-player-video-time-total, .squirtle-video-time-total, .bpx-player-ctrl-time-duration');
-        DURATION = total_time_elem ? parse_time(total_time_elem.textContent!, 0) : 0;
-        if(!DURATION) {
-            let video_elem = window.root_elem.querySelector('video');
-            DURATION = video_elem ? video_elem.duration : 0;
-        }
-
-        if(DURATION > 0)
-            DURATION = DURATION * 1000 + 1000;
+        let d = get_video_duration();
+        DURATION_MS = d>0 ? Math.ceil(d * 1000 + 1000) : 0;
     }
-
     getduration();
 
     const LINE_WIDTH = 1.5 * DPI;
@@ -144,7 +136,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
     let graph_img: HTMLCanvasElement | null = null;
 
     function block(time: number) {
-        return Math.round(time * WIDTH / DURATION);
+        return Math.round(time * WIDTH / DURATION_MS);
     }
 
     function fix_line_visibility(arr_above: number[], arr_below: number[], idx: int) {
@@ -182,7 +174,7 @@ function inject_fluctlight_graph(bar_elem: HTMLElement, _version: int, cvs_conta
         den_aft = zero_array(WIDTH);
 
         getduration();
-        if(!DURATION) {
+        if(!DURATION_MS) {
             console.log('pakku fluctlight: failed to get video duration');
             return false;
         }

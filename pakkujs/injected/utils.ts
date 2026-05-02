@@ -109,3 +109,13 @@ export function wait_until_success(fn: (...args: any) => boolean, interval_ms: n
         }, interval_ms);
     }
 }
+
+export function get_video_duration() {
+    let total_time_elem = window.root_elem.querySelector('.bilibili-player-video-time-total, .squirtle-video-time-total, .bpx-player-ctrl-time-duration');
+    let ret = total_time_elem ? parse_time(total_time_elem.textContent!, 0) : 0;
+    if(!ret) {
+        let video_elem = window.root_elem.querySelector('video');
+        ret = video_elem ? video_elem.duration : 0;
+    }
+    return ret;
+}

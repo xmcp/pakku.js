@@ -2,12 +2,13 @@ import {
     format_datetime,
     format_duration,
     get_L,
+    get_video_duration,
     make_a,
     make_elem,
     make_p, parse_time,
     proc_mode,
     proc_rgb,
-    sleep_ms
+    sleep_ms,
 } from "./utils";
 import {AnyObject, DanmuObjectRepresentative, int} from "../core/types";
 import {crack_uidhash} from "./crc32_crack";
@@ -127,24 +128,40 @@ async function query_uid(uidhash: string, logger_container: HTMLElement) {
 }
 
 function extract_insight(s: string): HTMLButtonElement[] {
-    let ret = [];
+    let ret: HTMLButtonElement[] = [];
+    let dedup = new Set();
+
+    function add_ret(text: string, callback: () => void) {
+        if(ret.length>=10)
+            return;
+        if(dedup.has(text))
+            return;
+
+        let btn = document.createElement('button') as HTMLButtonElement;
+        btn.textContent = text;
+        btn.onclick = callback;
+        ret.push(btn);
+
+        dedup.add(text);
+    }
+
 
     // note that s may be prefixed or suffixed `₍₎` or `[]` by pakku
 
     // jump to time (1:00:00), also include things like `7.30` or `730工程` because some users do send danmus like this
-    for(let pattern_jump of s.matchAll(/(?:^|[^a-zA-Z0-9日号天])([1-9]\d?)(?:(?:[:：.]|小?时)([0-5][0-9]))?(?:[:：.]|分钟?)?([0-5][0-9])(?:$|[^a-zA-Z0-9分千万亿倍个天日月年元米+:：.])/g)) {
+    let dur = get_video_duration();
+    for(let pattern_jump of s.matchAll(/(?:^|[^a-zA-Z0-9日号天])([1-9]\d?)(?:(?:[:：.]|小?时)([0-5][0-9]))?(?:[:：.]|分钟?)?([0-5][0-9])(?:$|[^a-zA-Z0-9点分千万亿倍个人天号日月年块元厘米公吨克买+:：.*-])/g)) {
         let time_normalized = pattern_jump[2] ? `${pattern_jump[1]}:${pattern_jump[2]}:${pattern_jump[3]}` : `${pattern_jump[1]}:${pattern_jump[3]}`;
         let jump_s = parse_time(time_normalized, null);
         if(jump_s!==null) {
-            let btn = document.createElement('button') as HTMLButtonElement;
-            btn.textContent = time_normalized;
-            btn.onclick = function () {
+            if(dur>0 && jump_s>dur)
+                continue; // filter out invalid jump timestamp
+            add_ret(time_normalized, function () {
                 window.postMessage({
                     type: 'pakku_video_jump',
                     time: jump_s,
                 });
-            };
-            ret.push(btn);
+            });
         }
     }
 
@@ -154,23 +171,17 @@ function extract_insight(s: string): HTMLButtonElement[] {
             // avxxxx must be lowercase
             pattern_video[1].toLowerCase().startsWith('a') ? pattern_video[1].toLowerCase() : pattern_video[1]
         );
-        let btn = document.createElement('button') as HTMLButtonElement;
-        btn.textContent = pattern_video[1];
-        btn.onclick = function () {
+        add_ret(pattern_video[1], function () {
             window.open(video_link);
-        };
-        ret.push(btn);
+        });
     }
 
     // user reference (@xxxx)
     for(let pattern_user of s.matchAll(/(?:^|[ ~,，.。《》、:：()（）…!！?？₎/\[\]]|\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana})(@(?:[0-9a-zA-Zー_-]|\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}){3,16})(?:$|[ @~,，.。《》、:：()（）…!！?？/₍\[\]])/ug)) {
         let user_link = 'https://search.bilibili.com/upuser?keyword=' + encodeURIComponent(pattern_user[1]);
-        let btn = document.createElement('button') as HTMLButtonElement;
-        btn.textContent = pattern_user[1];
-        btn.onclick = function () {
+        add_ret(pattern_user[1], function () {
             window.open(user_link);
-        };
-        ret.push(btn);
+        });
     }
 
     return ret;
